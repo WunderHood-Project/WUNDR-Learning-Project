@@ -42,3 +42,6 @@ export async function makeApiRequest<T>(
 
     return response.json();
 }
+
+
+export const API = process.env.NEXT_PUBLIC_PRODUCTION ?? process.env.NEXT_PUBLIC_DEV;

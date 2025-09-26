@@ -10,6 +10,9 @@ import { CITIES_CO } from '@/data/citiesCO';
 import { useModal } from '@/app/context/modal';
 import LoginModal from '@/components/login/LoginModal';
 import SignupModal from '@/components/signup/SignupModal';
+import { API } from '../../../utils/api';
+import { Err } from '@/types/errors';
+
 import {
   isGeneralSubmitted,
   markGeneralSubmitted,
@@ -17,7 +20,6 @@ import {
   markOppSubmitted,
 } from './volunteerLocks';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 const TIME_OPTIONS = ['Mornings', 'Afternoons', 'Evenings'] as const;
 
 const initial = {
@@ -122,7 +124,7 @@ export default function VolunteerForm({
       const isRole = Boolean(opportunityId);
       const url = isRole ? `${API}/volunteer/${opportunityId}` : `${API}/volunteer/`;
 
-      await makeApiRequest<{ volunteer: any }>(url, {
+      await makeApiRequest<{ volunteer: VolunteerCreate }>(url, {
         method: 'POST',
         body: {
           firstName: f.firstName.trim(),
@@ -144,7 +146,7 @@ export default function VolunteerForm({
         setOk(true);
         setOkMsg(`Thank you! Your application for “${roleTitle ?? 'this role'}” was submitted. We will contact you within 2–3 business days.`);
         setError(null);
-        onDone?.(); 
+        onDone?.();
       } else {
         // General application 
         markGeneralSubmitted();
@@ -158,51 +160,53 @@ export default function VolunteerForm({
       requestAnimationFrame(() => {
         document.getElementById('volunteer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
-    } catch (err: any) {
-      const code = String(err?.status || err?.response?.status || '');
-      const detail: string =
-        (typeof err === 'string' && err) ||
-        err?.detail ||
-        err?.message ||
-        err?.response?.data?.detail ||
-        err?.response?.data?.message ||
-        '';
+    } catch (err) {
+      throw new Error(`Unable to create volunteer: ${err}`)
+      //   const code = String(err?.status || err?.response?.status || '');
+      //   const detail: string =
+      //     (typeof err === 'string' && err) ||
+      //     err?.detail ||
+      //     err?.message ||
+      //     err?.response?.data?.detail ||
+      //     err?.response?.data?.message ||
+      //     '';
 
-      if (code === '401') {
-        try {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('token');
-        } catch {}
-        setModalContent(<LoginModal />);
-        setError('Please log in to apply as a volunteer.');
-        return;
-      }
+      //   if (code === '401') {
+      //     try {
+      //       localStorage.removeItem('access_token');
+      //       localStorage.removeItem('token');
+      //     } catch { }
+      //     setModalContent(<LoginModal />);
+      //     setError('Please log in to apply as a volunteer.');
+      //     return;
+      //   }
 
-      if (opportunityId) {
-        if (code === '409' || /already applied to this opportunity/i.test(detail)) {
-          markOppSubmitted(opportunityId);
-          setOk(true);
-          setError(null);
-          setOkMsg(`You already applied to “${roleTitle ?? 'this role'}”.`);
-          onDone?.();
-          return;
-        }
-        if (code === '404') {
-          setError('This opportunity no longer exists.');
-          return;
-        }
-      } else {
-        if (/already registered as a volunteer/i.test(detail)) {
-          markGeneralSubmitted();
-          setLockedGeneral(true);
-          setOk(true);
-          setOkMsg('You have already submitted a volunteer application. Thank you!');
-          setError(null);
-          return;
-        }
-      }
+      //   if (opportunityId) {
+      //     if (code === '409' || /already applied to this opportunity/i.test(detail)) {
+      //       markOppSubmitted(opportunityId);
+      //       setOk(true);
+      //       setError(null);
+      //       setOkMsg(`You already applied to “${roleTitle ?? 'this role'}”.`);
+      //       onDone?.();
+      //       return;
+      //     }
+      //     if (code === '404') {
+      //       setError('This opportunity no longer exists.');
+      //       return;
+      //     }
+      //   } else {
+      //     if (/already registered as a volunteer/i.test(detail)) {
+      //       markGeneralSubmitted();
+      //       setLockedGeneral(true);
+      //       setOk(true);
+      //       setOkMsg('You have already submitted a volunteer application. Thank you!');
+      //       setError(null);
+      //       return;
+      //     }
+      //   }
 
-      setError(detail || 'Failed to submit application.');
+      //   setError(detail || 'Failed to submit application.');
+      // } 
     } finally {
       setSubmitting(false);
     }
