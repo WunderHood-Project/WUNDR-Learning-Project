@@ -40,7 +40,7 @@ app = FastAPI(lifespan=lifespan)
 # CORS Policy
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://vercel.com/erikaabrandon-6148s-projects/wonderhood-project"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
