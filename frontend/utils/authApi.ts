@@ -9,8 +9,10 @@
 //   return makeApiRequest<{ user: any }>(`${API}/auth/me`);
 // }
 
+import { User } from "@/types/user";
+
 import { makeApiRequest, API } from "./api";
 
 export async function fetchMe() {
-  return makeApiRequest<{ user: any }>(`${API}/auth/users/me`);
+  return makeApiRequest<{ user: User }>(`${API}/auth/users/me`);
 }
