@@ -3,12 +3,12 @@ import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 
 type Props = {
-    children: Child[]
+    enrolledChildren: Child[]
     eventID: string | undefined
     onAfterUnenroll?: () => void
 }
 
-const UnenrollEvent:React.FC<Props> = ({ children, eventID, onAfterUnenroll }) => {
+const UnenrollEvent:React.FC<Props> = ({ enrolledChildren, eventID, onAfterUnenroll }) => {
     const [selected, setSelected] = useState<Set<string>>(new Set)
     const [serverError, setServerError] = useState<string | null>(null)
 
@@ -44,7 +44,7 @@ const UnenrollEvent:React.FC<Props> = ({ children, eventID, onAfterUnenroll }) =
     return (
         <form onSubmit={handleUnenroll} className="space-y-4 px-10">
             <fieldset className="space-y-2">
-                {children?.map(child => {
+                {enrolledChildren?.map(child => {
                     const childID = `child-${child.id}`
                     const isChecked = selected.has(child.id)
 
