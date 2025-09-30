@@ -4,9 +4,10 @@ import React, { useMemo, useState } from "react"
 import { Views, Calendar, dateFnsLocalizer, type View } from "react-big-calendar"
 import { format, getDay, parse, startOfWeek } from "date-fns"
 import {enUS} from 'date-fns/locale';
-import { Event } from "@/types/event"
+import { EventForCalendar } from "@/types/event"
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { combineLocal } from "../../../../utils/formatDate";
+import { CalendarEvent } from "@/types/calendar";
 
 
 const localizer = dateFnsLocalizer({
@@ -18,7 +19,7 @@ const localizer = dateFnsLocalizer({
 })
 
 type Props = {
-    events: Partial<Event>[]
+    events: EventForCalendar[]
     onPick: (eventId: string) => void
 }
 
@@ -26,7 +27,7 @@ const EventCalendar: React.FC<Props> = ({ events, onPick }) => {
     const [date, setDate] = useState<Date>(new Date())
     const [view, setView] = useState<View>(Views.MONTH)
 
-    const calendarEvents = useMemo(() => {
+    const calendarEvents = useMemo<CalendarEvent[]>(() => {
         return (events ?? []).flatMap((e) => {
             if (!e?.id || !e?.name || !e?.date) return []
 
@@ -48,7 +49,7 @@ const EventCalendar: React.FC<Props> = ({ events, onPick }) => {
                 view={view}
                 onView={(v) => setView(v)}
                 popup
-                onSelectEvent={(ev: any) => {
+                onSelectEvent={(ev: CalendarEvent) => {
                     const id = ev?.resource?.id ?? ev?.id
                     if (id && onPick) onPick(String(id))
                 }}

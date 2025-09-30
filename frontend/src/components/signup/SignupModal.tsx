@@ -33,7 +33,8 @@ const SignupModal = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [creating, setCreating] = useState(false)
-    
+
+    console.log(errors)
 
     // Form fields for each step
     const [form1, setForm1] = useState({
@@ -121,7 +122,7 @@ const SignupModal = () => {
             const response = await handleSignup(userInfo)
             await loginWithToken(response.token, response.user as User | undefined)
             closeModal();
-            
+
             let redirectTo = safeNext;
             if (selectedRole === "parent") {
                 redirectTo = parentNext === 'now' ? "/profile?tab=child" : safeNext;
@@ -412,7 +413,7 @@ const SignupModal = () => {
                                             {selectedRole === 'parent' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
                                         </div>
                                         <div>
-                                            <div className="font-medium">I'm a Parent</div>
+                                            <div className="font-medium">I&apos;m a Parent</div>
                                             <div className="text-sm text-gray-600">Looking for activities for my child</div>
                                         </div>
                                     </div>
@@ -434,7 +435,7 @@ const SignupModal = () => {
                                             {selectedRole === 'volunteer' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
                                         </div>
                                         <div>
-                                            <div className="font-medium">I'm a Volunteer</div>
+                                            <div className="font-medium">I&apos;m a Volunteer</div>
                                             <div className="text-sm text-gray-600">Want to help or earn service hours</div>
                                         </div>
                                     </div>
@@ -465,8 +466,8 @@ const SignupModal = () => {
                         <div className="space-y-5">
                             <h3 className="text-lg font-semibold text-gray-800">Almost there!</h3>
                             <p className="text-sm text-gray-600">
-                                You can add your child's details now (about 2-3 minutes), or skip and do it later from your profile.
-                                You'll need a child on file to join events.
+                                You can add your child&apos;s details now (about 2-3 minutes), or skip and do it later from your profile.
+                                You&apos;ll need a child on file to join events.
                             </p>
 
                             <div className="space-y-3">
@@ -477,7 +478,7 @@ const SignupModal = () => {
                                     className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
                                 >
                                     Add a Child Now
-                                    <div className="text-xs font-normal text-green-100">We'll create your account first.</div>
+                                    <div className="text-xs font-normal text-green-100">We&apos;ll create your account first.</div>
                                 </button>
 
                                 <button

@@ -237,7 +237,7 @@ const LoginModal = () => {
 
                         <div className="space-y-4">
                             <p className="text-gray-600 text-sm mb-4">
-                                Enter your email address and we'll send you instructions to reset your password.
+                                Enter your email address and we&apos;ll send you instructions to reset your password.
                             </p>
 
                             <input
@@ -403,7 +403,7 @@ const LoginModal = () => {
                         </button>
 
                         <div className="text-center text-sm text-gray-600 mt-4">
-                            Don't have an account?{" "}
+                            Don&apos;t have an account?{" "}
                             <button
                                 type="button"
                                 onClick={() => {

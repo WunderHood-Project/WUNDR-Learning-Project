@@ -4,16 +4,17 @@ import { makeApiRequest } from "../../../../utils/api"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
 import { gradeOptions } from "../../../../utils/displayGrade"
-import { dedupeECs, ECErrors, ECInput, ecsEqual, EmergencyContact } from "@/types/emergencyContact"
+import { dedupeECs, ECErrors, ECUpdateForm, ecsEqual } from "@/types/emergencyContact"
 import { e164toUS, formatUs, toE164US } from "../../../../utils/formatPhoneNumber"
 
+type ChildUpdateForm = Omit<Child, "id" | "homeschool" | "waiver" | "createdAt" | "parents">;
 type Props = {
     currChild: Child
     setEditingChildId: (id: string | null) => void
     refreshChildren: () => Promise<void>
 }
 
-const blankEC = (): ECInput => ({
+const blankEC = (): ECUpdateForm => ({
     firstName: "",
     lastName: "",
     relationship: "",
@@ -30,10 +31,9 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
     const [allergiesMedical, setAllergiesMedical] = useState<string>("")
     const [notes, setNotes] = useState<string>("")
     const [saving, setSaving] = useState(false)
-    const [ecs, setEcs] = useState<ECInput[]>([blankEC()])
+    const [ecs, setEcs] = useState<ECUpdateForm[]>([blankEC()])
     const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
 
-    // console.log('lets go', currChild.emergencyContacts.map((c) => c.phoneNumber))
     useEffect(() => {
         setFirstName(currChild.firstName ?? "")
         setPreferredName(currChild.preferredName ?? "")
@@ -51,7 +51,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
             setBirthday("")
         }
 
-        const initialFromServer: ECInput[] =
+        const initialFromServer: ECUpdateForm[] =
             (currChild.emergencyContacts ?? []).map(ec => ({
                 firstName: ec.firstName ?? "",
                 lastName: ec.lastName ?? "",
@@ -62,7 +62,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
         const initial = initialFromServer.length ? initialFromServer : [blankEC()]
         setEcs(initial)
         setEcErrors(initial.map(() => ({})))
-    }, [currChild.id])
+    }, [currChild])
 
     const isValid = useMemo(() => Boolean(firstName?.trim() && lastName?.trim()), [firstName, lastName])
 
@@ -78,14 +78,14 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
         setGrade(Number(n))
     }
 
-    const handleECChange = (i: number, field: keyof ECInput, isPhone: boolean = false) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleECChange = (i: number, field: keyof ECUpdateForm, isPhone: boolean = false) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const v = e.target.value
         setEcs(prev => prev.map((contact, idx) =>
             (idx === i ? { ...contact, [field]: isPhone ? formatUs(v) : v } : contact)))
     }
 
-    const validateECs = (contacts: ECInput[]) => {
-        const filled = (c: ECInput) => !!(c.firstName.trim() || c.lastName.trim() || c.relationship.trim() || c.phoneNumber.trim())
+    const validateECs = (contacts: ECUpdateForm[]) => {
+        const filled = (c: ECUpdateForm) => !!(c.firstName.trim() || c.lastName.trim() || c.relationship.trim() || (c.phoneNumber ?? "").trim())
         const errs: ECErrors[] = contacts.map(() => ({}))
 
         contacts.forEach((c, i) => {
@@ -114,7 +114,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
         setEcErrors(errs)
         if (!ecOk) return
 
-        const currentECs: ECInput[] = (currChild.emergencyContacts ?? []).map(ec => ({
+        const currentECs: ECUpdateForm[] = (currChild.emergencyContacts ?? []).map(ec => ({
             firstName: ec.firstName ?? "",
             lastName: ec.lastName ?? "",
             relationship: ec.relationship ?? "",
@@ -123,16 +123,16 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
 
         const includeECs = !ecsEqual(deduped, currentECs)
 
-        const payload: any = {
+        const payload: ChildUpdateForm = {
             firstName: firstName?.trim(),
-            preferredName: preferredName === "" ? null : preferredName?.trim(),
             lastName: lastName?.trim(),
-            birthday: new Date(birthday).toISOString(),
+            preferredName: preferredName === "" ? null : preferredName?.trim(),
             grade,
-            photoConsent,
+            birthday: new Date(birthday).toISOString(),
             allergiesMedical: allergiesMedical === "" ? null : allergiesMedical?.trim(),
             notes: notes === "" ? null : notes?.trim(),
-            updatedAt: new Date().toISOString()
+            photoConsent,
+            // updatedAt: new Date().toISOString()
         }
 
         if (includeECs) {
@@ -140,11 +140,9 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
                 firstName: c.firstName.trim(),
                 lastName: c.lastName.trim(),
                 relationship: c.relationship.trim(),
-                phoneNumber: toE164US(c.phoneNumber)
+                phoneNumber: c.phoneNumber ? toE164US(c.phoneNumber) : null
             }))
         }
-
-        console.log('look here', payload)
 
         try {
             setSaving(true)
@@ -323,7 +321,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
                                             inputMode="tel"
                                             autoComplete="tel"
                                             placeholder="Phone Number"
-                                            value={c.phoneNumber}
+                                            value={c.phoneNumber ?? ""}
                                             onChange={handleECChange(i, "phoneNumber", true)}
                                             disabled={saving}
                                             className="w-full p-3 border rounded-lg"

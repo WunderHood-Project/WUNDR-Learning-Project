@@ -21,6 +21,8 @@ const ChildInfo = () => {
     const [refreshKey, setRefreshKey] = useState(0)
     const [editingChildId, setEditingChildId] = useState<string | null>(null)
 
+    console.log('for npm build', loadErrors)
+
     const fetchChildren = useCallback(async () => {
         setLoading(true)
 
@@ -82,11 +84,11 @@ const ChildInfo = () => {
     return (
         <div>
             <div className="text-center mb-[40px]">
-                <h1 className="text-4xl font-bold text-wondergreen mb-4">Your Children's Information</h1>
+                <h1 className="text-4xl font-bold text-wondergreen mb-4">Your Childrens&apos; Information</h1>
                 {!children ? (
                     <div className="flex justify-center items-center min-h-[200px]">You have do not have any children in our system yet.</div>
                 ) : (
-                    <h2 className="max-w-2xl mx-auto text-lg text-wondergreen">Manage your children's profile for their events</h2>
+                    <h2 className="max-w-2xl mx-auto text-lg text-wondergreen">Manage your children&apos;s profile for their events</h2>
                 )}
             </div>
 

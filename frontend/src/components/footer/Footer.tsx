@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { FaInstagram, FaFacebook, FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
@@ -20,10 +19,10 @@ export default function Footer() {
                 <FaFacebook className="w-6 h-6 hover:opacity-80" />
             </a>
         </div>
-            
+
         </div>
 
-        
+
       <div className="border-t border-gray-200 pt-4 max-w-5xl mx-auto text-center text-white text-md">
       <p className="mb-3">WonderHood is a registered 501(c)(3) non-profit organization. All donations are tax-deductible to the fullest extent allowed by law.</p>
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6 text-md md:text-md">

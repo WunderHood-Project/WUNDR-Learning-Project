@@ -6,14 +6,13 @@ import { useUser } from "../../../../hooks/useUser"
 import { combineLocal, formatDate } from "../../../../utils/formatDate"
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import EventCalendar from "./calendar"
-import Link from "next/link"
 import { Child } from "@/types/child"
 import { FaPen } from "react-icons/fa"
 import UnenrollEvent from "./unenrollEvent"
 
 
 const YourEvents = () => {
-    const { events, loading, error, refetch } = useGetAllEvents()
+    const { events, loading, refetch } = useGetAllEvents()
     const { user } = useUser()
     const [currEventIdx, setCurrEventIdx] = useState(0)
     const [editingId, setEditingId] = useState<string | null>(null)
@@ -33,7 +32,7 @@ const YourEvents = () => {
                 date: e.date,
                 startTime: e.startTime,
                 endTime: e.endTime,
-                childIds: (e.childIDs ?? []).filter(id => childIDSet.has(id)) //string[]
+                childIDs: (e.childIDs ?? []).filter(id => childIDSet.has(id)) //string[]
             }))
     }, [events, user?.children])
 
@@ -114,7 +113,7 @@ const YourEvents = () => {
                 {visibleEvents && visibleEvents.map((event) => {
                     const isEditing = editingId === event.id
 
-                    const children = (event?.childIds ?? [])
+                    const children = (event?.childIDs ?? [])
                         .map((id) => childById.get(id))
                         .filter((c): c is Child => !!c) //this is typescript type predicate syntax (if truthy, the variable is Child type)
 

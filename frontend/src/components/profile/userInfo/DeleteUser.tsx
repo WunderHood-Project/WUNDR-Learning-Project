@@ -38,7 +38,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
 
             <div className="mb-6">
                 <p className="text-gray-600 mb-2">
-                    Are you sure you want to delete <strong>{currUser?.firstName} {currUser?.lastName}'s</strong> account?
+                    Are you sure you want to delete <strong>{currUser?.firstName} {currUser?.lastName}&apos;s</strong> account?
                 </p>
             </div>
 

@@ -12,7 +12,7 @@ type Props = {
 }
 
 const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
-    const [avatar, setAvatar] = useState<string>("")
+    // const [avatar, setAvatar] = useState<string>("")
     const [firstName, setFirstName] = useState<string>("")
     const [lastName, setLastName] = useState<string>("")
     const [email, setEmail] = useState<string>("")
@@ -24,7 +24,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
     const [saving, setSaving] = useState(false)
 
     useEffect(() => {
-        setAvatar(currUser?.avatar ?? "")
+        // setAvatar(currUser?.avatar ?? "")
         setFirstName(currUser?.firstName ?? "")
         setLastName(currUser?.lastName ?? "")
         setEmail(currUser?.email ?? "")
@@ -46,7 +46,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
             zipCode?.length === 5
 
         return ok
-    }, [firstName, lastName, email, address, city, state])
+    }, [firstName, lastName, email, address, city, state, zipCode?.length])
 
     // const updateAvatar
     const updateFirstName = (e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)

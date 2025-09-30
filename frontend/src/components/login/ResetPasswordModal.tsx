@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import LoginModal from "./LoginModal";
 import { useModal } from "@/app/context/modal";
-import { useRouter } from "next/navigation";
 
 
 interface ResetPasswordModalProps {
@@ -65,12 +64,12 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
 
       const data = await res.json();
 
-      if (res.ok) { 
+      if (res.ok) {
         // Success: show message and after 2s open login modal
         setMessage("✅ Your password has been reset! You can now log in.");
         setTimeout(() => {
           setMessage(null);
-          onClose?.();        
+          onClose?.();
           setModalContent(<LoginModal />)
         }, 2000);
       } else {

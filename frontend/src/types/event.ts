@@ -20,3 +20,5 @@ export type Event = {
     userId: string[]
     childIDs: string[]
 }
+
+export type EventForCalendar = Omit<Event, "activityId" | "image" | "participants" | "limit" | "state" | "address" | "zipCode" | "latitude" | "longitude" | "userId">
