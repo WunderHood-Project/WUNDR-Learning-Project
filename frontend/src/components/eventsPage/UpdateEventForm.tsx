@@ -34,7 +34,7 @@ export default function UpdateEventForm() {
         // create async helper function to get activities
         const getActivities = async () => {
             try {
-                let fetchActivities: ActivitiesResponse = await makeApiRequest("http://localhost:8000/activity")
+                const fetchActivities: ActivitiesResponse = await makeApiRequest("http://localhost:8000/activity")
                 if (fetchActivities.activities) setActivities(fetchActivities.activities)
             } catch {
                 throw Error("Unable to fetch activities")
@@ -118,7 +118,7 @@ export default function UpdateEventForm() {
 
         // Try to add an event
         try {
-            const response: any = await makeApiRequest(`http://localhost:8000/event/${eventId}`, {
+            const response = await makeApiRequest(`http://localhost:8000/event/${eventId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: payload
