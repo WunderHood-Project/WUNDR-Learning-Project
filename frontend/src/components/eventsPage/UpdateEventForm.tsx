@@ -12,25 +12,23 @@ import { convertStringToIsoFormat } from "../../../utils/formatDate"
 import { EventPayload } from '../../../utils/auth';
 
 type ActivitiesResponse = { activities: Activity[] }
-type EventsResponse = { events: Event[] }
 type FormErrors = Partial<Record<"activity" | "name" | "description" | "date" | "startTime" | "endTime" | "limit" | "address" | "longitude" | "latitude" | "zipCode", string>>
 
 export default function UpdateEventForm() {
     const { eventId } = useParams()
-    const { event, loading, error, refetch } = useEvent(eventId)
+    const { event: singleEvent, loading: singleLoading, error: singleError } = useEvent(eventId)
+    const { events: allEvents } = useEvent(undefined)
     const [formEvent, setFormEvent] = useState<Event | null>(null)
     const [activities, setActivities] = useState<Activity[]>()
     const [errors, setErrors] = useState<FormErrors>({})
-    const [fetchedEvents, setFetchedEvents] = useState<Event[]>([])
     const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
-
     useEffect(() => {
-        if (event) {
-            setFormEvent(event)
+        if (singleEvent) {
+            setFormEvent(singleEvent)
         }
-    }, [event])
+    }, [singleEvent])
 
     useEffect(() => {
         // create async helper function to get activities
@@ -45,20 +43,8 @@ export default function UpdateEventForm() {
         getActivities()
     }, [])
 
-    useEffect(() => {
-        const getEvents = async () => {
-            try {
-                let fetchEvents: EventsResponse = await makeApiRequest("http://localhost:8000/event")
-                if (fetchEvents) setFetchedEvents(fetchEvents.events)
-            } catch (err) {
-                throw Error(`Unable to fetch events:", ${err}`)
-            }
-        }
-        getEvents()
-    }, [])
-
-    if (loading) return <p>Loading...</p>
-    if (error) return <p>Failed to load event.</p>
+    if (singleLoading) return <p>Loading...</p>
+    if (singleError) return <p>Failed to load event.</p>
     if (!formEvent) return <p>Preparing form...</p>
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -68,7 +54,7 @@ export default function UpdateEventForm() {
 
         // * Add validations here
         // Ensure the name does not already exist
-        const matchingNames = fetchedEvents.find((e) => e.name === formEvent.name)
+        const matchingNames = allEvents?.find((e) => e.name === formEvent.name)
         if (matchingNames) {
             newErrors.name = "Name Already Exists"
         }
@@ -97,8 +83,12 @@ export default function UpdateEventForm() {
         if (formEvent.address.length > 200) newErrors.address = "Address must contain less than 200 characters"
         if (formEvent.zipCode.toString().length < 5) newErrors.zipCode = "Please provide a valid zipcode"
         // Validate lattitude/longitude
-        if (formEvent.latitude < -90 || formEvent.latitude > 90) newErrors.latitude = "Please provide valid latitude"
-        if (formEvent.longitude < -180 || formEvent.longitude > 180) newErrors.longitude = "Please provide valid longitude"
+        if (formEvent.latitude !== null &&
+            formEvent.latitude !== undefined &&
+            (formEvent.latitude < -90 || formEvent.latitude > 90)) newErrors.latitude = "Please provide valid latitude"
+        if (formEvent.longitude !== null &&
+            formEvent.longitude !== undefined &&
+            (formEvent.longitude < -180 || formEvent.longitude > 180)) newErrors.longitude = "Please provide valid longitude"
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
@@ -120,8 +110,8 @@ export default function UpdateEventForm() {
             state: formEvent.state,
             address: formEvent.address,
             zipCode: parseInt(formEvent.zipCode.toString(), 10),
-            latitude: parseFloat(formEvent.latitude.toString()),
-            longitude: parseFloat(formEvent.longitude.toString()),
+            latitude: formEvent.latitude ? parseFloat(formEvent.latitude.toString()) : undefined,
+            longitude: formEvent.longitude ? parseFloat(formEvent.longitude.toString()) : undefined,
             userId: [],
             childIDs: []
         }
@@ -156,7 +146,7 @@ export default function UpdateEventForm() {
     }
 
     const handleDiscard = async () => {
-        setFormEvent(event)
+        setFormEvent(singleEvent)
     }
 
     return (
@@ -372,7 +362,7 @@ export default function UpdateEventForm() {
                             <input
                                 name="latitude"
                                 placeholder="Latitude"
-                                value={formEvent.latitude}
+                                value={formEvent.latitude ?? undefined}
                                 onChange={handleChangeSelectOrInputOrText}
                                 required
                                 className="w-full border rounded px-3 py-2"
@@ -386,7 +376,7 @@ export default function UpdateEventForm() {
                             <input
                                 name="longitude"
                                 placeholder="Longitude"
-                                value={formEvent.longitude}
+                                value={formEvent.longitude ?? undefined}
                                 onChange={handleChangeSelectOrInputOrText}
                                 required
                                 className="w-full border rounded px-3 py-2"

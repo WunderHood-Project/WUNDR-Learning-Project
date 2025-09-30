@@ -185,29 +185,29 @@ export function isTokenExpired(token: string): boolean {
   }
 }
 // * Event ===================================================
-// export interface EventPayload {
+export interface EventPayload {
 
-//   id?: string
-//   activityId: string
-//   name: string
-//   description: string
-//   date: string
-//   startTime: string
-//   endTime: string
-//   image: string
-//   participants?: number
-//   limit: number
+  id?: string
+  activityId: string
+  name: string
+  description: string
+  date: string
+  startTime: string
+  endTime: string
+  image: string
+  participants?: number
+  limit: number
 
-//   city: string
-//   state: string
-//   address: string
-//   zipCode: number
-//   latitude: number
-//   longitude: number
+  city: string
+  state: string
+  address: string
+  zipCode: number
+  latitude?: number
+  longitude?: number
 
-//   userId: string[]
-//   childIDs: string[]
-// }
+  userId: string[]
+  childIDs: string[]
+}
 
 // * Notification ===================================================
 export interface NotificationPayload {
