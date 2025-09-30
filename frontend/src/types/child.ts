@@ -15,5 +15,5 @@ export type Child = {
     photoConsent: boolean
     waiver: boolean
     parents: User[]
-    emergencyContacts: EmergencyContact[]
+    emergencyContacts?: EmergencyContact[]
 }

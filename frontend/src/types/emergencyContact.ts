@@ -1,14 +1,16 @@
 import { onlyDigitals } from "../../utils/formatPhoneNumber"
 
 export type EmergencyContact = {
-    id: string
+    id?: string
     firstName: string
     lastName: string
-    phoneNumber: string
+    phoneNumber: string | null
     relationship: string
 }
 
-export type ECInput = Pick<EmergencyContact, "firstName" | "lastName" | "phoneNumber" | "relationship">
+export type ECInput = Pick<EmergencyContact, "id" | "firstName" | "lastName" | "phoneNumber" | "relationship">
+export type ECUpdateForm = Omit<ECInput, "id">;
+
 export type ECErrors = Partial<{
     firstName: string
     lastName: string
@@ -16,7 +18,7 @@ export type ECErrors = Partial<{
     phoneNumber: string
 }>
 
-const normalizeEC = (c: ECInput) => ({
+const normalizeEC = (c: ECUpdateForm) => ({
     firstName: (c.firstName || "").trim().toLowerCase(),
     lastName: (c.lastName || "").trim().toLowerCase(),
     relationship: (c.relationship || "").trim().toLowerCase(),
@@ -24,9 +26,9 @@ const normalizeEC = (c: ECInput) => ({
 })
 
 // removes duplicate contacts within array
-export const dedupeECs = (arr: ECInput[]) => {
+export const dedupeECs = (arr: ECUpdateForm[]) => {
     const seen = new Set<string>()
-    const out: ECInput[] = []
+    const out: ECUpdateForm[] = []
 
     for (const contact of arr) {
         const key = JSON.stringify(normalizeEC(contact))
@@ -42,8 +44,8 @@ export const dedupeECs = (arr: ECInput[]) => {
 
 // compares currentContact array and potential edited array
 //this is necessary to see if we run patch request with or w/o emergenecy contacts
-export const ecsEqual = (a: ECInput[], b: ECInput[]) => {
-    const toKeySet = (xs: ECInput[]) => new Set(xs.map(x => JSON.stringify(normalizeEC(x))))
+export const ecsEqual = (a: ECUpdateForm[], b: ECUpdateForm[]) => {
+    const toKeySet = (xs: ECUpdateForm[]) => new Set(xs.map(x => JSON.stringify(normalizeEC(x))))
 
     //converts each each to a normalized set
     const A = toKeySet(a)

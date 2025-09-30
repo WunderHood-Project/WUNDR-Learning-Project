@@ -1,18 +1,19 @@
 import React, { useState } from "react"
-import { ChildPayload } from "../../../../utils/auth";
+// import { ChildPayload } from "../../../../utils/auth";
 import { makeApiRequest } from "../../../../utils/api";
 import { calculateAge } from "../../../../utils/calculateAge";
 import { gradeOptions } from "../../../../utils/displayGrade";
 import { ECErrors, EmergencyContact } from "@/types/emergencyContact";
 import { formatUs, toE164US } from "../../../../utils/formatPhoneNumber";
+import { Child } from "@/types/child";
 
 type Props = {
     showForm: boolean
-    onSuccess: (createdChild: any) => void
+    onSuccess: (createdChild: Child) => void
 }
 
 type FormErrors = Partial<Record<"firstName" | "lastName" | "birthday", string>>
-type ChildForm = Omit<ChildPayload, "emergencyContacts" | "createdAt" | "updatedAt">;
+type ChildForm = Omit<Child, "createdAt" | "updatedAt" | "parents" | "id">;
 const blankEC = (): EmergencyContact => ({
     id: "",
     firstName: "",
@@ -39,6 +40,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
         notes: "",
         photoConsent: false,
         waiver: false,
+        emergencyContacts: []
     })
 
     const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> = (e) => {
@@ -160,7 +162,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
             })
             .filter(Boolean) as EmergencyContact[]
 
-        const payload: ChildPayload = {
+        const payload: ChildForm = {
             firstName: child.firstName?.trim(),
             lastName: child.lastName?.trim(),
             preferredName: child.preferredName === "" ? null : child.preferredName?.trim(),
@@ -171,8 +173,8 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
             notes: child.notes === "" ? null : child.notes?.trim(),
             photoConsent: child.photoConsent,
             waiver: child.waiver,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            // createdAt: new Date().toISOString(),
+            // updatedAt: new Date().toISOString(),
             emergencyContacts
         }
 
@@ -184,7 +186,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                 body: payload
             })
 
-            onSuccess((response as any).child ?? payload)
+            onSuccess(response as Child)
             setChild({
                 firstName: "",
                 lastName: "",
@@ -195,12 +197,13 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                 allergiesMedical: "",
                 notes: "",
                 photoConsent: false,
-                waiver: false
+                waiver: false,
+                emergencyContacts: []
             })
             setEcs([blankEC()])
             setErrors({})
         } catch (err) {
-            setServerError("A network error occurred. Please try again later.")
+            setServerError(err instanceof Error ? err.message : "Fail to join child to account. Please try again later.")
         } finally {
             showForm = false
             setSubmitting(false)
@@ -230,7 +233,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
             {currentStep === 1 && (
                 <>
                     <h2 className="flex flex-col text-xl mt-4 mb-6 text-center">
-                        Add your child's information.
+                        Add your child&apos;s information.
                         <span className="mt-1">Child must be between 10–18 years old.</span>
                     </h2>
                     {serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
@@ -418,7 +421,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                                         autoComplete="tel"
                                         maxLength={12}
                                         placeholder="Phone Number"
-                                        value={c.phoneNumber}
+                                        value={c?.phoneNumber ?? ""}
                                         onChange={handleECPhoneChange(i)}
                                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                         required={i === 0}

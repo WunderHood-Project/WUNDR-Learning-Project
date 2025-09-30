@@ -1,7 +1,6 @@
 import { Child } from "@/types/child"
-import React, { useMemo, useState } from "react"
+import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
-import { useRouter } from "next/navigation"
 
 type Props = {
     children: Child[]
@@ -10,14 +9,17 @@ type Props = {
 }
 
 const UnenrollEvent:React.FC<Props> = ({ children, eventID, onAfterUnenroll }) => {
-    const router = useRouter()
     const [selected, setSelected] = useState<Set<string>>(new Set)
     const [serverError, setServerError] = useState<string | null>(null)
 
     const toggleChild = (id: string) => {
         setSelected(prev => {
             const next = new Set(prev)
-            next.has(id) ? next.delete(id) : next.add(id)
+            if (next.has(id)) {
+                next.delete(id)
+            } else {
+                next.add(id)
+            }
             return next
         })
     }

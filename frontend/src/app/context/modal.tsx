@@ -1,5 +1,5 @@
 "use client"
-import React, { createContext, useRef, useState, ReactNode, useContext, RefObject, useEffect } from 'react'
+import React, { createContext, useState, ReactNode, useContext, useEffect } from 'react'
 import ReactDOM from "react-dom"
 import "./modal.css"
 
