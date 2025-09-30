@@ -3,7 +3,7 @@ import { makeApiRequest } from "../../../../utils/api"
 import { Child } from "@/types/child"
 import { FaCircleChevronLeft, FaCircleChevronRight, FaX } from "react-icons/fa6"
 import { FaCheck, FaPen, FaTrash } from "react-icons/fa"
-import JoinChildForm from "./JoinChildForm"
+import JoinChild from "./JoinChildForm"
 import UpdateChildForm from "./UpdateChild"
 import OpenModalButton from "@/app/context/openModalButton"
 import DeleteChild from "./DeleteChild"
@@ -176,7 +176,7 @@ const ChildInfo = () => {
             </div>
 
             <div ref={formAnchorRef} className="scroll-mt-24 aria-hidden" />
-            <JoinChildForm showForm={showForm} onSuccess={handleFormSuccess}/>
+            <JoinChild showForm={showForm} onSuccess={handleFormSuccess}/>
         </div>
     )
 }

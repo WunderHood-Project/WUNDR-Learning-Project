@@ -35,20 +35,19 @@ const Profile = () => {
         router.replace(`/profile?tab=${idxToKey(idx)}`);
     };
 
-
     return (
         <div className="flex flex-row bg-wonderbg">
             {/* Left menu */}
             <div className="flex flex-col w-1/4">
-            {profileTabs.map((tab, idx) => (
-                <button
-                 key={idx}
-                 className={`${idx === tabIdx ? 'active' : ""}`}
-                 onClick={() => openTab(idx)}
-                >
-                {tab}
-                </button>
-            ))}
+                {profileTabs.map((tab, idx) => (
+                    <button
+                        key={idx}
+                        className={`${idx === tabIdx ? 'active' : ""}`}
+                        onClick={() => openTab(idx)}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
 
             <div className="w-3/4">

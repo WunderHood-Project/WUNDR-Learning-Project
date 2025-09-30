@@ -17,3 +17,6 @@ export type Child = {
     parents: User[]
     emergencyContacts?: EmergencyContact[]
 }
+
+export type ChildUpdateForm = Omit<Child, "id" | "homeschool" | "waiver" | "createdAt" | "parents">;
+export type JoinChildForm = Omit<Child, "createdAt" | "updatedAt" | "parents" | "id">;

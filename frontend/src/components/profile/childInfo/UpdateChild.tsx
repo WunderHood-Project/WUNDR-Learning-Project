@@ -1,13 +1,13 @@
-import { Child } from "@/types/child"
+import { Child, ChildUpdateForm } from "@/types/child"
 import React, { useEffect, useMemo, useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
 import { gradeOptions } from "../../../../utils/displayGrade"
-import { dedupeECs, ECErrors, ECUpdateForm, ecsEqual } from "@/types/emergencyContact"
+import { ECErrors, ECUpdateForm } from "@/types/emergencyContact"
+import { dedupeECs, ecsEqual } from "../../../../utils/emergencyContactHelpers"
 import { e164toUS, formatUs, toE164US } from "../../../../utils/formatPhoneNumber"
 
-type ChildUpdateForm = Omit<Child, "id" | "homeschool" | "waiver" | "createdAt" | "parents">;
 type Props = {
     currChild: Child
     setEditingChildId: (id: string | null) => void

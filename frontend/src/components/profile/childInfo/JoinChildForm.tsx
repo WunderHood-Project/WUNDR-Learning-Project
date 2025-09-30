@@ -5,7 +5,7 @@ import { calculateAge } from "../../../../utils/calculateAge";
 import { gradeOptions } from "../../../../utils/displayGrade";
 import { ECErrors, EmergencyContact } from "@/types/emergencyContact";
 import { formatUs, toE164US } from "../../../../utils/formatPhoneNumber";
-import { Child } from "@/types/child";
+import { Child, JoinChildForm } from "@/types/child";
 
 type Props = {
     showForm: boolean
@@ -13,7 +13,6 @@ type Props = {
 }
 
 type FormErrors = Partial<Record<"firstName" | "lastName" | "birthday", string>>
-type ChildForm = Omit<Child, "createdAt" | "updatedAt" | "parents" | "id">;
 const blankEC = (): EmergencyContact => ({
     id: "",
     firstName: "",
@@ -22,14 +21,14 @@ const blankEC = (): EmergencyContact => ({
     phoneNumber: ""
 });
 
-const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
+const JoinChild: React.FC<Props> = ({ showForm, onSuccess }) => {
     const [errors, setErrors] = useState<FormErrors>({})
     const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
     const [serverError, setServerError] = useState<string | null>(null)
     const [currentStep, setCurrentStep] = useState(1)
     const [submitting, setSubmitting] = useState(false)
     const [ecs, setEcs] = useState<EmergencyContact[]>([blankEC()])
-    const [child, setChild] = useState<ChildForm>({
+    const [child, setChild] = useState<JoinChildForm>({
         firstName: '',
         lastName: '',
         preferredName: "",
@@ -162,7 +161,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
             })
             .filter(Boolean) as EmergencyContact[]
 
-        const payload: ChildForm = {
+        const payload: JoinChildForm = {
             firstName: child.firstName?.trim(),
             lastName: child.lastName?.trim(),
             preferredName: child.preferredName === "" ? null : child.preferredName?.trim(),
@@ -501,4 +500,4 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
     )
 }
 
-export default JoinChildForm
+export default JoinChild
