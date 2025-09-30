@@ -5,23 +5,21 @@ import { isLoggedIn } from '../../../utils/auth';
 import LoginModal from '@/components/login/LoginModal';
 import VolunteerForm from './VolunteerForm';
 import { useEffect, useRef, useState } from 'react';
-import { makeApiRequest } from '../../../utils/api';
-import { markOppSubmitted, isOppSubmitted } from './volunteerLocks';
+import {API, makeApiRequest } from '../../../utils/api';
+import { markOppSubmitted, isOppSubmitted } from './volunteerHelpers';
 import { Opp, Venue } from "../../types/opportunity"
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
-const ALSO_HELPFUL = [
-  { title: 'Fundraising / Grants (Online)', blurb: 'Find mini-grants and draft simple applications.' },
-  { title: 'Community Outreach (Indoor/Online)', blurb: 'Connect with libraries, museums, parks, schools.' },
-  { title: 'Equipment Manager (Indoor)', blurb: 'Track and prep kits/materials for programs.' },
-];
+// const ALSO_HELPFUL = [
+//   { title: 'Fundraising / Grants (Online)', blurb: 'Find mini-grants and draft simple applications.' },
+//   { title: 'Community Outreach (Indoor/Online)', blurb: 'Connect with libraries, museums, parks, schools.' },
+//   { title: 'Equipment Manager (Indoor)', blurb: 'Track and prep kits/materials for programs.' },
+// ];
 
-export default function Opportunities({
-  onApply,
-}: {
+export default function Opportunities({onApply}: {
   onApply?: (roleTitle?: string, opportunityId?: string) => void;
 }) {
+  
   const { setModalContent, closeModal } = useModal();
 
   // Client-only flags
@@ -34,7 +32,6 @@ export default function Opportunities({
   const [loaded, setLoaded] = useState(false); // "loaded" ensures we don't flash the placeholder before fetch completes
 
   const goToGeneralForm = () => {
-    // toggle hash → parent will catch and show form
     window.location.hash = 'apply';
   };
 
@@ -47,7 +44,6 @@ export default function Opportunities({
         );
         setItems(res.opportunities ?? []);
       } catch {
-        // noop — you could set an error banner here if needed
       } finally {
         setLoaded(true);
       }
@@ -80,11 +76,20 @@ export default function Opportunities({
           { method: 'GET' }
         );
         (res.opportunityIds || []).forEach(id => markOppSubmitted(id));
-      } catch (e: any) {
-        if (String(e?.status) === '401' || String(e?.status) === '403') return;
+      } catch (e: unknown) {
+        const status =
+          typeof e === 'object' && e !== null
+            ? String(
+                (e as { status?: number; response?: { status?: number } }).status ??
+                (e as { response?: { status?: number } }).response?.status ??
+                ''
+              )
+            : '';
+        if (status === '401' || status === '403') return;
       }
     })();
   }, [hydrated, logged]);
+
 
   const openApply = (oppId: string, title: string) => {
     if (onApply) return onApply(title, oppId);
@@ -100,8 +105,8 @@ export default function Opportunities({
     <section className="max-w-6xl mx-auto px-4 py-2">
       <header className="text-center mb-8">
         <p className="mt-3 text-lg text-gray-700">
-          We're building a small team of caring helpers. Pick a role or tell us your skills —
-          we'll find a good fit (one-time or ongoing).
+          We&apos;re building a small team of caring helpers. Pick a role or tell us your skills —
+          we&apos;ll find a good fit (one-time or ongoing).
         </p>
         <p className="mt-2 text-sm text-gray-600">
           In the application, please include your cities and availability (weekdays/weekends, morning/afternoon/evening).
@@ -111,17 +116,15 @@ export default function Opportunities({
       {/* Grid of opportunity cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch">
         {loaded && items.length === 0 ? (
-          // Centered placeholder card when there are no open opportunities
           <div className="col-span-full flex justify-center">
             <article className="w-full max-w-xl rounded-2xl bg-white border border-wonderleaf/20 p-6 text-center shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900">
                 No open opportunities right now
               </h3>
               <p className="mt-2 text-gray-700">
-                You can still apply as a volunteer — we'll contact you when there's a good fit.
+                You can still apply as a volunteer — we&apos;ll contact you when there&apos;s a good fit.
                 Thank you for your willingness to help!
               </p>
-              
               <button
                 type="button"
                 onClick={goToGeneralForm}
@@ -132,16 +135,18 @@ export default function Opportunities({
             </article>
           </div>
         ) : (
+
           items.map((r) => {
             // If the user already applied to this opportunity, card is visually muted & action disabled
             const applied = logged && hydrated && isOppSubmitted(r.id);
             return (
               <article
                 key={r.id}
-                aria-disabled={applied}
+                data-applied={applied ? 'true' : 'false'}
                 className={`h-full flex flex-col rounded-2xl bg-white border p-5 shadow-sm hover:shadow transition border-wonderleaf/20
                   ${applied ? 'opacity-75 ring-1 ring-emerald-200' : ''}`}
               >
+
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-xl font-semibold text-wondergreen">{r.title}</h3>
                   <div className="flex items-center gap-2">
@@ -171,7 +176,7 @@ export default function Opportunities({
 
                 <div className="mt-3 grid sm:grid-cols-2 gap-4">
                   <div className="min-h-[190px] md:min-h-[210px]">
-                    <h4 className="font-medium text-gray-900 mb-1">What you'll do</h4>
+                    <h4 className="font-medium text-gray-900 mb-1">What you&apos;ll do</h4>
                     <ul className="list-disc pl-5 text-gray-700 text-sm leading-relaxed space-y-2">
                       {r.duties.map((d, i) => <li key={i}>{d}</li>)}
                     </ul>

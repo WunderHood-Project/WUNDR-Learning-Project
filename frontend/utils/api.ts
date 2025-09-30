@@ -46,5 +46,4 @@ export async function makeApiRequest<T>(
 
 // export const API = process.env.NEXT_PUBLIC_PRODUCTION ?? process.env.NEXT_PUBLIC_DEV;
 
-export const API =
-  (process.env.NEXT_API_PRODUCTION?.replace(/\/$/, "")) ?? process.env.NEXT_API_DEV;
+export const API = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
