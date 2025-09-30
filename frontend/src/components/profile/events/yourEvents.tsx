@@ -113,13 +113,12 @@ const YourEvents = () => {
                 {visibleEvents && visibleEvents.map((event) => {
                     const isEditing = editingId === event.id
 
-                    const children = (event?.childIDs ?? [])
+                    const enrolledChildren = (event?.childIDs ?? [])
                         .map((id) => childById.get(id))
                         .filter((c): c is Child => !!c) //this is typescript type predicate syntax (if truthy, the variable is Child type)
 
                     return (
                         <div key={event.id} className="basis-1/2 max-w-3xl w-full mx-auto">
-                            {/* <Link href={`/events/${event.id}`}> */}
                                 <div className="bg-white rounded-lg p-6 min-h-[350px]">
                                     <div className="mb-6">
                                         <div className="flex flex-row justify-between">
@@ -149,12 +148,12 @@ const YourEvents = () => {
                                             Your Children Enrolled: {isEditing && (<span> (Click to remove)</span>)}
                                         </p>
 
-                                        {children.length > 0 && (
+                                        {enrolledChildren.length > 0 && (
                                             isEditing ? (
-                                                <UnenrollEvent children={children} eventID={event.id} onAfterUnenroll={handleAfterUnenroll}/>
+                                                <UnenrollEvent enrolledChildren={enrolledChildren} eventID={event.id} onAfterUnenroll={handleAfterUnenroll}/>
                                             ) : (
                                                 <ul className="list-disc pl-5 text-xs text-gray-700 space-y-0.5">
-                                                    {children.map((child) => (
+                                                    {enrolledChildren.map((child) => (
                                                         <li key={`${event.id}-${child.id}`}>{displayName(child)}</li>
                                                     ))}
                                                 </ul>
@@ -162,7 +161,6 @@ const YourEvents = () => {
                                         )}
                                     </div>
                                 </div>
-                            {/* </Link> */}
                         </div>
                     )
                 })}
