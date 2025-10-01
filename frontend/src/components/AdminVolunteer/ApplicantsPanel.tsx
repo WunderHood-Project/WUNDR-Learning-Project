@@ -1,12 +1,16 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { makeApiRequest } from '../../../utils/api';
+import { API, makeApiRequest } from '../../../utils/api';
 import type { VolunteerApp } from '@/types/volunteer';
 import { useModal } from '@/app/context/modal';
-import DeleteAppModal from './DeleteAppModal'; 
+import LoginModal from '@/components/login/LoginModal';
+import DeleteAppModal from './DeleteAppModal';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+// helpers
+type ErrLike = { status?: number; response?: { status?: number; data?: { detail?: string; message?: string } } };
+const statusOf  = (e: unknown) => String((e as ErrLike)?.status ?? (e as ErrLike)?.response?.status ?? '');
+const messageOf = (e: unknown) => ((e as ErrLike)?.response?.data?.detail || (e as ErrLike)?.response?.data?.message || '');
 
 type Props =
   | { mode: 'all'; title?: string; onBack?: () => void }
@@ -15,55 +19,83 @@ type Props =
 type OppLite = { id: string; title: string };
 
 export default function ApplicantsPanel(props: Props) {
+    const { setModalContent } = useModal();
+    // auth gate
+    const [authChecked, setAuthChecked] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    // ui/data
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState<string | null>(null);
     const [items, setItems] = useState<VolunteerApp[]>([]);
     const [q, setQ] = useState('');
-    const [kind, setKind] = useState<'all' | 'general'>('all'); // only for "all" mode
-    const { setModalContent } = useModal();
+    const [kind, setKind] = useState<'all' | 'general'>('all');
 
-    // id -> title map (for "all" mode to show opportunity titles for each application)
     const [oppMap, setOppMap] = useState<Record<string, string>>({});
 
     const mode = props.mode;
     const oppId = mode === 'opp' ? props.opportunityId : undefined;
 
-    // fetch applications
+    // 1) fetch if admin
     useEffect(() => {
         (async () => {
         try {
-            setLoading(true);
-            setErr(null);
-            const url =
+            const me = await makeApiRequest<{ role: 'admin'|'parent'|'instructor'|'volunteer' }>(
+            `${API}/auth/users/me`,
+            { method: 'GET' }
+            );
+            if (me.role === 'admin') setIsAdmin(true);
+            else setErr('Admins only.');
+        } catch (e) {
+            const code = statusOf(e);
+            if (code === '401') setModalContent(<LoginModal />);
+            else setErr(messageOf(e) || 'Failed to verify user.');
+            setIsAdmin(false);
+        } finally {
+            setAuthChecked(true);
+        }
+        })();
+    }, [setModalContent]);
+
+    // 2) if admin - download
+    useEffect(() => {
+        if (!authChecked || !isAdmin) return;
+
+        (async () => {
+        setLoading(true);
+        setErr(null);
+        try {
+            const appsUrl =
             mode === 'opp'
                 ? `${API}/opportunities/${oppId}/applications`
                 : `${API}/volunteer/applications?kind=${kind}`;
-            const res = await makeApiRequest<{ volunteers: VolunteerApp[] }>(url, { method: 'GET' });
-            setItems(res.volunteers ?? []);
-        } catch (e: any) {
-            setErr(e?.detail || e?.message || 'Failed to load applications.');
+
+            const apps = await makeApiRequest<{ volunteers: VolunteerApp[] }>(appsUrl, { method: 'GET' });
+            setItems(apps.volunteers ?? []);
+
+            if (mode === 'all') {
+            try {
+                const res = await makeApiRequest<{ opportunities: OppLite[] }>(
+                `${API}/opportunities`,
+                { method: 'GET' }
+                );
+                const map: Record<string, string> = {};
+                for (const o of res.opportunities ?? []) map[o.id] = o.title;
+                setOppMap(map);
+            } catch {
+            }
+            }
+        } catch (e) {
+            const code = statusOf(e);
+            if (code === '401') setModalContent(<LoginModal />);
+            else if (code === '403') setErr('Admins only.');
+            else setErr(messageOf(e) || 'Failed to load applications.');
         } finally {
             setLoading(false);
         }
         })();
-    }, [mode, oppId, kind]);
+    }, [authChecked, isAdmin, mode, kind, oppId, setModalContent]);
 
-    // fetch opportunities list (to display titles in the applications list)
-    useEffect(() => {
-        if (mode !== 'all') return;
-        (async () => {
-        try {
-            const res = await makeApiRequest<{ opportunities: OppLite[] }>(`${API}/opportunities/`, { method: 'GET' });
-            const map: Record<string, string> = {};
-            for (const o of res.opportunities ?? []) map[o.id] = o.title;
-            setOppMap(map);
-        } catch {
-            // non-critical — if it fails, we simply won't show titles
-        }
-        })();
-    }, [mode]);
-
-    // search
+    // Search
     const filtered = useMemo(() => {
         const s = q.trim().toLowerCase();
         if (!s) return items;
@@ -101,37 +133,6 @@ export default function ApplicantsPanel(props: Props) {
         return titles.length ? titles.join(', ') : 'Multiple opportunities';
         }
         return 'Application';
-
-
-        const mailtoFor = (v: VolunteerApp) => {
-        // Кому пишем
-        const to = v.email ?? '';
-        // Тема письма
-        const subject = `WonderHood Volunteer Application — ${appTitleFor(v)}`;
-        // Тело письма (шаблон)
-        const body = [
-            `Hi ${v.firstName || ''},`,
-            '',
-            `Thanks for your application to WonderHood Project (${appTitleFor(v)}).`,
-            `We’ll review your information and follow up with next steps.`,
-            '',
-            'Best,',
-            'WonderHood Project Team',
-        ].join('\n');
-
-        // (опционально) можно добавить cc/bcc:
-        // const cc = 'team@wonderhood.org';
-        // const bcc = 'admin@wonderhood.org';
-
-        const params = new URLSearchParams({
-            subject,
-            body,
-            // cc,
-            // bcc,
-        });
-
-        return `mailto:${encodeURIComponent(to)}?${params.toString()}`;
-        };
     };
 
     return (
@@ -176,127 +177,127 @@ export default function ApplicantsPanel(props: Props) {
                 const title = appTitleFor(v);
                 const submittedAt = v.generalAppliedAt ?? v.createdAt ?? null;
 
-                return (
-                    <li key={v.id} className="py-4 flex items-start justify-between gap-4">
-                    <div className="min-w-0 flex-1">
-                        {/* Name + status + submitted date on the right */}
-                        <div className="flex items-start justify-between gap-3">
-                        <div className="font-medium">
-                            {v.firstName} {v.lastName}{' '}
-                            {v.status ? (
-                            <span className="ml-2 text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wide">
-                                {v.status}
-                            </span>
-                            ) : null}
-                        </div>
-                        <div className="shrink-0 text-xs text-gray-500">
-                            Submitted: {formatDate(submittedAt)}
-                        </div>
-                        </div>
-
-                        {/* Application title (opportunity title or "General") */}
-                        <div className="mt-0.5 text-sm text-gray-700">
-                        <span className="font-medium">Title:</span> {title}
-                        </div>
-
-                        {/* Contacts */}
-                        <div className="text-sm text-gray-700 mt-1">
-                        {v.email ? <span>{v.email}</span> : null}
-                        {v.phoneNumber ? <span className="ml-2">· {v.phoneNumber}</span> : null}
-                        </div>
-
-                        {/* Chips by sections */}
-                        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                        {v.cities?.length ? (
-                            <div>
-                            <div className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Cities</div>
-                            <div className="flex flex-wrap gap-2">
-                                {v.cities.map(c => (
-                                <span key={c} className="text-[11px] px-2 py-1 rounded-full bg-gray-100 text-gray-700">
-                                    {c}
-                                </span>
-                                ))}
-                            </div>
-                            </div>
-                        ) : null}
-
-                        {v.skills?.length ? (
-                            <div>
-                            <div className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Skills</div>
-                            <div className="flex flex-wrap gap-2">
-                                {v.skills.map(s => (
-                                <span key={s} className="text-[11px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700">
-                                    {s}
-                                </span>
-                                ))}
-                            </div>
-                            </div>
-                        ) : null}
-
-                        {v.timesAvail?.length ? (
-                            <div>
-                            <div className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Times</div>
-                            <div className="flex flex-wrap gap-2">
-                                {v.timesAvail.map(t => (
-                                <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700">
-                                    {t}
-                                </span>
-                                ))}
-                            </div>
-                            </div>
-                        ) : null}
-                        </div>
-
-                        {/* Bio — left as is, per request */}
-                        {v.bio ? (
-                        <div className="mt-3 text-sm text-gray-800">
-                            <details className="group">
-                            <summary className="cursor-pointer text-wondergreen hover:text-wonderleaf underline decoration-dotted">
-                                Short bio
-                            </summary>
-                            <div className="mt-1 whitespace-pre-wrap">{v.bio}</div>
-                            </details>
-                        </div>
-                        ) : null}
-
-                        {/* Policies / consents */}
-                        <div className="mt-2 flex flex-wrap gap-2">
-                        <span className={`text-[11px] px-2 py-1 rounded-full ${v.photoConsent ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-700'}`}>
-                            Photo consent: {v.photoConsent ? 'Yes' : 'No'}
+            return (
+                <li key={v.id} className="py-4 flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                    {/* Name + status + submitted date on the right */}
+                    <div className="flex items-start justify-between gap-3">
+                    <div className="font-medium">
+                        {v.firstName} {v.lastName}{' '}
+                        {v.status ? (
+                        <span className="ml-2 text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wide">
+                            {v.status}
                         </span>
-                        {typeof v.backgroundCheckConsent === 'boolean' && (
-                            <span className={`text-[11px] px-2 py-1 rounded-full ${v.backgroundCheckConsent ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-700'}`}>
-                            BG check consent: {v.backgroundCheckConsent ? 'Yes' : 'No'}
-                            </span>
-                        )}
-                        </div>
+                        ) : null}
+                    </div>
+                    <div className="shrink-0 text-xs text-gray-500">
+                        Submitted: {formatDate(submittedAt)}
+                    </div>
                     </div>
 
-                    <div className="shrink-0 flex items-center gap-2">
-                        
-                        <button
-                            onClick={() =>
-                            setModalContent(
-                                <DeleteAppModal
-                                applicationId={v.id}
-                                appTitle={appTitleFor(v)}
-                                onDeleted={() => {
-                                    setItems(prev => prev.filter(x => x.id !== v.id));
-                                }}
-                                />
-                            )
-                            }
-                            className="text-sm rounded-md border px-3 py-1.5 text-rose-600 hover:bg-rose-50 border-rose-200 mt-40"
-                        >
-                            Delete
-                        </button>
+                    {/* Application title (opportunity title or "General") */}
+                    <div className="mt-0.5 text-sm text-gray-700">
+                    <span className="font-medium">Title:</span> {title}
                     </div>
-                    </li>
-                );
-                })}
-            </ul>
-            )}
-        </div>
-        </div>
-    );
+
+                    {/* Contacts */}
+                    <div className="text-sm text-gray-700 mt-1">
+                    {v.email ? <span>{v.email}</span> : null}
+                    {v.phoneNumber ? <span className="ml-2">· {v.phoneNumber}</span> : null}
+                    </div>
+
+                    {/* Chips by sections */}
+                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                    {v.cities?.length ? (
+                        <div>
+                        <div className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Cities</div>
+                        <div className="flex flex-wrap gap-2">
+                            {v.cities.map(c => (
+                            <span key={c} className="text-[11px] px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+                                {c}
+                            </span>
+                            ))}
+                        </div>
+                        </div>
+                    ) : null}
+
+                    {v.skills?.length ? (
+                        <div>
+                        <div className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Skills</div>
+                        <div className="flex flex-wrap gap-2">
+                            {v.skills.map(s => (
+                            <span key={s} className="text-[11px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700">
+                                {s}
+                            </span>
+                            ))}
+                        </div>
+                        </div>
+                    ) : null}
+
+                    {v.timesAvail?.length ? (
+                        <div>
+                        <div className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Times</div>
+                        <div className="flex flex-wrap gap-2">
+                            {v.timesAvail.map(t => (
+                            <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700">
+                                {t}
+                            </span>
+                            ))}
+                        </div>
+                        </div>
+                    ) : null}
+                    </div>
+
+                    {/* Bio — left as is, per request */}
+                    {v.bio ? (
+                    <div className="mt-3 text-sm text-gray-800">
+                        <details className="group">
+                        <summary className="cursor-pointer text-wondergreen hover:text-wonderleaf underline decoration-dotted">
+                            Short bio
+                        </summary>
+                        <div className="mt-1 whitespace-pre-wrap">{v.bio}</div>
+                        </details>
+                    </div>
+                    ) : null}
+
+                    {/* Policies / consents */}
+                    <div className="mt-2 flex flex-wrap gap-2">
+                    <span className={`text-[11px] px-2 py-1 rounded-full ${v.photoConsent ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-700'}`}>
+                        Photo consent: {v.photoConsent ? 'Yes' : 'No'}
+                    </span>
+                    {typeof v.backgroundCheckConsent === 'boolean' && (
+                        <span className={`text-[11px] px-2 py-1 rounded-full ${v.backgroundCheckConsent ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-700'}`}>
+                        BG check consent: {v.backgroundCheckConsent ? 'Yes' : 'No'}
+                        </span>
+                    )}
+                    </div>
+                </div>
+
+                <div className="shrink-0 flex items-center gap-2">
+                    
+                    <button
+                        onClick={() =>
+                        setModalContent(
+                            <DeleteAppModal
+                            applicationId={v.id}
+                            appTitle={appTitleFor(v)}
+                            onDeleted={() => {
+                                setItems(prev => prev.filter(x => x.id !== v.id));
+                            }}
+                            />
+                        )
+                        }
+                        className="text-sm rounded-md border px-3 py-1.5 text-rose-600 hover:bg-rose-50 border-rose-200 mt-40"
+                    >
+                        Delete
+                    </button>
+                </div>
+                </li>
+            );
+            })}
+        </ul>
+        )}
+    </div>
+    </div>
+);
 }

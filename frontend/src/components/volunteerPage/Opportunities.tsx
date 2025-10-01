@@ -1,14 +1,18 @@
 'use client';
 
 import { useModal } from '@/app/context/modal';
-import { isLoggedIn } from '../../../utils/auth';
+// import { isLoggedIn } from '../../../utils/auth';
 import LoginModal from '@/components/login/LoginModal';
 import VolunteerForm from './VolunteerForm';
 import { useEffect, useRef, useState } from 'react';
 import {API, makeApiRequest } from '../../../utils/api';
 import { markOppSubmitted, isOppSubmitted } from './volunteerHelpers';
 import { Opp, Venue } from "../../types/opportunity"
+// import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
+type ErrLike = { status?: number; response?: { status?: number }; body?: unknown };
+const statusOf = (e: unknown) =>
+  (e as ErrLike)?.status ?? (e as ErrLike)?.response?.status ?? 0;
 
 // const ALSO_HELPFUL = [
 //   { title: 'Fundraising / Grants (Online)', blurb: 'Find mini-grants and draft simple applications.' },
@@ -31,9 +35,7 @@ export default function Opportunities({onApply}: {
   const [items, setItems] = useState<Opp[]>([]);
   const [loaded, setLoaded] = useState(false); // "loaded" ensures we don't flash the placeholder before fetch completes
 
-  const goToGeneralForm = () => {
-    window.location.hash = 'apply';
-  };
+  const goToGeneralForm = () => window.location.hash = 'apply';
 
   useEffect(() => {
     (async () => {
@@ -43,7 +45,6 @@ export default function Opportunities({onApply}: {
           { method: 'GET' }
         );
         setItems(res.opportunities ?? []);
-      } catch {
       } finally {
         setLoaded(true);
       }
@@ -61,34 +62,55 @@ export default function Opportunities({onApply}: {
     return 'Online';
   };
 
-  useEffect(() => {
-    setHydrated(true);
-    setLogged(isLoggedIn());
-  }, []);
+  // useEffect(() => {
+  //   setHydrated(true);
+  //   setLogged(isLoggedIn());
+  // }, []);
+
+
+  const [authChecked, setAuthChecked] = useState(false);
+    useEffect(() => {
+      setHydrated(true);
+      (async () => {
+        try {
+          await makeApiRequest(`${API}/auth/users/me`, { method: 'GET' }); 
+          setLogged(true);
+        } catch {
+          setLogged(false);
+        } finally {
+          setAuthChecked(true);
+        }
+      })();
+    }, []);
+
 
   useEffect(() => {
-    if (!hydrated || !logged || fetched.current) return;
-    fetched.current = true;
-    (async () => {
+    if (!hydrated || !authChecked || !logged || fetched.current) return;
+
+    let cancelled = false;
+
+    const run = async () => {
       try {
-        const res = await makeApiRequest<{ opportunityIds: string[] }>(
+        const res = await makeApiRequest<{ opportunityIds?: string[] }>(
           `${API}/volunteer/my-opportunities`,
           { method: 'GET' }
         );
-        (res.opportunityIds || []).forEach(id => markOppSubmitted(id));
+        if (cancelled) return;
+        (res.opportunityIds ?? []).forEach(id => markOppSubmitted(id));
+        fetched.current = true; 
       } catch (e: unknown) {
-        const status =
-          typeof e === 'object' && e !== null
-            ? String(
-                (e as { status?: number; response?: { status?: number } }).status ??
-                (e as { response?: { status?: number } }).response?.status ??
-                ''
-              )
-            : '';
-        if (status === '401' || status === '403') return;
+        const status = statusOf(e);
+          if(!cancelled && (status === 401 || status === 404 )) {
+            setTimeout(() => { if (!cancelled && !fetched.current) run(); }, 600);
+            return;
+          }
+          fetched.current = true; 
+        }
       }
-    })();
-  }, [hydrated, logged]);
+
+    run();
+    return () => { cancelled = true; };
+  }, [hydrated, authChecked, logged]);
 
 
   const openApply = (oppId: string, title: string) => {
