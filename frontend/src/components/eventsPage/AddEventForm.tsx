@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { makeApiRequest } from '../../../utils/api';
 import { CITIES_CO } from '@/data/citiesCO';
 import { US_States } from '@/data/states';
@@ -8,6 +8,7 @@ import { Event } from '@/types/event';
 import { Activity } from '@/types/activity';
 import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
 import { useRouter } from 'next/navigation';
+import { useEvent } from '../../../hooks/useEvent';
 
 // type EventsResponse = { events: Event[] }
 type ActivitiesResponse = { activities: Activity[] }
@@ -39,8 +40,8 @@ const parseFloatOrNull = (v: string): number | null => {
 }
 
 const parseIntOrZero = (v: string): number => {
-  const n = parseInt(v, 10)
-  return Number.isFinite(n) ? n : 0
+    const n = parseInt(v, 10)
+    return Number.isFinite(n) ? n : 0
 }
 
 
@@ -48,31 +49,18 @@ export default function EventForm() {
     const [event, setEvent] = useState<Event>(initialEventForm)
     const [errors, setErrors] = useState<FormErrors>({})
     const [activities, setActivities] = useState<Activity[]>([])
-    const [fetchedEvents, setFetchedEvents] = useState<Event[]>([])
+    const { events } = useEvent(undefined)
     const dateYMD = /^\d{4}-\d{2}-\d{2}$/
     // const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     const router = useRouter()
-
-    // useEffect hooks for fetching Events and Activities
-    // useEffect(() => {
-    //     const getEvents = async () => {
-    //         try {
-    //             let fetchEvents: EventsResponse = await makeApiRequest("http://localhost:8000/event")
-    //             if (fetchEvents) setFetchedEvents(fetchEvents.events)
-    //         } catch (err) {
-    //             throw Error(`Unable to fetch events:", ${err}`)
-    //         }
-    //     }
-    //     getEvents()
-    // }, [])
 
     const todayYMD = useMemo<string>(() => toYMDLocal(), [])
     useEffect(() => {
         // create async helper function to get activities
         const getActivities = async () => {
             try {
-                let fetchActivities: ActivitiesResponse = await makeApiRequest("http://localhost:8000/activity")
+                const fetchActivities: ActivitiesResponse = await makeApiRequest("http://localhost:8000/activity")
                 if (fetchActivities.activities) setActivities(fetchActivities.activities)
             } catch {
                 throw Error("Unable to fetch activities")
@@ -85,7 +73,7 @@ export default function EventForm() {
         const { name, value } = e.target
 
         if (name === "latitude" || name === "longitude") {
-            setEvent(prev => ({ ...prev, [name]: parseFloatOrNull(value)}))
+            setEvent(prev => ({ ...prev, [name]: parseFloatOrNull(value) }))
             return
         }
 
@@ -94,7 +82,7 @@ export default function EventForm() {
             return
         }
 
-        setEvent(prev => ({ ...prev, [name]: value}))
+        setEvent(prev => ({ ...prev, [name]: value }))
     }
 
     const handleDiscard = async () => setEvent(initialEventForm)
@@ -106,7 +94,7 @@ export default function EventForm() {
 
         // * Add validations here
         // Ensure the name does not already exist
-        const matchingNames = fetchedEvents.find((e) => e.name === event.name)
+        const matchingNames = events?.find((e) => e.name === event.name)
         if (matchingNames) newErrors.name = "Name Already Exists"
 
         // Validate name's length:
@@ -164,7 +152,7 @@ export default function EventForm() {
 
         // Try to add an event
         try {
-            const response: any = await makeApiRequest("http://localhost:8000/event", {
+            const response = await makeApiRequest("http://localhost:8000/event", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: payload

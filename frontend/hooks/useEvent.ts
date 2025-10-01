@@ -4,44 +4,50 @@ import { Event } from "@/types/event"
 
 export function useEvent(eventId: string | string[] | undefined) {
   const [event, setEvent] = useState<Event | null>(null)
+  const [events, setEvents] = useState<Event[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchEvent = async () => {
-    if (!eventId || Array.isArray(eventId)) {
-      setError("Invalid event ID")
-      setLoading(false)
-      return
-    }
-
-      try {
-        setLoading(true)
-        setError(null)
-        const eventData = await makeApiRequest<Event>(
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      if (eventId && !Array.isArray(eventId)) {
+          const eventData = await makeApiRequest<Event>(
           `http://localhost:8000/event/${eventId}/`,
           { method: "GET" }
+          )
+          setEvent(eventData)
+          setEvents(null)
+      } else if (!eventId) {
+        const eventsData = await makeApiRequest<{ events: Event[] }>(
+          "http://localhost:8000/event",
+          { method: "GET"}
         )
-        setEvent(eventData)
+        setEvents(eventsData.events)
+        setEvent(null)
+      } else {
+        setError("Invalid event ID")
+        setEvent(null)
+        setEvents(null)
+      }
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch event")
         setEvent(null)
+        setEvents(null)
       } finally {
         setLoading(false)
       }
     }
 
     useEffect(() => {
-        fetchEvent()
+        fetchData()
     }, [eventId])
 
   const refetch = () => {
-    if (eventId && !Array.isArray(eventId)) {
-      setLoading(true)
-      setError(null)
-      // Re-trigger the effect
-      fetchEvent()
-    }
+      fetchData()
   }
 
-  return { event, loading, error, refetch }
+  return { event, events, loading, error, refetch }
 }

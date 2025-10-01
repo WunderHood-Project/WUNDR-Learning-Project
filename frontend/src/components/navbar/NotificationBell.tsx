@@ -1,11 +1,27 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import NotificationDropdown from './NotificationDropdown';
+import { API, makeApiRequest } from '../../../utils/api';
+import type { Notification, NotificationsResponse } from '@/types/notification';
 
 export default function NotificationBell() {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(3);
+  const [unreadCount, setUnreadCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  //unReadCount
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res: NotificationsResponse = await makeApiRequest(`${API}/notifications/`);
+      const items: Notification[] = res?.Notifications ?? [];
+      setUnreadCount(items.filter((n) => !n.isRead).length);
+    } catch {
+    }
+  }, []);
+
+  useEffect(() => { 
+    void fetchUnreadCount(); 
+  },[fetchUnreadCount])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -17,12 +33,25 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleToggle = () => {
+    setShowDropdown((prev) => {
+      const next = !prev;
+      if(next) void fetchUnreadCount();
+      return next;
+    })
+  }
+
+  const handleClose = () => {
+    setShowDropdown(false);
+    void fetchUnreadCount();
+  }
+
   return (
     <div className="relative" ref={containerRef}>
       {/* Bell btn */}
       <button
         type="button"
-        onClick={() => setShowDropdown(v => !v)}
+        onClick={handleToggle}
         className="relative p-2 text-wondergreen hover:text-wonderleaf hover:bg-wondergreen/5 rounded-full transition-all duration-300 hover:scale-110"
         aria-haspopup="true"
         aria-expanded={showDropdown}
@@ -43,9 +72,10 @@ export default function NotificationBell() {
       </button>
 
       {/* Dropdown */}
-      {showDropdown && (
-        <NotificationDropdown onClose={() => setShowDropdown(false)} />
-      )}
+      <div className={showDropdown ? '' : 'hidden'}>
+        <NotificationDropdown onClose={handleClose} />
+      </div>
+      
     </div>
   );
 }

@@ -48,6 +48,12 @@ export default function EventsPageContent() {
     fetchActivitiesWithEvents();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="text-center py-20 text-green-700">Loading events...</div>
+    );
+  }
+
   return (
     <main className="px-6 py-8 max-w-5xl md:max-w-7xl mx-auto bg-wonderbg min-h-screen">
       <div className="text-center mb-12">

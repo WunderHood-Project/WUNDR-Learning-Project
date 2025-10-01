@@ -7,32 +7,42 @@ import type { Opp } from '@/types/opportunity';
 
 type Tab = 'opps' | 'apps';
 
+const initialTab: Tab =
+  typeof window !== 'undefined' && window.location.hash.slice(1) === 'apps'
+    ? 'apps'
+    : 'opps';
+
 export default function AdminVolunteerPage() {
-  const [tab, setTab] = useState<Tab>('opps');
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [selectedOpp, setSelectedOpp] = useState<Pick<Opp, 'id' | 'title'> | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const openAppsFor = (opp: Opp) => {
     setSelectedOpp({ id: opp.id, title: opp.title });
     setTab('apps');
   };
-  const openAllApps = () => {
-    setSelectedOpp(null);
-    setTab('apps');
-  };
-
 
   const goApps = () => { setSelectedOpp(null); setTab('apps'); };
   const goOpps = () => setTab('opps');
 
   useEffect(() => {
-    const hash = window.location.hash.slice(1);
-    if (hash === 'apps') setTab('apps');
-    if (hash === 'opps') setTab('opps');
+    const onHash = () => {
+      const h = window.location.hash.slice(1);
+      if (h === 'apps') setTab('apps');
+      if (h === 'opps') setTab('opps');
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
   }, []);
+
   useEffect(() => {
     const want = tab === 'apps' ? '#apps' : '#opps';
     if (window.location.hash !== want) history.replaceState(null, '', want);
   }, [tab]);
+
+  if (!mounted) return null;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
@@ -63,7 +73,7 @@ export default function AdminVolunteerPage() {
       <div className="mt-6">
         {tab === 'opps' ? (
           <AdminVolunteerOpportunities
-            onViewAllApps={openAllApps}
+            // onViewAllApps={openAllApps}
             onViewAppsFor={openAppsFor}
           />
         ) : (
