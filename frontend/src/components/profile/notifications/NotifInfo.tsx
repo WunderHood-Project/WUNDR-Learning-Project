@@ -1,65 +1,9 @@
 'use client';
-//testing for merging
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { formatWhen } from '../../../../utils/formatDate';
 import { Notification, NotificationsResponse } from '@/types/notification';
-import { makeApiRequest } from '../../../../utils/api';
-// type NotifType = 'event' | 'message';
-
-// type Notif = {
-//   id: number;
-//   type: NotifType;
-//   title: string;
-//   text: string;
-//   timeISO: string;     // ISO-время
-//   isRead: boolean;
-//   icon: string;
-//   eventId?: string;    // для перехода на страницу события
-// };
-
-// const initialItems: Notif[] = [
-//   {
-//     id: 1,
-//     type: 'event',
-//     title: 'Event Reminder',
-//     text: "Mountain Hiking starts tomorrow at 9:00 AM. Don't forget to bring water and comfortable shoes!",
-//     timeISO: new Date().toISOString(),
-//     isRead: false,
-//     icon: '📅',
-//     eventId: 'mountain-hiking-123',
-//   },
-//   {
-//     id: 2,
-//     type: 'event',
-//     title: 'Event Reminder',
-//     text: 'Art Workshop at Greenstone Artworks starts tomorrow at 2:00 PM. Materials will be provided.',
-//     timeISO: new Date().toISOString(),
-//     isRead: false,
-//     icon: '🎨',
-//     eventId: 'art-workshop-456',
-//   },
-//   {
-//     id: 3,
-//     type: 'event',
-//     title: 'Event Reminder',
-//     text: 'Museum Tour at The Custer County Historical Society starts tomorrow at 10:00 AM.',
-//     timeISO: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-//     isRead: true,
-//     icon: '🏛️',
-//     eventId: 'museum-tour-789',
-//   },
-//   {
-//     id: 4,
-//     type: 'message',
-//     title: 'Message from WonderHood',
-//     text: 'Welcome! Your profile is set up. Feel free to join our upcoming events.',
-//     timeISO: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3h ago
-//     isRead: false,
-//     icon: '📣',
-//   },
-// ];
+import { API, makeApiRequest } from '../../../../utils/api';
 
 type TabKey = 'all' | 'unread' | 'event' | 'message';
 
@@ -71,11 +15,10 @@ export default function Notifications() {
 
   // Set the items (e.g. notifications)
   const fetchNotifications = useCallback(async () => {
-    setLoading(false)
-
+    setLoading(true)
     try {
-      const response: NotificationsResponse = await makeApiRequest("http://localhost:8000/notifications/")
-      setItems(response?.Notifications)
+      const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
+      setItems(response?.Notifications ?? [])
       setLoadErrors(null)
     } catch (e) {
       if (e instanceof Error) {
@@ -87,7 +30,7 @@ export default function Notifications() {
   }, [])
 
   useEffect(() => {
-    fetchNotifications()
+    void fetchNotifications()
   }, [fetchNotifications])
 
 
@@ -108,7 +51,7 @@ export default function Notifications() {
 
   const markAsRead = async (id: string) => {
     try {
-      await makeApiRequest(`http://localhost:8000/notifications/${id}`, {
+      await makeApiRequest(`${API}/notifications/${id}`, {
         method: "PATCH",
         body: { isRead: true }  // This gets JSON.stringify'd automatically
       });
@@ -130,7 +73,7 @@ export default function Notifications() {
 
       // Make API calls for each unread notification
       const updatePromises = unreadNotifications.map(notification =>
-        makeApiRequest(`http://localhost:8000/notifications/${notification.id}`, {
+        makeApiRequest(`${API}/notifications/${notification.id}`, {
           method: "PATCH",
           body: { isRead: true }
         })
@@ -192,66 +135,47 @@ export default function Notifications() {
 
       {/* List */}
       <div className="space-y-4">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="rounded-xl border border-wonderleaf/30 bg-white p-8 text-center text-gray-500">
+            Loading…
+          </div>
+        ) : loadErrors ? (
+          <div className="rounded-xl border border-red-200 bg-white p-8 text-center text-red-600 text-sm">
+            {loadErrors}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-wonderleaf/30 bg-white p-8 text-center text-gray-500">
             No notifications here yet.
           </div>
         ) : (
-          filtered
-            .slice()
-            // .sort((a, b) => +new Date(b.timeISO) - +new Date(a.timeISO))
-            .map(n => (
-              <div
-                key={n.id}
-                className={`rounded-xl border p-5 md:p-6 bg-white transition ${n.isRead
-                  ? 'border-wonderleaf/40'
-                  : 'border-wondergreen bg-wondergreen/5'
-                  }`}
-              >
-                <div className="flex items-start gap-4">
-                  {/* <div className="text-2xl leading-6">{n.icon}</div> */}
-
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-x-2">
-                      <div className="font-semibold text-gray-900">
-                        {n.title}
-                      </div>
-                      {/* {n.type === 'message' && (
-                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-wonderleaf/10 text-wonderleaf uppercase tracking-wide">
-                          From WonderHood
-                        </span>
-                      )} */}
-                    </div>
-
-                    <p className="text-gray-700 mt-1">{n.description}</p>
-
-                    <div className="mt-3 flex items-center gap-3 text-sm">
-                      <span className="text-gray-400">{formatWhen(n.time)}</span>
-
-                      {/* {n.type === 'event' && (
-                        <>
-                          <span className="text-gray-300">•</span>
-                          <Link
-                            href={n.eventId ? `/events/${n.eventId}` : '/events'}
-                            className="text-wondergreen hover:text-wonderleaf font-medium"
-                          >
-                            View Event
-                          </Link>
-                        </>
-                      )} */}
-                    </div>
+          filtered.map(n => (
+            <div
+              key={n.id}
+              className={`rounded-xl border p-5 md:p-6 bg-white transition ${
+                n.isRead ? 'border-wonderleaf/40' : 'border-wondergreen bg-wondergreen/5'
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-x-2">
+                    <div className="font-semibold text-gray-900">{n.title}</div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => markAsRead(n?.id)}
-                    className="text-sm text-gray-400 hover:text-wonderleaf"
-                  >
-                    {n.isRead === false ? "Mark as read" : ""}
-                  </button>
+                  <p className="text-gray-700 mt-1">{n.description}</p>
+                  <div className="mt-3 flex items-center gap-3 text-sm">
+                    <span className="text-gray-400">{formatWhen(n.time)}</span>
+                  </div>
                 </div>
+
+                <button
+                type="button"
+                onClick={() => markAsRead(n.id)}
+                className="text-sm text-gray-400 hover:text-wonderleaf"
+                >
+                  {n.isRead === false ? "Mark as read" : ""}
+                </button>
               </div>
-            ))
+            </div>
+          ))
         )}
       </div>
     </div>

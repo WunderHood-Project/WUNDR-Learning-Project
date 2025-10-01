@@ -19,7 +19,7 @@ type DeleteAppProps = {
 export default function DeleteAppModal({ applicationId, appTitle, onDeleted }: DeleteAppProps) {
     const [busy, setBusy] = useState(false);
     const [err, setError] = useState<string | null>(null);
-    const {closeModal, setModalContent} = useModal();
+    const {closeModal} = useModal();
 
     const handleDelete = async () => {
     setBusy(true);
