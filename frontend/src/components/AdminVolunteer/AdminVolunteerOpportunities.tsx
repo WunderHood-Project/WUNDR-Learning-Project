@@ -1,63 +1,33 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { API, makeApiRequest } from '../../../utils/api';
-import { getUserRole, isLoggedIn } from '../../../utils/auth';
 import { useModal } from '@/app/context/modal';
 import LoginModal from '@/components/login/LoginModal';
 import DeleteOpportunityModal from './DeleteOpportunityModal';
-import { VENUE_OPTIONS, type Venue, type Opp, type OppCreate, type OppUpdate } from '../../types/opportunity';
+import { VENUE_OPTIONS, Venue, Opp, OppCreate, OppUpdate } from '../../types/opportunity';
 
-// API base
-const OPPS_API = `${API}/opportunities`;
-
-//helpers
-
-// trim array items & drop empties
-const clean = (arr?: string[]) => (arr ?? []).map(s => s.trim()).filter(Boolean);
-
-// textarea <-> string[] mappers
+// helpers
+// const clean = (arr?: string[]) => (arr ?? []).map(s => s.trim()).filter(Boolean);
 const toLines = (s: string) => s.split('\n');
 const fromLines = (a?: string[]) => (a ?? []).join('\n');
 
-// normalize payload to what FastAPI expects
+//normalization data
 const buildBody = (src: OppCreate): OppCreate => ({
+  ...src,
   title: src.title.trim(),
-  venue: [...src.venue] as Venue[],
-  duties: clean(src.duties),
-  skills: clean(src.skills),
   time: src.time.trim(),
-  requirements: clean(src.requirements),
-  tags: clean(src.tags),
   minAge: Number(src.minAge),
-  bgCheckRequired: !!src.bgCheckRequired,
-  volunteerIDs: src.volunteerIDs ?? [], // FastAPI expects the field to exist
 });
 
-// Error narrowing (avoid `any`)
-type ApiErrorShape = {
-  status?: number;
-  detail?: string;
-  message?: string;
-  response?: { status?: number; data?: { detail?: string; message?: string } };
-};
-const getErrStatus = (e: unknown): string => {
-  const ee = e as ApiErrorShape | undefined;
-  const s = ee?.status ?? ee?.response?.status;
-  return s ? String(s) : '';
-};
-const getErrMessage = (e: unknown): string => {
-  const ee = e as ApiErrorShape | undefined;
-  return (
-    ee?.detail ??
-    ee?.message ??
-    ee?.response?.data?.detail ??
-    ee?.response?.data?.message ??
-    ''
-  );
-};
+// Tiny error shape reader (works for fetch/axios-like errors without `any`)
+type ErrLike = { status?: number; response?: { status?: number; data?: { detail?: string; message?: string } } };
+const statusOf = (e: unknown) => String((e as ErrLike)?.status ?? (e as ErrLike)?.response?.status ?? '');
+const messageOf = (e: unknown) => ((e as ErrLike)?.response?.data?.detail || (e as ErrLike)?.response?.data?.message || '');
 
-// default form state
+const OPPS_API = `${API}/opportunities`;
+
+// Blank form model used for create/reset
 const emptyForm: OppCreate = {
   title: '',
   venue: [],
@@ -71,77 +41,46 @@ const emptyForm: OppCreate = {
   volunteerIDs: [],
 };
 
-export default function AdminVolunteerOpportunities({onViewAppsFor}: {onViewAppsFor?: (opp: Opp) => void;}) {
+export default function AdminVolunteerOpportunities({ onViewAppsFor }: { onViewAppsFor?: (opp: Opp) => void }) {
   const { setModalContent } = useModal();
 
-  // auth & role
-  const [hydrated, setHydrated] = useState(false);
-  const [logged, setLogged] = useState(false);
-  const [role, setRole] = useState<ReturnType<typeof getUserRole> | null>(null);
-
-  // data
   const [items, setItems] = useState<Opp[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  // form
   const [editingId, setEditingId] = useState<string | null>(null);
   const [f, setF] = useState<OppCreate>(emptyForm);
   const isEditing = !!editingId;
   const submitLabel = isEditing ? 'Save changes' : 'Create opportunity';
 
-  // search
   const [q, setQ] = useState('');
 
-  // StrictMode double-run guard
-  const fetchedRef = useRef(false);
-
-  //hydrate client flags once
+  //fetch list if admin
   useEffect(() => {
-    setHydrated(true);
-    setLogged(isLoggedIn());
-    setRole(getUserRole());
-  }, []);
-
-  // guarded fetch: wait for hydration/login/role, require admin; prevent double fetch
-  useEffect(() => {
-    if (!hydrated) return;
-
-    if (!logged) {
-      setModalContent(<LoginModal />);
-      setLoading(false);
-      return;
-    }
-
-    if (role == null) return; // wait until role is read
-
-    if (role !== 'admin') {
-      setErr('Admins only.');
-      setLoading(false);
-      return;
-    }
-
-    if (fetchedRef.current) return;
-    fetchedRef.current = true;
-
     (async () => {
+      setLoading(true);
+      setErr(null);
       try {
-        setLoading(true);
-        setErr(null);
-        const res = await makeApiRequest<{ opportunities: Opp[] }>(`${OPPS_API}/`, { method: 'GET' });
+        const me = await makeApiRequest<{ role: 'admin' | 'parent' | 'instructor' | 'volunteer' }>(`${API}/auth/users/me`, { method: 'GET' });
+        if (me.role !== 'admin') {
+          setErr('Admins only.');
+          return;
+        }
+        // Admin confirmed -> load opportunities
+        const res = await makeApiRequest<{ opportunities: Opp[] }>(`${OPPS_API}`, { method: 'GET' });
         setItems(res.opportunities ?? []);
-      } catch (e: unknown) {
-        const code = getErrStatus(e);
+      } catch (e) {
+        const code = statusOf(e);
         if (code === '401') setModalContent(<LoginModal />);
         else if (code === '403') setErr('Admins only.');
-        else setErr(getErrMessage(e) || 'Failed to load opportunities.');
+        else setErr(messageOf(e) || 'Failed to load opportunities.');
       } finally {
         setLoading(false);
       }
     })();
-  }, [hydrated, logged, role, setModalContent]);
+  }, [setModalContent]);
 
-  // list filtered by search
+  //filter over a few text fields
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return items;
@@ -153,28 +92,13 @@ export default function AdminVolunteerOpportunities({onViewAppsFor}: {onViewApps
     );
   }, [items, q]);
 
-  // delete modal
-  const openDelete = (opp: Opp) => {
-    setModalContent(
-      <DeleteOpportunityModal
-        id={opp.id}
-        title={opp.title}
-        onDeleted={() => {
-          setItems(prev => prev.filter(x => x.id !== opp.id));
-          if (editingId === opp.id) resetForm();
-        }}
-      />,
-    );
-  };
-
-  // reset form
+  //Form helpers: reset and populate for edit
   const resetForm = () => {
     setEditingId(null);
     setF(emptyForm);
     setErr(null);
   };
 
-  // start editing existing opp
   const startEdit = (opp: Opp) => {
     setErr(null);
     setEditingId(opp.id);
@@ -193,18 +117,29 @@ export default function AdminVolunteerOpportunities({onViewAppsFor}: {onViewApps
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // create or update opp
+  //Delete: open modal opp
+  const openDelete = (opp: Opp) => {
+    setModalContent(
+      <DeleteOpportunityModal
+        id={opp.id}
+        title={opp.title}
+        onDeleted={() => {
+          setItems(prev => prev.filter(x => x.id !== opp.id));
+          if (editingId === opp.id) resetForm();
+        }}
+      />,
+    );
+  };
+
+  //Submit: add/remove value in array
+  const toggleVenue = (v: Venue) =>
+    setF(s => ({
+      ...s,
+      venue: s.venue.includes(v) ? s.venue.filter(x => x !== v) : [...s.venue, v],
+    }));
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // quick client-side validations
-    if (!f.title.trim()) return alert('Title is required');
-    if (!f.venue.length) return alert('Select at least one venue');
-
-    const skillsClean = clean(f.skills);
-    const tagsClean = clean(f.tags);
-    if (skillsClean.length === 0) return setErr('Please provide at least one skill');
-    if (tagsClean.length === 0) return setErr('Please provide at least one tag');
 
     try {
       setErr(null);
@@ -224,23 +159,14 @@ export default function AdminVolunteerOpportunities({onViewAppsFor}: {onViewApps
         setItems(prev => [res.opportunity, ...prev]);
       }
       resetForm();
-    } catch (e: unknown) {
-      const code = getErrStatus(e);
+    } catch (e) {
+      const code = statusOf(e);
       if (code === '401') setModalContent(<LoginModal />);
-      setErr(getErrMessage(e) || 'Failed to save opportunity.');
-
+      setErr(messageOf(e) || 'Failed to save opportunity.');
     }
   };
 
-  // toggle venue checkbox
-  const toggleVenue = (v: Venue) =>
-    setF(s => ({
-      ...s,
-      venue: s.venue.includes(v) ? s.venue.filter(x => x !== v) : [...s.venue, v],
-    }));
 
-  // don’t render until client hydrated (avoids SSR/LS mismatch)
-  if (!hydrated) return null;
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
