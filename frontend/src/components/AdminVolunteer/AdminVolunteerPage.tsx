@@ -15,10 +15,10 @@ export default function AdminVolunteerPage() {
     setSelectedOpp({ id: opp.id, title: opp.title });
     setTab('apps');
   };
-  const openAllApps = () => {
-    setSelectedOpp(null);
-    setTab('apps');
-  };
+  // const openAllApps = () => {
+  //   setSelectedOpp(null);
+  //   setTab('apps');
+  // };
 
 
   const goApps = () => { setSelectedOpp(null); setTab('apps'); };
@@ -63,7 +63,7 @@ export default function AdminVolunteerPage() {
       <div className="mt-6">
         {tab === 'opps' ? (
           <AdminVolunteerOpportunities
-            onViewAllApps={openAllApps}
+            // onViewAllApps={openAllApps}
             onViewAppsFor={openAppsFor}
           />
         ) : (

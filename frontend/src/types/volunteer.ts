@@ -1,6 +1,8 @@
 
 export type AvailabilityDay = 'Weekdays' | 'Weekends';
 export type AppStatus = 'New' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED';
+export const TIME_OPTIONS = ['Mornings', 'Afternoons', 'Evenings'] as const;
+export type TimeOption = (typeof TIME_OPTIONS)[number];
 
 export type VolunteerCreate = {
   firstName: string;
@@ -9,7 +11,7 @@ export type VolunteerCreate = {
   phoneNumber?: string;
   cities: string[];
   daysAvail: AvailabilityDay[];
-  timesAvail: string[];
+  timesAvail?: TimeOption[];
   skills: string[];
   bio?: string;
   photoConsent: boolean;
@@ -28,7 +30,7 @@ export type VolunteerApp = {
   backgroundCheckConsent?: boolean;
   cities?: string[];
   daysAvail?: AvailabilityDay[];
-  timesAvail?: string[];
+  timesAvail?: TimeOption[];
   skills?: string[];
   status?: AppStatus;
   volunteerOpportunityIDs?: string[];

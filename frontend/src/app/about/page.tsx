@@ -75,7 +75,7 @@ export default function AboutPage() {
             
             <div className="bg-gradient-to-br from-wondersun/20 to-wonderorange/10 rounded-xl p-6 border-l-4 border-wondersun">
               <p className="text-gray-700 leading-relaxed">
-                In the future, we'll launch even more clubs, workshops, and camps—creating a safe, inspiring environment for youth and their families across Colorado.
+                In the future, we&aposll launch even more clubs, workshops, and camps—creating a safe, inspiring environment for youth and their families across Colorado.
               </p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function AboutPage() {
         {/* Bottom Mission Statement */}
         <div className="mt-8 bg-gradient-to-r from-wondergreen to-wonderleaf rounded-2xl p-8 text-white text-center">
           <p className="text-lg md:text-xl leading-relaxed">
-            By connecting families, building community, and creating real opportunities, WonderHood aims to fill the gaps in home education—and add even more to children's lives.
+            By connecting families, building community, and creating real opportunities, WonderHood aims to fill the gaps in home education—and add even more to children&aposs lives.
           </p>
         </div>
       </div>
@@ -128,10 +128,10 @@ export default function AboutPage() {
           
           <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 mb-4">
             <p className="text-lg text-gray-700 leading-relaxed">
-              Membership is <span className="font-bold text-wondergreen bg-wondersun/30 px-2 py-1 rounded">free</span> for all homeschool families with kids ages <span className="font-bold text-wonderorange">10–18</span>.
+              Membership is <span className="font-bold text-wondergreen bg-wondersun/30 px-2 py-1 rounded">free</span> for all homeschool families with kids ages <span className="font-bold text-wonderorange">10-18</span>.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed mt-2">
-              Just sign up form for your child and join any club, or contact us with questions — you're always welcome!
+              Just sign up form for your child and join any club, or contact us with questions — you&aposre always welcome!
             </p>
           </div>
           
@@ -210,7 +210,7 @@ export default function AboutPage() {
       {/* Contact Footer */}
       <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-wonderleaf/20 max-w-4xl mx-auto">
         <p className="text-lg text-gray-600 mb-4">
-          Questions? We'd love to hear from you!
+          Questions? We&aposd love to hear from you!
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a 
