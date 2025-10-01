@@ -55,7 +55,7 @@ export default function PrivacyPolicy() {
         <h2 className="text-xl font-semibold text-wondergreen">3) Legal Basis / Consent</h2>
         <p>
           We process information with your consent, to fulfill a request/registration/donation, and/or for legitimate nonprofit purposes
-          such as participant safety and reporting. Children's data is supplied by a parent/guardian (see §9).
+          such as participant safety and reporting. Children&lsquos data is supplied by a parent/guardian (see §9).
         </p>
       </section>
 
@@ -116,11 +116,11 @@ export default function PrivacyPolicy() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-wondergreen">9) Children's Privacy</h2>
+        <h2 className="text-xl font-semibold text-wondergreen">9) Children&lsquos Privacy</h2>
         <p className="mt-2">
           Accounts/registrations are created by a parent or legal guardian. We collect only the minimum information needed for safe participation.
           We do not knowingly collect personal information directly from children under 13 online without verifiable parental consent.
-          Parents/guardians can review or delete their child's information and withdraw participation at any time.
+          Parents/guardians can review or delete their child&lsquos information and withdraw participation at any time.
         </p>
       </section>
 
