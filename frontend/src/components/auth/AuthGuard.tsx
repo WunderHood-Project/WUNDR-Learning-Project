@@ -17,7 +17,7 @@ export default function AuthGuard() {
       localStorage.removeItem("user");
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   return null;
 }
