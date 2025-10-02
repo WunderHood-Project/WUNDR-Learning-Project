@@ -5,11 +5,15 @@ import { makeApiRequest } from "../../../../utils/api"
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa"
 import { useAuth } from "@/app/context/auth"
 import { useRouter } from "next/navigation"
+import { determineEnv } from "../../../../utils/api"
+
+let WONDERHOOD_URL = determineEnv()
+
 
 type Props = { currUser: User | null }
 
 const DeleteUser: React.FC<Props> = ({ currUser }) => {
-    const {closeModal} = useModal()
+    const { closeModal } = useModal()
     const { logout } = useAuth()
     const router = useRouter()
     const [isDeleting, setIsDeleting] = useState(false)
@@ -18,7 +22,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
         setIsDeleting(true)
 
         try {
-            await makeApiRequest(`http://localhost:8000/user`, { method: "DELETE" })
+            await makeApiRequest(`${WONDERHOOD_URL}/user`, { method: "DELETE" })
             closeModal()
             logout()
             router.replace("/")

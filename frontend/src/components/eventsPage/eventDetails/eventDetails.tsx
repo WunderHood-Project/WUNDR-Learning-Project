@@ -5,6 +5,10 @@ import { useEvent } from "../../../../hooks/useEvent"
 import React, { useCallback, useMemo, useState } from "react"
 import { useUser } from "../../../../hooks/useUser"
 import { makeApiRequest } from "../../../../utils/api"
+import { determineEnv } from "../../../../utils/api"
+
+let WONDERHOOD_URL = determineEnv()
+
 
 const EventDetails = () => {
     const { eventId } = useParams()
@@ -35,10 +39,10 @@ const EventDetails = () => {
         const childIDs = Array.from(selected)
 
         try {
-            await makeApiRequest(`http://localhost:8000/event/${eventId}/enroll`, {
+            await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}/enroll`, {
                 method: "PATCH",
-                headers: {"Content-Type": "application/json"},
-                body: {childIDs}
+                headers: { "Content-Type": "application/json" },
+                body: { childIDs }
             })
             setShowForm(false)
             setSuccessEnroll(true)

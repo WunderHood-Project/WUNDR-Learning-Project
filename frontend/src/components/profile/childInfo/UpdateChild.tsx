@@ -6,6 +6,9 @@ import { FaX } from "react-icons/fa6"
 import { gradeOptions } from "../../../../utils/displayGrade"
 import { dedupeECs, ECErrors, ECUpdateForm, ecsEqual } from "@/types/emergencyContact"
 import { e164toUS, formatUs, toE164US } from "../../../../utils/formatPhoneNumber"
+import { determineEnv } from "../../../../utils/api"
+
+let WONDERHOOD_URL = determineEnv()
 
 type ChildUpdateForm = Omit<Child, "id" | "homeschool" | "waiver" | "createdAt" | "parents">;
 type Props = {
@@ -92,7 +95,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
             const required = i === 0 || filled(c)
             if (!required) return
             if (!c.firstName.trim()) errs[i].firstName = "Required"
-            if (!c.lastName.trim())  errs[i].lastName = "Required"
+            if (!c.lastName.trim()) errs[i].lastName = "Required"
             if (!c.relationship.trim()) errs[i].relationship = "Required"
             if (!toE164US(c.phoneNumber)) errs[i].phoneNumber = "Enter a valid US phone"
         })
@@ -146,7 +149,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
 
         try {
             setSaving(true)
-            await makeApiRequest(`http://localhost:8000/child/${currChild.id}`, {
+            await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: payload

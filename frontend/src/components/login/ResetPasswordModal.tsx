@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import LoginModal from "./LoginModal";
 import { useModal } from "@/app/context/modal";
+import { determineEnv } from "../../../utils/api";
+
+let WONDERHOOD_URL = determineEnv()
 
 
 interface ResetPasswordModalProps {
@@ -51,7 +54,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
 
     try { // Send request to backend API to reset password
       const res = await fetch(
-        "http://localhost:8000/password_reset/reset-password",
+        `${WONDERHOOD_URL}/password_reset/reset-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -84,7 +87,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
 
   return (
     <div className="fixed inset-0 bg-gray-200/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-       {/* Modal background */}
+      {/* Modal background */}
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <form onSubmit={handleSubmit} className="p-6">
           <div className="flex justify-between items-center mb-6">
@@ -104,14 +107,13 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
             )}
           </div>
 
-            {/* Show message if exists (success or error) */}
+          {/* Show message if exists (success or error) */}
           {message && (
             <div
-              className={`p-3 mb-4 rounded-lg text-sm ${
-                message.includes("✅")
+              className={`p-3 mb-4 rounded-lg text-sm ${message.includes("✅")
                   ? "bg-green-50 border border-green-200 text-green-700"
                   : "bg-red-50 border border-red-200 text-red-700"
-              }`}
+                }`}
             >
               {message}
             </div>
