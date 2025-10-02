@@ -3,7 +3,7 @@ import { useModal } from '@/app/context/modal';
 import { makeApiRequest } from '../../../utils/api';
 import { determineEnv } from '../../../utils/api';
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 type ErrLike = {
   detail?: string;

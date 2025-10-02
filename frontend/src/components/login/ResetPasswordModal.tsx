@@ -5,7 +5,7 @@ import LoginModal from "./LoginModal";
 import { useModal } from "@/app/context/modal";
 import { determineEnv } from "../../../utils/api";
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 
 interface ResetPasswordModalProps {
@@ -111,8 +111,8 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
           {message && (
             <div
               className={`p-3 mb-4 rounded-lg text-sm ${message.includes("✅")
-                  ? "bg-green-50 border border-green-200 text-green-700"
-                  : "bg-red-50 border border-red-200 text-red-700"
+                ? "bg-green-50 border border-green-200 text-green-700"
+                : "bg-red-50 border border-red-200 text-red-700"
                 }`}
             >
               {message}
