@@ -7,7 +7,7 @@ import { useUser } from "../../../../hooks/useUser"
 import { makeApiRequest } from "../../../../utils/api"
 import { determineEnv } from "../../../../utils/api"
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 
 const EventDetails = () => {

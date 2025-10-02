@@ -3,7 +3,7 @@ import { makeApiRequest } from "../utils/api"
 import { Event } from "@/types/event"
 import { determineEnv } from "../utils/api"
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 export function useEvent(eventId: string | string[] | undefined) {
   const [event, setEvent] = useState<Event | null>(null)

@@ -8,7 +8,7 @@ import { Event } from "@/types/event";
 import Link from "next/link";
 import { determineEnv } from "../../../utils/api";
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 interface GroupedEvents {
   activity: string;

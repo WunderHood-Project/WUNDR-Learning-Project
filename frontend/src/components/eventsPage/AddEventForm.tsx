@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
 import { determineEnv } from '../../../utils/api';
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 // type EventsResponse = { events: Event[] }
 type ActivitiesResponse = { activities: Activity[] }
