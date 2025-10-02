@@ -5,9 +5,9 @@ export function determineEnv() {
 
     if (process.env.NODE_ENV === "production") {
         baseURL = process.env.NEXT_PUBLIC_API_URL || ""
-    } else {
-        baseURL = process.env.NEXT_PUBLIC_LOCAL|| ""
     }
+    baseURL = process.env.NEXT_PUBLIC_API_URL|| ""
+
     return baseURL
 }
 
