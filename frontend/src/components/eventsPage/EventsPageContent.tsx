@@ -10,8 +10,6 @@ import { determineEnv } from "../../../utils/api";
 
 const WONDERHOOD_URL = determineEnv()
 
-console.log("LALAL", WONDERHOOD_URL)
-
 interface GroupedEvents {
   activity: string;
   events: Event[];
