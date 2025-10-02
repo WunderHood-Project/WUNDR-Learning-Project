@@ -4,6 +4,9 @@ import { Event } from "@/types/event";
 import React from "react";
 import { makeApiRequest } from "../../../utils/api";
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa";
+import { determineEnv } from "../../../utils/api";
+
+let WONDERHOOD_URL = determineEnv()
 
 type props = {
   event: Event;
@@ -17,7 +20,7 @@ const DeleteEventModal: React.FC<props> = ({ event }) => {
     setIsDeleting(true);
 
     try {
-      await makeApiRequest(`http://localhost:8000/event/${event.id}`, {
+      await makeApiRequest(`${WONDERHOOD_URL}/event/${event.id}`, {
         method: "DELETE",
       });
       closeModal();
