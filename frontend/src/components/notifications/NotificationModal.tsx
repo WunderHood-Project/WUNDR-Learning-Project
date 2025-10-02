@@ -13,14 +13,12 @@ type NotificationModalProps = {
     url: string
 }
 
-export function NotificationModal(
-    { url }: NotificationModalProps
-) {
+export function NotificationModal({ url }: NotificationModalProps) {
     const { closeModal } = useModal();
     const [isNotifying, setIsNotifying] = useState(false);
     const [title, setTitle] = useState<string>("")
     const [description, setDescription] = useState<string>("")
-    const [time, setTime] = useState<Date>(new Date())
+    const [time] = useState<Date>(new Date())
     const [errors, setErrors] = useState<ModalErrors>({})
     // const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -41,6 +39,8 @@ export function NotificationModal(
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
+            setIsNotifying(false);
+            return;
         }
 
         const payload: NotificationPayload = {
@@ -64,7 +64,9 @@ export function NotificationModal(
     }
 
     return (
-        <div className="rounded-lg p-6 w-full max-w-md mx-auto bg-white shadow-md">
+        <div 
+        className="rounded-lg p-6 w-full max-w-md mx-auto bg-white shadow-md"
+        aria-busy={isNotifying}>
             <h1 className="text-xl font-bold text-center">Send a Notification to All Users</h1>
             <p className="text-sm text-center text-gray-600">
                 All registered users will receive an email notification
@@ -103,6 +105,7 @@ export function NotificationModal(
             <div className="flex justify-between mt-6">
                 <button
                     onClick={handleNotification}
+                    disabled={isNotifying}
                     className="border border-black bg-wondergreen hover:bg-wonderleaf rounded w-[100px] text-white py-2 font-medium transition-colors"
                 >
                     Send

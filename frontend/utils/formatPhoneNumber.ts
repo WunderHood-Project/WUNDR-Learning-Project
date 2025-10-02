@@ -10,7 +10,8 @@ export const formatUs = (s: string) => {
     return [p1, p2, p3].filter(Boolean).join("-")
 }
 
-export const toE164US = (phoneNumber: string) => {
+export const toE164US = (phoneNumber?: string | null): string | null => {
+    if (!phoneNumber) return null
     const d = onlyDigitals(phoneNumber)
     const ten = d.length === 11 && d.startsWith("1") ? d.slice(1) : d
     return ten.length === 10 ? `+1${ten}` : null

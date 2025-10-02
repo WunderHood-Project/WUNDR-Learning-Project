@@ -1,3 +1,16 @@
+export const API = (process.env.NEXT_API_PRODUCTION || 'http://localhost:8000').replace(/\/$/, '');
+
+export function determineEnv() {
+    let baseURL: string = ""
+
+    if (process.env.NODE_ENV === "production") {
+        baseURL = process.env.NEXT_API_PRODUCTION || ""
+    } else {
+        baseURL = process.env.NEXT_API_DEV || ""
+    }
+    return baseURL
+}
+
 export interface ApiRequestOptions {
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     body?: any

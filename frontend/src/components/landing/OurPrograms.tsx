@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function OurPrograms() {
     const programs = [
         {
@@ -63,7 +65,15 @@ export default function OurPrograms() {
 
                             {/* Icon + program title */}
                             <div className="flex items-center gap-3 sm:gap-4 mb-2 mt-2 z-10">
-                                <img src={prog.icon} alt="" className="w-10 h-10 sm:w-14 sm:h-14" />
+                                <Image
+                                 src={prog.icon}
+                                alt={`${prog.title} icon`}
+                                width={56} 
+                                height={56}
+                                className="w-10 h-10 sm:w-14 sm:h-14"
+                                sizes="(min-width: 640px) 56px, 40px"
+                                priority={false} 
+                                />
                                 <h3 className="text-lg sm:text-xl lg:text-[21px] font-bold text-wondergreen">
                                     {prog.title}
                                 </h3>

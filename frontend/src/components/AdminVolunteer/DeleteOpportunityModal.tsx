@@ -7,6 +7,13 @@ import { makeApiRequest } from '../../../utils/api';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
+type ErrLike = {
+  detail?: string;
+  message?: string;
+  response?: { data?: { detail?: string; message?: string } };
+};
+
+
 type DeleteOpportunityModalProps = {
   id: string;
   title?: string;
@@ -25,9 +32,14 @@ const DeleteOpportunityModal: React.FC<DeleteOpportunityModalProps> = ({ id, tit
       await makeApiRequest(`${API}/opportunities/${id}`, { method: 'DELETE' });
       onDeleted?.();
       closeModal();
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const ee = e as ErrLike | undefined;
       const detail =
-        e?.detail || e?.message || e?.response?.data?.detail || 'Failed to delete opportunity.';
+        ee?.detail ||
+        ee?.message ||
+        ee?.response?.data?.detail ||
+        ee?.response?.data?.message ||
+        'Failed to delete opportunity.';
       setErr(detail);
     } finally {
       setIsDeleting(false);

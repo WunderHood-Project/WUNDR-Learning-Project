@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link';
-import { makeApiRequest } from '../../../utils/api';
+import { API, makeApiRequest } from '../../../utils/api';
 import { useState, useCallback, useEffect } from 'react';
 import { Notification, NotificationsResponse } from '@/types/notification';
 import { formatNotificationTime } from '../../../utils/formatDate';
@@ -20,7 +20,7 @@ export default function NotificationDropdown({ onClose }: Props) {
     setLoading(true)
 
     try {
-      const response: NotificationsResponse = await makeApiRequest("http://localhost:8000/notifications/")
+      const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
       setNotifications(response?.Notifications)
       setLoadErrors(null)
     } catch (e) {
@@ -33,8 +33,14 @@ export default function NotificationDropdown({ onClose }: Props) {
   }, [])
 
   useEffect(() => {
-    fetchNotifications()
+    void fetchNotifications()
   }, [fetchNotifications])
+
+  // const hasUnread = notifications?.some((n) => !n.isRead) ?? false;
+
+  // const recent = [...(notifications ?? [])]
+  // .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+  // .slice(0, 4);
 
   return (
     <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-wonderleaf/20 rounded-xl shadow-xl z-50">
@@ -48,10 +54,12 @@ export default function NotificationDropdown({ onClose }: Props) {
 
       {/* Notifications List */}
       <div className="max-h-80 overflow-y-auto">
-        {notifications?.length === 0 ? (
+        {loading ? (
+          <div className="p-8 text-center text-gray-500">Loading...</div>
+        ) : loadErrors? (
           <div className="p-8 text-center text-gray-500">
             <div className="text-3xl mb-2">✨</div>
-            <div className="font-medium mb-1">You're all caught up!</div>
+            <div className="font-medium mb-1">You&aposre all caught up!</div>
             <div className="text-sm">No new notifications right now.</div>
           </div>
         ) : (
