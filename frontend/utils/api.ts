@@ -4,9 +4,9 @@ export function determineEnv() {
     let baseURL: string = ""
 
     if (process.env.NODE_ENV === "production") {
-        baseURL = process.env.NEXT_API_PRODUCTION || ""
+        baseURL = process.env.NEXT_PUBLIC_API_URL || ""
     } else {
-        baseURL = process.env.NEXT_API_DEV || ""
+        baseURL = process.env.NEXT_PUBLIC_LOCAL|| ""
     }
     return baseURL
 }
