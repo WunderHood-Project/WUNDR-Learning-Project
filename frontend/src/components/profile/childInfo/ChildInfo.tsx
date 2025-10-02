@@ -21,6 +21,7 @@ const ChildInfo = () => {
     const [currChildIdx, setCurrChildIdx] = useState<number>(0)
     const [refreshKey, setRefreshKey] = useState(0)
     const [editingChildId, setEditingChildId] = useState<string | null>(null)
+    console.log(loadErrors)
 
     const WONDERHOOD_URL = determineEnv()
 
