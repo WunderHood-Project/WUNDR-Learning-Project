@@ -6,6 +6,10 @@ import { gradeOptions } from "../../../../utils/displayGrade";
 import { ECErrors, EmergencyContact } from "@/types/emergencyContact";
 import { formatUs, toE164US } from "../../../../utils/formatPhoneNumber";
 import { Child } from "@/types/child";
+import { determineEnv } from "../../../../utils/api";
+
+let WONDERHOOD_URL = determineEnv()
+
 
 type Props = {
     showForm: boolean
@@ -73,10 +77,10 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                     ...contact,
                     ...(name === "emergencyFirstName" ? { firstName: value }
                         : name === "emergencyLastName" ? { lastName: value }
-                        : name === "relationship" ? { relationship: value }
-                        : {})
+                            : name === "relationship" ? { relationship: value }
+                                : {})
                 }
-            : contact
+                : contact
         ))
         setServerError(null)
     }
@@ -90,7 +94,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                     ...contact,
                     phoneNumber: formatUs(value)
                 }
-            : contact
+                : contact
         ))
         setServerError(null)
     }
@@ -180,7 +184,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
 
         try {
             setSubmitting(true)
-            const response = await makeApiRequest("http://localhost:8000/child", {
+            const response = await makeApiRequest(`${WONDERHOOD_URL}/child`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: payload
@@ -250,7 +254,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                                     maxLength={50}
                                     required
                                 />
-                                    {errors.firstName && <p className="text-sm text-red-600 mt-1">{String(errors.firstName)}</p>}
+                                {errors.firstName && <p className="text-sm text-red-600 mt-1">{String(errors.firstName)}</p>}
                             </div>
 
                             <div>
@@ -263,7 +267,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                                     maxLength={50}
                                     required
                                 />
-                                    {errors.lastName && <p className="text-sm text-red-600 mt-1">{String(errors.lastName)}</p>}
+                                {errors.lastName && <p className="text-sm text-red-600 mt-1">{String(errors.lastName)}</p>}
                             </div>
                         </div>
 
@@ -290,18 +294,18 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                                 className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent mx-auto"
                                 required
                             />
-                                {errors.birthday && <p className="text-sm text-red-600 mt-1">{String(errors.birthday)}</p>}
+                            {errors.birthday && <p className="text-sm text-red-600 mt-1">{String(errors.birthday)}</p>}
                         </div>
 
                         <label className="inline-flex items-center gap-2">
                             <input
-                            type="checkbox"
-                            name="homeschool"
-                            checked={child.homeschool ?? false}
-                            onChange={handleChange}
-                            className="h-4 w-4"
+                                type="checkbox"
+                                name="homeschool"
+                                checked={child.homeschool ?? false}
+                                onChange={handleChange}
+                                className="h-4 w-4"
                             />
-                                <span>Homeschool?</span>
+                            <span>Homeschool?</span>
                         </label>
 
                         <div className="font-bold mb-2">GRADE (OPTIONAL)</div>
@@ -410,7 +414,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                                         maxLength={50}
                                         required={i === 0}
                                     />
-                                        {ecErrors[i]?.relationship && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.relationship}</p>}
+                                    {ecErrors[i]?.relationship && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.relationship}</p>}
                                 </div>
 
                                 <div className="mt-3">
@@ -435,7 +439,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                             <button type="button" onClick={prevStep}
                                 className="bg-gray-200 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                             >
-                             Back
+                                Back
                             </button>
 
                             <div className="flex items-center gap-3">
@@ -467,7 +471,7 @@ const JoinChildForm: React.FC<Props> = ({ showForm, onSuccess }) => {
                             onChange={handleChange}
                             className="h-4 w-4"
                         />
-                            <span>Placeholder Waiver</span>
+                        <span>Placeholder Waiver</span>
                     </label>
 
                     <div className="flex space-x-3 pt-4">
