@@ -6,7 +6,7 @@ import { makeApiRequest } from "../../../../utils/api"
 import { e164toUS, formatUs, onlyDigitals, toE164US } from "../../../../utils/formatPhoneNumber";
 import { determineEnv } from "../../../../utils/api";
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 type Props = {
     currUser: User | null

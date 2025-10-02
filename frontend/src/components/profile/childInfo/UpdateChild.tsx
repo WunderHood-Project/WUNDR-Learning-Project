@@ -8,7 +8,7 @@ import { dedupeECs, ECErrors, ECUpdateForm, ecsEqual } from "@/types/emergencyCo
 import { e164toUS, formatUs, toE164US } from "../../../../utils/formatPhoneNumber"
 import { determineEnv } from "../../../../utils/api"
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 type ChildUpdateForm = Omit<Child, "id" | "homeschool" | "waiver" | "createdAt" | "parents">;
 type Props = {

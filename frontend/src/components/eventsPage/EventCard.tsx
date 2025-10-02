@@ -6,7 +6,7 @@ import DeleteEventModal from "./DeleteEventModal";
 import { NotificationModal } from "../notifications/NotificationModal";
 import { determineEnv } from "../../../utils/api";
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 
 interface Props {
