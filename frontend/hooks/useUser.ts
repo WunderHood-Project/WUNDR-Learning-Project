@@ -3,7 +3,7 @@ import { User } from "@/types/user"
 import { makeApiRequest } from "../utils/api"
 import { determineEnv } from "../utils/api"
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 export const useUser = () => {
     const [user, setUser] = useState<User | null>(null)

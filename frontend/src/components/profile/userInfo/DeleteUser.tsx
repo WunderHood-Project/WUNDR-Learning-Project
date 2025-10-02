@@ -7,7 +7,7 @@ import { useAuth } from "@/app/context/auth"
 import { useRouter } from "next/navigation"
 import { determineEnv } from "../../../../utils/api"
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 
 type Props = { currUser: User | null }

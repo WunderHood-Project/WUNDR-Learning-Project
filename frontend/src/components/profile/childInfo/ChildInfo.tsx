@@ -22,7 +22,7 @@ const ChildInfo = () => {
     const [refreshKey, setRefreshKey] = useState(0)
     const [editingChildId, setEditingChildId] = useState<string | null>(null)
 
-    let WONDERHOOD_URL = determineEnv()
+    const WONDERHOOD_URL = determineEnv()
 
     const fetchChildren = useCallback(async () => {
         setLoading(true)

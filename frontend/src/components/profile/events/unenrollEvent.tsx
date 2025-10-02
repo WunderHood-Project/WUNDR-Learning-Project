@@ -3,7 +3,7 @@ import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { determineEnv } from "../../../../utils/api"
 
-let WONDERHOOD_URL = determineEnv()
+const WONDERHOOD_URL = determineEnv()
 
 type Props = {
     enrolledChildren: Child[]
