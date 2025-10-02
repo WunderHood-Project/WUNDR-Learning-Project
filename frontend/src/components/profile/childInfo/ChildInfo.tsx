@@ -39,7 +39,7 @@ const ChildInfo = () => {
         } finally {
             setLoading(false)
         }
-    }, [])
+    }, [WONDERHOOD_URL])
 
     useEffect(() => {
         fetchChildren()
