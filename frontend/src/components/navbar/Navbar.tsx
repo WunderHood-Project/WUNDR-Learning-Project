@@ -1,6 +1,5 @@
 'use client'
 
-import Image from "next/image";
 import Link from "next/link";
 import { useModal } from "@/app/context/modal";
 import SignupModal from "../signup/SignupModal";
