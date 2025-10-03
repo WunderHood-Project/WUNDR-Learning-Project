@@ -1,3 +1,16 @@
+export const API = (process.env.NEXT_API_PRODUCTION || 'http://localhost:8000').replace(/\/$/, '');
+
+export function determineEnv() {
+    let baseURL: string = ""
+
+    if (process.env.NODE_ENV === "production") {
+        baseURL = process.env.NEXT_PUBLIC_API_URL || ""
+    }
+    baseURL = process.env.NEXT_PUBLIC_API_URL|| ""
+
+    return baseURL
+}
+
 export interface ApiRequestOptions {
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     body?: any
@@ -42,8 +55,3 @@ export async function makeApiRequest<T>(
 
     return response.json();
 }
-
-
-// export const API = process.env.NEXT_PUBLIC_PRODUCTION ?? process.env.NEXT_PUBLIC_DEV;
-
-export const API = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');

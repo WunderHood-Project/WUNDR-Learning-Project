@@ -10,6 +10,7 @@ import DeleteChild from "./DeleteChild"
 import { numericFormatDate } from "../../../../utils/formatDate"
 import { calculateAge } from "../../../../utils/calculateAge"
 import { displayGrade } from "../../../../utils/displayGrade"
+import { determineEnv } from "../../../../utils/api"
 
 const ChildInfo = () => {
     const formAnchorRef = useRef<HTMLDivElement | null>(null)
@@ -20,14 +21,15 @@ const ChildInfo = () => {
     const [currChildIdx, setCurrChildIdx] = useState<number>(0)
     const [refreshKey, setRefreshKey] = useState(0)
     const [editingChildId, setEditingChildId] = useState<string | null>(null)
+    console.log(loadErrors)
 
-    console.log('for npm build', loadErrors)
+    const WONDERHOOD_URL = determineEnv()
 
     const fetchChildren = useCallback(async () => {
         setLoading(true)
 
         try {
-            const response = await makeApiRequest("http://localhost:8000/child/current")
+            const response = await makeApiRequest(`${WONDERHOOD_URL}/child/current`)
             const allChildren: Child[] = response as Child[]
             setChildren(allChildren)
             setLoadErrors(null)
@@ -37,7 +39,7 @@ const ChildInfo = () => {
         } finally {
             setLoading(false)
         }
-    }, [])
+    }, [WONDERHOOD_URL])
 
     useEffect(() => {
         fetchChildren()
@@ -96,12 +98,12 @@ const ChildInfo = () => {
                 onClick={handleShowForm}
                 className="flex items-center mb-30 bg-wonderleaf border-none py-[12px] px-[24px] text-base rounded-md cursor-pointer mb-30 mx-auto"
             >
-                    Add a child?
+                Add a child?
             </button>
 
             <div className="flex flex-row gap-6 my-10">
                 {children.length > 1 && (
-                    <FaCircleChevronLeft className="w-[50px] h-[50px] cursor-pointer my-auto" onClick={handlePrev}/>
+                    <FaCircleChevronLeft className="w-[50px] h-[50px] cursor-pointer my-auto" onClick={handlePrev} />
                 )}
 
                 {visibleChildren.map((child) => (
@@ -118,10 +120,10 @@ const ChildInfo = () => {
                                     <div className="font-bold text-xl">{child.firstName} {child?.preferredName ? `"${child?.preferredName}"` : ""} {child.lastName}</div>
 
                                     <div className="flex flex-row gap-2">
-                                        <FaPen onClick={() => setEditingChildId(child.id)}/>
+                                        <FaPen onClick={() => setEditingChildId(child.id)} />
                                         <OpenModalButton
                                             buttonText={<FaTrash />}
-                                            modalComponent={<DeleteChild currChild={child} onDeleteSuccess={fetchChildren}/>}
+                                            modalComponent={<DeleteChild currChild={child} onDeleteSuccess={fetchChildren} />}
                                         />
                                     </div>
                                 </div>
@@ -140,7 +142,7 @@ const ChildInfo = () => {
 
                                 <div className="flex flex-row gap-3 mb-4">
                                     <div className="font-bold">PHOTO CONSENT </div>
-                                    <div className="text-gray-500 text-sm mt-1">{child.photoConsent ? <FaCheck/> : <FaX/>}</div>
+                                    <div className="text-gray-500 text-sm mt-1">{child.photoConsent ? <FaCheck /> : <FaX />}</div>
                                 </div>
 
                                 <div className="mb-4 border-t pt-4">
@@ -171,12 +173,12 @@ const ChildInfo = () => {
                 ))}
 
                 {children.length > 1 && (
-                    <FaCircleChevronRight className="w-[50px] h-[50px] cursor-pointer my-auto" onClick={handleNext}/>
+                    <FaCircleChevronRight className="w-[50px] h-[50px] cursor-pointer my-auto" onClick={handleNext} />
                 )}
             </div>
 
             <div ref={formAnchorRef} className="scroll-mt-24 aria-hidden" />
-            <JoinChild showForm={showForm} onSuccess={handleFormSuccess}/>
+            <JoinChildForm showForm={showForm} onSuccess={handleFormSuccess} />
         </div>
     )
 }

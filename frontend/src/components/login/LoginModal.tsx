@@ -5,6 +5,9 @@ import { useAuth } from "@/app/context/auth";
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams, } from "next/navigation";
 import { setToken } from '../../../utils/auth';
+import { determineEnv } from "../../../utils/api";
+
+const WONDERHOOD_URL = determineEnv()
 
 
 // Eye icon SVGs
@@ -81,7 +84,7 @@ const LoginModal = () => {
         setForgotPasswordMessage(null);
 
         try {
-            const res = await fetch("http://localhost:8000/password_reset/forgot-password", {
+            const res = await fetch(`${WONDERHOOD_URL}/password_reset/forgot-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: forgotPasswordEmail })
@@ -117,17 +120,17 @@ const LoginModal = () => {
     const isVolunteer = (pathname || '').toLowerCase().includes('/volunteer');
 
     const safeNext =
-    nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//')
-        ? nextParam
-        : `${pathname || '/'}${isVolunteer ? '#apply' : ''}`;
+        nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//')
+            ? nextParam
+            : `${pathname || '/'}${isVolunteer ? '#apply' : ''}`;
 
     useEffect(() => {
         if (pathname.startsWith("/reset-password")) {
-        router.replace("/");
+            router.replace("/");
         }
     }, [pathname, router]);
 
-     // Handle submit for main login form
+    // Handle submit for main login form
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setErrors({});
@@ -154,7 +157,7 @@ const LoginModal = () => {
         formData.append("password", password);
 
         try {
-            const res = await fetch("http://localhost:8000/auth/token", {
+            const res = await fetch(`${WONDERHOOD_URL}/auth/token`, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: formData.toString()
@@ -191,7 +194,7 @@ const LoginModal = () => {
             }
 
             // Get user profile
-            const userRes = await fetch("http://localhost:8000/auth/users/me", {
+            const userRes = await fetch(`${WONDERHOOD_URL}/auth/users/me`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                 }
@@ -252,11 +255,10 @@ const LoginModal = () => {
                             />
 
                             {forgotPasswordMessage && (
-                                <div className={`p-3 rounded-lg text-sm ${
-                                    forgotPasswordMessage.includes('sent')
-                                        ? 'bg-green-50 border border-green-200 text-green-700'
-                                        : 'bg-red-50 border border-red-200 text-red-700'
-                                }`}>
+                                <div className={`p-3 rounded-lg text-sm ${forgotPasswordMessage.includes('sent')
+                                    ? 'bg-green-50 border border-green-200 text-green-700'
+                                    : 'bg-red-50 border border-red-200 text-red-700'
+                                    }`}>
                                     {forgotPasswordMessage}
                                 </div>
                             )}
@@ -376,7 +378,7 @@ const LoginModal = () => {
                                 >
                                     {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                                 </button>
-                                </div>
+                            </div>
 
 
                             {errors.password && (

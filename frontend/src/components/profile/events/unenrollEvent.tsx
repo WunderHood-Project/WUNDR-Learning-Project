@@ -1,6 +1,9 @@
 import { Child } from "@/types/child"
 import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
+import { determineEnv } from "../../../../utils/api"
+
+const WONDERHOOD_URL = determineEnv()
 
 type Props = {
     enrolledChildren: Child[]
@@ -8,7 +11,7 @@ type Props = {
     onAfterUnenroll?: () => void
 }
 
-const UnenrollEvent:React.FC<Props> = ({ enrolledChildren, eventID, onAfterUnenroll }) => {
+const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventID, onAfterUnenroll }) => {
     const [selected, setSelected] = useState<Set<string>>(new Set)
     const [serverError, setServerError] = useState<string | null>(null)
 
@@ -29,10 +32,10 @@ const UnenrollEvent:React.FC<Props> = ({ enrolledChildren, eventID, onAfterUnenr
         const childIDs = Array.from(selected)
 
         try {
-            await makeApiRequest(`http://localhost:8000/event/${eventID}/unenroll`, {
+            await makeApiRequest(`${WONDERHOOD_URL}/event/${eventID}/unenroll`, {
                 method: "PATCH",
-                headers: {"Content-Type": "application/json"},
-                body: {childIDs}
+                headers: { "Content-Type": "application/json" },
+                body: { childIDs }
             })
             setSelected(new Set())
             onAfterUnenroll?.()

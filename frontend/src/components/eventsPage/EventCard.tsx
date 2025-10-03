@@ -4,6 +4,10 @@ import { formatDate } from "../../../utils/formatDate";
 import { Event } from "@/types/event";
 import DeleteEventModal from "./DeleteEventModal";
 import { NotificationModal } from "../notifications/NotificationModal";
+import { determineEnv } from "../../../utils/api";
+
+const WONDERHOOD_URL = determineEnv()
+
 
 interface Props {
   event: Event;
@@ -51,7 +55,7 @@ export default function EventCard({ event, isAdmin }: Props) {
             <OpenModalButton
               className="mt-2 bg-wonderleaf text-white px-4 py-2 rounded text-sm text-center font-bold hover:bg-gradient-to-r from-wonderorange to-wonderleaf transition-colors"
               buttonText="Notify Users"
-              modalComponent={<NotificationModal url={`http://localhost:8000/event/${event.id}/notification/enrolled_users_child`} />}
+              modalComponent={<NotificationModal url={`${WONDERHOOD_URL}/event/${event.id}/notification/enrolled_users_child`} />}
             />
             <OpenModalButton
               className="mt-2 bg-red-700 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-900 transition-colors"

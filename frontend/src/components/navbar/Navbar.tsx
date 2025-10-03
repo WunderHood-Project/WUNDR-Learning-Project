@@ -1,6 +1,5 @@
 'use client'
 
-import Image from "next/image";
 import Link from "next/link";
 import { useModal } from "@/app/context/modal";
 import SignupModal from "../signup/SignupModal";
@@ -86,7 +85,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center space-x-3 shrink-0 group">
             <div className="relative">
               <div className="absolute inset-0 bg-wonderleaf/20 rounded-full blur-lg group-hover:bg-wondergreen/30 transition-all duration-300"></div>
-              <Image
+              <img
                 src="/logo.png"
                 alt="WonderHood logo"
                 width={60}
@@ -105,11 +104,10 @@ export default function Navbar() {
               <Link
                 key={href}
                 href={href}
-                className={`relative px-4 py-2 text-xl font-semibold transition-all duration-300 group ${
-                  pathname === href
-                    ? "text-wondergreen" 
-                    : "text-wondergreen hover:text-wondergreen"
-                }`}
+                className={`relative px-4 py-2 text-xl font-semibold transition-all duration-300 group ${pathname === href
+                  ? "text-wondergreen"
+                  : "text-wondergreen hover:text-wondergreen"
+                  }`}
               >
                 <span className="relative z-10">{label}</span>
                 {/* Hover background */}
@@ -123,18 +121,18 @@ export default function Navbar() {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4 ml-6 border-l border-wonderleaf/30 pl-6">
-            {isLoggedIn && (
-              <NotificationBell />
-            )}
+              {isLoggedIn && (
+                <NotificationBell />
+              )}
               {!isLoggedIn && (
                 <>
-                  <div 
+                  <div
                     className="px-6 py-1 text-wondergreen font-semibold hover:text-wonderleaf cursor-pointer transition-colors duration-300 hover:bg-wondergreen/5 rounded-lg text-lg border-2 border-wondergreen hover:bg-wondergreen hover:text-white"
                     onClick={handleLogin}
                   >
                     Login
                   </div>
-                  <div 
+                  <div
                     className="px-6 py-2 bg-gradient-to-r from-wonderleaf to-wondergreen text-white font-semibold rounded-lg cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300"
                     onClick={handleSignup}
                   >
@@ -151,8 +149,8 @@ export default function Navbar() {
                     className={`
                       flex items-center px-4 py-2 bg-white/70 backdrop-blur-sm border-2 rounded-xl font-semibold
                       hover:shadow-lg transition-all duration-300 hover:scale-105
-                      ${pathname === "/profile" 
-                        ? "border-wondergreen bg-wondergreen/10 text-wondergreen shadow-lg" 
+                      ${pathname === "/profile"
+                        ? "border-wondergreen bg-wondergreen/10 text-wondergreen shadow-lg"
                         : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"
                       }
                     `}
@@ -198,11 +196,10 @@ export default function Navbar() {
                   key={href}
                   href={href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`block px-4 py-3 text-lg font-semibold rounded-lg transition-all duration-300 ${
-                    pathname === href
-                      ? "bg-gradient-to-r from-wonderleaf/20 to-wondergreen/20 text-wondergreen border-l-4 border-wondergreen" 
-                      : "text-gray-700 hover:text-wondergreen hover:bg-wondergreen/5"
-                  }`}
+                  className={`block px-4 py-3 text-lg font-semibold rounded-lg transition-all duration-300 ${pathname === href
+                    ? "bg-gradient-to-r from-wonderleaf/20 to-wondergreen/20 text-wondergreen border-l-4 border-wondergreen"
+                    : "text-gray-700 hover:text-wondergreen hover:bg-wondergreen/5"
+                    }`}
                 >
                   {label}
                 </Link>
@@ -211,7 +208,7 @@ export default function Navbar() {
               <div className="border-t border-wonderleaf/20 pt-4 space-y-3">
                 {!isLoggedIn && (
                   <>
-                    <div 
+                    <div
                       className="block px-4 py-3 text-lg font-semibold text-wondergreen hover:bg-wondergreen/5 rounded-lg cursor-pointer transition-colors duration-300"
                       onClick={(e) => {
                         handleLogin(e);
@@ -220,7 +217,7 @@ export default function Navbar() {
                     >
                       Login
                     </div>
-                    <div 
+                    <div
                       className="block px-4 py-3 text-lg font-semibold bg-gradient-to-r from-wonderleaf to-wondergreen text-white rounded-lg cursor-pointer hover:shadow-lg transition-all duration-300 text-center"
                       onClick={(e) => {
                         handleSignup(e);

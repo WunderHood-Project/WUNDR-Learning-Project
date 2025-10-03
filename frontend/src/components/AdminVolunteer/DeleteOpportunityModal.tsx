@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { FaExclamationTriangle, FaTrash } from 'react-icons/fa';
 import { useModal } from '@/app/context/modal';
 import { makeApiRequest } from '../../../utils/api';
+import { determineEnv } from '../../../utils/api';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+const WONDERHOOD_URL = determineEnv()
 
 type ErrLike = {
   detail?: string;
@@ -17,7 +18,7 @@ type ErrLike = {
 type DeleteOpportunityModalProps = {
   id: string;
   title?: string;
-  onDeleted?: () => void; 
+  onDeleted?: () => void;
 };
 
 const DeleteOpportunityModal: React.FC<DeleteOpportunityModalProps> = ({ id, title, onDeleted, }) => {
@@ -29,7 +30,7 @@ const DeleteOpportunityModal: React.FC<DeleteOpportunityModalProps> = ({ id, tit
     setIsDeleting(true);
     setErr(null);
     try {
-      await makeApiRequest(`${API}/opportunities/${id}`, { method: 'DELETE' });
+      await makeApiRequest(`${WONDERHOOD_URL}/opportunities/${id}`, { method: 'DELETE' });
       onDeleted?.();
       closeModal();
     } catch (e: unknown) {

@@ -10,6 +10,10 @@ import { Activity } from '@/types/activity';
 import { makeApiRequest } from "../../../utils/api"
 import { convertStringToIsoFormat } from "../../../utils/formatDate"
 import { EventPayload } from '../../../utils/auth';
+import { determineEnv } from "../../../utils/api"
+
+const WONDERHOOD_URL = determineEnv()
+
 
 type ActivitiesResponse = { activities: Activity[] }
 type FormErrors = Partial<Record<"activity" | "name" | "description" | "date" | "startTime" | "endTime" | "limit" | "address" | "longitude" | "latitude" | "zipCode", string>>
@@ -34,7 +38,7 @@ export default function UpdateEventForm() {
         // create async helper function to get activities
         const getActivities = async () => {
             try {
-                const fetchActivities: ActivitiesResponse = await makeApiRequest("http://localhost:8000/activity")
+                const fetchActivities: ActivitiesResponse = await makeApiRequest(`${WONDERHOOD_URL}/activity`)
                 if (fetchActivities.activities) setActivities(fetchActivities.activities)
             } catch {
                 throw Error("Unable to fetch activities")
@@ -118,7 +122,7 @@ export default function UpdateEventForm() {
 
         // Try to add an event
         try {
-            const response = await makeApiRequest(`http://localhost:8000/event/${eventId}`, {
+            const response = await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: payload

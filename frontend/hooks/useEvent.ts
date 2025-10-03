@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react"
 import { makeApiRequest } from "../utils/api"
 import { Event } from "@/types/event"
+import { determineEnv } from "../utils/api"
+
+const WONDERHOOD_URL = determineEnv()
 
 export function useEvent(eventId: string | string[] | undefined) {
   const [event, setEvent] = useState<Event | null>(null)
@@ -14,14 +17,14 @@ export function useEvent(eventId: string | string[] | undefined) {
       setError(null)
       if (eventId && !Array.isArray(eventId)) {
           const eventData = await makeApiRequest<Event>(
-          `http://localhost:8000/event/${eventId}/`,
+          `${WONDERHOOD_URL}/event/${eventId}/`,
           { method: "GET" }
           )
           setEvent(eventData)
           setEvents(null)
       } else if (!eventId) {
         const eventsData = await makeApiRequest<{ events: Event[] }>(
-          "http://localhost:8000/event",
+          `${WONDERHOOD_URL}/event`,
           { method: "GET"}
         )
         setEvents(eventsData.events)

@@ -12,7 +12,7 @@ type TabKey = 'user' | 'child' | 'events' | 'notifications';
 const profileTabs = ['User Information', "Child's Information", 'Your Events', 'Notifications'] as const;
 const keyToIdx: Record<TabKey, number> = { user: 0, child: 1, events: 2, notifications: 3 };
 const idxToKey = (idx: number): TabKey =>
-  (['user', 'child', 'events', 'notifications'] as TabKey[])[idx];
+    (['user', 'child', 'events', 'notifications'] as TabKey[])[idx];
 
 const Profile = () => {
     const router = useRouter();
@@ -49,7 +49,6 @@ const Profile = () => {
                     </button>
                 ))}
             </div>
-
             <div className="w-3/4">
                 {tabIdx === 0 && <UserInfo />}
                 {tabIdx === 1 && <ChildInfo />}

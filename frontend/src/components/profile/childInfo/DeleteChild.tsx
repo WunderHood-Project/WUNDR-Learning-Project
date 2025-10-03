@@ -3,6 +3,10 @@ import { Child } from "@/types/child"
 import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa"
+import { determineEnv } from "../../../../utils/api"
+
+const WONDERHOOD_URL = determineEnv()
+
 
 type Props = {
     currChild: Child
@@ -17,7 +21,7 @@ const DeleteChild: React.FC<Props> = ({ currChild, onDeleteSuccess }) => {
         setIsDeleting(true)
 
         try {
-            await makeApiRequest(`http://localhost:8000/child/${currChild.id}`, { method: "DELETE" })
+            await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, { method: "DELETE" })
             onDeleteSuccess()
             closeModal()
         } catch (err) {

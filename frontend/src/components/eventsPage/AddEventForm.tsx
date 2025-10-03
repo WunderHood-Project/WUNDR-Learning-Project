@@ -9,6 +9,9 @@ import { Activity } from '@/types/activity';
 import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
 import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
+import { determineEnv } from '../../../utils/api';
+
+const WONDERHOOD_URL = determineEnv()
 
 // type EventsResponse = { events: Event[] }
 type ActivitiesResponse = { activities: Activity[] }
@@ -60,7 +63,7 @@ export default function EventForm() {
         // create async helper function to get activities
         const getActivities = async () => {
             try {
-                const fetchActivities: ActivitiesResponse = await makeApiRequest("http://localhost:8000/activity")
+                const fetchActivities: ActivitiesResponse = await makeApiRequest(`${WONDERHOOD_URL}/activity`)
                 if (fetchActivities.activities) setActivities(fetchActivities.activities)
             } catch {
                 throw Error("Unable to fetch activities")
@@ -152,7 +155,7 @@ export default function EventForm() {
 
         // Try to add an event
         try {
-            const response = await makeApiRequest("http://localhost:8000/event", {
+            const response = await makeApiRequest(`${WONDERHOOD_URL}/event`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: payload

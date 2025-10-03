@@ -4,6 +4,9 @@ import { UpdateUserPayload, User } from "@/types/user"
 import React, { useEffect, useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { e164toUS, formatUs, onlyDigitals, toE164US } from "../../../../utils/formatPhoneNumber";
+import { determineEnv } from "../../../../utils/api";
+
+const WONDERHOOD_URL = determineEnv()
 
 type Props = {
     currUser: User | null
@@ -75,7 +78,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
 
         try {
             setSaving(true)
-            await makeApiRequest(`http://localhost:8000/user`, {
+            await makeApiRequest(`${WONDERHOOD_URL}/user`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: payload
