@@ -1,6 +1,7 @@
 export type Event = {
     id?: string
     activityId: string
+
     name: string
     description: string
     date: string
@@ -21,4 +22,9 @@ export type Event = {
     childIDs: string[]
 }
 
+type EventForm = Pick<Event, "activityId" | "name" | "description" | "date" | "startTime"
+    | "endTime" | "image" | "limit" | "city" | "state" | "address" | "zipCode" | "latitude" | "longitude"
+>
+
+export type EventFormErrors = Partial<Record<keyof EventForm, string>>
 export type EventForCalendar = Omit<Event, "activityId" | "image" | "participants" | "limit" | "state" | "address" | "zipCode" | "latitude" | "longitude" | "userId">

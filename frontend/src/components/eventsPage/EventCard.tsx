@@ -13,9 +13,10 @@ interface Props {
   event: Event;
   events: Event[];
   isAdmin: boolean;
+  onDelete: (id: string) => void
 }
 
-export default function EventCard({ event, isAdmin }: Props) {
+export default function EventCard({ event, isAdmin, onDelete }: Props) {
   return (
     <div className="flex-shrink-0 w-80 bg-white border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
       {/* Date Badge */}
@@ -60,7 +61,7 @@ export default function EventCard({ event, isAdmin }: Props) {
             <OpenModalButton
               className="mt-2 bg-red-700 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-900 transition-colors"
               buttonText="DELETE"
-              modalComponent={<DeleteEventModal event={event} />}
+              modalComponent={<DeleteEventModal event={event} onDelete={onDelete}/>}
             />
           </div>
         )}

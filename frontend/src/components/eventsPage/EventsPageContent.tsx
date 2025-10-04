@@ -7,6 +7,7 @@ import { Activity } from "@/types/activity";
 import { Event } from "@/types/event";
 import Link from "next/link";
 import { determineEnv } from "../../../utils/api";
+import { useUser } from "../../../hooks/useUser";
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -18,17 +19,19 @@ interface GroupedEvents {
 }
 
 export default function EventsPageContent() {
+  const { user } = useUser()
   const [groupedEvents, setGroupedEvents] = useState<GroupedEvents[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const isAdmin: boolean = user?.role === "admin"
+  // const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      const userObj = JSON.parse(user);
-      setIsAdmin(userObj.role === "admin");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const user = localStorage.getItem("user");
+  //   if (user) {
+  //     const userObj = JSON.parse(user);
+  //     setIsAdmin(userObj.role === "admin");
+  //   }
+  // }, []);
 
   useEffect(() => {
     const fetchActivitiesWithEvents = async () => {
@@ -53,7 +56,16 @@ export default function EventsPageContent() {
     fetchActivitiesWithEvents();
   }, []);
 
-  if (loading) <div className="text-center py-20 text-green-700">Loading events...</div>
+  const handleDelete = (deletedId: string) => {
+    setGroupedEvents(prev =>
+      prev.map((group) => ({
+        ...group,
+        events: group.events.filter(e => e.id !== deletedId)
+      }))
+    )
+  }
+
+  if (loading) return <div className="text-center py-20 text-green-700">Loading events...</div>
 
   return (
     <main className="px-6 py-8 max-w-5xl md:max-w-7xl mx-auto bg-wonderbg min-h-screen">
@@ -82,6 +94,7 @@ export default function EventsPageContent() {
           activityName={activity}
           events={events}
           isAdmin={isAdmin}
+          onDelete={handleDelete}
         />
       ))}
     </main>

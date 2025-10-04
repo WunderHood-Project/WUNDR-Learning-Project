@@ -10,10 +10,10 @@ import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate'
 import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
 import { determineEnv } from '../../../utils/api';
+import { parseFloatOrNull, parseIntOrZero } from '../../../utils/parseHelpers';
 
 const WONDERHOOD_URL = determineEnv()
 
-// type EventsResponse = { events: Event[] }
 type ActivitiesResponse = { activities: Activity[] }
 type FormErrors = Partial<Record<"activity" | "name" | "description" | "date" | "startTime" | "endTime" | "limit" | "address" | "longitude" | "latitude" | "zipCode", string>>
 const initialEventForm: Event = {
@@ -29,32 +29,19 @@ const initialEventForm: Event = {
     city: "",
     state: "",
     address: "",
-    zipCode: "12345",
+    zipCode: "",
     latitude: null,
     longitude: null,
     userId: [],
     childIDs: []
 }
 
-const parseFloatOrNull = (v: string): number | null => {
-    if (v === "" || v == null) return null
-    const n = parseFloat(v)
-    return Number.isFinite(n) ? n : null
-}
-
-const parseIntOrZero = (v: string): number => {
-    const n = parseInt(v, 10)
-    return Number.isFinite(n) ? n : 0
-}
-
-
-export default function EventForm() {
+export default function AddEvent() {
     const [event, setEvent] = useState<Event>(initialEventForm)
     const [errors, setErrors] = useState<FormErrors>({})
     const [activities, setActivities] = useState<Activity[]>([])
     const { events } = useEvent(undefined)
     const dateYMD = /^\d{4}-\d{2}-\d{2}$/
-    // const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     const router = useRouter()
 
@@ -95,7 +82,6 @@ export default function EventForm() {
         setErrors({})
         const newErrors: FormErrors = {}
 
-        // * Add validations here
         // Ensure the name does not already exist
         const matchingNames = events?.find((e) => e.name === event.name)
         if (matchingNames) newErrors.name = "Name Already Exists"
@@ -131,7 +117,6 @@ export default function EventForm() {
             return
         }
 
-        // Create Payload
         const payload: Event = {
             activityId: event.activityId,
             name: event.name,
@@ -153,7 +138,6 @@ export default function EventForm() {
         }
         console.log('payload', payload)
 
-        // Try to add an event
         try {
             const response = await makeApiRequest(`${WONDERHOOD_URL}/event`, {
                 method: "POST",
@@ -168,6 +152,7 @@ export default function EventForm() {
             }
         } catch (e) {
             console.error("Failed to create event", e)
+            // setErrors(e instanceof Error ? e.message : "Error deleting event");
             // throw new Error(`Unable to add event: ${e}`)
         }
     }
@@ -228,7 +213,6 @@ export default function EventForm() {
                             type='date'
                             name="date"
                             min={todayYMD}
-                            // placeholder="MM/DD/YYYY"
                             value={event.date}
                             onChange={handleChangeSelectOrInputOrText}
                             className="w-full border rounded px-3 py-2"
@@ -264,10 +248,7 @@ export default function EventForm() {
                     </div>
 
                     <div>
-                        <label className="block mb-1 font-medium">
-                            Image
-                            {/* <span className="text-rose-600">*</span> */}
-                        </label>
+                        <label className="block mb-1 font-medium">Image</label>
                         <input
                             name="image"
                             placeholder="Image (optional)"
@@ -340,7 +321,6 @@ export default function EventForm() {
                             name="zipCode"
                             inputMode='numeric'
                             pattern='[0-9]{5}'
-                            // placeholder="Zipcode"
                             value={event.zipCode}
                             onChange={handleChangeSelectOrInputOrText}
                             required
@@ -351,9 +331,7 @@ export default function EventForm() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block mb-1 font-medium">Latitude
-                                {/* <span className="text-rose-600">*</span> */}
-                            </label>
+                            <label className="block mb-1 font-medium">Latitude</label>
                             <input
                                 type='number'
                                 step="any"
@@ -363,14 +341,12 @@ export default function EventForm() {
                                 placeholder="Latitude (optional)"
                                 value={event.latitude ?? ""}
                                 onChange={handleChangeSelectOrInputOrText}
-                                // required
                                 className="w-full border rounded px-3 py-2"
                             />
                             {errors.latitude && <p className="text-sm text-red-600">{errors.latitude}</p>}
                         </div>
                         <div>
                             <label className="block mb-1 font-medium">Longitude
-                                {/* <span className="text-rose-600">*</span> */}
                             </label>
                             <input
                                 type='number'
@@ -381,7 +357,6 @@ export default function EventForm() {
                                 placeholder="Longitude (optional)"
                                 value={event.longitude ?? ""}
                                 onChange={handleChangeSelectOrInputOrText}
-                                // required
                                 className="w-full border rounded px-3 py-2"
                             />
                             {errors.longitude && <p className="text-sm text-red-600">{errors.longitude}</p>}
