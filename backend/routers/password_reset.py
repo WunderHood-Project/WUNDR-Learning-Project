@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
-from backend.db.prisma_client import db
-from backend.models.user_models import PasswordResetRequest, PasswordResetPayload
-from backend.routers.auth.utils import hash_password
+from db.prisma_client import db
+from models.user_models import PasswordResetRequest, PasswordResetPayload
+from routers.auth.utils import hash_password
 from datetime import datetime, timedelta
 from jose import jwt
 from dotenv import load_dotenv

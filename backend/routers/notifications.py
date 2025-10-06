@@ -1,15 +1,15 @@
 from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
-from backend.models.user_models import User
+from models.user_models import User
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string
 from typing import Annotated
-from backend.db.prisma_client import db
+from db.prisma_client import db
 from datetime import datetime, timedelta, timezone
 import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.mongodb import MongoDBJobStore
-from backend.models.interaction_models import NotificationUpdate, NotificationCreate
+from models.interaction_models import NotificationUpdate, NotificationCreate
 import os
 import yagmail
 from pymongo import MongoClient

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, HTTPException
 from pydantic import BaseModel, Field, HttpUrl
 from typing import List
-from backend.models.user_models import ChildCreate, Role
-from backend.db.prisma_client import db
+from models.user_models import ChildCreate, Role
+from db.prisma_client import db
 from datetime import datetime, timezone, timedelta, date
 from .utils import hash_password
 from .login import create_access_token
