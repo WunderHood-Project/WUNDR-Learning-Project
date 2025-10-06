@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from backend.db.prisma_client import db
+from db.prisma_client import db
 from typing import Annotated
-from backend.models.user_models import User, ChildCreate, ChildUpdate, EmergencyContactCreate, EmergencyContactUpdate
+from models.user_models import User, ChildCreate, ChildUpdate, EmergencyContactCreate, EmergencyContactUpdate
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from .auth.login import get_current_user
