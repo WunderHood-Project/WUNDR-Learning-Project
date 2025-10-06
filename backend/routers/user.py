@@ -1,9 +1,9 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from pydantic import BaseModel, field_validator, ConfigDict
-from backend.db.prisma_client import db
+from db.prisma_client import db
 from typing import Annotated, Optional, List
-from backend.models.user_models import User, Child, Role, UserUpdateRequest, UserResponse, UserUpdateResponse
-from backend.models.interaction_models import Event, Review, Notification
+from models.user_models import User, Child, Role, UserUpdateRequest, UserResponse, UserUpdateResponse
+from models.interaction_models import Event, Review, Notification
 from datetime import datetime
 from .auth.login import get_current_active_user, get_current_active_user_by_email
 from .auth.utils import hash_password, enforce_authentication

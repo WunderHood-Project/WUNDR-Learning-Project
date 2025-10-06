@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-from backend.models.user_models import User
+from models.user_models import User
 from fastapi import HTTPException, status
 from datetime import datetime
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

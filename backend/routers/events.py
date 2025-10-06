@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
-from backend.db.prisma_client import db
+from db.prisma_client import db
 from typing import Annotated
-from backend.models.user_models import User
-from backend.models.interaction_models import EventCreate, EventUpdate, ReviewCreate, EnrollChildren, NotificationCreate
+from models.user_models import User
+from models.interaction_models import EventCreate, EventUpdate, ReviewCreate, EnrollChildren, NotificationCreate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string
 from datetime import datetime, timezone

@@ -1,19 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routers.auth.routes import router as auth_router
-from backend.routers.user import router as user_router
-from backend.routers.child import router as child_router
-from backend.routers.activities import router as activity_router
-from backend.routers.events import router as event_router
-from backend.routers.reviews import router as review_router
-from backend.routers.password_reset import router as password_reset_router
-from backend.routers.notifications import router as notifications_router
-from backend.routers.emergency_contact import router as emergency_contact_router
-from backend.routers.volunteer import router as volunteer_router
+from routers.auth.routes import router as auth_router
+from routers.user import router as user_router
+from routers.child import router as child_router
+from routers.activities import router as activity_router
+from routers.events import router as event_router
+from routers.reviews import router as review_router
+from routers.password_reset import router as password_reset_router
+from routers.notifications import router as notifications_router
+from routers.emergency_contact import router as emergency_contact_router
+from routers.volunteer import router as volunteer_router
 # from backend.routers.volunteer_opportunity import router as volunteer_opportunity_router
-from backend.routers.volunteer_opportunity import router as opportunities_router
-from backend.db.prisma_client import db
-from backend.routers.notifications import start_scheduler, scheduler
+from routers.volunteer_opportunity import router as opportunities_router
+from db.prisma_client import db
+from routers.notifications import start_scheduler, scheduler
 from contextlib import asynccontextmanager
 
 # When we start the app, connect to the db. When we shut down the app, disconnect

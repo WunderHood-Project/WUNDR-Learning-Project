@@ -7,8 +7,8 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, Field, HttpUrl
 from typing import List, Annotated
 from passlib.context import CryptContext
-from backend.models.user_models import ChildCreate, Role, User
-from backend.db.prisma_client import db
+# from backend.models.user_models import ChildCreate, Role, User
+# from backend.db.prisma_client import db
 from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
