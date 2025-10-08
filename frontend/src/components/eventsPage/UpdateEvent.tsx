@@ -1,20 +1,19 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useEvent } from "../../../hooks/useEvent"
 import { Event, EventForm, EventFormErrors, UpdateEventPayload } from "@/types/event"
 import { useEffect, useState } from "react"
-import { Activity } from '@/types/activity';
 import { makeApiRequest } from "../../../utils/api"
 import { convertStringToIsoFormat, toYMDForInput } from "../../../utils/formatDate"
 import { determineEnv } from "../../../utils/api"
 import { parseFloatOrNull, parseIntOrZero } from "../../../utils/parseHelpers"
 import EventFields from "./EventField"
+import { useActivity } from "../../../hooks/useActivity"
 
 
 const WONDERHOOD_URL = determineEnv()
 
-type ActivitiesResponse = { activities: Activity[] }
 const toEventForm = (ev: Event): EventForm => ({
     activityId: ev.activityId ?? "",
     name: ev.name ?? "",
@@ -36,29 +35,18 @@ export default function UpdateEvent() {
     const { eventId } = useParams()
     const { event: singleEvent, loading: singleLoading, error: singleError } = useEvent(eventId)
     const { events: allEvents } = useEvent(undefined)
+    const { activities } = useActivity()
     const [formEvent, setFormEvent] = useState<EventForm | null>(null)
-    const [activities, setActivities] = useState<Activity[]>([])
     const [errors, setErrors] = useState<EventFormErrors>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
+    const router = useRouter()
+
 
     useEffect(() => {
         if (singleEvent) setFormEvent(toEventForm(singleEvent))
     }, [singleEvent])
-
-    useEffect(() => {
-        // create async helper function to get activities
-        const getActivities = async () => {
-            try {
-                const fetchActivities: ActivitiesResponse = await makeApiRequest(`${WONDERHOOD_URL}/activity`)
-                if (fetchActivities.activities) setActivities(fetchActivities.activities)
-            } catch {
-                throw Error("Unable to fetch activities")
-            }
-        }
-        getActivities()
-    }, [])
 
     if (singleLoading) return <p>Loading...</p>
     if (singleError) return <p>Failed to load event.</p>
@@ -150,6 +138,7 @@ export default function UpdateEvent() {
             if (response) {
                 console.log("Event successfully created:", response)
                 setFormEvent(formEvent)
+                router.replace(`/events/${singleEvent?.id}`)
             }
         } catch (e) {
             throw new Error(`Unable to add event: ${e}`)
@@ -176,7 +165,8 @@ export default function UpdateEvent() {
                         type="submit" disabled={isSubmitting}
                         className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
                     >
-                        {isSubmitting ? "Saving..." : "Edit Event"}
+                        Edit Event
+                        {/* {isSubmitting ? "Saving..." : "Edit Event"} */}
                     </button>
                     <button
                         type="reset"

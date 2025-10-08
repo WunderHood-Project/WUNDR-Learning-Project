@@ -1,20 +1,19 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { makeApiRequest } from '../../../utils/api';
 import { CreateEventPayload, EventForm, EventFormErrors } from '@/types/event';
-import { Activity } from '@/types/activity';
 import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
 import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
 import { determineEnv } from '../../../utils/api';
 import { parseFloatOrNull, parseIntOrZero } from '../../../utils/parseHelpers';
 import EventFields from './EventField';
+import { useActivity } from '../../../hooks/useActivity';
 
 
 const WONDERHOOD_URL = determineEnv()
 
-type Activities = { activities: Activity[] }
 const initialEventForm = (): EventForm => ({
     activityId: "",
     name: "",
@@ -37,24 +36,12 @@ export default function AddEvent() {
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
     const [form, setForm] = useState<EventForm>(() => initialEventForm())
     const [errors, setErrors] = useState<EventFormErrors>({})
-    const [activities, setActivities] = useState<Activity[]>([])
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const { activities } = useActivity()
     const { events } = useEvent(undefined)
     const router = useRouter()
     const todayYMD = useMemo<string>(() => toYMDLocal(), [])
 
-    useEffect(() => {
-        // create async helper function to get activities
-        const getActivities = async () => {
-            try {
-                const fetchActivities: Activities = await makeApiRequest(`${WONDERHOOD_URL}/activity`)
-                if (fetchActivities.activities) setActivities(fetchActivities.activities)
-            } catch {
-                throw Error("Unable to fetch activities")
-            }
-        }
-        getActivities()
-    }, [])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -160,7 +147,8 @@ export default function AddEvent() {
                         type="submit" disabled={isSubmitting}
                         className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
                     >
-                        {isSubmitting ? "Saving..." : "Add Event"}
+                        Add Event
+                        {/* {isSubmitting ? "Saving..." : "Add Event"} */}
                     </button>
                     <button
                         type="reset"
