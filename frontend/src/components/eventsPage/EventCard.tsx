@@ -40,18 +40,14 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
 
         <div className="flex justify-between gap-x-2 mt-2">
           <Link href={`/events/${event.id}`} className="flex-1 bg-wondergreen text-white px-4 py-2 rounded text-sm text-center font-medium hover:bg-wonderleaf transition-colors">
-            <button>
               <strong>VIEW DETAILS</strong>
-            </button>
           </Link>
         </div>
 
         {isAdmin && (
           <div className="flex flex-col justify-between mt-2 gap-x-2">
             <Link href={`/events/${event.id}/updateEvent`} className="mt-2 bg-wonderorange text-white px-4 py-2 rounded text-sm text-center font-medium hover:bg-gradient-to-l from-wonderorange to-wonderleaf transition-colors">
-              <button >
                 <strong>EDIT</strong>
-              </button>
             </Link>
             <OpenModalButton
               className="mt-2 bg-wonderleaf text-white px-4 py-2 rounded text-sm text-center font-bold hover:bg-gradient-to-r from-wonderorange to-wonderleaf transition-colors"
@@ -65,7 +61,6 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
             />
           </div>
         )}
-        {/* End Admin Buttons */}
       </div>
     </div>
   );

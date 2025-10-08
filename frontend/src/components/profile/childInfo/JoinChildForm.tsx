@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-// import { ChildPayload } from "../../../../utils/auth";
+import { JoinChildForm } from "@/types/child";
 import { makeApiRequest } from "../../../../utils/api";
 import { calculateAge } from "../../../../utils/calculateAge";
 import { gradeOptions } from "../../../../utils/displayGrade";

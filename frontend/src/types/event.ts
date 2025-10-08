@@ -22,7 +22,7 @@ export type Event = {
     childIDs: string[]
 }
 
-type EventForm = Pick<Event, "activityId" | "name" | "description" | "date" | "startTime"
+export type EventForm = Pick<Event, "activityId" | "name" | "description" | "date" | "startTime" | "participants"
     | "endTime" | "image" | "limit" | "city" | "state" | "address" | "zipCode" | "latitude" | "longitude"
 >
 

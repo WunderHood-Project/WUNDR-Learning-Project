@@ -79,10 +79,8 @@ export default function EventsPageContent() {
         </p>
         {isAdmin && (
           <div className="flex flex-col items-center justify-center mt-6">
-            <Link href={"/events/addEvent"}>
-              <button className="mt-2 bg-green-700 text-white px-10 py-2 rounded text-sm font-medium hover:bg-green-800 transition-colors">
+            <Link href={"/events/addEvent"} className="mt-2 bg-green-700 text-white px-10 py-2 rounded text-sm font-medium hover:bg-green-800 transition-colors">
                 <strong>ADD EVENT</strong>
-              </button>
             </Link>
           </div>
         )}

@@ -9,7 +9,6 @@ import { determineEnv } from "../../../../utils/api"
 
 const WONDERHOOD_URL = determineEnv()
 
-
 const EventDetails = () => {
     const { eventId } = useParams()
     const { event, loading, error, refetch } = useEvent(eventId)

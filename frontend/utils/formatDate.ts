@@ -62,3 +62,15 @@ export const convertStringToIsoFormat = (date: string) => {
 }
 
 export const toYMDLocal = (d: Date = new Date()) : string => d.toLocaleDateString("en-CA")
+
+// Turns ('MM/DD/YYYY') into 'YYYY-MM-DD' for <input type="date">
+export const toYMDForInput = (s: string): string => {
+    if (!s) return ""
+    const d = new Date(s)
+
+    if (!Number.isNaN(d.getTime())) return d.toLocaleDateString("en-CA") // YYYY-MM-DD
+
+    // fallback for explicit MM/DD/YYYY
+    const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+    return m ? `${m[3]}-${m[1]}-${m[2]}` : ""
+}
