@@ -24,6 +24,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: { default: "WonderHood", template: "%s — WonderHood" },
   description: "Community programs and events by WonderHood.",
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
 };
 
 
