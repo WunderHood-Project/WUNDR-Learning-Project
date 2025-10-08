@@ -13,9 +13,10 @@ interface Props {
   event: Event;
   events: Event[];
   isAdmin: boolean;
+  onDelete: (id: string) => void
 }
 
-export default function EventCard({ event, isAdmin }: Props) {
+export default function EventCard({ event, isAdmin, onDelete }: Props) {
   return (
     <div className="flex-shrink-0 w-80 bg-white border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
       {/* Date Badge */}
@@ -39,18 +40,14 @@ export default function EventCard({ event, isAdmin }: Props) {
 
         <div className="flex justify-between gap-x-2 mt-2">
           <Link href={`/events/${event.id}`} className="flex-1 bg-wondergreen text-white px-4 py-2 rounded text-sm text-center font-medium hover:bg-wonderleaf transition-colors">
-            <button>
               <strong>VIEW DETAILS</strong>
-            </button>
           </Link>
         </div>
 
         {isAdmin && (
           <div className="flex flex-col justify-between mt-2 gap-x-2">
             <Link href={`/events/${event.id}/updateEvent`} className="mt-2 bg-wonderorange text-white px-4 py-2 rounded text-sm text-center font-medium hover:bg-gradient-to-l from-wonderorange to-wonderleaf transition-colors">
-              <button >
                 <strong>EDIT</strong>
-              </button>
             </Link>
             <OpenModalButton
               className="mt-2 bg-wonderleaf text-white px-4 py-2 rounded text-sm text-center font-bold hover:bg-gradient-to-r from-wonderorange to-wonderleaf transition-colors"
@@ -60,11 +57,10 @@ export default function EventCard({ event, isAdmin }: Props) {
             <OpenModalButton
               className="mt-2 bg-red-700 text-white px-4 py-2 rounded text-sm font-bold hover:bg-red-900 transition-colors"
               buttonText="DELETE"
-              modalComponent={<DeleteEventModal event={event} />}
+              modalComponent={<DeleteEventModal event={event} onDelete={onDelete}/>}
             />
           </div>
         )}
-        {/* End Admin Buttons */}
       </div>
     </div>
   );

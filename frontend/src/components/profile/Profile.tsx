@@ -35,7 +35,6 @@ const Profile = () => {
         router.replace(`/profile?tab=${idxToKey(idx)}`);
     };
 
-
     return (
         <div className="flex flex-row bg-wonderbg">
             {/* Left menu */}

@@ -9,7 +9,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { combineLocal } from "../../../../utils/formatDate";
 import { CalendarEvent } from "@/types/calendar";
 
-
+//this is necessary for the calendar. calendar needs localizer
 const localizer = dateFnsLocalizer({
     format,
     parse,
