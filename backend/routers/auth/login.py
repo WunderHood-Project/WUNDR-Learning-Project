@@ -4,8 +4,8 @@ from typing import Annotated
 import jwt
 from jwt.exceptions import InvalidTokenError
 from typing import Annotated
-from backend.models.user_models import User
-from backend.db.prisma_client import db
+from models.user_models import User
+from db.prisma_client import db
 from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv

@@ -14,3 +14,4 @@ pymongo==4.13.2
 yagmail==0.15.293
 tzlocal==5.3.1
 apscheduler==3.11.0
+uvicorn[standard]==0.35.0

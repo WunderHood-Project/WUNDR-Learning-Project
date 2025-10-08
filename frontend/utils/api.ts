@@ -1,14 +1,18 @@
-export const API = (process.env.NEXT_API_PRODUCTION || 'http://localhost:8000').replace(/\/$/, '');
+
+export const BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+
+export const API = BASE;
 
 export function determineEnv() {
-    let baseURL: string = ""
+    return BASE;
+    // let baseURL: string = ""
 
-    if (process.env.NODE_ENV === "production") {
-        baseURL = process.env.NEXT_PUBLIC_API_URL || ""
-    }
-    baseURL = process.env.NEXT_PUBLIC_API_URL|| ""
+    // if (process.env.NODE_ENV === "production") {
+    //     baseURL = process.env.NEXT_PUBLIC_API_URL || ""
+    // }
+    // baseURL = process.env.NEXT_PUBLIC_API_URL|| ""
 
-    return baseURL
+    // return baseURL
 }
 
 export interface ApiRequestOptions {
@@ -28,7 +32,8 @@ export async function makeApiRequest<T>(
         method = "GET",
         body,
         headers = {},
-        token = localStorage.getItem("token") ?? undefined,
+        token = (typeof window !== 'undefined' ? localStorage.getItem("token") : null) ?? undefined,
+        // token = localStorage.getItem("token") ?? undefined,
     } = options;
 
     const finalHeaders: Record<string, string> = {
@@ -38,7 +43,11 @@ export async function makeApiRequest<T>(
 
     if (token) finalHeaders["Authorization"] = `Bearer ${token}`;
 
-    const response = await fetch(endpoint, {
+    const url = endpoint.startsWith('http')
+    ? endpoint
+    : `${BASE}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+
+    const response = await fetch(url, {
         method,
         headers: finalHeaders,
         body: body ? JSON.stringify(body) : undefined,

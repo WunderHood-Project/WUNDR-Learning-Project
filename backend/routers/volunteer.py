@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from backend.db.prisma_client import db
+from db.prisma_client import db
 from typing import Annotated
-from backend.models.user_models import User, VolunteerCreate, VolunteerUpdate
+from models.user_models import User, VolunteerCreate, VolunteerUpdate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
 from datetime import datetime, timezone
