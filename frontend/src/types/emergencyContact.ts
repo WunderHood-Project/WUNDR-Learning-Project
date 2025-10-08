@@ -1,5 +1,3 @@
-import { onlyDigitals } from "../../utils/formatPhoneNumber"
-
 export type EmergencyContact = {
     id?: string
     firstName: string

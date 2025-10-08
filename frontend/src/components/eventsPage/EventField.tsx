@@ -11,11 +11,11 @@ type Props = {
     form: EventForm
     errors: EventFormErrors
     activities: Activity[]
-    todayYMD: string
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
+    minDate?: string
 }
 
-const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onChange }) => {
+const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onChange }) => {
 
     return (
         <fieldset className="space-y-4">
@@ -26,6 +26,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                     value={form.activityId}
                     onChange={onChange}
                     className="w-full border rounded px-3 py-2"
+                    required
                 >
                     <option value="">Select an Activity</option>
                     {activities.map((activity) => (
@@ -45,6 +46,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                     value={form.name}
                     onChange={onChange}
                     className="w-full border rounded px-3 py-2"
+                    required
                 />
                 {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
             </div>
@@ -57,6 +59,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                     value={form.description}
                     onChange={onChange}
                     maxLength={750}
+                    required
                     className="w-full border rounded px-3 py-2"
                 />
                 {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
@@ -67,9 +70,10 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                 <input
                     type='date'
                     name="date"
-                    min={todayYMD}
+                    min={minDate}
                     value={form.date}
                     onChange={onChange}
+                    required
                     className="w-full border rounded px-3 py-2"
                 />
                 {errors.date && <p className="text-sm text-red-600">{errors.date}</p>}
@@ -84,6 +88,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                         placeholder="Start Time"
                         value={form.startTime}
                         onChange={onChange}
+                        required
                         className="w-full border rounded px-3 py-2"
                     />
                     {errors.startTime && <p className="text-sm text-red-600">{errors.startTime}</p>}
@@ -96,6 +101,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                         placeholder="End Time"
                         value={form.endTime}
                         onChange={onChange}
+                        required
                         className="w-full border rounded px-3 py-2"
                     />
                     {errors.endTime && <p className="text-sm text-red-600">{errors.endTime}</p>}
@@ -116,10 +122,15 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
             <div>
                 <label className="block mb-1 font-medium">Participants Limit <span className="text-rose-600">*</span></label>
                 <input
+                    type="number"
                     name="limit"
-                    placeholder="(e.g. 15)"
+                    min={0}
+                    max={100}
+                    inputMode="numeric"
+                    // placeholder="(e.g. 15)"
                     value={form.limit}
                     onChange={onChange}
+                    required
                     className="w-full border rounded px-3 py-2"
                 />
                 {errors.limit && <p className="text-sm text-red-600">{errors.limit}</p>}
@@ -133,6 +144,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                     onChange={onChange}
                     value={form.city}
                     className="w-full border rounded px-3 py-2"
+                    required
                 >
                     {CITIES_CO.map((city) => (
                         <option key={city} value={city}>
@@ -150,6 +162,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                     onChange={onChange}
                     value={form.state}
                     className="w-full border rounded px-3 py-2"
+                    required
                 >
                     {US_States.map((state) => (
                         <option key={state} value={state}>
@@ -167,6 +180,7 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
                     value={form.address}
                     onChange={onChange}
                     className="w-full border rounded px-3 py-2"
+                    required
                 />
                 {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
             </div>
@@ -223,4 +237,4 @@ const AddEventForm: React.FC<Props> = ({ form, errors, activities, todayYMD, onC
     )
 }
 
-export default AddEventForm
+export default EventFields

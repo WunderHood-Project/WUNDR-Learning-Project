@@ -1,15 +1,15 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { useEvent } from "../../../../hooks/useEvent"
-import { Event, EventForm, EventFormErrors } from "@/types/event"
-import { useEffect, useMemo, useState } from "react"
+import { useEvent } from "../../../hooks/useEvent"
+import { Event, EventForm, EventFormErrors, UpdateEventPayload } from "@/types/event"
+import { useEffect, useState } from "react"
 import { Activity } from '@/types/activity';
-import { makeApiRequest } from "../../../../utils/api"
-import { convertStringToIsoFormat, toYMDForInput, toYMDLocal } from "../../../../utils/formatDate"
-import { determineEnv } from "../../../../utils/api"
-import { parseFloatOrNull, parseIntOrZero } from "../../../../utils/parseHelpers"
-import UpdateEventForm from "./UpdateEventForm"
+import { makeApiRequest } from "../../../utils/api"
+import { convertStringToIsoFormat, toYMDForInput } from "../../../utils/formatDate"
+import { determineEnv } from "../../../utils/api"
+import { parseFloatOrNull, parseIntOrZero } from "../../../utils/parseHelpers"
+import EventFields from "./EventField"
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -39,9 +39,9 @@ export default function UpdateEvent() {
     const [formEvent, setFormEvent] = useState<EventForm | null>(null)
     const [activities, setActivities] = useState<Activity[]>([])
     const [errors, setErrors] = useState<EventFormErrors>({})
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
-    const todayYMD = useMemo<string>(() => toYMDLocal(), [])
 
     useEffect(() => {
         if (singleEvent) setFormEvent(toEventForm(singleEvent))
@@ -82,16 +82,24 @@ export default function UpdateEvent() {
         })
     }
 
-    const handleDiscard = () => setFormEvent(singleEvent)
+    const handleDiscard = () => {
+        if (!singleEvent) return
+        setFormEvent(toEventForm(singleEvent))
+        setErrors({})
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return
+        setIsSubmitting(true)
         setErrors({})
         const newErrors: EventFormErrors = {}
 
         // * Add validations here
         // Ensure the name does not already exist
-        const matchingNames = allEvents?.find((e) => e.name === formEvent.name)
+        const matchingNames = allEvents?.find((e) =>
+            e.id !== singleEvent?.id &&
+            e.name.trim().toLowerCase() === formEvent.name.trim().toLowerCase())
         if (matchingNames) newErrors.name = "Name Already Exists"
 
         // Validate name's length:
@@ -126,24 +134,9 @@ export default function UpdateEvent() {
         }
 
         // Create Payload
-        const payload: Event = {
-            activityId: formEvent.activityId,
-            name: formEvent.name,
-            description: formEvent.description,
+        const payload: UpdateEventPayload = {
+            ...formEvent,
             date: convertStringToIsoFormat(formEvent.date),
-            startTime: formEvent.startTime,
-            endTime: formEvent.endTime,
-            image: formEvent.image,
-            participants: formEvent.participants,
-            limit: Number(formEvent.limit),
-            city: formEvent.city,
-            state: formEvent.state,
-            address: formEvent.address,
-            zipCode: formEvent.zipCode,
-            latitude: formEvent.latitude,
-            longitude: formEvent.longitude,
-            userId: [],
-            childIDs: []
         }
 
         // Try to add an event
@@ -160,6 +153,8 @@ export default function UpdateEvent() {
             }
         } catch (e) {
             throw new Error(`Unable to add event: ${e}`)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -168,21 +163,20 @@ export default function UpdateEvent() {
             <h1 className="text-2xl font-bold text-center mb-4">Update Event</h1>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-                <UpdateEventForm
-                    formEvent={formEvent}
+                <EventFields
+                    form={formEvent}
                     errors={errors}
                     activities={activities}
-                    todayYMD={todayYMD}
                     onChange={handleChange}
                 />
 
                 {/* Buttons */}
                 <div className="flex justify-end gap-4">
                     <button
-                        type="submit"
+                        type="submit" disabled={isSubmitting}
                         className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
                     >
-                        Edit Event
+                        {isSubmitting ? "Saving..." : "Edit Event"}
                     </button>
                     <button
                         type="reset"

@@ -1,15 +1,15 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react';
-import { makeApiRequest } from '../../../../utils/api';
-import { Event, EventForm, EventFormErrors } from '@/types/event';
+import { makeApiRequest } from '../../../utils/api';
+import { CreateEventPayload, EventForm, EventFormErrors } from '@/types/event';
 import { Activity } from '@/types/activity';
-import { convertStringToIsoFormat, toYMDLocal } from '../../../../utils/formatDate';
+import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
 import { useRouter } from 'next/navigation';
-import { useEvent } from '../../../../hooks/useEvent';
-import { determineEnv } from '../../../../utils/api';
-import { parseFloatOrNull, parseIntOrZero } from '../../../../utils/parseHelpers';
-import AddEventForm from './AddEventForm';
+import { useEvent } from '../../../hooks/useEvent';
+import { determineEnv } from '../../../utils/api';
+import { parseFloatOrNull, parseIntOrZero } from '../../../utils/parseHelpers';
+import EventFields from './EventField';
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -38,6 +38,7 @@ export default function AddEvent() {
     const [form, setForm] = useState<EventForm>(() => initialEventForm())
     const [errors, setErrors] = useState<EventFormErrors>({})
     const [activities, setActivities] = useState<Activity[]>([])
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const { events } = useEvent(undefined)
     const router = useRouter()
     const todayYMD = useMemo<string>(() => toYMDLocal(), [])
@@ -75,6 +76,8 @@ export default function AddEvent() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return
+        setIsSubmitting(true)
         setErrors({})
         const newErrors: EventFormErrors = {}
 
@@ -113,24 +116,9 @@ export default function AddEvent() {
             return
         }
 
-        const payload: Event = {
-            activityId: form.activityId,
-            name: form.name,
-            description: form.description,
+        const payload: CreateEventPayload = {
+            ...form,
             date: convertStringToIsoFormat(form.date),
-            startTime: form.startTime,
-            endTime: form.endTime,
-            image: form.image,
-            participants: 0,
-            limit: Number(form.limit),
-            city: form.city,
-            state: form.state,
-            address: form.address,
-            zipCode: form.zipCode,
-            latitude: form.latitude,
-            longitude: form.longitude,
-            userId: [],
-            childIDs: []
         }
         console.log('payload', payload)
 
@@ -147,9 +135,9 @@ export default function AddEvent() {
                 router.replace("/events")
             }
         } catch (e) {
-            // console.error("Failed to create event", e)
-            // setErrors(e instanceof Error ? e.message : "Error deleting event");
             throw new Error(`Unable to add event: ${e}`)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -159,20 +147,20 @@ export default function AddEvent() {
             <h1 className="text-2xl font-bold text-center mb-4">Add an Event Below</h1>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-                <AddEventForm
+                <EventFields
                     form={form}
                     errors={errors}
                     activities={activities}
-                    todayYMD={todayYMD}
+                    minDate={todayYMD}
                     onChange={handleChange}
                 />
 
                 <div className="flex justify-end gap-4">
                     <button
-                        type="submit"
+                        type="submit" disabled={isSubmitting}
                         className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
                     >
-                        Add Event
+                        {isSubmitting ? "Saving..." : "Add Event"}
                     </button>
                     <button
                         type="reset"
