@@ -1,92 +1,168 @@
-import Image from 'next/image';
+import React from "react";
+import {
+  Mountain,
+  Paintbrush,
+  Atom,
+  HeartPulse,
+  UsersRound,
+} from "lucide-react";
+
+type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+
+type Club = { Icon: IconType; title: string; desc: string };
+
+const clubs: Club[] = [
+  {
+    Icon: Mountain,
+    title: "Adventure & Outdoor Club",
+    desc:
+      "Hiking, climbing, camping, and seasonal sports (skiing/snowshoeing). Builds confidence, teamwork, and a healthy love for the outdoors.",
+  },
+  {
+    Icon: Paintbrush,
+    title: "Arts & Expression Club",
+    desc:
+      "Book & Art, creative writing, design, hands-on workshops. Encourages imagination, self-expression, and collaboration.",
+  },
+  {
+    Icon: Atom,
+    title: "STEM & Innovation Club",
+    desc:
+      "Hands-on science, tech, and engineering projects. From coding to building experiments — where curiosity meets creativity.",
+  },
+  {
+    Icon: HeartPulse,
+    title: "Life Skills & Wellness Club",
+    desc:
+      "Practical learning through cooking, nutrition, first aid, and mindfulness. Promotes independence, resilience, and lifelong healthy habits.",
+  },
+  {
+    Icon: UsersRound,
+    title: "Leadership & Community Club",
+    desc:
+      "Developing communication, leadership, and service. Teens learn how to lead, mentor, and contribute through teamwork and community projects.",
+  },
+];
 
 export default function OurPrograms() {
-    const programs = [
-        {
-            icon: "/programsIcon/fishing.png",
-            title: "Outdoor Discovery",
-            desc: "Fishing adventures, map reading skills, and nature-based science exploration in Colorado's beautiful wilderness.",
-        },
-        {
-            icon: "/programsIcon/tent.png",
-            title: "Survival & First Aid Skills",
-            desc: "Essential life skills including knot tying, shelter building, emergency preparedness, and CPR certification.",
-        },
-        {
-            icon: "/programsIcon/salad.png",
-            title: "Healthy Living & Cooking",
-            desc: "Garden-to-table experiences, cooking workshops, nutrition education, and sustainable living practices.",
-        },
-        {
-            icon: "/programsIcon/books.png",
-            title: "Book & Art Club",
-            desc: "Literary discussions, creative writing, sculpting, painting, and artistic expression in a supportive community.",
-        },
-        {
-            icon: "/programsIcon/laptop.png",
-            title: "Tech Evenings",
-            desc: "Coding workshops, robotics, and technology exploration through partnerships with regional tech organizations.",
-        },
-        {
-            icon: "/programsIcon/ski.png",
-            title: "Adventures & Field Trips",
-            desc: "Sports activities, ski days, national park visits, museum trips, and seasonal community celebrations.",
-        },
-    ];
+  return (
+    <section className="w-full py-12 sm:py-16 text-wondergreen bg-[#FAF7ED]">
+      <div className="max-w-7xl mx-auto flex flex-col px-4 sm:px-6 lg:px-8">
+        {/* Heading */}
+        <div className="flex flex-col items-center sm:items-start">
+          <div className="w-full mb-3 flex flex-col items-center lg:flex-row lg:items-end gap-2 lg:gap-3">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center lg:text-left">
+                WonderHood Signature Clubs
+            </h2>
+            <span
+                className="mt-2 lg:mt-0 ml-0 lg:ml-3 text-[11px] sm:text-xs px-3 py-2.5 rounded-full
+                        bg-gradient-to-br from-amber-300 via-amber-400 to-amber-300 text-amber-950
+                        font-semibold tracking-wide shadow-md ring-1 ring-amber-500/35"
+            >
+                COMING SOON
+            </span>
+        </div>
 
-    return (
-        <section className="w-full py-12 sm:py-16 text-wondergreen bg-[#FAF7ED]">
-            <div className="max-w-7xl mx-auto flex flex-col px-4 sm:px-6 lg:px-8">
 
-                {/* Section heading */}
-                <div className="flex flex-col items-center sm:items-start">
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-                        Our Programs
-                    </h2>
+          {/* underline */}
+          <div className="h-1 w-3/4 sm:w-2/3 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-4 mt-1" />
 
-                    {/* Decorative gradient underline */}
-                    <div className="h-1 w-2/4 sm:w-1/4 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-4 mt-2" />
+          <p className="text-base sm:text-lg lg:text-[20px] text-gray-600 max-w-5xl text-center sm:text-left mb-8 sm:mb-10 mt-1">
+            Year-round communities (in planning) where homeschool and online learners (ages 10-18) connect, learn, and grow together.
+          </p>
+        </div>
 
-                    {/* Section subtitle */}
-                    <p className="text-base sm:text-lg lg:text-[20px] text-gray-600 max-w-3xl text-center sm:text-left mb-8 sm:mb-10 mt-2">
-                        Hands-on experiences that bring homeschool families together.
+        {/* Grid */}
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {clubs.map(({ Icon, title, desc }) => {
+            const id = title.toLowerCase().replace(/\s+/g, "-");
+            return (
+              <li
+                key={title}
+                role="article"
+                aria-labelledby={id}
+                tabIndex={0}
+                className="group relative h-full rounded-2xl bg-white ring-1 ring-wonderleaf/20 shadow-sm transition-all duration-300 ease-out
+                           motion-safe:hover:-translate-y-1.5 motion-safe:hover:shadow-xl
+                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wondergreen/70"
+              >
+                {/* top strip */}
+                <div className="absolute top-0 left-0 w-full h-1.5 rounded-t-2xl bg-gradient-to-r from-wondergreen via-wonderleaf to-wondersun transition-colors duration-300 group-hover:from-wondergreen/90 group-hover:to-wondersun/90" />
+
+                <div className="p-6 sm:p-6 min-h-[180px] sm:min-h-[200px] flex flex-col">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-2 mt-2">
+                    {/* compact icon badge */}
+                    <span className="inline-grid place-items-center w-9 h-9 sm:w-11 sm:h-11 rounded-full
+                                     bg-wondersun/55 ring-1 ring-amber-400/30
+                                     shadow-sm transition-transform duration-300 ease-out
+                                     motion-safe:group-hover:scale-110 motion-safe:group-hover:rotate-3">
+                      <Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px] text-wondergreen stroke-[1.8]" />
+                    </span>
+
+                    <h3 id={id} className="text-lg sm:text-xl lg:text-[21px] font-bold text-wondergreen">
+                      {title}
+                    </h3>
+                  </div>
+
+                  <p className="text-sm sm:text-base lg:text-[17px] text-gray-600 ml-1 sm:ml-2">
+                    {desc}
+                  </p>
+
+                  {/* We stretch the description so that the heights of the cards are aligned. */}
+                  <div className="mt-auto" />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Bottom of the section */}
+        <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <p className="text-sm text-gray-500">
+            Programs may vary by season, location, and funding.
+          </p>
+          {/* <a href="/interest" className="text-sm font-semibold text-wondergreen underline underline-offset-4 hover:opacity-80">
+            Join the interest list →
+          </a> */}
+        </div>
+
+        {/* Announcement / Interest banner */}
+        <div
+        role="note"
+        className="relative mt-10 rounded-2xl px-6 py-6 sm:px-10 sm:py-7 text-white
+                    bg-gradient-to-r from-wondergreen to-wonderleaf shadow-xl"
+        >
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full
+                        bg-wondersun/20 blur-2xl"
+            />
+            <div className="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-[auto,1fr,auto] items-center gap-3 lg:gap-6">
+                <span className="justify-self-center lg:justify-self-start text-2xl sm:text-3xl">✨</span>
+
+                <div className="text-center lg:text-left">
+                    <p className="font-semibold text-[17px] sm:text-lg">
+                    Clubs are in planning — join the interest list.
+                    </p>
+                    <p className="text-white/90 text-sm sm:text-base">
+                    We&aposre collecting interest and confirming partners/funding. Get updates and priority invites when pilot sessions open.
                     </p>
                 </div>
 
-                {/* Grid of program cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
-                    {programs.map((prog) => (
-                        <div
-                            key={prog.title}
-                            className="bg-[#f9faf7] rounded-3xl shadow-lg p-6 sm:p-6 flex flex-col items-start min-h-[220px] sm:min-h-[250px] relative overflow-hidden"
-                        >
-                            {/* Gradient bar at the top of each card */}
-                            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-wondergreen to-wondersun" />
-
-                            {/* Icon + program title */}
-                            <div className="flex items-center gap-3 sm:gap-4 mb-2 mt-2 z-10">
-                                <Image
-                                 src={prog.icon}
-                                alt={`${prog.title} icon`}
-                                width={56} 
-                                height={56}
-                                className="w-10 h-10 sm:w-14 sm:h-14"
-                                sizes="(min-width: 640px) 56px, 40px"
-                                priority={false} 
-                                />
-                                <h3 className="text-lg sm:text-xl lg:text-[21px] font-bold text-wondergreen">
-                                    {prog.title}
-                                </h3>
-                            </div>
-
-                            {/* Program description */}
-                            <p className="text-sm sm:text-base lg:text-lg text-gray-600 ml-2 sm:ml-4">
-                                {prog.desc}
-                            </p>
-                        </div>
-                    ))}
-                </div>
+                <a
+                    href="mailto:hello@wonderhood.org?subject=Clubs%20Interest&body=Teen%20age%3A%20%0AClubs%20interests%3A%20"
+                    className="justify-self-center lg:justify-self-end mt-4 lg:mt-0 whitespace-nowrap
+                            inline-flex items-center rounded-full bg-wondersun px-4 py-2
+                            text-amber-950 text-sm font-semibold shadow-md hover:brightness-95
+                            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+                >
+                    Join Interest List
+                </a>
             </div>
-        </section>
-    );
+
+        </div>
+
+      </div>
+    </section>
+  );
 }
