@@ -233,12 +233,6 @@ async def get_user_notifications(
     notifications = await db.notifications.find_many(
         where={"userId": current_user.id}
     )
-
-    if not notifications:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Unable to obtain notifications"
-        )
     
     return {"Notifications": notifications}
 
