@@ -127,20 +127,20 @@ export default function OurPrograms() {
         </div>
 
         {/* Announcement / Interest banner */}
-        <div
+        {/* <div
         role="note"
         className="relative mt-10 rounded-2xl px-6 py-6 sm:px-10 sm:py-7 text-white
                     bg-gradient-to-r from-wondergreen to-wonderleaf shadow-xl"
-        >
-            <div
+        > */}
+            {/* <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full
                         bg-wondersun/20 blur-2xl"
-            />
-            <div className="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-[auto,1fr,auto] items-center gap-3 lg:gap-6">
-                <span className="justify-self-center lg:justify-self-start text-2xl sm:text-3xl">✨</span>
+            /> */}
+            {/* <div className="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-[auto,1fr,auto] items-center gap-3 lg:gap-6"> */}
+                {/* <span className="justify-self-center lg:justify-self-start text-2xl sm:text-3xl">✨</span> */}
 
-                <div className="text-center lg:text-left">
+                {/* <div className="text-center lg:text-left">
                     <p className="font-semibold text-[17px] sm:text-lg">
                     Clubs are in planning — join the interest list.
                     </p>
@@ -158,9 +158,9 @@ export default function OurPrograms() {
                 >
                     Join Interest List
                 </a>
-            </div>
+            </div> */}
 
-        </div>
+        {/* </div> */}
 
       </div>
     </section>
