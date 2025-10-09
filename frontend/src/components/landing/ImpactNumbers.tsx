@@ -25,7 +25,7 @@ export default function ImpactStats() {
           <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-5xl mx-auto text-center leading-relaxed">
             We believe that learning flourishes when children and families come together.
             <br className="hidden sm:block"/>
-            WonderHood connects homeschoolers through real experiences, new friendships, and joyful discovery.
+            WonderHood connects homeschool and online learners through real experiences, new friendships, and joyful discovery — helping them feel part of a vibrant community.
           </p>
         </div>
 

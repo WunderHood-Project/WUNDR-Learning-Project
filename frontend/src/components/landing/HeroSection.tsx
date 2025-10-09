@@ -41,7 +41,7 @@ export default function HeroSection() {
                                 text-base sm:text-lg md:text-xl lg:text-2xl
                                 max-w-[90%] mx-auto
                                 drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
-                    Clubs, projects, nature, creativity — together.
+                    Connection, adventure, and friendship for youth ages 10-18.
                     </p>
                     <Link href="/get-involved" className="mt-4 md:mt-6">
                     <button className="bg-wondergreen text-white
@@ -109,7 +109,7 @@ export default function HeroSection() {
                                 text-2xl sm:text-3xl md:text-4xl lg:text-6xl
                                 lg:whitespace-nowrap
                                 drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
-                    Where Homeschool Kids Connect & Grow
+                    Where Homeschool Teens Connect & Grow
                     </h1>
                     <p className="text-white mt-3 md:mt-4
                                 text-base sm:text-lg md:text-xl lg:text-2xl

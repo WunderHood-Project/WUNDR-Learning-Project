@@ -22,14 +22,14 @@ export default function AboutPage() {
         <div className="absolute top-6 right-6 w-32 h-32 bg-wonderorange/20 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-8 left-8 w-28 h-28 bg-wonderleaf/25 rounded-full blur-2xl pointer-events-none"></div>
         <div className="absolute top-1/2 right-1/4 w-20 h-20 bg-wondergreen/15 rounded-full blur-xl pointer-events-none"></div>
-        
+
         {/* Content with relative positioning */}
         <div className="relative z-10">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-4 h-12 bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange rounded-full shadow-lg"></div>
             <h2 className="text-2xl md:text-3xl font-bold text-wondergreen drop-shadow-sm">Our Story</h2>
           </div>
-          
+
           <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-md border border-wonderleaf/20">
             <p className="text-lg text-gray-700 leading-relaxed">
               WonderHood was born out of a desire to give our children more than just academics—to help them find lasting friendships, learn practical life skills, and thrive through teamwork, creativity, and outdoor adventure. We believe that every child deserves a vibrant community, a safe space to grow, and real-life experiences that inspire confidence, purpose, and joy.
@@ -48,7 +48,7 @@ export default function AboutPage() {
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-wonderleaf to-wonderorange mx-auto rounded-full"></div>
         </div>
-        
+
         <div className="grid md:grid-cols-2 gap-8 md:gap-10">
           {/* Left Column */}
           <div className="space-y-6">
@@ -57,7 +57,7 @@ export default function AboutPage() {
                 At WonderHood, we believe every child deserves not just knowledge, but skills for life—friendship, teamwork, confidence, and real joy.
               </p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-wonderorange/10 to-wondersun/5 rounded-xl p-6 border-l-4 border-wonderorange">
               <p className="text-gray-700 leading-relaxed">
                 We offer fun, creative, and educational events that bring families together, help teens build leadership skills, and show every child they belong.
@@ -72,10 +72,10 @@ export default function AboutPage() {
                 Our community helps kids grow through shared adventures, group projects, and opportunities to shine—no matter their background or learning style.
               </p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-wondersun/20 to-wonderorange/10 rounded-xl p-6 border-l-4 border-wondersun">
               <p className="text-gray-700 leading-relaxed">
-                In the future, we&aposll launch even more clubs, workshops, and camps—creating a safe, inspiring environment for youth and their families across Colorado.
+                In the future, we&apos;ll launch even more clubs, workshops, and camps—creating a safe, inspiring environment for youth and their families across Colorado.
               </p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function AboutPage() {
         {/* Bottom Mission Statement */}
         <div className="mt-8 bg-gradient-to-r from-wondergreen to-wonderleaf rounded-2xl p-8 text-white text-center">
           <p className="text-lg md:text-xl leading-relaxed">
-            By connecting families, building community, and creating real opportunities, WonderHood aims to fill the gaps in home education—and add even more to children&aposs lives.
+            By connecting families, building community, and creating real opportunities, WonderHood aims to fill the gaps in home education—and add even more to children&apos;s lives.
           </p>
         </div>
       </div>
@@ -117,7 +117,7 @@ export default function AboutPage() {
         {/* Decorative elements */}
         <div className="absolute top-4 right-4 w-28 h-28 bg-wonderorange/40 rounded-full blur-2xl pointer-events-none"></div>
         <div className="absolute bottom-4 left-4 w-24 h-24 bg-wonderleaf/40 rounded-full blur-xl pointer-events-none"></div>
-        
+
         <div className="relative z-10">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-wonderorange to-wondersun rounded-full flex items-center justify-center">
@@ -125,16 +125,16 @@ export default function AboutPage() {
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-wondergreen">How to Join</h2>
           </div>
-          
+
           <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 mb-4">
             <p className="text-lg text-gray-700 leading-relaxed">
               Membership is <span className="font-bold text-wondergreen bg-wondersun/30 px-2 py-1 rounded">free</span> for all homeschool families with kids ages <span className="font-bold text-wonderorange">10-18</span>.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed mt-2">
-              Just sign up form for your child and join any club, or contact us with questions — you&aposre always welcome!
+              Just sign up form for your child and join any club, or contact us with questions — you&apos;re always welcome!
             </p>
           </div>
-          
+
           <div className="text-center">
             <a
               href="mailto:wonderhood.project@gmail.com"
@@ -210,11 +210,11 @@ export default function AboutPage() {
       {/* Contact Footer */}
       <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-wonderleaf/20 max-w-4xl mx-auto">
         <p className="text-lg text-gray-600 mb-4">
-          Questions? We&aposd love to hear from you!
+          Questions? We&apos;d love to hear from you!
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a 
-            href="mailto:wonderhood.project@gmail.com" 
+          <a
+            href="mailto:wonderhood.project@gmail.com"
             className="text-wonderleaf hover:text-wondergreen font-semibold transition-colors duration-300"
           >
             wonderhood.project@gmail.com
