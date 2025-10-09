@@ -31,11 +31,11 @@ const EventDetails = () => {
     }
 
     const eventParticipantSet = useMemo(() => new Set(event?.childIDs ?? []), [event?.childIDs])
-    const handleDisable = useCallback((childID: string) => eventParticipantSet.has(childID), [eventParticipantSet])
 
     const handleEnroll = async (e: React.FormEvent) => {
         e.preventDefault()
         const childIDs = Array.from(selected)
+        if (childIDs.length === 0) return
 
         try {
             await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}/enroll`, {
@@ -45,15 +45,19 @@ const EventDetails = () => {
             })
             setShowForm(false)
             setSuccessEnroll(true)
+            setSelected(new Set())
             refetch()
         } catch (err) {
             setServerError(err instanceof Error ? err.message : "A network error occurred. Please try again later.")
         }
     }
 
+    const hasCapacity =
+        typeof event?.participants === 'number'
+        && event?.participants < event?.limit
+
     if (loading) return <div className="flex justify-center items-center min-h-screen">Loading event details...</div>
     if (!event) return <div className="flex justify-center items-center min-h-screen">Event not found</div>
-
     if (error) return (
         <div className="flex justify-center items-center min-h-screen">
             <div className="text-red-500">
@@ -68,9 +72,9 @@ const EventDetails = () => {
     return (
         <div>
             <header className="relative">
-                <h1 className="text-center font-bold text-2xl md:text-3xl py-6 bg-gradient-to-r from-wonderleaf to-wondergreen text-white">
+                {/* <h1 className="text-center font-bold text-2xl md:text-3xl py-6 bg-gradient-to-r from-wonderleaf to-wondergreen text-white">
                     Event Details
-                </h1>
+                </h1> */}
                 <div className="relative overflow-hidden">
                     <img src={event?.image} alt={event?.name}
                         className="w-full h-64 md:h-80 object-cover transition-transform duration-300 hover:scale-105"
@@ -96,8 +100,8 @@ const EventDetails = () => {
                         </div>
 
                         <div className="mt-3">
-                            <h3 className="flex items-center text-white-800 text-lg font-semibold">{event?.participants == 1 ? "Participant" : "Participants"}</h3>
-                            <span>{event?.participants}</span>
+                            <h3 className="flex items-center text-white-800 text-lg font-semibold">{event?.participants == 1 ? "Participant" : "Participants"} (Max: {event?.limit})</h3>
+                            <span>{event?.participants} enrolled</span>
                         </div>
                         <div className="mb-8">
                             <h3 className="text-lg font-semibold text-white-800 mt-3">About this Event</h3>
@@ -109,13 +113,17 @@ const EventDetails = () => {
                 </div>
             </main >
 
-            <div className="px-6 md:px-8 pb-8">
-                <button onClick={() => setShowForm(v => !v)}
-                    className="w-full md:w-auto bg-gradient-to-r from-wondergreen to-wonderleaf hover:from-wondergreen hover:to-wonderleaf text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:translate-y-0.5 transition-all duration-200 text-lg"
-                >
-                    {showForm && user ? "Complete Enrollment Below" : "Enroll in Event"}
-                </button>
-            </div>
+            {hasCapacity ? (
+                <div className="px-6 md:px-8 pb-8">
+                    <button onClick={() => setShowForm(v => !v)}
+                        className="w-full md:w-auto bg-gradient-to-r from-wondergreen to-wonderleaf hover:from-wondergreen hover:to-wonderleaf text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:translate-y-0.5 transition-all duration-200 text-lg"
+                    >
+                        {showForm && user ? "Complete Enrollment Below" : "Enroll in Event"}
+                    </button>
+                </div>
+            ) : (
+                <div>Sorry! This event is currently at full capacity.</div>
+            )}
 
             {showForm && user?.children?.length ? (
                 <form onSubmit={handleEnroll} className="space-y-4 px-10">
@@ -124,6 +132,7 @@ const EventDetails = () => {
                         {user.children.map(child => {
                             const childID = `child-${child.id}`
                             const isChecked = selected.has(child.id)
+                            const alreadyEnrolled = eventParticipantSet.has(child.id)
 
                             return (
                                 <div key={child.id} className="flex flex-row gap-2">
@@ -135,15 +144,27 @@ const EventDetails = () => {
                                         checked={isChecked}
                                         onChange={() => toggleChild(child.id)}
                                         className="h-4 w-4"
-                                        disabled={handleDisable(child.id)}
+                                        disabled={alreadyEnrolled}
+                                        aria-describedby={alreadyEnrolled ? `${childID}-hint` : undefined}
                                     />
                                     <label className="cursor-pointer">{child.firstName} {child.lastName}</label>
+                                    {alreadyEnrolled && (
+                                        <span id={`${childID}-hint`} className="text-sm text-gray-500">(Already Enrolled!)</span>
+                                    )}
                                 </div>
                             )
                         })}
                     </fieldset>
                     <div className="flex flex-row gap-12">
-                        <button type="submit">Enroll</button>
+                        <button
+                            type="submit"
+                            className="bg-wondergreen text-white px-6 py-2 rounded disabled:opacity-50"
+                            disabled={selected.size === 0}
+                            aria-disabled={selected.size === 0}
+                            title={selected.size === 0 ? "Select at least one child" : "Enroll"}
+                        >
+                            Enroll
+                        </button>
                         <button type="button" onClick={() => setShowForm(false)}>Cancel</button>
 
                     </div>
@@ -151,6 +172,8 @@ const EventDetails = () => {
                 </form>
             ) : showForm && !user ? (
                 <div>Please create an account or log in</div>
+            ) : user?.children.length === 0 ? (
+                <div>You don't have any children in our system. Please add a child to your account to enroll.</div>
             ) : null}
 
             {successEnroll && (
