@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation"
 import { useEvent } from "../../../../hooks/useEvent"
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useUser } from "../../../../hooks/useUser"
 import { makeApiRequest } from "../../../../utils/api"
 import { determineEnv } from "../../../../utils/api"
@@ -173,7 +173,7 @@ const EventDetails = () => {
             ) : showForm && !user ? (
                 <div>Please create an account or log in</div>
             ) : user?.children.length === 0 ? (
-                <div>You don't have any children in our system. Please add a child to your account to enroll.</div>
+                <div>You don&apos;t have any children in our system. Please add a child to your account to enroll.</div>
             ) : null}
 
             {successEnroll && (
