@@ -151,9 +151,8 @@ export default function Notifications() {
           filtered.map(n => (
             <div
               key={n.id}
-              className={`rounded-xl border p-5 md:p-6 bg-white transition ${
-                n.isRead ? 'border-wonderleaf/40' : 'border-wondergreen bg-wondergreen/5'
-              }`}
+              className={`rounded-xl border p-5 md:p-6 bg-white transition ${n.isRead ? 'border-wonderleaf/40' : 'border-wondergreen bg-wondergreen/5'
+                }`}
             >
               <div className="flex items-start gap-4">
                 <div className="flex-1">
@@ -167,9 +166,9 @@ export default function Notifications() {
                 </div>
 
                 <button
-                type="button"
-                onClick={() => markAsRead(n.id)}
-                className="text-sm text-gray-400 hover:text-wonderleaf"
+                  type="button"
+                  onClick={() => markAsRead(n.id)}
+                  className="text-sm text-gray-400 hover:text-wonderleaf"
                 >
                   {n.isRead === false ? "Mark as read" : ""}
                 </button>

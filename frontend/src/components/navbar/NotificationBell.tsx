@@ -19,9 +19,9 @@ export default function NotificationBell() {
     }
   }, []);
 
-  useEffect(() => { 
-    void fetchUnreadCount(); 
-  },[fetchUnreadCount])
+  useEffect(() => {
+    void fetchUnreadCount();
+  }, [fetchUnreadCount])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -36,7 +36,7 @@ export default function NotificationBell() {
   const handleToggle = () => {
     setShowDropdown((prev) => {
       const next = !prev;
-      if(next) void fetchUnreadCount();
+      if (next) void fetchUnreadCount();
       return next;
     })
   }
@@ -75,7 +75,7 @@ export default function NotificationBell() {
       <div className={showDropdown ? '' : 'hidden'}>
         <NotificationDropdown onClose={handleClose} />
       </div>
-      
+
     </div>
   );
 }

@@ -58,7 +58,7 @@ export default function NotificationDropdown({ onClose }: Props) {
       <div className="max-h-80 overflow-y-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
-        ) : loadErrors? (
+        ) : loadErrors ? (
           <div className="p-8 text-center text-gray-500">
             <div className="text-3xl mb-2">✨</div>
             <div className="font-medium mb-1">You&apos;re all caught up!</div>
