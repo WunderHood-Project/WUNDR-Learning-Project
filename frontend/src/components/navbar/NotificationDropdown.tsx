@@ -21,6 +21,8 @@ export default function NotificationDropdown({ onClose }: Props) {
 
     try {
       const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
+      if (!response) setNotifications([])
+
       setNotifications(response?.Notifications)
       setLoadErrors(null)
     } catch (e) {
@@ -59,7 +61,7 @@ export default function NotificationDropdown({ onClose }: Props) {
         ) : loadErrors? (
           <div className="p-8 text-center text-gray-500">
             <div className="text-3xl mb-2">✨</div>
-            <div className="font-medium mb-1">You&aposre all caught up!</div>
+            <div className="font-medium mb-1">You&apos;re all caught up!</div>
             <div className="text-sm">No new notifications right now.</div>
           </div>
         ) : (
