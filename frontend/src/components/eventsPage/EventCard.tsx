@@ -5,6 +5,8 @@ import { Event } from "@/types/event";
 import DeleteEventModal from "./DeleteEventModal";
 import { NotificationModal } from "../notifications/NotificationModal";
 import { determineEnv } from "../../../utils/api";
+import { FaUser } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -26,14 +28,22 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
 
       {/* Event Content */}
       <h3 className="text-lg font-semibold text-gray-800 mb-2">
-        {event.name} in {event.city}
+        {event.name}
       </h3>
-      <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[3.5rem]">
-        {event.description}
-      </p>
+      <div>
+        <p className="flex flex-row text-gray-600 text-sm mb-1 line-clamp-2">
+          <FaLocationDot className="mr-2"/>{event.city}, {event.state}
+        </p>
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[3.5rem]">
+          {event.description}
+        </p>
+      </div>
 
       {/* Event Metadata */}
       <div className="flex flex-col justify-center mt-auto">
+        <p className="flex flex-row text-gray-600 text-sm line-clamp-2">
+          <FaUser className="mr-2"/>Max Participants: {event.limit}
+        </p>
         <span className="text-xs text-gray-500 mb-2">
           {event.participants} participant(s) enrolled
         </span>
