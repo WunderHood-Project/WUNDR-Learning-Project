@@ -24,7 +24,7 @@ const initialEventForm = (): EventForm => ({
     image: "",
     limit: 0,
     city: "",
-    state: "",
+    state: "CO",
     address: "",
     zipCode: "",
     latitude: null,
