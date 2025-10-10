@@ -92,7 +92,6 @@ import { User } from "@/types/user";
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 
-
 type AuthContextType = {
   user: User | null;
   setUser: (user: User) => void;
@@ -133,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token]);
 
-   const loginWithToken = (token: string, user?: User) => {
+  const loginWithToken = (token: string, user?: User) => {
     setToken(token);
     if (user) {
       setUser(user);
@@ -144,9 +143,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     setToken(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location.href = "/";
   };
 
-    return (
+  return (
     <AuthContext.Provider value={{ user, setUser, isLoggedIn: !!user, logout, loginWithToken, token }}>
       {children}
     </AuthContext.Provider>
