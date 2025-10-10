@@ -24,7 +24,7 @@ const toEventForm = (ev: Event): EventForm => ({
     image: ev.image ?? "",
     limit: ev.limit ?? 0,
     city: ev.city ?? "",
-    state: ev.state ?? "",
+    state: ev.state ?? "CO",
     address: ev.address ?? "",
     zipCode: String(ev.zipCode ?? ""),
     latitude: ev.latitude ?? null,
@@ -66,7 +66,7 @@ export default function UpdateEvent() {
                 return { ...prev, [name]: parseIntOrZero(value) }
             }
 
-            return { ...prev, [name]: value}
+            return { ...prev, [name]: value }
         })
     }
 
