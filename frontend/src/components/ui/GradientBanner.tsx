@@ -1,18 +1,17 @@
-// src/components/ui/GradientBanner.tsx
 import * as React from "react";
 
-// мини-утилита для классов
+// mini-utility for classes
 const cn = (...xs: Array<string | false | null | undefined>) => xs.filter(Boolean).join(" ");
 
 type Props = {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
-  cta?: React.ReactNode;                // сюда можно передать кнопки/ссылки
-  size?: "sm" | "md" | "lg";            // размеры
-  align?: "center" | "left";            // выравнивание контента
-  from?: string;                        // начало градиента, tailwind-класс, напр. 'from-wondergreen'
-  to?: string;                          // конец градиента, напр. 'to-wonderleaf'
-  showOrbs?: boolean;                   // включить/выключить кружочки
+  cta?: React.ReactNode;                // pass buttons/links
+  size?: "sm" | "md" | "lg";            // size
+  align?: "center" | "left";            // content alignment
+  from?: string;                        // gradient start, tailwind class, e.g. 'from-wondergreen'
+  to?: string;                          // end of a gradient, e.g. 'to-wonderleaf'
+  showOrbs?: boolean;                   // turn circles on/off
   className?: string;
   contentClassName?: string;
 };
@@ -39,7 +38,7 @@ export default function GradientBanner({
       role="banner"
       className={cn("relative bg-gradient-to-br text-white shadow-lg overflow-hidden", from, to, paddings, className)}
     >
-      {/* декоративные кружочки */}
+      {/* decorative circles */}
       {showOrbs && (
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none z-0">
           <span className="absolute top-8 left-1/4 w-6 h-6 rounded-full bg-white/10 animate-bounce-slow" />
@@ -56,7 +55,7 @@ export default function GradientBanner({
         </div>
       )}
 
-      {/* контент */}
+      {/* content */}
       <div className={cn("relative z-10", contentClassName)}>
         <div className={cn("max-w-7xl mx-auto px-4 md:px-6 flex flex-col gap-4", alignCls)}>
           <h1 className={cn("font-extrabold drop-shadow-lg", titleSize)}>{title}</h1>

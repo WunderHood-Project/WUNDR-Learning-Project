@@ -12,12 +12,12 @@ export default function AboutPage() {
         subtitle="WonderHood connects Colorado homeschool and online learners (ages 10-18) with real friends, real adventures, and a supportive community."
       />
 
-      {/* общий контейнер для страницы */}
+      {/* container */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
         {/* Our Story */}
         <section className="relative my-12 md:my-16">
-          {/* декоративные «пятна» */}
+          {/* decorative "spots" */}
           <div className="pointer-events-none absolute -right-10 top-6 h-28 w-28 rounded-full bg-wonderorange/20 blur-3xl" />
           <div className="pointer-events-none absolute -left-8 bottom-6 h-24 w-24 rounded-full bg-wonderleaf/25 blur-2xl" />
 
@@ -148,17 +148,6 @@ export default function AboutPage() {
             </p>
           </div>
         </section>
-
-        {/* Safety */}
-        {/* <section className="mb-12">
-          <div className="flex items-start gap-3 rounded-xl border border-wondergreen/30 bg-wondergreen/5 p-4 shadow">
-            <span className="mt-0.5 flex-shrink-0 text-wondergreen">🛡️</span>
-            <p className="text-sm md:text-base leading-relaxed text-wondergreen">
-              <strong>Safety-first:</strong> adult volunteers are screened; programs are supervised; we teach healthy
-              habits and model respectful communication.
-            </p>
-          </div>
-        </section> */}
 
         {/* How to Join */}
         <section className="relative mb-12 rounded-2xl border-2 border-wonderorange/30 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white p-8 md:p-12 shadow-lg">
