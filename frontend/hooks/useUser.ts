@@ -14,9 +14,12 @@ export const useUser = () => {
         try {
             setLoading(true)
             setError(null)
+            
+            if (localStorage.getItem("user") && (localStorage.getItem('access_token')|| localStorage.getItem('token'))) {
+                const data = await makeApiRequest<User>(`${WONDERHOOD_URL}/user/me`)
+                setUser(data)
+            }
 
-            const data = await makeApiRequest<User>(`${WONDERHOOD_URL}/user/me`)
-            setUser(data)
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to fetch user")
             setUser(null)
