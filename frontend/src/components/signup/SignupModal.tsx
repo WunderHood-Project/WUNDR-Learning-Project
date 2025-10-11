@@ -121,13 +121,13 @@ const SignupModal = () => {
         try {
             const response = await handleSignup(userInfo)
             await loginWithToken(response.token, response.user as User | undefined)
-            closeModal();
 
             let redirectTo = safeNext;
             if (selectedRole === "parent") {
                 redirectTo = parentNext === 'now' ? "/profile?tab=child" : safeNext;
             }
             router.replace(redirectTo);
+            closeModal();
 
         } catch (err) {
             setServerError("A network error occurred. Please try again later.");
