@@ -16,7 +16,6 @@ type Props = {
 }
 
 const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onChange }) => {
-
     return (
         <fieldset className="space-y-4">
             <div>
@@ -164,11 +163,14 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
                     className="w-full border rounded px-3 py-2"
                     required
                 >
-                    {US_States.map((state) => (
+                    {/* {US_States.map((state) => (
                         <option key={state} value={state}>
                             {state}
                         </option>
-                    ))}
+                    ))} */}
+                    <option value={"CO"}>
+                        CO
+                    </option>
                 </select>
             </div>
 

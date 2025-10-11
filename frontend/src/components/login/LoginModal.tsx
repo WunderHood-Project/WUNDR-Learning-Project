@@ -52,11 +52,11 @@ const LoginModal = () => {
     };
 
     // Check email every time it changes, show error if invalid
-    useEffect(() => {
-        const newErrors: { [key: string]: string } = {};
-        if (email && !validateEmail(email)) newErrors.email = "Please provide a valid email address";
-        setErrors(newErrors);
-    }, [email]);
+    // useEffect(() => {
+    //     const newErrors: { [key: string]: string } = {};
+    //     if (email && !validateEmail(email)) newErrors.email = "Please provide a valid email address";
+    //     setErrors(newErrors);
+    // }, [email]);
 
     // Handle input changes (email & password), remove error if fixed
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
