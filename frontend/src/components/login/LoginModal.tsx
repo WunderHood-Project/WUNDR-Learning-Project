@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-// import { useModal } from "@/app/context/modal";
 import LoginForm from "./LoginForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 
@@ -9,7 +8,6 @@ export default function LoginModal() {
     const [forgot, setForgot] = useState(false);
     const router = useRouter();
     const pathname = usePathname() || "/";
-    // const { closeModal } = useModal();
 
     //If the modal is open on /reset-password/.., redirect back to home.
     useEffect(() => {

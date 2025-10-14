@@ -51,13 +51,7 @@ export default function UserDropdown({ onLogout, onClose, }: {
           Administration
         </Link>
       )}
-
-      <button
-        type="button"
-        className="block w-full text-left px-4 py-2 hover:bg-wonderorange/10 text-wonderorange font-semibold rounded-b-xl"
-        onClick={() => { onClose(); onLogout(); }}
-      >
-      </button>
+      
       <button
         type="button"
         className="block w-full text-left px-4 py-2 hover:bg-wonderorange/10 text-wonderorange font-semibold rounded-b-xl"
