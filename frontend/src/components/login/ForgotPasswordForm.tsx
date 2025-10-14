@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import ModalHeader from "./ModalHeader";
 import Alert from "./Alert";
 import { makeApiRequest, BASE } from "../../../utils/api";
-import { useModal } from "@/app/context/modal";
-import { errorMessage } from "../../../utils/errorHelpers"; 
+import { useModal } from "@/context/modal";
+import { errorMessage } from "../../../utils/errorHelpers";
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
@@ -84,7 +84,7 @@ export default function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
               onChange={(e) => setEmail(e.target.value)}
               className="
                 w-full px-5 py-4
-                rounded-2xl 
+                rounded-2xl
                 bg-gray-50
                 text-gray-900 placeholder-gray-400 text-base
                 border-2 border-gray-200

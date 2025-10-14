@@ -12,7 +12,7 @@ export type Opp = {
   tags?: string[];
   minAge: number;
   bgCheckRequired: boolean;
-  volunteerIDs?: string[]; 
+  volunteerIds?: string[];
   createdAt?: string;
   updatedAt?: string | null;
 };

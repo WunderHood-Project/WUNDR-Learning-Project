@@ -1,10 +1,10 @@
-import { useModal } from "@/app/context/modal"
+import { useModal } from "@/context/modal"
 import { FormErrors } from "@/types/forms"
 import React, { useState } from "react"
 import { handleSignup, SignupPayload } from "../../../utils/auth";
 import { formatUs, toE164US } from "../../../utils/formatPhoneNumber";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useAuth } from "@/app/context/auth";
+import { useAuth } from "@/context/auth";
 import { User } from "@/types/user";
 
 type UserInfo = SignupPayload

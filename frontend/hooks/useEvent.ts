@@ -30,7 +30,7 @@ export function useEvent(eventId: string | string[] | undefined) {
         setEvents(eventsData.events)
         setEvent(null)
       } else {
-        setError("Invalid event ID")
+        setError("Invalid event id")
         setEvent(null)
         setEvents(null)
       }

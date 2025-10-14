@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import type { VolunteerCreate } from '@/types/volunteer';
 import { isLoggedIn } from '../../../utils/auth';
 import { toE164US } from '../../../utils/formatPhoneNumber';
-import { useModal } from '@/app/context/modal';
+import { useModal } from '@/context/modal';
 import LoginModal from '@/components/login/LoginModal';
 import SignupModal from '@/components/signup/SignupModal';
 import { API, makeApiRequest } from '../../../utils/api';
@@ -19,8 +19,8 @@ const initial: VolunteerCreate = {
   phoneNumber: '',
   cities: [],
   daysAvail: [],
-  timesAvail: [],     
-  skills: [],       
+  timesAvail: [],
+  skills: [],
   bio: '',
   photoConsent: false,
   backgroundCheckConsent: false,
@@ -59,7 +59,7 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
   // helpers to patch state
   const onChange = (patch: Partial<VolunteerCreate>) =>
     setForm(prev => ({ ...prev, ...patch }));
-  
+
 
   // submit
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -263,4 +263,3 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
     </div>
   );
 }
-

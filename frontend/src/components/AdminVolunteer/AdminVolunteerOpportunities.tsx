@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { API, makeApiRequest } from '../../../utils/api';
-import { useModal } from '@/app/context/modal';
+import { useModal } from '@/context/modal';
 import LoginModal from '@/components/login/LoginModal';
 import DeleteOpportunityModal from './DeleteOpportunityModal';
 import { VENUE_OPTIONS, Venue, Opp, OppCreate, OppUpdate } from '../../types/opportunity';
@@ -38,7 +38,7 @@ const emptyForm: OppCreate = {
   tags: [],
   minAge: 18,
   bgCheckRequired: true,
-  volunteerIDs: [],
+  volunteerIds: [],
 };
 
 export default function AdminVolunteerOpportunities({ onViewAppsFor }: { onViewAppsFor?: (opp: Opp) => void }) {
@@ -112,7 +112,7 @@ export default function AdminVolunteerOpportunities({ onViewAppsFor }: { onViewA
       tags: opp.tags ?? [],
       minAge: opp.minAge ?? 18,
       bgCheckRequired: !!opp.bgCheckRequired,
-      volunteerIDs: opp.volunteerIDs ?? [],
+      volunteerIds: opp.volunteerIds ?? [],
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

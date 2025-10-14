@@ -1,9 +1,9 @@
-import { useModal } from "@/app/context/modal"
+import { useModal } from "@/context/modal"
 import { User } from "@/types/user"
 import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa"
-import { useAuth } from "@/app/context/auth"
+import { useAuth } from "@/context/auth"
 import { useRouter } from "next/navigation"
 import { determineEnv } from "../../../../utils/api"
 

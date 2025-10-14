@@ -5,10 +5,8 @@ import Volunteer from "@/components/volunteerPage/Volunteer"
 export default function VolunteerPage(){
 
     return(
-    <div>
-        <Volunteer />
-    </div>
-        
+        <div>
+            <Volunteer />
+        </div>
     )
-
 }

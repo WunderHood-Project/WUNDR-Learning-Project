@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import HeroVolunteer from './Hero';
 import Opportunities from './Opportunities';
 import VolunteerForm from './VolunteerForm';
-import { useModal } from '@/app/context/modal';
+import { useModal } from '@/context/modal';
 
 type TabKey = 'opps' | 'form';
 const hashToTab = (h: string): TabKey =>
@@ -22,7 +22,7 @@ export default function Volunteer() {
     const setFromHash = () => {
       const h = window.location.hash.slice(1).toLowerCase();
       const t = hashToTab(h);
-      setTab(t);                         
+      setTab(t);
     };
     setFromHash();
     window.addEventListener('hashchange', setFromHash);
@@ -40,7 +40,7 @@ export default function Volunteer() {
 
   const goFormGeneral = () => {
     closeModal();
-    setSelected({}); 
+    setSelected({});
     setTab('form');
     requestAnimationFrame(() => {
       document.getElementById('volunteer')?.scrollIntoView({ block: 'start' });
@@ -78,7 +78,7 @@ export default function Volunteer() {
           <button
             role="tab"
             aria-selected={tab === 'form'}
-            onClick={goFormGeneral}      
+            onClick={goFormGeneral}
             className={`pb-3 -mb-px font-semibold ${tab === 'form' ? 'text-wondergreen border-b-2 border-wondergreen' : 'text-gray-600 hover:text-wondergreen'}`}
           >
             Volunteer Application
@@ -92,7 +92,7 @@ export default function Volunteer() {
         ) : selected.id ? (
 
           <VolunteerForm
-            key={`opp-${selected.id}`}     
+            key={`opp-${selected.id}`}
             opportunityId={selected.id}
             roleTitle={selected.title}
           />

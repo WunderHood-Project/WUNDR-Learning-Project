@@ -4,8 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/footer/Footer";
-import { Modal, ModalProvider } from "./context/modal";
-import { AuthProvider } from "@/app/context/auth";
+import { Modal, ModalProvider } from "../context/modal";
+import { AuthProvider } from "@/context/auth";
 import ResetPasswordWrapper from "@/components/login/ResetPasswordWrapper";
 import AuthGuard from "@/components/auth/AuthGuard";
 

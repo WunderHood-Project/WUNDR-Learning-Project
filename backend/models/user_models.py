@@ -143,7 +143,7 @@ class Volunteer(BaseModel):
   backgroundCheckConsent: bool = Field(default=False)
   status: AppStatus = AppStatus.NEW
 
-  volunteerOpportunityIDs: Optional[List[str]] = None
+  volunteerOpportunityIds: Optional[List[str]] = None
   generalAppliedAt: Optional[datetime] = None
 
   createdAt: datetime
