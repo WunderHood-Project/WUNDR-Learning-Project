@@ -1,4 +1,4 @@
-import { Child, ChildUpdateForm } from "@/types/child"
+import { Child, UpdateChildPayload } from "@/types/child"
 import React, { useEffect, useMemo, useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaCheck } from "react-icons/fa"
@@ -8,13 +8,14 @@ import { ECErrors, ECUpdateForm } from "@/types/emergencyContact"
 import { dedupeECs, ecsEqual } from "../../../../utils/emergencyContactHelpers"
 import { e164toUS, formatUs, toE164US } from "../../../../utils/formatPhoneNumber"
 import { determineEnv } from "../../../../utils/api"
+import { useChild } from "../../../../hooks/useChild"
+import EmergencyContactField from "./emergencyContact/EmergencyContactField"
 
 const WONDERHOOD_URL = determineEnv()
 
 type Props = {
     currChild: Child
     setEditingChildId: (id: string | null) => void
-    refreshChildren: () => Promise<void>
 }
 
 const blankEC = (): ECUpdateForm => ({
@@ -24,7 +25,9 @@ const blankEC = (): ECUpdateForm => ({
     phoneNumber: ""
 });
 
-const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refreshChildren }) => {
+const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
+    const {refetch} = useChild(undefined)
+
     const [firstName, setFirstName] = useState<string>("")
     const [preferredName, setPreferredName] = useState<string>("")
     const [lastName, setLastName] = useState<string>("")
@@ -33,8 +36,11 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
     const [photoConsent, setPhotoConsent] = useState(false)
     const [allergiesMedical, setAllergiesMedical] = useState<string>("")
     const [notes, setNotes] = useState<string>("")
-    const [saving, setSaving] = useState(false)
     const [ecs, setEcs] = useState<ECUpdateForm[]>([blankEC()])
+    const [updateChild, setUpdateChild] = useState<UpdateChildPayload>({
+
+    })
+    const [saving, setSaving] = useState(false)
     const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
 
     useEffect(() => {
@@ -126,7 +132,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
 
         const includeECs = !ecsEqual(deduped, currentECs)
 
-        const payload: ChildUpdateForm = {
+        const payload: UpdateChildPayload = {
             firstName: firstName?.trim(),
             lastName: lastName?.trim(),
             preferredName: preferredName === "" ? null : preferredName?.trim(),
@@ -154,7 +160,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
                 headers: { "Content-Type": "application/json" },
                 body: payload
             }) as Child
-            await refreshChildren()
+            refetch()
             setEditingChildId(null)
         } catch (err) {
             console.error("update failed", err)
@@ -267,74 +273,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, refres
                     <div className="font-bold">EMERGENCY CONTACTS</div>
                     <div className="text-gray-500 text-sm my-1 ml-2">
                         <div className="space-y-3">
-                            {ecs.map((c, i) => (
-                                <div key={i} className="p-3 border rounded-lg">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="font-semibold">Contact {i + 1}</div>
-                                        <button type="button" onClick={() => removeEC(i)} disabled={saving || ecs.length <= 1}
-                                            className="text-sm text-red-600 hover:underline disabled:opacity-50"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-
-                                    <div className="flex gap-3">
-                                        <div className="flex-1">
-                                            <input
-                                                placeholder="First Name"
-                                                value={c.firstName}
-                                                onChange={handleECChange(i, "firstName")}
-                                                disabled={saving}
-                                                className="w-full p-3 border rounded-lg"
-                                                maxLength={50}
-                                                required={i === 0}
-                                            />
-                                            {ecErrors[i]?.firstName && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.firstName}</p>}
-                                        </div>
-                                        <div className="flex-1">
-                                            <input
-                                                placeholder="Last Name"
-                                                value={c.lastName}
-                                                onChange={handleECChange(i, "lastName")}
-                                                disabled={saving}
-                                                className="w-full p-3 border rounded-lg"
-                                                maxLength={50}
-                                                required={i === 0}
-                                            />
-                                            {ecErrors[i]?.lastName && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.lastName}</p>}
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-3">
-                                        <input
-                                            placeholder="Relationship to Child"
-                                            value={c.relationship}
-                                            onChange={handleECChange(i, "relationship")}
-                                            disabled={saving}
-                                            className="w-full p-3 border rounded-lg"
-                                            maxLength={50}
-                                            required={i === 0}
-                                        />
-                                        {ecErrors[i]?.relationship && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.relationship}</p>}
-                                    </div>
-
-                                    <div className="mt-3">
-                                        <input
-                                            type="tel"
-                                            inputMode="tel"
-                                            autoComplete="tel"
-                                            placeholder="Phone Number"
-                                            value={c.phoneNumber ?? ""}
-                                            onChange={handleECChange(i, "phoneNumber", true)}
-                                            disabled={saving}
-                                            className="w-full p-3 border rounded-lg"
-                                            maxLength={12}
-                                            required={i === 0}
-                                        />
-                                        {ecErrors[i]?.phoneNumber && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.phoneNumber}</p>}
-                                    </div>
-                                </div>
-                            ))}
+                            <EmergencyContactField ecs={ecs} setEcs={setEcs} ecErrors={ecErrors} setEcErrors={setEcErrors}/>
 
                             <div className="flex justify-end">
                                 <button type="button" onClick={addEC} disabled={saving || ecs.length >= 3}

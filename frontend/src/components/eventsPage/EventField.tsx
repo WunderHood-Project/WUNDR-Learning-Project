@@ -2,13 +2,12 @@
 
 import React from "react"
 import { CITIES_CO } from "@/data/citiesCO"
-import { US_States } from "@/data/states"
 import type { Activity } from "@/types/activity"
-import type { EventForm, EventFormErrors } from '@/types/event'
+import type { CreateEventPayload, EventFormErrors } from '@/types/event'
 
 
 type Props = {
-    form: EventForm
+    form: CreateEventPayload
     errors: EventFormErrors
     activities: Activity[]
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
@@ -126,7 +125,6 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
                     min={0}
                     max={100}
                     inputMode="numeric"
-                    // placeholder="(e.g. 15)"
                     value={form.limit}
                     onChange={onChange}
                     required
@@ -163,11 +161,6 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
                     className="w-full border rounded px-3 py-2"
                     required
                 >
-                    {/* {US_States.map((state) => (
-                        <option key={state} value={state}>
-                            {state}
-                        </option>
-                    ))} */}
                     <option value={"CO"}>
                         CO
                     </option>

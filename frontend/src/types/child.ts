@@ -18,5 +18,9 @@ export type Child = {
     emergencyContacts?: EmergencyContact[]
 }
 
-export type ChildUpdateForm = Omit<Child, "id" | "homeschool" | "waiver" | "createdAt" | "parents">;
-export type JoinChildForm = Omit<Child, "createdAt" | "updatedAt" | "parents" | "id">;
+type ServerManaged = "id" | "parents"
+type ChildMutable = Omit<Child, ServerManaged>
+
+export type CreateChildForm = ChildMutable
+export type UpdateChildPayload = Partial<ChildMutable>
+export type ChildErrorsForm = Partial<Record<keyof ChildMutable, string>>

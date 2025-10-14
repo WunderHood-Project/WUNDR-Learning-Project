@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { JoinChildForm } from "@/types/child";
+import { ChildErrorsForm, CreateChildForm } from "@/types/child";
 import { makeApiRequest } from "../../../../utils/api";
 import { calculateAge } from "../../../../utils/calculateAge";
 import { gradeOptions } from "../../../../utils/displayGrade";
@@ -7,6 +7,7 @@ import { ECErrors, EmergencyContact } from "@/types/emergencyContact";
 import { formatUs, toE164US } from "../../../../utils/formatPhoneNumber";
 import { Child } from "@/types/child";
 import { determineEnv } from "../../../../utils/api";
+import EmergencyContactField from "./emergencyContact/EmergencyContactField";
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -16,7 +17,7 @@ type Props = {
     onSuccess: (createdChild: Child) => void
 }
 
-type FormErrors = Partial<Record<"firstName" | "lastName" | "birthday", string>>
+// type FormErrors = Partial<Record<"firstName" | "lastName" | "birthday", string>>
 const blankEC = (): EmergencyContact => ({
     id: "",
     firstName: "",
@@ -25,14 +26,14 @@ const blankEC = (): EmergencyContact => ({
     phoneNumber: ""
 });
 
-const JoinChild: React.FC<Props> = ({ showForm, onSuccess }) => {
-    const [errors, setErrors] = useState<FormErrors>({})
+const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
+    const [errors, setErrors] = useState<ChildErrorsForm>({})
+    const [ecs, setEcs] = useState<EmergencyContact[]>([blankEC()])
     const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
     const [serverError, setServerError] = useState<string | null>(null)
     const [currentStep, setCurrentStep] = useState(1)
     const [submitting, setSubmitting] = useState(false)
-    const [ecs, setEcs] = useState<EmergencyContact[]>([blankEC()])
-    const [child, setChild] = useState<JoinChildForm>({
+    const [child, setChild] = useState<CreateChildForm>({
         firstName: '',
         lastName: '',
         preferredName: "",
@@ -67,45 +68,10 @@ const JoinChild: React.FC<Props> = ({ showForm, onSuccess }) => {
         setServerError(null)
     }
 
-    const handleECChange = (i: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.currentTarget
-
-        setEcs(prev => prev.map((contact, idx) =>
-            idx === i ?
-                {
-                    ...contact,
-                    ...(name === "emergencyFirstName" ? { firstName: value }
-                        : name === "emergencyLastName" ? { lastName: value }
-                            : name === "relationship" ? { relationship: value }
-                                : {})
-                }
-                : contact
-        ))
-        setServerError(null)
-    }
-
-    const handleECPhoneChange = (i: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.currentTarget
-
-        setEcs(prev => prev.map((contact, idx) =>
-            idx === i ?
-                {
-                    ...contact,
-                    phoneNumber: formatUs(value)
-                }
-                : contact
-        ))
-        setServerError(null)
-    }
-
     const addEC = () => setEcs(prev => (prev.length < 3 ? [...prev, blankEC()] : prev))
-    const removeEC = (i: number) => {
-        setEcs(prev => prev.filter((_, idx) => idx !== i));
-        setEcErrors(prev => prev.filter((_, idx) => idx !== i));
-    }
 
     const validations = () => {
-        const newErrors: FormErrors = {}
+        const newErrors: ChildErrorsForm = {}
         if (!child.firstName?.trim()) newErrors.firstName = "Required"
         if (!child.lastName?.trim()) newErrors.lastName = "Required"
         if (!child.birthday) newErrors.birthday = "Required"
@@ -165,7 +131,7 @@ const JoinChild: React.FC<Props> = ({ showForm, onSuccess }) => {
             })
             .filter(Boolean) as EmergencyContact[]
 
-        const payload: JoinChildForm = {
+        const payload: CreateChildForm = {
             firstName: child.firstName?.trim(),
             lastName: child.lastName?.trim(),
             preferredName: child.preferredName === "" ? null : child.preferredName?.trim(),
@@ -176,8 +142,6 @@ const JoinChild: React.FC<Props> = ({ showForm, onSuccess }) => {
             notes: child.notes === "" ? null : child.notes?.trim(),
             photoConsent: child.photoConsent,
             waiver: child.waiver,
-            // createdAt: new Date().toISOString(),
-            // updatedAt: new Date().toISOString(),
             emergencyContacts
         }
 
@@ -364,75 +328,7 @@ const JoinChild: React.FC<Props> = ({ showForm, onSuccess }) => {
                     {serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
                     <div className="space-y-3">
-                        {ecs.map((c, i) => (
-                            <div key={i} className="p-3 border rounded-lg">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="font-semibold">Contact {i + 1}</div>
-                                    {i > 0 && (
-                                        <button type="button" onClick={() => removeEC(i)} className="text-sm text-red-600 hover:underline">
-                                            Remove
-                                        </button>
-                                    )}
-                                </div>
-
-                                <div className="flex flex-row gap-3 w-full">
-                                    <div className="flex-1">
-                                        <input
-                                            name="emergencyFirstName"
-                                            placeholder="First Name"
-                                            value={c.firstName}
-                                            onChange={handleECChange(i)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                            maxLength={50}
-                                            required={i === 0}
-                                        />
-                                        {ecErrors[i]?.firstName && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.firstName}</p>}
-                                    </div>
-
-                                    <div className="flex-1">
-                                        <input
-                                            name="emergencyLastName"
-                                            placeholder="Last Name"
-                                            value={c.lastName}
-                                            onChange={handleECChange(i)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                            maxLength={50}
-                                            required={i === 0}
-                                        />
-                                        {ecErrors[i]?.lastName && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.lastName}</p>}
-                                    </div>
-                                </div>
-
-                                <div className="mt-3">
-                                    <input
-                                        name="relationship"
-                                        placeholder="Relationship to Child"
-                                        value={c.relationship}
-                                        onChange={handleECChange(i)}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        maxLength={50}
-                                        required={i === 0}
-                                    />
-                                    {ecErrors[i]?.relationship && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.relationship}</p>}
-                                </div>
-
-                                <div className="mt-3">
-                                    <input
-                                        type="tel"
-                                        name="phoneNumber"
-                                        inputMode="tel"
-                                        autoComplete="tel"
-                                        maxLength={12}
-                                        placeholder="Phone Number"
-                                        value={c?.phoneNumber ?? ""}
-                                        onChange={handleECPhoneChange(i)}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                        required={i === 0}
-                                    />
-                                    {ecErrors[i]?.phoneNumber && <p className="text-sm text-red-600 mt-1">{ecErrors[i]?.phoneNumber}</p>}
-                                </div>
-                            </div>
-                        ))}
+                        <EmergencyContactField ecs={ecs} setEcs={setEcs} ecErrors={ecErrors} setEcErrors={setEcErrors}/>
 
                         <div className="flex items-center justify-between">
                             <button type="button" onClick={prevStep}
@@ -504,4 +400,4 @@ const JoinChild: React.FC<Props> = ({ showForm, onSuccess }) => {
     )
 }
 
-export default JoinChild
+export default AddChild
