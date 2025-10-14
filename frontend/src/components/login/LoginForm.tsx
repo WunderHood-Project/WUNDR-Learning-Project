@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import ModalHeader from "./ModalHeader";
 import Alert from "./Alert";
 import PasswordField from "./PasswordField";
-import { useAuth } from "@/app/context/auth";
-import { useModal } from "@/app/context/modal";
+import { useAuth } from "@/context/auth";
+import { useModal } from "@/context/modal";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { BASE } from "../../../utils/api";
-import { handleLogin, setToken } from "../../../utils/auth"; 
-import { errorMessage } from "../../../utils/errorHelpers"; 
+import { handleLogin, setToken } from "../../../utils/auth";
+import { errorMessage } from "../../../utils/errorHelpers";
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
@@ -123,13 +123,13 @@ export default function LoginForm({ onForgot }:{ onForgot: ()=>void }) {
                             </button>
                         </div>
 
-                        <button 
-                          type="submit" 
-                          disabled={loading} 
+                        <button
+                          type="submit"
+                          disabled={loading}
                           className="
-                            w-full bg-green-600 text-white 
-                            px-6 py-3.5 rounded-2xl 
-                            hover:bg-green-700 
+                            w-full bg-green-600 text-white
+                            px-6 py-3.5 rounded-2xl
+                            hover:bg-green-700
                             font-semibold text-base
                             transition-all duration-200
                             active:translate-y-0.5

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useAuth } from "@/app/context/auth";
+import { useAuth } from "@/context/auth";
 import { useEffect } from 'react';
 
 

@@ -33,9 +33,7 @@ export type VolunteerApp = {
   timesAvail?: TimeOption[];
   skills?: string[];
   status?: AppStatus;
-  volunteerOpportunityIDs?: string[];
+  volunteerOpportunityIds?: string[];
   generalAppliedAt?: string | null;
   createdAt?: string;
 };
-
-

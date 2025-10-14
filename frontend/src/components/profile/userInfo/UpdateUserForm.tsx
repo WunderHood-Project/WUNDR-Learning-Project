@@ -15,6 +15,7 @@ type Props = {
 }
 
 const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
+    const [saving, setSaving] = useState(false)
     const [form, setForm] = useState<UpdateUserPayload>({
         firstName: "",
         lastName: "",
@@ -25,7 +26,6 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
         state: "",
         zipCode: ""
     })
-    const [saving, setSaving] = useState(false)
 
     useEffect(() => {
         if (!currUser) return
@@ -50,7 +50,6 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
         !!form.state?.trim() &&
         form.zipCode?.length === 5
 
-    // const updateAvatar
     const updateFirstName = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, firstName: e.target.value }))
     const updateLastName = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, lastName: e.target.value }))
     const updateEmail = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, email: e.target.value }))

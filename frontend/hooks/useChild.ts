@@ -5,7 +5,7 @@ import { Child } from "@/types/child";
 
 const WONDERHOOD_URL = determineEnv()
 
-export function useChild(childID: string | string[] | undefined) {
+export function useChild(childId: string | string[] | undefined) {
   const [child, setChild] = useState<Child | null>(null)
   const [children, setChildren] = useState<Child[] | null>(null)
   const [loading, setLoading] = useState(true)
@@ -15,14 +15,14 @@ export function useChild(childID: string | string[] | undefined) {
     try {
       setLoading(true)
       setError(null)
-      if (childID && !Array.isArray(childID)) {
+      if (childId && !Array.isArray(childId)) {
           const childData = await makeApiRequest<Child>(
-          `${WONDERHOOD_URL}/child/${childID}/`,
+          `${WONDERHOOD_URL}/child/${childId}/`,
           { method: "GET" }
           )
           setChild(childData)
           setChildren(null)
-      } else if (!childID) {
+      } else if (!childId) {
         const childrenData = await makeApiRequest<Child[]>(
           `${WONDERHOOD_URL}/child/current`,
           { method: "GET"}
@@ -30,7 +30,7 @@ export function useChild(childID: string | string[] | undefined) {
         setChildren(childrenData)
         setChild(null)
       } else {
-        setError("Invalid event ID")
+        setError("Invalid event id")
         setChild(null)
         setChildren(null)
       }
@@ -46,7 +46,7 @@ export function useChild(childID: string | string[] | undefined) {
 
   useEffect(() => {
       fetchData()
-  }, [childID])
+  }, [childId])
 
   const refetch = () => {
       fetchData()

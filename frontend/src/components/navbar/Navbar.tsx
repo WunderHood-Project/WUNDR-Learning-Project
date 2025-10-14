@@ -1,12 +1,12 @@
 'use client'
 
 import Link from "next/link";
-import { useModal } from "@/app/context/modal";
+import { useModal } from "@/context/modal";
 import SignupModal from "../signup/SignupModal";
 import LoginModal from '../login/LoginModal';
 import React, { useState, useEffect, useRef, } from "react";
 import { usePathname } from 'next/navigation';
-import { useAuth } from "@/app/context/auth";
+import { useAuth } from "@/context/auth";
 import UserDropdown from "./UserDropdown";
 import NotificationBell from "./NotificationBell";
 

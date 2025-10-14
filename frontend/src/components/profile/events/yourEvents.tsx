@@ -19,11 +19,11 @@ const YourEvents = () => {
     const cardsRef = useRef<HTMLDivElement>(null)
 
     const usersEvents = useMemo(() => {
-        const childIDSet = new Set((user?.children ?? []).map(c => c.id))
+        const childIdSet = new Set((user?.children ?? []).map(c => c.id))
 
         return (events ?? [])
             //keeps only events that include at least one of the user's child ID
-            .filter(e => (e.childIDs ?? []).some(id => childIDSet.has(id)))
+            .filter(e => (e.childIds ?? []).some(id => childIdSet.has(id)))
             .map(e => ({
                 id: e.id,
                 name: e.name,
@@ -32,7 +32,7 @@ const YourEvents = () => {
                 date: e.date,
                 startTime: e.startTime,
                 endTime: e.endTime,
-                childIDs: (e.childIDs ?? []).filter(id => childIDSet.has(id)) //string[]
+                childIds: (e.childIds ?? []).filter(id => childIdSet.has(id)) //string[]
             }))
     }, [events, user?.children])
 
@@ -113,7 +113,7 @@ const YourEvents = () => {
                 {visibleEvents && visibleEvents.map((event) => {
                     const isEditing = editingId === event.id
 
-                    const enrolledChildren = (event?.childIDs ?? [])
+                    const enrolledChildren = (event?.childIds ?? [])
                         .map((id) => childById.get(id))
                         .filter((c): c is Child => !!c) //this is typescript type predicate syntax (if truthy, the variable is Child type)
 
@@ -150,7 +150,7 @@ const YourEvents = () => {
 
                                     {enrolledChildren.length > 0 && (
                                         isEditing ? (
-                                            <UnenrollEvent enrolledChildren={enrolledChildren} eventID={event.id} onAfterUnenroll={handleAfterUnenroll} />
+                                            <UnenrollEvent enrolledChildren={enrolledChildren} eventId={event.id} onAfterUnenroll={handleAfterUnenroll} />
                                         ) : (
                                             <ul className="list-disc pl-5 text-xs text-gray-700 space-y-0.5">
                                                 {enrolledChildren.map((child) => (

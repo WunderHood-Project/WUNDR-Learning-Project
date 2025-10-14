@@ -19,10 +19,10 @@ export type Event = {
     longitude: number | null
 
     userId: string[]
-    childIDs: string[]
+    childIds: string[]
 }
 
-type ServerManaged = "id" | "participants" | "userId" | "childIDs"
+type ServerManaged = "id" | "participants" | "userId" | "childIds"
 type EventMutable = Omit<Event, ServerManaged>
 export type CreateEventPayload = EventMutable
 export type UpdateEventPayload = Partial<EventMutable>

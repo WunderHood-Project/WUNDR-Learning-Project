@@ -27,11 +27,11 @@ model Users {
   zipCode           String
 
   // m-to-n
-  childIDs String[]   @db.ObjectId
-  children  Children[]   @relation(fields: [childIDs], references: [id])
+  childIds String[]   @db.ObjectId
+  children  Children[]   @relation(fields: [childIds], references: [id])
 
-  eventIDs String[] @db.ObjectId
-  events Events[] @relation(fields: [eventIDs], references: [id])
+  eventIds String[] @db.ObjectId
+  events Events[] @relation(fields: [eventIds], references: [id])
 
   createdAt         DateTime
   updatedAt         DateTime
@@ -67,14 +67,14 @@ model Children {
   photoConsent          Boolean
   waiver                Boolean
 
-  parentIDs             String[]  @db.ObjectId
-  parents               Users[]   @relation(fields: [parentIDs], references: [id])
+  parentIds             String[]  @db.ObjectId
+  parents               Users[]   @relation(fields: [parentIds], references: [id])
 
-  eventIDs              String[] @db.ObjectId
-  events                Events[] @relation(fields: [eventIDs], references: [id])
+  eventIds              String[] @db.ObjectId
+  events                Events[] @relation(fields: [eventIds], references: [id])
 
-  emergencyContactIDs   String[] @db.ObjectId
-  emergencyContacts     EmergencyContact[] @relation(fields: [emergencyContactIDs], references: [id])
+  emergencyContactIds   String[] @db.ObjectId
+  emergencyContacts     EmergencyContact[] @relation(fields: [emergencyContactIds], references: [id])
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
@@ -109,16 +109,16 @@ model Volunteers{
   backgroundCheckConsent Boolean
   status                 AppStatus @default(New)
 
-  eventIDs String[] @db.ObjectId
-  events Events[] @relation(fields: [eventIDs], references: [id])
+  eventIds String[] @db.ObjectId
+  events Events[] @relation(fields: [eventIds], references: [id])
 
   // One-to-one relationship
   user Users @relation(fields: [userId], references: [id])
   userId String @unique @db.ObjectId
 
   // Many-to-many relationship
-  volunteerOpportunityIDs String[] @db.ObjectId
-  volunteerOpportunities  VolunteerOpportunities[] @relation(fields: [volunteerOpportunityIDs], references: [id])
+  volunteerOpportunityIds String[] @db.ObjectId
+  volunteerOpportunities  VolunteerOpportunities[] @relation(fields: [volunteerOpportunityIds], references: [id])
 
   generalAppliedAt      DateTime?
 
@@ -150,8 +150,8 @@ model VolunteerOpportunities{
   bgCheckRequired Boolean
 
   // Many-to-many relationship
-  volunteerIDs String[]     @db.ObjectId
-  volunteers   Volunteers[] @relation(fields: [volunteerIDs], references: [id])
+  volunteerIds String[]     @db.ObjectId
+  volunteers   Volunteers[] @relation(fields: [volunteerIds], references: [id])
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
@@ -168,8 +168,8 @@ model EmergencyContact{
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
 
-  childIDs              String[] @db.ObjectId
-  child                 Children[] @relation(fields: [childIDs], references: [id])
+  childIds              String[] @db.ObjectId
+  child                 Children[] @relation(fields: [childIds], references: [id])
 }
 
 // ! Activities     =============================================================================
@@ -207,14 +207,14 @@ model Events {
     updatedAt         DateTime? @default(now())
 
     // m-to-n relationship
-    volunteerIDs  String[] @db.ObjectId
-    volunteers Volunteers[] @relation(fields: [volunteerIDs], references: [id])
+    volunteerIds  String[] @db.ObjectId
+    volunteers Volunteers[] @relation(fields: [volunteerIds], references: [id])
 
-    childIDs  String[] @db.ObjectId
-    children  Children[] @relation(fields: [childIDs], references: [id])
+    childIds  String[] @db.ObjectId
+    children  Children[] @relation(fields: [childIds], references: [id])
 
-    userIDs   String[] @db.ObjectId
-    users     Users[] @relation(fields: [userIDs], references: [id])
+    userIds   String[] @db.ObjectId
+    users     Users[] @relation(fields: [userIds], references: [id])
 
     // One-to-m relationship
     activity    Activities   @relation(fields: [activityId], references: [id])

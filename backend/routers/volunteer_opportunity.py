@@ -35,7 +35,7 @@ async def get_opportunity(opportunity_id: str, current_user: Annotated[User, Dep
 @router.get("/{opportunity_id}/applications", status_code=200)
 async def applications_by_opportunity(opportunity_id: str, current_user: Annotated[User, Depends(get_current_user)]):
     enforce_authentication(current_user); enforce_admin(current_user)
-    vols = await db.volunteers.find_many(where={"volunteerOpportunityIDs": {"has": opportunity_id}})
+    vols = await db.volunteers.find_many(where={"volunteerOpportunityIds": {"has": opportunity_id}})
     return {"volunteers": vols}
 
 # -------- CREATE (admin only) ----------
@@ -86,12 +86,12 @@ async def enroll_volunteer(opportunity_id: str, volunteer_id: str, current_user:
     if not opp:
         raise HTTPException(404, "Volunteer opportunity not found")
 
-    if volunteer_id in (opp.volunteerIDs or []):
+    if volunteer_id in (opp.volunteerIds or []):
         raise HTTPException(409, "Volunteer already exists")
 
     updated = await db.volunteeropportunities.update(
         where={"id": opportunity_id},
-        data={"volunteerIDs": {"push": volunteer_id}}  # атомарно для Mongo
+        data={"volunteerIds": {"push": volunteer_id}}  # атомарно для Mongo
     )
     return {"opportunity": updated}
 
@@ -104,9 +104,9 @@ async def remove_volunteer_from_opportunity(opportunity_id: str, volunteer_id: s
     if not opp:
         raise HTTPException(404, "Unable to locate opportunity")
 
-    new_ids = [vid for vid in (opp.volunteerIDs or []) if vid != volunteer_id]
+    new_ids = [vid for vid in (opp.volunteerIds or []) if vid != volunteer_id]
     updated = await db.volunteeropportunities.update(
         where={"id": opportunity_id},
-        data={"volunteerIDs": {"set": new_ids}}  # атомарно
+        data={"volunteerIds": {"set": new_ids}}  # атомарно
     )
     return {"opportunity": updated}
