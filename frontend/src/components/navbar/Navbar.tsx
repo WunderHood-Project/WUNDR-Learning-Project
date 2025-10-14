@@ -86,17 +86,17 @@ export default function Navbar() {
               <div className="relative z-10 group-hover:scale-105 transition-transform duration-300">
                 {/* Logo is smaller on mobile, scales up on breakpoints */}
                 <Image
-                  src="/logo.png"
-                  alt="WonderHood logo"
-                  width={60}
-                  height={55}
-                  priority
-                  className="w-10 h-9 sm:w-12 sm:h-11 md:w-[60px] md:h-[50px]"
-                  sizes="(max-width: 640px) 40px, (max-width: 768px) 48px, 60px"
+                src="/logo.png"
+                alt="WonderHood logo"
+                width={60}
+                height={55}
+                priority
+                className="w-10 h-9 sm:w-12 sm:h-11 md:w-[60px] md:h-[50px]"
+                sizes="(max-width: 640px) 40px, (max-width: 768px) 48px, 60px"
                 />
               </div>
             </div>
-            <span className="text-xl md:text-[23px] text-wondergreen font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
+            <span className="text-lg md:text-[23px] text-wondergreen font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
               WonderHood
             </span>
           </Link>
@@ -128,15 +128,15 @@ export default function Navbar() {
             {isLoggedIn && user && (
               <div ref={userMenuRef} className="relative">
                 <button
-                  onClick={() => setShowDropdown(v => !v)}
-                  className={`
-                    flex items-center px-4 py-2 bg-white/70 backdrop-blur-sm border-2 rounded-xl font-semibold
-                    hover:shadow-lg transition-all duration-300 hover:scale-105
-                    ${pathname === "/profile"
-                      ? "border-wondergreen bg-wondergreen/10 text-wondergreen shadow-lg"
-                      : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"
-                    }
-                  `}
+                onClick={() => setShowDropdown(v => !v)}
+                className={`
+                  flex items-center px-4 py-2 bg-white/70 backdrop-blur-sm border-2 rounded-xl font-semibold
+                  hover:shadow-lg transition-all duration-300 hover:scale-105
+                  ${pathname === "/profile"
+                    ? "border-wondergreen bg-wondergreen/10 text-wondergreen shadow-lg"
+                    : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"
+                  }
+                `}
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
                     {user.firstName.charAt(0).toUpperCase()}
@@ -154,12 +154,12 @@ export default function Navbar() {
           {/* Mobile menu toggle */}
           <div className="lg:hidden">
             <button
-              ref={menuToggleRef}
-              onClick={(e) => { e.stopPropagation(); setIsMenuOpen(prev => !prev); }}
-              aria-expanded={isMenuOpen}
-              aria-controls="mobile-nav"
-              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-              className="p-2 text-wondergreen hover:text-wonderleaf transition-colors duration-300"
+            ref={menuToggleRef}
+            onClick={(e) => { e.stopPropagation(); setIsMenuOpen(prev => !prev); }}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-nav"
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            className="p-2 text-wondergreen hover:text-wonderleaf transition-colors duration-300"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMenuOpen ? (
@@ -175,18 +175,18 @@ export default function Navbar() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div
-            id="mobile-nav"
-            ref={mobileMenuRef}
-            className="relative lg:hidden bg-white/95 backdrop-blur-sm rounded-b-2xl shadow-lg mt-2 overscroll-contain"
-            role="menu"
-            aria-label="Mobile navigation"
+          id="mobile-nav"
+          ref={mobileMenuRef}
+          className="relative lg:hidden bg-white/95 backdrop-blur-sm rounded-b-2xl shadow-lg mt-2 overscroll-contain"
+          role="menu"
+          aria-label="Mobile navigation"
           >
             {/* Menu items list */}
             <div className="px-3 pt-2 pb-3 sm:px-4 sm:pt-3 sm:pb-4 space-y-1.5">
               <MobileNavItems
-                links={NAV_LINKS}
-                pathname={pathname}
-                onClose={() => setIsMenuOpen(false)}
+              links={NAV_LINKS}
+              pathname={pathname}
+              onClose={() => setIsMenuOpen(false)}
               />
             </div>
 
@@ -194,9 +194,9 @@ export default function Navbar() {
             {isLoggedIn ? (
               <div className="px-3 sm:px-4 pb-3">
                 <Link
-                  href="/profile"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center rounded-xl px-3 py-3 bg-gradient-to-r from-wonderleaf/10 to-wondergreen/10 border border-wonderleaf/30 font-semibold text-wondergreen hover:shadow-lg transition-all"
+                href="/profile"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center rounded-xl px-3 py-3 bg-gradient-to-r from-wonderleaf/10 to-wondergreen/10 border border-wonderleaf/30 font-semibold text-wondergreen hover:shadow-lg transition-all"
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
                     {user?.firstName.charAt(0).toUpperCase()}
@@ -205,10 +205,10 @@ export default function Navbar() {
                 </Link>
 
                 <button
-                  type="button"
-                  onClick={() => { logout(); setIsMenuOpen(false); }}
-                  className="mt-2 w-full rounded-xl px-3 py-2.5 text-base font-semibold border text-wondergreen bg-wondersun/60 border-wonderleaf hover:bg-wondersun focus:outline-none focus:ring-2 focus:ring-wonderleaf/40 transition-colors"
-                  aria-label="Log out"
+                type="button"
+                onClick={() => { logout(); setIsMenuOpen(false); }}
+                className="mt-2 w-full rounded-xl px-3 py-2.5 text-base font-semibold border text-wondergreen bg-wondersun/60 border-wonderleaf hover:bg-wondersun focus:outline-none focus:ring-2 focus:ring-wonderleaf/40 transition-colors"
+                aria-label="Log out"
                 >
                   Logout
                 </button>
@@ -220,16 +220,16 @@ export default function Navbar() {
               <div className="sticky bottom-0 bg-white/90 backdrop-blur-sm border-t border-wonderleaf/20 px-3 sm:px-4 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)]">
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
-                    type="button"
-                    className="h-11 rounded-2xl border-2 border-wondergreen text-wondergreen font-semibold hover:bg-wondergreen/5 focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
-                    onClick={(e) => { handleLogin(e); setIsMenuOpen(false); }}
+                  type="button"
+                  className="h-11 rounded-2xl border-2 border-wondergreen text-wondergreen font-semibold hover:bg-wondergreen/5 focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
+                  onClick={(e) => { handleLogin(e); setIsMenuOpen(false); }}
                   >
                     Login
                   </button>
                   <button
-                    type="button"
-                    className="h-11 rounded-2xl font-semibold text-white bg-gradient-to-r from-wonderleaf to-wondergreen hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
-                    onClick={(e) => { handleSignup(e); setIsMenuOpen(false); }}
+                  type="button"
+                  className="h-11 rounded-2xl font-semibold text-white bg-gradient-to-r from-wonderleaf to-wondergreen hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
+                  onClick={(e) => { handleSignup(e); setIsMenuOpen(false); }}
                   >
                     Sign Up
                   </button>
