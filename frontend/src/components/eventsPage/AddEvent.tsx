@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { makeApiRequest } from '../../../utils/api';
-import { CreateEventPayload, EventForm, EventFormErrors } from '@/types/event';
+import { CreateEventPayload, EventFormErrors } from '@/types/event';
 import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
 import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
@@ -14,7 +14,7 @@ import { useActivity } from '../../../hooks/useActivity';
 
 const WONDERHOOD_URL = determineEnv()
 
-const initialEventForm = (): EventForm => ({
+const initialEventForm = (): CreateEventPayload => ({
     activityId: "",
     name: "",
     description: "",
@@ -34,7 +34,7 @@ const initialEventForm = (): EventForm => ({
 export default function AddEvent() {
     const dateYMD = /^\d{4}-\d{2}-\d{2}$/
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
-    const [form, setForm] = useState<EventForm>(() => initialEventForm())
+    const [form, setForm] = useState<CreateEventPayload>(() => initialEventForm())
     const [errors, setErrors] = useState<EventFormErrors>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { activities } = useActivity()

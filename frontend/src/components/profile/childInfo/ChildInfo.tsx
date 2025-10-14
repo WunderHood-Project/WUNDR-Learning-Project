@@ -1,49 +1,28 @@
-import React, { useEffect, useState, useCallback, useRef } from "react"
-import { makeApiRequest } from "../../../../utils/api"
+import React, { useEffect, useState, useRef } from "react"
 import { Child } from "@/types/child"
 import { FaCircleChevronLeft, FaCircleChevronRight, FaX } from "react-icons/fa6"
 import { FaCheck, FaPen, FaTrash } from "react-icons/fa"
-import JoinChildForm from "./JoinChildForm"
+import JoinChildForm from "./AddChildForm"
 import UpdateChildForm from "./UpdateChild"
 import OpenModalButton from "@/app/context/openModalButton"
 import DeleteChild from "./DeleteChild"
 import { numericFormatDate } from "../../../../utils/formatDate"
 import { calculateAge } from "../../../../utils/calculateAge"
 import { displayGrade } from "../../../../utils/displayGrade"
-import { determineEnv } from "../../../../utils/api"
+import { useChild } from "../../../../hooks/useChild"
+
 
 const ChildInfo = () => {
+    const { children, loading } = useChild(undefined)
     const formAnchorRef = useRef<HTMLDivElement | null>(null)
-    const [children, setChildren] = useState<Child[]>([])
-    const [loadErrors, setLoadErrors] = useState<string | null>(null)
-    const [loading, setLoading] = useState<boolean>(true)
+    const [child, setChildren] = useState<Child[]>([])
+    // const [loadErrors, setLoadErrors] = useState<string | null>(null)
+    // const [loading, setLoading] = useState<boolean>(true)
     const [showForm, setShowForm] = useState<boolean>(false)
     const [currChildIdx, setCurrChildIdx] = useState<number>(0)
-    const [refreshKey, setRefreshKey] = useState(0)
+    // const [refreshKey, setRefreshKey] = useState(0)
     const [editingChildId, setEditingChildId] = useState<string | null>(null)
-    console.log(loadErrors)
 
-    const WONDERHOOD_URL = determineEnv()
-
-    const fetchChildren = useCallback(async () => {
-        setLoading(true)
-
-        try {
-            const response = await makeApiRequest(`${WONDERHOOD_URL}/child/current`)
-            const allChildren: Child[] = response as Child[]
-            setChildren(allChildren)
-            setLoadErrors(null)
-            setCurrChildIdx(prev => (allChildren.length ? Math.min(prev, allChildren.length - 1) : 0))
-        } catch (e) {
-            if (e instanceof Error) setLoadErrors(e.message)
-        } finally {
-            setLoading(false)
-        }
-    }, [WONDERHOOD_URL])
-
-    useEffect(() => {
-        fetchChildren()
-    }, [fetchChildren, refreshKey])
 
     useEffect(() => {
         if (showForm) {
@@ -56,32 +35,34 @@ const ChildInfo = () => {
         }
     }, [showForm])
 
-    const handleFormSuccess = (createdChild?: Child) => {
-        setShowForm(false)
-        if (createdChild) {
-            setChildren(prev => [createdChild, ...prev])
-            setCurrChildIdx(0)
-        } else {
-            setRefreshKey(counter => counter + 1)
-        }
-    }
+    if (!children || loading) return <div className="flex justify-center items-center min-h-[200px]">No children displayable at this moment</div>
 
-    const visibleChildren = Array.from({ length: Math.min(1, children.length) }, (_, i) => {
+    //!for adding a child, which isnt working
+    // const handleFormSuccess = (createdChild?: Child) => {
+    //     setShowForm(false)
+    //     if (createdChild) {
+    //         setChildren(children => [createdChild, ...children])
+    //         setCurrChildIdx(0)
+    //     } else {
+    //         setRefreshKey(counter => counter + 1)
+    //     }
+    // }
+
+    const visibleChildren = Array.from({ length: Math.min(1, children?.length) }, (_, i) => {
         const idx = (((currChildIdx + i) % children.length) + children.length) % children.length
         return children[idx]
     })
 
     const handleNext = () => {
-        if (children.length > 0) setCurrChildIdx((prevIdx) => (((prevIdx + 1) % children.length) + children.length) % children.length)
+        if (children?.length > 0) setCurrChildIdx((prevIdx) => (((prevIdx + 1) % children?.length) + children?.length) % children?.length)
     }
 
     const handlePrev = () => {
-        if (children.length > 0) setCurrChildIdx((prevIdx) => (((prevIdx - 1) % children.length) + children.length) % children.length)
+        if (children?.length > 0) setCurrChildIdx((prevIdx) => (((prevIdx - 1) % children?.length) + children?.length) % children?.length)
     }
 
     const handleShowForm = () => !showForm ? setShowForm(true) : setShowForm(false)
 
-    if (loading) return <div className="flex justify-center items-center min-h-[200px]">Loading...</div>
 
     return (
         <div>
@@ -102,17 +83,16 @@ const ChildInfo = () => {
             </button>
 
             <div className="flex flex-row gap-6 my-10">
-                {children.length > 1 && (
+                {children && children?.length > 1 && (
                     <FaCircleChevronLeft className="w-[50px] h-[50px] cursor-pointer my-auto" onClick={handlePrev} />
                 )}
 
-                {visibleChildren.map((child) => (
+                {visibleChildren?.map((child) => (
                     <div key={child.id} className="basis-full max-w-3xl w-full mx-auto">
                         {editingChildId === child.id ? (
                             <UpdateChildForm
                                 setEditingChildId={setEditingChildId}
                                 currChild={child}
-                                refreshChildren={fetchChildren}
                             />
                         ) : (
                             <div className="bg-white rounded-lg p-6 min-h-[350px]">
@@ -123,7 +103,7 @@ const ChildInfo = () => {
                                         <FaPen onClick={() => setEditingChildId(child.id)} />
                                         <OpenModalButton
                                             buttonText={<FaTrash />}
-                                            modalComponent={<DeleteChild currChild={child} onDeleteSuccess={fetchChildren} />}
+                                            modalComponent={<DeleteChild currChild={child} />}
                                         />
                                     </div>
                                 </div>
@@ -178,7 +158,7 @@ const ChildInfo = () => {
             </div>
 
             <div ref={formAnchorRef} className="scroll-mt-24 aria-hidden" />
-            <JoinChildForm showForm={showForm} onSuccess={handleFormSuccess} />
+            {/* <JoinChildForm showForm={showForm} onSuccess={handleFormSuccess} /> */}
         </div>
     )
 }

@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useEvent } from "../../../hooks/useEvent"
-import { Event, EventForm, EventFormErrors, UpdateEventPayload } from "@/types/event"
+import { CreateEventPayload, Event, EventFormErrors, UpdateEventPayload } from "@/types/event"
 import { useEffect, useState } from "react"
 import { makeApiRequest } from "../../../utils/api"
 import { convertStringToIsoFormat, toYMDForInput } from "../../../utils/formatDate"
@@ -14,7 +14,7 @@ import { useActivity } from "../../../hooks/useActivity"
 
 const WONDERHOOD_URL = determineEnv()
 
-const toEventForm = (ev: Event): EventForm => ({
+const toEventForm = (ev: Event): CreateEventPayload => ({
     activityId: ev.activityId ?? "",
     name: ev.name ?? "",
     description: ev.description ?? "",
@@ -36,7 +36,7 @@ export default function UpdateEvent() {
     const { event: singleEvent, loading: singleLoading, error: singleError } = useEvent(eventId)
     const { events: allEvents } = useEvent(undefined)
     const { activities } = useActivity()
-    const [formEvent, setFormEvent] = useState<EventForm | null>(null)
+    const [formEvent, setFormEvent] = useState<CreateEventPayload | null>(null)
     const [errors, setErrors] = useState<EventFormErrors>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/

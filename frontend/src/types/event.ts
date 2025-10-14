@@ -26,10 +26,6 @@ type ServerManaged = "id" | "participants" | "userId" | "childIDs"
 type EventMutable = Omit<Event, ServerManaged>
 export type CreateEventPayload = EventMutable
 export type UpdateEventPayload = Partial<EventMutable>
-// export type EventForm = Pick<Event, "activityId" | "name" | "description" | "date" | "startTime"
-//     | "endTime" | "image" | "limit" | "city" | "state" | "address" | "zipCode" | "latitude" | "longitude"
-// >
-export type EventForm = EventMutable
-
 export type EventFormErrors = Partial<Record<keyof EventMutable, string>>
+
 export type EventForCalendar = Omit<Event, "activityId" | "image" | "participants" | "limit" | "state" | "address" | "zipCode" | "latitude" | "longitude" | "userId">
