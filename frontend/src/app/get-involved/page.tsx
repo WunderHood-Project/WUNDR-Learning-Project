@@ -63,10 +63,10 @@ export default function GetInvolved() {
                 <li className="flex items-center gap-2 text-gray-700"><span className="text-wondergreen">✔</span> Help with outdoor activities</li>
                 <li className="flex items-center gap-2 text-gray-700"><span className="text-wondergreen">✔</span> Support administrative tasks</li>
               </ul>
-              <Link href="/volunteer" className="w-full">
-                <button className="w-full py-2 rounded-full text-lg font-bold text-white bg-gradient-to-r from-wondergreen to-wonderleaf shadow hover:from-wonderleaf hover:to-wondergreen transition-colors">
+              <Link 
+              href="/volunteer"
+              className=" block w-full py-2 rounded-full text-lg font-bold text-white  text-center bg-gradient-to-r from-wondergreen to-wonderleaf shadow hover:from-wonderleaf hover:to-wondergreen transition-colors">
                   Become a Volunteer
-                </button>
               </Link>
             </div>
             {/* Partnership */}
@@ -88,11 +88,11 @@ export default function GetInvolved() {
                 <li className="flex items-center gap-2 text-gray-700"><span className="text-wondergreen">✔</span> Expert guest speaking</li>
                 <li className="flex items-center gap-2 text-gray-700"><span className="text-wondergreen">✔</span> Community outreach programs</li>
               </ul>
-              <a href="/partnership" className="w-full">
-                <button className="w-full py-2 rounded-full text-lg font-bold text-white bg-gradient-to-r from-wonderorange to-wondersun shadow hover:from-wondersun hover:to-wonderorange transition-colors">
+              <Link
+              href="/partnership"
+              className="w-full py-2 rounded-full text-lg font-bold text-white text-center bg-gradient-to-r from-wonderorange to-wondersun shadow hover:from-wondersun hover:to-wonderorange transition-colors">
                   Explore Partnership
-                </button>
-              </a>
+              </Link>
             </div>
             {/* Make a Donation */}
             <div className="group relative bg-white rounded-2xl shadow-xl p-8 flex flex-col items-start transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] cursor-pointer overflow-hidden w-full">
@@ -113,17 +113,17 @@ export default function GetInvolved() {
                 <li className="flex items-center gap-2 text-gray-700"><span className="text-wondergreen">✔</span> Enable new club creation</li>
                 <li className="flex items-center gap-2 text-gray-700"><span className="text-wondergreen">✔</span> Support community events</li>
               </ul>
-              <a href="/support" className="w-full">
-                <button className="w-full py-2 rounded-full text-lg font-bold text-white bg-gradient-to-r from-wondergreen to-wonderleaf shadow hover:from-wonderleaf hover:to-wondergreen transition-colors">
+              <Link 
+              href="/support"
+              className="w-full py-2 rounded-full text-lg font-bold text-white text-center bg-gradient-to-r from-wondergreen to-wonderleaf shadow hover:from-wonderleaf hover:to-wondergreen transition-colors">
                   Donate Now
-                </button>
-              </a>
+              </Link >
             </div>
           </div>
         </section>
 
         {/* Become a Sponsor */}
-        <div className="relative z-10 font-segoe text-center mt-12">
+        {/* <div className="relative z-10 font-segoe text-center mt-12">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
             Become a Sponsor
           </h1>
@@ -132,9 +132,9 @@ export default function GetInvolved() {
           </p>
         </div>
 
-        <section className="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-6">
+        <section className="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-6"> */}
             {/* Program Sponsor */}
-            <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
+            {/* <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
                 <div className="flex items-center w-full justify-center mb-4">
                     <span className="block w-14 h-14 rounded-full bg-wonderleaf/30 flex items-center justify-center text-3xl mr-4">
                     🎓
@@ -150,10 +150,10 @@ export default function GetInvolved() {
                     <li className="flex items-start gap-2"><span className="text-wondergreen text-xl">✔</span> Recognition at events</li>
                 </ul>
                 <div className="italic text-sm text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity text-center">Your gift helps run our core programs!</div>
-            </div>
+            </div> */}
 
             {/* Event Sponsor */}
-            <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
+            {/* <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
                 <div className="flex items-center w-full justify-center mb-4">
                 <span className="block w-14 h-14 rounded-full bg-wonderleaf/30 flex items-center justify-center text-3xl mr-4">🎉</span>
                 <div className="flex flex-col justify-center">
@@ -169,10 +169,10 @@ export default function GetInvolved() {
                 <div className="italic text-sm text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity text-center">
                 Get featured at our biggest events!
                 </div>
-            </div>
+            </div> */}
             
             {/* Adventure Sponsor */}
-            <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
+            {/* <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
                 <div className="flex items-center w-full justify-center mb-4">
                 <span className="block w-14 h-14 rounded-full bg-wonderleaf/30 flex items-center justify-center text-3xl mr-4">🏕️</span>
                 <div className="flex flex-col justify-center">
@@ -188,10 +188,10 @@ export default function GetInvolved() {
                 <div className="italic text-sm text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity text-center">
                 Support amazing outdoor experiences!
                 </div>
-            </div>
+            </div> */}
             
             {/* Creative Sponsor */}
-            <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
+            {/* <div className="group relative bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 w-full max-w-[370px] mx-auto">
                 <div className="flex items-center w-full justify-center mb-4">
                 <span className="block w-14 h-14 rounded-full bg-wonderleaf/30 flex items-center justify-center text-3xl mr-4">🎨</span>
                 <div className="flex flex-col justify-center">
@@ -208,10 +208,10 @@ export default function GetInvolved() {
                 Inspire creativity in young minds!
                 </div>
             </div>
-            </section>
+            </section> */}
 
         {/* Call to Action Buttons */}
-        <div className="flex flex-col md:flex-row gap-4 justify-center items-center mt-10">
+        {/* <div className="flex flex-col md:flex-row gap-4 justify-center items-center mt-10">
           <button className="px-10 py-3 rounded-full text-xl font-bold text-white bg-gradient-to-r from-wondergreen to-wonderleaf shadow hover:from-wonderleaf hover:to-wondergreen transition-colors">
             Become a Sponsor
           </button>
@@ -219,7 +219,7 @@ export default function GetInvolved() {
             <svg width="22" height="25" fill="none" stroke="currentColor" strokeWidth="2" className="inline"><path d="M12 17v-8m0 8l4-4m-4 4l-4-4M20 21a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16z"/></svg>
             Download Sponsor Package
           </button>
-        </div>
+        </div> */}
       </main>
     </div>
   );
