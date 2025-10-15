@@ -5,12 +5,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import GradientBanner from '@/components/ui/GradientBanner';
-import {
-  VolunteerBadge,
-  PartnershipBadge,
-  DonationBadge,
-} from '@/components/ui/BadgedIcons';
-
+import {VolunteerBadge, PartnershipBadge, DonationBadge} from '@/components/ui/BadgedIcons';
 
 export default function GetInvolved() {
   return (
