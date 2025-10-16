@@ -1,27 +1,12 @@
 'use client';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import NotificationDropdown from './NotificationDropdown';
-import { API, makeApiRequest } from '../../../utils/api';
-import type { Notification, NotificationsResponse } from '@/types/notification';
+import { useUnreadNotifications } from '../../../hooks/useUnreadNotifications';
 
 export default function NotificationBell() {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  //unReadCount
-  const fetchUnreadCount = useCallback(async () => {
-    try {
-      const res: NotificationsResponse = await makeApiRequest(`${API}/notifications/`);
-      const items: Notification[] = res?.Notifications ?? [];
-      setUnreadCount(items.filter((n) => !n.isRead).length);
-    } catch {
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchUnreadCount();
-  }, [fetchUnreadCount])
+  const { unread, refresh } = useUnreadNotifications();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -36,14 +21,14 @@ export default function NotificationBell() {
   const handleToggle = () => {
     setShowDropdown((prev) => {
       const next = !prev;
-      if (next) void fetchUnreadCount();
+      if (next) void refresh();
       return next;
     })
   }
 
   const handleClose = () => {
     setShowDropdown(false);
-    void fetchUnreadCount();
+    void refresh();
   }
 
   return (
@@ -64,9 +49,9 @@ export default function NotificationBell() {
         </svg>
 
         {/* Badge */}
-        {unreadCount > 0 && (
+        {unread > 0 && (
           <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {unread > 9 ? '9+' : unread}
           </div>
         )}
       </button>

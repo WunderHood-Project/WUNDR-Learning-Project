@@ -12,6 +12,9 @@ import UserDropdown from './UserDropdown';
 import NotificationBell from './NotificationBell';
 import { NAV_LINKS } from './navLinks';
 import { DesktopNavItems, MobileNavItems } from './NavItems';
+import MobileUserBlock from './MobileUserBlock';
+
+type UserRole = 'admin' | 'parent' | 'instructor' | 'volunteer';
 
 export default function Navbar() {
   // --- App state ---
@@ -193,25 +196,12 @@ export default function Navbar() {
             {/* Auth / Profile block (not sticky) */}
             {isLoggedIn ? (
               <div className="px-3 sm:px-4 pb-3">
-                <Link
-                href="/profile"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center rounded-xl px-3 py-3 bg-gradient-to-r from-wonderleaf/10 to-wondergreen/10 border border-wonderleaf/30 font-semibold text-wondergreen hover:shadow-lg transition-all"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                    {user?.firstName.charAt(0).toUpperCase()}
-                  </div>
-                  Profile — {user?.firstName}
-                </Link>
-
-                <button
-                type="button"
-                onClick={() => { logout(); setIsMenuOpen(false); }}
-                className="mt-2 w-full rounded-xl px-3 py-2.5 text-base font-semibold border text-wondergreen bg-wondersun/60 border-wonderleaf hover:bg-wondersun focus:outline-none focus:ring-2 focus:ring-wonderleaf/40 transition-colors"
-                aria-label="Log out"
-                >
-                  Logout
-                </button>
+                <MobileUserBlock
+                fullName={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()}
+                role={(user?.role ?? 'parent') as UserRole}
+                onLogout={logout}
+                onNavigate={() => setIsMenuOpen(false)}
+                />
               </div>
             ) : null}
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import MultiSelect from '@/components/common/MultiSelect';
 import { CITIES_CO } from '@/data/citiesCO';
 import type { AvailabilityDay, VolunteerCreate, TimeOption } from '@/types/volunteer';
@@ -24,6 +24,11 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
     
     // Keep focus on the first input when the form becomes enabled
     const firstNameRef = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+        if (!disabled) firstNameRef.current?.focus();
+    }, [disabled]);
+
 
     // Toggle day in `daysAvail` (no extra UI state, works directly on API field)
     const toggleDay = (d: AvailabilityDay) => {
@@ -54,15 +59,34 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
         onChange({ timesAvail: allSelected ? [] : [...TIME_OPTIONS] });
     };
 
-    // Skills input is shown as a single CSV line but stored as string[]
-    const skillsText = (form.skills ?? []).join(', ');
-    const onSkillsTextChange = (s: string) =>
-        onChange({
-        skills: s
-            .split(',')
-            .map((x) => x.trim())
-            .filter(Boolean),
-        });
+    // Local text for skills input
+    const [skillsInput, setSkillsInput] = useState<string>((form.skills ?? []).join(', '));
+
+    // We synchronize if the parent resets the form (after a successful submission)
+    useEffect(() => {
+    setSkillsInput((form.skills ?? []).join(', '));
+    }, [form.skills]);
+
+    // Split string -> array (comma or newline), remove duplicates
+    const toSkillsArray = (s: string) => {
+    const tokens = s
+        .split(/\s*,\s*|\r?\n/g)
+        .map(x => x.trim())
+        .filter(Boolean);
+    const seen = new Set<string>();
+    const unique: string[] = [];
+    for (const t of tokens) {
+        const key = t.toLowerCase();
+        if (!seen.has(key)) { seen.add(key); unique.push(t); }
+    }
+    return unique;
+    };
+
+    const commitSkills = (raw: string) => {
+    const next = toSkillsArray(raw);
+    onChange({ skills: next });
+    setSkillsInput(next.join(', ')); 
+    };
 
 
     return (
@@ -184,19 +208,30 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
                 </div>
                 </div>
 
-                {/* Skills (UI shows one line, API stores string[]) */}
+                {/* Skills */}
                 <div className="space-y-2 mt-4">
                 <label className="block text-sm font-medium">
                     Skills <span className="text-rose-600">*</span>
                 </label>
                 <input
-                    placeholder="hiking, photography"
-                    className="w-full rounded-lg border px-3 py-2.5"
-                    value={skillsText}
-                    onChange={(e) => onSkillsTextChange(e.target.value)}
-                    required
+                placeholder="first aid, project management, youth mentoring"
+                className="w-full rounded-lg border px-3 py-2.5"
+                value={skillsInput}                          // local text
+                onChange={(e) => setSkillsInput(e.target.value)} //don't parse every character
+                onBlur={() => commitSkills(skillsInput)}     // commit on loss of focus
+                onKeyDown={(e) => {
+                if (e.key === 'Enter') {                   // commit tru Enter (not submitting form)
+                    e.preventDefault();
+                    commitSkills(skillsInput);
+                }
+                }}
+                required
                 />
+                <p className="mt-1 text-xs text-slate-500">
+                    Separate skills with commas or press Enter. Spaces inside a skill are allowed (e.g., “first aid”).
+                </p>
                 </div>
+
 
                 {/* Short bio */}
                 <div className="space-y-2 mt-4">

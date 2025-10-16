@@ -10,6 +10,7 @@ import SignupModal from '@/components/signup/SignupModal';
 import { API, makeApiRequest } from '../../../utils/api';
 import { isGeneralSubmitted, markGeneralSubmitted, isOppSubmitted, markOppSubmitted } from './volunteerHelpers';
 import VolunteerFormContent from './VolunteerFormContent';
+import SuccessPopup from '@/components/feedback/SuccessPopup';
 
 // Initial client-side form state
 const initial: VolunteerCreate = {
@@ -102,16 +103,36 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
 
       if (isRole) {
         if (opportunityId) markOppSubmitted(opportunityId);
+        const msg = `Thank you! Your application for “${roleTitle ?? 'this role'}” was submitted. We will contact you within 2-3 business days.`;
         setOk(true);
         setOkMsg(`Thank you! Your application for “${roleTitle ?? 'this role'}” was submitted. We will contact you within 2-3 business days.`);
         setError(null);
+        setModalContent(
+          <SuccessPopup
+            title="Application sent 🎉"
+            message={msg}
+            ctaLabel="Back to opportunities"
+            ctaHref="#opportunities"
+            onClose={() => setModalContent(null)}
+          />
+    );
         onDone?.();
       } else {
         markGeneralSubmitted();
         setLockedGeneral(true);
+        const msg = 'Thank you! Your volunteer application was submitted. We will contact you within 2-3 business days.';
         setOk(true);
         setOkMsg('Thank you! Your volunteer application was submitted. We will contact you within 2-3 business days.');
         setError(null);
+        setModalContent(
+          <SuccessPopup
+            title="Thank you for volunteering! 🌿"
+            message={msg}
+            ctaLabel="Back to opportunities"
+            ctaHref="#opportunities"
+            onClose={() => setModalContent(null)}
+          />
+        );
       }
 
       setForm(initial);
