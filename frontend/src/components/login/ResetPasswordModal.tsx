@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import LoginModal from "./LoginModal";
-import { useModal } from "@/app/context/modal";
+import { useModal } from "@/context/modal";
 import { determineEnv } from "../../../utils/api";
 
 const WONDERHOOD_URL = determineEnv()

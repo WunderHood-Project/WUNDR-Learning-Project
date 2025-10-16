@@ -1,6 +1,6 @@
 'use client'
 
-import OpenModalButton from "@/app/context/openModalButton";
+import OpenModalButton from "@/context/openModalButton";
 import Link from "next/link";
 import { formatDate } from "../../../utils/formatDate";
 import { Event } from "@/types/event";

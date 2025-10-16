@@ -7,11 +7,11 @@ const WONDERHOOD_URL = determineEnv()
 
 type Props = {
     enrolledChildren: Child[]
-    eventID: string | undefined
+    eventId: string | undefined
     onAfterUnenroll?: () => void
 }
 
-const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventID, onAfterUnenroll }) => {
+const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventId, onAfterUnenroll }) => {
     const [selected, setSelected] = useState<Set<string>>(new Set)
     const [serverError, setServerError] = useState<string | null>(null)
 
@@ -29,13 +29,13 @@ const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventID, onAfterUnen
 
     const handleUnenroll = async (e: React.FormEvent) => {
         e.preventDefault()
-        const childIDs = Array.from(selected)
+        const childIds = Array.from(selected)
 
         try {
-            await makeApiRequest(`${WONDERHOOD_URL}/event/${eventID}/unenroll`, {
+            await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}/unenroll`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: { childIDs }
+                body: { childIds }
             })
             setSelected(new Set())
             onAfterUnenroll?.()
@@ -48,13 +48,13 @@ const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventID, onAfterUnen
         <form onSubmit={handleUnenroll} className="space-y-4 px-10">
             <fieldset className="space-y-2">
                 {enrolledChildren?.map(child => {
-                    const childID = `child-${child.id}`
+                    const childId = `child-${child.id}`
                     const isChecked = selected.has(child.id)
 
                     return (
                         <div key={child.id} className="flex flex-row gap-2">
                             <input
-                                id={childID}
+                                id={childId}
                                 type="checkbox"
                                 name="children"
                                 value={child.id}

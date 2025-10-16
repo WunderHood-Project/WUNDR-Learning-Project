@@ -1,4 +1,4 @@
-import { useModal } from "@/app/context/modal";
+import { useModal } from "@/context/modal";
 import { useState } from "react";
 import { Event } from "@/types/event";
 import React from "react";

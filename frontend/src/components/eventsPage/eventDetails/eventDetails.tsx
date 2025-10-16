@@ -32,18 +32,18 @@ const EventDetails = () => {
         })
     }
 
-    const eventParticipantSet = useMemo(() => new Set(event?.childIDs ?? []), [event?.childIDs])
+    const eventParticipantSet = useMemo(() => new Set(event?.childIds ?? []), [event?.childIds])
 
     const handleEnroll = async (e: React.FormEvent) => {
         e.preventDefault()
-        const childIDs = Array.from(selected)
-        if (childIDs.length === 0) return
+        const childIds = Array.from(selected)
+        if (childIds.length === 0) return
 
         try {
             await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}/enroll`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: { childIDs }
+                body: { childIds }
             })
             setShowForm(false)
             setSuccessEnroll(true)
@@ -132,14 +132,14 @@ const EventDetails = () => {
                     <h2 className="text-lg font-semibold">Select your child(ren)</h2>
                     <fieldset className="space-y-2">
                         {user.children.map(child => {
-                            const childID = `child-${child.id}`
+                            const childId = `child-${child.id}`
                             const isChecked = selected.has(child.id)
                             const alreadyEnrolled = eventParticipantSet.has(child.id)
 
                             return (
                                 <div key={child.id} className="flex flex-row gap-2">
                                     <input
-                                        id={childID}
+                                        id={childId}
                                         type="checkbox"
                                         name="children"
                                         value={child.id}
@@ -147,11 +147,11 @@ const EventDetails = () => {
                                         onChange={() => toggleChild(child.id)}
                                         className="h-4 w-4"
                                         disabled={alreadyEnrolled}
-                                        aria-describedby={alreadyEnrolled ? `${childID}-hint` : undefined}
+                                        aria-describedby={alreadyEnrolled ? `${childId}-hint` : undefined}
                                     />
                                     <label className="cursor-pointer">{child.firstName} {child.lastName}</label>
                                     {alreadyEnrolled && (
-                                        <span id={`${childID}-hint`} className="text-sm text-gray-500">(Already Enrolled!)</span>
+                                        <span id={`${childId}-hint`} className="text-sm text-gray-500">(Already Enrolled!)</span>
                                     )}
                                 </div>
                             )

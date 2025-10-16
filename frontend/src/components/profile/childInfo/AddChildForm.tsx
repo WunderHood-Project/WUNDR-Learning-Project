@@ -1,10 +1,10 @@
 import React, { useState } from "react"
-import { ChildErrorsForm, CreateChildForm } from "@/types/child";
+import { ChildErrorsForm, CreateChildForm, CreateChildResponse } from "@/types/child";
 import { makeApiRequest } from "../../../../utils/api";
 import { calculateAge } from "../../../../utils/calculateAge";
 import { gradeOptions } from "../../../../utils/displayGrade";
 import { ECErrors, EmergencyContact } from "@/types/emergencyContact";
-import { formatUs, toE164US } from "../../../../utils/formatPhoneNumber";
+import { toE164US } from "../../../../utils/formatPhoneNumber";
 import { Child } from "@/types/child";
 import { determineEnv } from "../../../../utils/api";
 import EmergencyContactField from "./emergencyContact/EmergencyContactField";
@@ -17,7 +17,6 @@ type Props = {
     onSuccess: (createdChild: Child) => void
 }
 
-// type FormErrors = Partial<Record<"firstName" | "lastName" | "birthday", string>>
 const blankEC = (): EmergencyContact => ({
     id: "",
     firstName: "",
@@ -147,13 +146,13 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
 
         try {
             setSubmitting(true)
-            const response = await makeApiRequest(`${WONDERHOOD_URL}/child`, {
+            const response = await makeApiRequest<CreateChildResponse>(`${WONDERHOOD_URL}/child`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: payload
             })
 
-            onSuccess(response as Child)
+            onSuccess(response.child)
             setChild({
                 firstName: "",
                 lastName: "",

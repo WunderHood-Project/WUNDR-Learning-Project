@@ -143,7 +143,7 @@ class Volunteer(BaseModel):
   backgroundCheckConsent: bool = Field(default=False)
   status: AppStatus = AppStatus.NEW
 
-  volunteerOpportunityIDs: Optional[List[str]] = None
+  volunteerOpportunityIds: Optional[List[str]] = None
   generalAppliedAt: Optional[datetime] = None
 
   createdAt: datetime
@@ -193,7 +193,7 @@ class Child(BaseModel):
   preferredName: Optional[str] = Field(default=None, max_length=50)
   birthday: datetime = Field(default_factory=..., description="Child's birthday")
 
-  homeschool: bool = Field(default_factory=False)
+  homeschool: bool = Field(default=False)
   grade: Optional[int] = Field(default=None, ge=-1, le=12)
 
   parents: Optional[List["User"]] = Field(default_factory=list)
@@ -213,14 +213,18 @@ class ChildCreate(BaseModel):
   firstName: str = Field(min_length=1, max_length=50)
   lastName: str = Field(min_length=1, max_length=50)
   preferredName: Optional[str] = Field(default=None, max_length=50)
-  birthday: datetime = Field(
-      description="Child's date of birth",
-      default_factory=lambda: datetime.now(timezone.utc).replace(
-        hour=0, minute=0, second=0, microsecond=0
-      )
-    )
+  # birthday: datetime = Field(
+  #     description="Child's date of birth",
+  #     default_factory=lambda: datetime.now(timezone.utc).replace(
+  #       hour=0, minute=0, second=0, microsecond=0
+  #     )
+  #   )
+  birthday: date = Field(
+    description="Child's date of birth",
+    default_factory=lambda: datetime.now(timezone.utc).date()
+  )
 
-  homeschool: bool = Field(default_factory=False)
+  homeschool: bool = False
   grade: Optional[int] = Field(default=None, ge=-1, le=12)
 
   allergiesMedical: Optional[str] = Field(default=None, max_length=1000)
@@ -231,8 +235,8 @@ class ChildCreate(BaseModel):
 
   emergencyContacts: List["EmergencyContactCreate"] = Field(default_factory=list)
 
-  createdAt: datetime = Field(default_factory=datetime.now(timezone.utc))
-  updatedAt: datetime = Field(default_factory=datetime.now(timezone.utc))
+  createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+  updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ChildUpdate(BaseModel):

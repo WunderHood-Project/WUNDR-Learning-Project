@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { API, makeApiRequest } from '../../../utils/api';
 import type { VolunteerApp } from '@/types/volunteer';
-import { useModal } from '@/app/context/modal';
+import { useModal } from '@/context/modal';
 import LoginModal from '@/components/login/LoginModal';
 import DeleteAppModal from './DeleteAppModal';
 
@@ -104,7 +104,7 @@ export default function ApplicantsPanel(props: Props) {
             v.firstName, v.lastName, v.email, v.phoneNumber, v.bio,
             ...(v.cities ?? []), ...(v.skills ?? []), ...(v.timesAvail ?? []),
             v.status ?? '',
-            ...(v.volunteerOpportunityIDs ?? []).map(id => oppMap[id] || ''),
+            ...(v.volunteerOpportunityIds ?? []).map(id => oppMap[id] || ''),
         ]
             .filter(Boolean)
             .join(' ')
@@ -125,7 +125,7 @@ export default function ApplicantsPanel(props: Props) {
 
     const appTitleFor = (v: VolunteerApp) => {
         if (mode === 'opp') return props.title ?? 'Opportunity';
-        const ids = v.volunteerOpportunityIDs ?? [];
+        const ids = v.volunteerOpportunityIds ?? [];
         if (ids.length === 0 && v.generalAppliedAt) return 'General application';
         if (ids.length === 1) return oppMap[ids[0]] ?? 'Opportunity';
         if (ids.length > 1) {
@@ -274,7 +274,7 @@ export default function ApplicantsPanel(props: Props) {
                 </div>
 
                 <div className="shrink-0 flex items-center gap-2">
-                    
+
                     <button
                         onClick={() =>
                         setModalContent(

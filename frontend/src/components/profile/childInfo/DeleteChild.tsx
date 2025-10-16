@@ -1,4 +1,4 @@
-import { useModal } from "@/app/context/modal"
+import { useModal } from "@/context/modal"
 import { Child } from "@/types/child"
 import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"

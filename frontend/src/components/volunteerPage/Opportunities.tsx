@@ -1,6 +1,6 @@
 'use client';
 
-import { useModal } from '@/app/context/modal';
+import { useModal } from '@/context/modal';
 // import { isLoggedIn } from '../../../utils/auth';
 import LoginModal from '@/components/login/LoginModal';
 import VolunteerForm from './VolunteerForm';
@@ -23,7 +23,7 @@ const statusOf = (e: unknown) =>
 export default function Opportunities({onApply}: {
   onApply?: (roleTitle?: string, opportunityId?: string) => void;
 }) {
-  
+
   const { setModalContent, closeModal } = useModal();
 
   // Client-only flags
@@ -73,7 +73,7 @@ export default function Opportunities({onApply}: {
       setHydrated(true);
       (async () => {
         try {
-          await makeApiRequest(`${API}/auth/users/me`, { method: 'GET' }); 
+          await makeApiRequest(`${API}/auth/users/me`, { method: 'GET' });
           setLogged(true);
         } catch {
           setLogged(false);
@@ -97,14 +97,14 @@ export default function Opportunities({onApply}: {
         );
         if (cancelled) return;
         (res.opportunityIds ?? []).forEach(id => markOppSubmitted(id));
-        fetched.current = true; 
+        fetched.current = true;
       } catch (e: unknown) {
         const status = statusOf(e);
           if(!cancelled && (status === 401 || status === 404 )) {
             setTimeout(() => { if (!cancelled && !fetched.current) run(); }, 600);
             return;
           }
-          fetched.current = true; 
+          fetched.current = true;
         }
       }
 

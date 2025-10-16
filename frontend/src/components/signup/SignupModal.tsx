@@ -1,10 +1,10 @@
-import { useModal } from "@/app/context/modal"
+import { useModal } from "@/context/modal"
 import { FormErrors } from "@/types/forms"
 import React, { useState } from "react"
 import { handleSignup, SignupPayload } from "../../../utils/auth";
 import { formatUs, toE164US } from "../../../utils/formatPhoneNumber";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useAuth } from "@/app/context/auth";
+import { useAuth } from "@/context/auth";
 import { User } from "@/types/user";
 
 type UserInfo = SignupPayload
@@ -121,13 +121,13 @@ const SignupModal = () => {
         try {
             const response = await handleSignup(userInfo)
             await loginWithToken(response.token, response.user as User | undefined)
-            closeModal();
 
             let redirectTo = safeNext;
             if (selectedRole === "parent") {
                 redirectTo = parentNext === 'now' ? "/profile?tab=child" : safeNext;
             }
             router.replace(redirectTo);
+            closeModal();
 
         } catch (err) {
             setServerError("A network error occurred. Please try again later.");

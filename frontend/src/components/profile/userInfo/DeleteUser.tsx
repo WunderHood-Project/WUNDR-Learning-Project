@@ -1,9 +1,9 @@
-import { useModal } from "@/app/context/modal"
+import { useModal } from "@/context/modal"
 import { User } from "@/types/user"
 import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa"
-import { useAuth } from "@/app/context/auth"
+import { useAuth } from "@/context/auth"
 import { useRouter } from "next/navigation"
 import { determineEnv } from "../../../../utils/api"
 
@@ -17,6 +17,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
     const { logout } = useAuth()
     const router = useRouter()
     const [isDeleting, setIsDeleting] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const handleDelete = async () => {
         setIsDeleting(true)
@@ -27,7 +28,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
             logout()
             router.replace("/")
         } catch (err) {
-            console.error("delete user failed", err)
+            setError(err instanceof Error ? err.message : "A network error occurred. Please try again later.")
         } finally {
             setIsDeleting(false)
         }
@@ -44,6 +45,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
                 <p className="text-gray-600 mb-2">
                     Are you sure you want to delete <strong>{currUser?.firstName} {currUser?.lastName}&apos;s</strong> account?
                 </p>
+                {error && <p className="text-red-600 text-sm">{error}</p>}
             </div>
 
             <div className="flex gap-3 justify-end">
