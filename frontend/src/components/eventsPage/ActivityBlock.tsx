@@ -166,10 +166,16 @@ export default function ActivityBlock({
 
         {/* scroller */}
         <div
-          ref={scrollerRef}
-          className="flex flex-1 snap-x snap-mandatory gap-4 overflow-x-auto pb-3 scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-wonderleaf/40 hover:scrollbar-thumb-wonderleaf/60"
-          style={{ scrollbarGutter: 'stable' }}
-        >
+        ref={scrollerRef}
+        className="
+        flex flex-1 gap-4 overflow-x-auto pb-3
+        snap-x snap-mandatory scroll-smooth touch-pan-x
+        scrollbar-thin no-scrollbar
+        scrollbar-track-transparent
+        scrollbar-thumb-wonderleaf/40 hover:scrollbar-thumb-wonderleaf/60
+        "
+        style={{ scrollbarGutter: 'stable', WebkitOverflowScrolling: 'touch' }}
+      >
           {events.length > 0 ? (
             events.map((event) => (
               <div
