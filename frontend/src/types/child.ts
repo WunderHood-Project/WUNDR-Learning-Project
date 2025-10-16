@@ -24,3 +24,10 @@ type ChildMutable = Omit<Child, ServerManaged>
 export type CreateChildForm = ChildMutable
 export type UpdateChildPayload = Partial<ChildMutable>
 export type ChildErrorsForm = Partial<Record<keyof ChildMutable, string>>
+
+export type CreateChildResponse = {
+    child: Child
+    parent: User
+    emergencyContacts: EmergencyContact[];
+    message: string;
+}

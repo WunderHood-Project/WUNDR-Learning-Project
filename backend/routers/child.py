@@ -6,6 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from .auth.login import get_current_user
 from .auth.utils import enforce_authentication, enforce_admin
+from datetime import datetime, time, timezone
 
 
 router = APIRouter()
@@ -22,6 +23,8 @@ async def create_child(
     # Make sure the user is authenticated
     enforce_authentication(current_user, "add a child")
 
+    # now = datetime.now(timezone.utc)
+    bday_dateTime = datetime.combine(child_data.birthday, time.min).replace(tzinfo=timezone.utc)
     # Add the child
     try:
         async with db.tx() as tx:
@@ -33,7 +36,7 @@ async def create_child(
                     "preferredName": child_data.preferredName,
                     "homeschool": child_data.homeschool,
                     "grade": child_data.grade,
-                    "birthday": child_data.birthday,
+                    "birthday": bday_dateTime,
                     "allergiesMedical": child_data.allergiesMedical,
                     "notes": child_data.notes,
                     "waiver": child_data.waiver,
