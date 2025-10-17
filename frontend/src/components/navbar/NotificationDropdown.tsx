@@ -2,46 +2,48 @@
 
 import Link from 'next/link';
 import { API, makeApiRequest } from '../../../utils/api';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Notification, NotificationsResponse } from '@/types/notification';
 import { formatNotificationTime } from '../../../utils/formatDate';
-import { useUser } from '../../../hooks/useUser';
+import { useAuth } from '@/context/auth';
 
 interface Props {
   onClose: () => void;
 }
 
 export default function NotificationDropdown({ onClose }: Props) {
-  const { user } = useUser()
+  const { token, authReady } = useAuth()
   const [loading, setLoading] = useState<boolean>(false)
   const [loadErrors, setLoadErrors] = useState<string | null>(null)
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const didFetch = useRef(false)
 
   // Fetch the notifications here:
   const fetchNotifications = useCallback(async () => {
+    if (!token) {
+      setNotifications([])
+      setLoadErrors(null)
+      return
+    }
+
     setLoading(true)
-
+    setLoadErrors(null)
     try {
-      if (user) {
-        const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
-
-        if (!response) setNotifications([])
-
-          setNotifications(response?.Notifications)
-        setLoadErrors(null)
-      }
+        const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`, {token})
+        setNotifications(response?.Notifications ?? [])
     } catch (e) {
-      if (e instanceof Error) {
-        setLoadErrors(e.message)
-      }
+      setNotifications([])
+      if (e instanceof Error) setLoadErrors(e.message)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [token])
 
   useEffect(() => {
-    void fetchNotifications()
-  }, [fetchNotifications])
+    if (!authReady || didFetch.current) return
+    didFetch.current = true
+    fetchNotifications()
+  }, [authReady, fetchNotifications])
 
   // const hasUnread = notifications?.some((n) => !n.isRead) ?? false;
 
