@@ -4,10 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatWhen } from '../../../../utils/formatDate';
 import { Notification, NotificationsResponse } from '@/types/notification';
 import { API, makeApiRequest } from '../../../../utils/api';
+import { useUser } from '../../../../hooks/useUser';
 
 type TabKey = 'all' | 'unread' | 'event' | 'message';
 
 export default function Notifications() {
+  const { user } = useUser()
   const [items, setItems] = useState<Notification[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [loading, setLoading] = useState<boolean>(false)
@@ -17,9 +19,11 @@ export default function Notifications() {
   const fetchNotifications = useCallback(async () => {
     setLoading(true)
     try {
-      const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
-      setItems(response?.Notifications ?? [])
-      setLoadErrors(null)
+      if (user) {
+        const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
+        setItems(response?.Notifications ?? [])
+        setLoadErrors(null)
+      }
     } catch (e) {
       if (e instanceof Error) {
         setLoadErrors(e.message)

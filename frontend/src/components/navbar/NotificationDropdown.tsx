@@ -5,12 +5,14 @@ import { API, makeApiRequest } from '../../../utils/api';
 import { useState, useCallback, useEffect } from 'react';
 import { Notification, NotificationsResponse } from '@/types/notification';
 import { formatNotificationTime } from '../../../utils/formatDate';
+import { useUser } from '../../../hooks/useUser';
 
 interface Props {
   onClose: () => void;
 }
 
 export default function NotificationDropdown({ onClose }: Props) {
+  const { user } = useUser()
   const [loading, setLoading] = useState<boolean>(false)
   const [loadErrors, setLoadErrors] = useState<string | null>(null)
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -20,11 +22,14 @@ export default function NotificationDropdown({ onClose }: Props) {
     setLoading(true)
 
     try {
-      const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
-      if (!response) setNotifications([])
+      if (user) {
+        const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
 
-      setNotifications(response?.Notifications)
-      setLoadErrors(null)
+        if (!response) setNotifications([])
+
+          setNotifications(response?.Notifications)
+        setLoadErrors(null)
+      }
     } catch (e) {
       if (e instanceof Error) {
         setLoadErrors(e.message)
