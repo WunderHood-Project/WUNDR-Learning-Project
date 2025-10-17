@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { FaPen } from "react-icons/fa"
 import UpdateUserForm from "./UpdateUserForm"
 import OpenModalButton from "@/context/openModalButton"
@@ -12,10 +12,6 @@ import { useUser } from "../../../../hooks/useUser";
 const UserInfo = () => {
     const { user, loading, error, refetch } = useUser()
     const [editing, setEditing] = useState(false)
-
-    //stops the multiple renders
-    useEffect(() => { user }, [user])
-
     // console.log('user info', user)
 
     if (loading) return <div className="flex justify-center items-center min-h-[200px]">Loading...</div>
