@@ -1,41 +1,58 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { formatWhen } from '../../../../utils/formatDate';
 import { Notification, NotificationsResponse } from '@/types/notification';
 import { API, makeApiRequest } from '../../../../utils/api';
-import { useUser } from '../../../../hooks/useUser';
+// import { useUser } from '../../../../hooks/useUser';
+import { useAuth } from '@/context/auth';
 
 type TabKey = 'all' | 'unread' | 'event' | 'message';
 
 export default function Notifications() {
-  const { user } = useUser()
+  const { token, authReady } = useAuth()
+  // const { user } = useUser()
   const [items, setItems] = useState<Notification[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [loading, setLoading] = useState<boolean>(false)
   const [loadErrors, setLoadErrors] = useState<string | null>(null)
+  const didFetchForToken = useRef<string | null>(null)
 
   // Set the items (e.g. notifications)
   const fetchNotifications = useCallback(async () => {
+    if (!token) {
+      setItems([])
+      setLoadErrors(null)
+      return
+    }
+
     setLoading(true)
+    setLoadErrors(null)
     try {
-      if (user) {
-        const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
+        const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`, { token })
         setItems(response?.Notifications ?? [])
-        setLoadErrors(null)
-      }
     } catch (e) {
-      if (e instanceof Error) {
-        setLoadErrors(e.message)
-      }
+      setItems([])
+      if (e instanceof Error) setLoadErrors(e.message)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [token])
+
+
 
   useEffect(() => {
-    void fetchNotifications()
-  }, [fetchNotifications])
+    if (!authReady) return
+
+    if (didFetchForToken.current !== token) {
+      didFetchForToken.current = token ?? null
+      fetchNotifications()
+    }
+  }, [authReady, token, fetchNotifications])
+
+  // useEffect(() => {
+  //   void fetchNotifications()
+  // }, [fetchNotifications])
 
 
   const unreadCount = useMemo(() => items.filter(i => !i.isRead).length, [items]);

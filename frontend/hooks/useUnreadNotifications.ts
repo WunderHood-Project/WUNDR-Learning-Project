@@ -8,7 +8,6 @@ import { useUser } from './useUser';
 
 export function useUnreadNotifications(pollMs?: number) {
   const { token } = useAuth();
-  const { user } = useUser()
   const [items, setItems] = useState<Notification[]>([]);
   const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -22,12 +21,10 @@ export function useUnreadNotifications(pollMs?: number) {
 
     setLoading(true);
     try {
-      if (user) {
-        const res = await makeApiRequest<NotificationsResponse>(`${API}/notifications/`);
+        const res = await makeApiRequest<NotificationsResponse>(`${API}/notifications/`, {token});
         const list = res?.Notifications ?? [];
         setItems(list);
         setUnread(list.filter(n => !n.isRead).length);
-      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/API Error (401|403)/i.test(msg)) {
