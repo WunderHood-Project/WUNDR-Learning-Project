@@ -5,13 +5,13 @@ export type Child = {
     id: string;
     firstName: string;
     lastName: string;
-    preferredName?: string | null
+    preferredName?: string
     homeschool: boolean
     // homeschoolProgram?: string | null
-    grade?: number | null;
+    grade?: number ;
     birthday: string;
-    allergiesMedical?: string | null
-    notes?: string | null;
+    allergiesMedical?: string
+    notes?: string;
     photoConsent: boolean
     waiver: boolean
     parents: User[]
@@ -22,7 +22,7 @@ type ServerManaged = "id" | "parents"
 type ChildMutable = Omit<Child, ServerManaged>
 
 export type CreateChildForm = ChildMutable
-export type UpdateChildPayload = Partial<ChildMutable>
+export type UpdateChildForm = Partial<CreateChildForm>
 export type ChildErrorsForm = Partial<Record<keyof ChildMutable, string>>
 
 export type CreateChildResponse = {
