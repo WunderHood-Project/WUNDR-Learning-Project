@@ -1,5 +1,5 @@
-import { ECErrors, EmergencyContact } from "@/types/emergencyContact"
-import React, { useState } from "react";
+import { EmergencyContact } from "@/types/emergencyContact"
+import React from "react";
 import { formatUs } from "../../../../../utils/formatPhoneNumber";
 
 // const blankEC = (): EmergencyContact => ({
@@ -18,10 +18,6 @@ type Props = {
 }
 
 const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcErrors }) => {
-    // const [ecs, setEcs] = useState<EmergencyContact[]>([blankEC()])
-    // const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
-    const [serverError, setServerError] = useState<string | null>(null)
-
     const handleECChange = (i: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.currentTarget
 
@@ -36,7 +32,6 @@ const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcEr
                 }
                 : contact
         ))
-        setServerError(null)
     }
 
     const handleECPhoneChange = (i: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +45,6 @@ const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcEr
                 }
                 : contact
         ))
-        setServerError(null)
     }
 
     const removeEC = (i: number) => {

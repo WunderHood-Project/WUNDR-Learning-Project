@@ -12,10 +12,9 @@ import { FaX } from "react-icons/fa6"
 type Props = {
     child: Child
     onEdit: () => void
-    onDelete: () => void
 }
 
-const ChildInfoCard: React.FC<Props> = ({ child, onEdit, onDelete }) => {
+const ChildInfoCard: React.FC<Props> = ({ child, onEdit }) => {
     return (
         <div className="bg-white rounded-lg p-6 min-h-[350px]">
             <div className="flex justify-between items-center mb-6">

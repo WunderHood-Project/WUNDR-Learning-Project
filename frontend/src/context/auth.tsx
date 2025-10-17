@@ -1,6 +1,6 @@
 "use client"
 import { User } from "@/types/user";
-import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useMemo } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef, useMemo, useCallback } from "react";
 import { determineEnv, makeApiRequest } from "../../utils/api";
 
 
@@ -23,7 +23,6 @@ const WONDERHOOD_URL = determineEnv()
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-
   const [authReady, setAuthReady] = useState(false)
   const [loadingUser, setLoadingUser] = useState(false)
   const [userError, setUserError] = useState<string | null>(null)
@@ -44,18 +43,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   //save user
   useEffect(() => {
-    user
-      ? localStorage.setItem("user", JSON.stringify(user))
-      : localStorage.removeItem("user")
-  }, [user])
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
 
+  //save token
   useEffect(() => {
-    token
-      ? localStorage.setItem("token", token)
-      : localStorage.removeItem("token")
-   }, [token])
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     if (!token) {
       setUser(null)
       setUserError(null)
@@ -76,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoadingUser(false)
     }
-  }
+  }, [token])
 
   useEffect(() => {
     if (!authReady) return
@@ -89,12 +93,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (didFetch.current) return
     didFetch.current = true
     fetchUser()
-  }, [authReady, token])
+  }, [authReady, token, fetchUser])
 
-  const refetchUser = () => {
+  const refetchUser = useCallback(() => {
     didFetch.current = true
     fetchUser()
-  }
+  }, [fetchUser])
 
   const loginWithToken = (token: string, user?: User) => {
     setToken(token);
@@ -115,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoggedIn: !!token,
     authReady, loadingUser, userError,
     refetchUser, loginWithToken, logout
-  }), [user, token, authReady, loadingUser, userError])
+  }), [user, token, authReady, loadingUser, userError, refetchUser])
 
   return (
     <AuthContext.Provider value={value}>
