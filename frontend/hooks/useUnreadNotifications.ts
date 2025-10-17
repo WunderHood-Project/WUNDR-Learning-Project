@@ -1,10 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { API, makeApiRequest } from '../utils/api';
 import type { Notification, NotificationsResponse } from '@/types/notification';
 import { useAuth } from '@/context/auth';
-import { useUser } from './useUser';
 
 export function useUnreadNotifications(pollMs?: number) {
   const { token } = useAuth();
