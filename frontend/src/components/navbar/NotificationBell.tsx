@@ -2,11 +2,13 @@
 import { useState, useRef, useEffect } from 'react';
 import NotificationDropdown from './NotificationDropdown';
 import { useUnreadNotifications } from '../../../hooks/useUnreadNotifications';
+import { useAuth } from '@/context/auth';
 
 export default function NotificationBell() {
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { unread, refresh } = useUnreadNotifications();
+  const { token } = useAuth();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -30,6 +32,12 @@ export default function NotificationBell() {
     setShowDropdown(false);
     void refresh();
   }
+
+  useEffect(() => {
+    if (!token) return;   
+    void refresh();
+  }, [token, refresh]);
+
 
   return (
     <div className="relative" ref={containerRef}>
