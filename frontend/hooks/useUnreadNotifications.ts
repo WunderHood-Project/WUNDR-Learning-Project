@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { API, makeApiRequest } from '../utils/api';
 import type { Notification, NotificationsResponse } from '@/types/notification';
 import { useAuth } from '@/context/auth';
@@ -20,10 +20,10 @@ export function useUnreadNotifications(pollMs?: number) {
 
     setLoading(true);
     try {
-      const res = await makeApiRequest<NotificationsResponse>(`${API}/notifications/`);
-      const list = res?.Notifications ?? [];
-      setItems(list);
-      setUnread(list.filter(n => !n.isRead).length);
+        const res = await makeApiRequest<NotificationsResponse>(`${API}/notifications/`, {token});
+        const list = res?.Notifications ?? [];
+        setItems(list);
+        setUnread(list.filter(n => !n.isRead).length);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/API Error (401|403)/i.test(msg)) {

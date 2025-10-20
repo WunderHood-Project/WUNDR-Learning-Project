@@ -7,6 +7,8 @@ import { useChild } from "../../../../hooks/useChild"
 import ChildInfoCard from "./ChildInfoCard"
 
 
+const NO_CHILDREN: readonly Child[] = Object.freeze([] as const);
+
 const ChildInfo = () => {
     const { children, loading, refetch } = useChild(undefined)
     const formAnchorRef = useRef<HTMLDivElement | null>(null)
@@ -14,21 +16,21 @@ const ChildInfo = () => {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [pendingId, setPendingId] = useState<string | null>(null)
     const [editingChildId, setEditingChildId] = useState<string | null>(null)
-    const childrenItems = children ?? []
+    const items = useMemo(() => children ?? NO_CHILDREN, [children])
 
     useEffect(() => {
-        if (!childrenItems.length) return
-        if (pendingId && childrenItems.some(c => c.id === pendingId)) {
+        if (!items.length) return
+        if (pendingId && items.some(c => c.id === pendingId)) {
             setSelectedId(pendingId)
             setPendingId(null)
             return
         }
 
-        if (!selectedId || !childrenItems.some(c => c.id === selectedId)) {
-            const firstId = childrenItems[0].id
-            if (selectedId !== firstId) setSelectedId(childrenItems[0].id)
+        if (!selectedId || !items.some(c => c.id === selectedId)) {
+            const firstId = items[0].id
+            if (selectedId !== firstId) setSelectedId(firstId)
         }
-    }, [childrenItems, pendingId, selectedId])
+    }, [items, pendingId, selectedId])
 
     useEffect(() => {
         if (showForm) {
@@ -40,11 +42,11 @@ const ChildInfo = () => {
 
     const selectedIndex = useMemo(() => {
         if (!selectedId) return 0
-        const i = childrenItems.findIndex(c => c.id === selectedId)
+        const i = items.findIndex(c => c.id === selectedId)
         return i >= 0 ? i : 0
-    }, [childrenItems, selectedId])
+    }, [items, selectedId])
 
-    const visibleChild = childrenItems[selectedIndex];
+    const visibleChild = items.length ? items[selectedIndex] : null
 
     const handleFormSuccess = (createdChild?: Child) => {
         setShowForm(false)
@@ -56,37 +58,37 @@ const ChildInfo = () => {
     }
 
     const handleNext = () => {
-        if (!childrenItems.length) return
-        const next = (selectedIndex + 1) % childrenItems.length
-        setSelectedId(childrenItems[next].id)
+        if (!items.length) return
+        const next = (selectedIndex + 1) % items.length
+        setSelectedId(items[next].id)
     }
 
     const handlePrev = () => {
-        if (!childrenItems.length) return
-        const prev = (selectedIndex - 1 + childrenItems.length) % childrenItems.length
-        setSelectedId(childrenItems[prev].id)
+        if (!items.length) return
+        const prev = (selectedIndex - 1 + items.length) % items.length
+        setSelectedId(items[prev].id)
     }
 
-    if (loading) return <div className="flex justify-center childrenItems-center min-h-[200px]">No children displayable at this moment</div>
+    if (loading) return <div className="flex justify-center items-center min-h-[200px]">No children displayable at this moment</div>
 
     return (
         <div>
             <div className="text-center mb-[20px]">
                 <h1 className="text-4xl font-bold text-wondergreen mb-4">Your Children&apos;s Information</h1>
                 <h2 className="max-w-2xl mx-auto text-lg text-wondergreen">
-                    {childrenItems.length ? "Manage your children’s profile for their events" : "You do not have any children in our system yet."}
+                    {items.length ? "Manage your children’s profile for their events" : "You do not have any children in our system yet."}
                 </h2>
             </div>
 
             <button onClick={() => setShowForm(v => !v)}
-                className="flex childrenItems-center bg-wonderleaf border-none py-[12px] px-[24px] text-base rounded-md cursor-pointer mx-auto"
+                className="flex items-center bg-wonderleaf border-none py-[12px] px-[24px] text-base rounded-md cursor-pointer mx-auto"
             >
                 Add a child?
             </button>
 
-            {childrenItems.length > 0 && visibleChild && (
+            {items.length > 0 && visibleChild && (
                 <div className="flex flex-row gap-6 my-10">
-                    {childrenItems.length > 1 && (
+                    {items.length > 1 && (
                         <FaCircleChevronLeft
                             className="w-[50px] h-[50px] cursor-pointer my-auto"
                             onClick={handlePrev}
@@ -100,12 +102,11 @@ const ChildInfo = () => {
                             <ChildInfoCard
                                 child={visibleChild}
                                 onEdit={() => setEditingChildId(visibleChild.id)}
-                                onDelete={() => {}}
                             />
                         )}
                     </div>
 
-                    {childrenItems.length > 1 && (
+                    {items.length > 1 && (
                         <FaCircleChevronRight
                             className="w-[50px] h-[50px] cursor-pointer my-auto"
                             onClick={handleNext}
@@ -114,7 +115,7 @@ const ChildInfo = () => {
                 </div>
             )}
 
-            <div ref={formAnchorRef} className="scroll-mt-24 aria-hidden" />
+            <div ref={formAnchorRef} className="scroll-mt-24" aria-hidden='true' />
             <JoinChildForm showForm={showForm} onSuccess={handleFormSuccess} />
         </div>
     )

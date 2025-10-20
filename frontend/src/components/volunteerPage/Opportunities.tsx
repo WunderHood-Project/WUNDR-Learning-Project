@@ -8,6 +8,7 @@ import { API, makeApiRequest } from '../../../utils/api';
 import { markOppSubmitted, isOppSubmitted } from './volunteerHelpers';
 import type { Opp, Venue } from '../../types/opportunity';
 import { useAuth } from '@/context/auth';
+// import { useUser } from '../../../hooks/useUser';
 
 export default function Opportunities({
   onApply,
@@ -16,7 +17,7 @@ export default function Opportunities({
 }) {
   const { setModalContent, closeModal } = useModal();
   const { isLoggedIn, token } = useAuth();
-
+  // const { user } = useUser()
   const fetched = useRef(false);
 
   const [items, setItems] = useState<Opp[]>([]);
@@ -40,10 +41,12 @@ export default function Opportunities({
     let cancelled = false;
     (async () => {
       try {
-        const res = await makeApiRequest<{ opportunityIds?: string[] }>(`${API}/volunteer/my-opportunities`);
-        if (cancelled) return;
-        (res.opportunityIds ?? []).forEach(id => markOppSubmitted(id));
-        fetched.current = true;
+        // if (user) {
+          const res = await makeApiRequest<{ opportunityIds?: string[] }>(`${API}/volunteer/my-opportunities`, {token});
+          if (cancelled) return;
+          (res.opportunityIds ?? []).forEach(id => markOppSubmitted(id));
+          fetched.current = true;
+        // }
       } catch {
         fetched.current = true;
       }
