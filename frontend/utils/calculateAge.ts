@@ -1,8 +1,20 @@
 export const calculateAge = (birthdayDate: string) => {
-    const d = new Date(birthdayDate)
-    let age = new Date().getFullYear() - d.getFullYear()
-    const m = new Date().getMonth() - d.getMonth()
+    const [y, m, d] = birthdayDate.split('T')[0].split('-').map(Number)
+    const birthYear = y
+    const birthMonth = m
+    const birthDay = d
 
-    if (m < 0 || (m === 0 && new Date().getDate() - d.getDate())) age --
+    const today = new Date();
+    const thisYear = today.getUTCFullYear()
+    const thisMonth = today.getUTCMonth() + 1
+    const thisDay = today.getUTCDate()
+
+    let age = thisYear - birthYear
+
+    // Hasn't had birthday yet this year?
+    if (thisMonth < birthMonth || (thisMonth === birthMonth && thisDay < birthDay)) {
+        age--
+    }
+
     return age
 }

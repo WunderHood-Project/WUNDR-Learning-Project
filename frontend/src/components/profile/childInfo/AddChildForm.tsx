@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { ChildErrorsForm, CreateChildForm, CreateChildResponse } from "@/types/child";
 import { makeApiRequest } from "../../../../utils/api";
 import { calculateAge } from "../../../../utils/calculateAge";
@@ -18,7 +18,7 @@ type Props = {
 }
 
 const blankEC = (): EmergencyContact => ({
-    id: "",
+    // id: "",
     firstName: "",
     lastName: "",
     relationship: "",
@@ -26,10 +26,12 @@ const blankEC = (): EmergencyContact => ({
 });
 
 const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
+    const keySeq = useRef(0)
     const [errors, setErrors] = useState<ChildErrorsForm>({})
     const [ecs, setEcs] = useState<EmergencyContact[]>([blankEC()])
     const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
     const [serverError, setServerError] = useState<string | null>(null)
+    const [rowKeys, setRowKeys] = useState<string[]>([String(keySeq.current++)])
     const [currentStep, setCurrentStep] = useState(1)
     const [submitting, setSubmitting] = useState(false)
     const [child, setChild] = useState<CreateChildForm>({
@@ -67,7 +69,11 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
         setServerError(null)
     }
 
-    const addEC = () => setEcs(prev => (prev.length < 3 ? [...prev, blankEC()] : prev))
+    const addEC = () => {
+        setEcs(prev => (prev.length < 3 ? [...prev, blankEC()] : prev))
+        setRowKeys(prev => (prev.length < 3 ? [...prev, String(keySeq.current++)] : prev))
+        setEcErrors(prev => (prev.length < 3 ? [...prev, {}] : prev))
+    }
 
     const validations = () => {
         const newErrors: ChildErrorsForm = {}
@@ -167,18 +173,20 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
                 emergencyContacts: []
             })
             setEcs([blankEC()])
+            setRowKeys([String(keySeq.current++)])
+            setEcErrors([])
             setErrors({})
         } catch (err) {
             setServerError(err instanceof Error ? err.message : "Fail to join child to account. Please try again later.")
         } finally {
-            showForm = false
+            // showForm = false
             setSubmitting(false)
         }
     }
 
     const nextStep = () => {
         if (currentStep === 1) {
-            if (!child.firstName || !child.lastName || !child.homeschool || !child.birthday) {
+            if (!child.firstName || !child.lastName || !child.birthday) {
                 setServerError("Please fill in all required fields.");
                 return;
             }
@@ -241,7 +249,6 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
                                 onChange={handleChange}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 maxLength={50}
-                                required
                             />
                         </div>
 
@@ -327,7 +334,14 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
                     {serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
                     <div className="space-y-3">
-                        <EmergencyContactField ecs={ecs} setEcs={setEcs} ecErrors={ecErrors} setEcErrors={setEcErrors}/>
+                        <EmergencyContactField
+                            ecs={ecs}
+                            setEcs={setEcs}
+                            ecErrors={ecErrors}
+                            setEcErrors={setEcErrors}
+                            rowKeys={rowKeys}
+                            setRowKeys={setRowKeys}
+                        />
 
                         <div className="flex items-center justify-between">
                             <button type="button" onClick={prevStep}

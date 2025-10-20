@@ -1,5 +1,5 @@
-import type { Child, UpdateChildForm } from "@/types/child"
-import React, { useEffect, useMemo, useState } from "react"
+import { CreateChildForm, type Child, type UpdateChildForm } from "@/types/child"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaCheck } from "react-icons/fa"
 import { FaX } from "react-icons/fa6"
@@ -8,15 +8,15 @@ import { ECErrors, ECUpdateForm } from "@/types/emergencyContact"
 import { dedupeECs, ecsEqual } from "../../../../utils/emergencyContactHelpers"
 import { e164toUS, formatUs, toE164US } from "../../../../utils/formatPhoneNumber"
 import { determineEnv } from "../../../../utils/api"
-import { useChild } from "../../../../hooks/useChild"
 import EmergencyContactField from "./emergencyContact/EmergencyContactField"
-import { convertStringToIsoFormat } from "../../../../utils/formatDate"
 
 const WONDERHOOD_URL = determineEnv()
 
 type Props = {
     currChild: Child
     setEditingChildId: (id: string | null) => void
+    onPatched?: (id: string) => void
+    refetchChildren?: () => Promise<void> | void
 }
 
 const blankEC = (): ECUpdateForm => ({
@@ -26,50 +26,88 @@ const blankEC = (): ECUpdateForm => ({
     phoneNumber: ""
 });
 
-const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
-    const { refetch } = useChild(undefined)
+const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatched, refetchChildren }) => {
+    console.log('look here', currChild)
+    const hydratedIdRef = useRef<string | null>(null)
+    const keySeq = useRef(0)
     const [ecs, setEcs] = useState<ECUpdateForm[]>([blankEC()])
-    const [updatedChild, setUpdatedChild] = useState<UpdateChildForm | null>(null)
-    const [saving, setSaving] = useState(false)
     const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
+    const [saving, setSaving] = useState(false)
+    const [serverError, setServerError] = useState<string | null>(null)
+    const [rowKeys, setRowKeys] = useState<string[]>([String(keySeq.current++)])
+    const [form, setForm] = useState<CreateChildForm>({
+        firstName: "",
+        lastName: '',
+        preferredName: "",
+        homeschool: true,
+        grade: null,
+        birthday: '',
+        allergiesMedical: "",
+        notes: "",
+        photoConsent: false,
+        waiver: false,
+        emergencyContacts: []
+    })
 
-    // useEffect(() => {
-    //     const initialFromServer: ECUpdateForm[] =
-    //         (currChild.emergencyContacts ?? []).map(ec => ({
-    //             firstName: ec.firstName ?? "",
-    //             lastName: ec.lastName ?? "",
-    //             relationship: ec.relationship ?? "",
-    //             phoneNumber: e164toUS(ec.phoneNumber) ?? formatUs(ec.phoneNumber ?? "")
-    //         }))
+    useEffect(() =>{
+        const id = currChild?.id
+        if (!id) return
 
-    //     const initial = initialFromServer.length ? initialFromServer : [blankEC()]
-    //     setEcs(initial)
-    //     setEcErrors(initial.map(() => ({})))
-    // }, [currChild])
+        if (hydratedIdRef.current === id) return
 
-    const isValid = useMemo(() => Boolean(currChild.firstName?.trim() && currChild.lastName?.trim()), [currChild.firstName, currChild.lastName])
+        setForm({
+            firstName: currChild.firstName ?? '',
+            lastName: currChild.lastName ?? "",
+            preferredName: currChild.preferredName ?? "",
+            homeschool: Boolean(currChild.homeschool),
+            grade: currChild.grade ?? null,
+            birthday: currChild.birthday ? currChild.birthday.split("T")[0] : "",
+            allergiesMedical: currChild.allergiesMedical ?? "",
+            notes: currChild.notes ?? "",
+            photoConsent: Boolean(currChild.photoConsent),
+            waiver: Boolean(currChild.waiver),
+            emergencyContacts: []
+        })
+
+        const initialFromServer: ECUpdateForm[] =
+            (currChild.emergencyContacts ?? []).map(ec => ({
+                firstName: ec.firstName ?? "",
+                lastName: ec.lastName ?? "",
+                relationship: ec.relationship ?? "",
+                phoneNumber: e164toUS(ec.phoneNumber) ?? formatUs(ec.phoneNumber ?? "")
+            }))
+
+        const initial = initialFromServer.length ? initialFromServer : [blankEC()]
+        setEcs(initial)
+        setEcErrors(initial.map(() => ({})))
+        setRowKeys(initial.map(() => String(keySeq.current++)))
+        setServerError(null)
+
+        hydratedIdRef.current = id
+    }, [currChild.id])
+
+    const isValid = useMemo(() => Boolean(form.firstName?.trim() && form.lastName?.trim()), [form.firstName, form.lastName])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const target = e.currentTarget as HTMLInputElement
         const { type, name, value } = target
 
+        if (!name) return
+
         if (type === "checkbox") {
-            setUpdatedChild((prev) => ({
-                ...prev,
-                [name]: target.checked
-            }))
+            setForm(prev => ({ ...prev, [name]: target.checked }))
+            setServerError(null)
+            return
         }
 
-        setUpdatedChild(prev => {
-            if (!prev) return prev
-            return { ...prev, [name]: value }
-        })
-    }
+        if (name === 'grade') {
+            setForm(prev => ({ ...prev, grade: value === "" ? null : Number(value)}))
+            setServerError(null)
+            return
+        }
 
-    const handleECChange = (i: number, field: keyof ECUpdateForm, isPhone: boolean = false) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const v = e.target.value
-        setEcs(prev => prev.map((contact, idx) =>
-            (idx === i ? { ...contact, [field]: isPhone ? formatUs(v) : v } : contact)))
+        setForm(prev => ({ ...prev, [name]: value }))
+        setServerError(null)
     }
 
     const validateECs = (contacts: ECUpdateForm[]) => {
@@ -94,13 +132,53 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
         return { ok, errs, deduped }
     }
 
+    const buildUpdatePayload = (form: CreateChildForm, curr: Child): UpdateChildForm => {
+        const payload: UpdateChildForm = {}
+        const set = <K extends keyof UpdateChildForm>(k: K, v: UpdateChildForm[K]) => {payload[k] = v}
+
+        if (form.firstName.trim() !== curr.firstName) set("firstName", form.firstName.trim())
+        if (form.lastName.trim() !== curr.lastName) set("lastName", form.lastName.trim())
+
+        const prefNext = form.preferredName?.trim() ?? ""
+        if (prefNext !== (curr.preferredName ?? "")) {
+            if (prefNext !== "") set('preferredName', prefNext)
+        }
+
+        const medNext = form.allergiesMedical?.trim() ?? ""
+        if (medNext !== (curr.allergiesMedical ?? "")) {
+            if (medNext !== "") set("allergiesMedical", medNext)
+        }
+
+        const notesNext = form.notes?.trim() ?? ""
+        if (notesNext !== (curr.notes ?? "")) {
+            if (notesNext !== "") set("notes", notesNext)
+        }
+
+        if (form.homeschool !== curr.homeschool) set("homeschool", form.homeschool)
+        if (form.photoConsent !== curr.photoConsent) set("photoConsent", form.photoConsent)
+
+        if ((form.grade ?? null) !== (curr.grade ?? null)) {
+            if (form.grade !== null) set('grade', form.grade)
+        }
+
+        const uiCurrBirthday = curr.birthday ? curr.birthday.split("T")[0] : ""
+        if (form.birthday && form.birthday !== uiCurrBirthday) {
+            set('birthday', new Date(form.birthday).toISOString())
+        }
+
+        return payload
+    }
+
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!isValid || saving) return
 
         const { ok: ecOk, errs, deduped } = validateECs(ecs)
         setEcErrors(errs)
-        if (!ecOk) return
+        if (!ecOk) {
+            setServerError("Please fix the Emergency Contact errors")
+            return
+        }
 
         const currentECs: ECUpdateForm[] = (currChild.emergencyContacts ?? []).map(ec => ({
             firstName: ec.firstName ?? "",
@@ -111,18 +189,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
 
         const includeECs = !ecsEqual(deduped, currentECs)
 
-        const checkBirthdayType = () => {
-            if (typeof updatedChild?.birthday === "string") {
-                convertStringToIsoFormat(updatedChild.birthday)
-            } else {
-                return undefined
-            }
-        }
-
-        const payload: UpdateChildForm = {
-            ...updatedChild,
-            birthday: checkBirthdayType()
-        }
+        const payload = buildUpdatePayload(form, currChild)
 
         if (includeECs) {
             payload.emergencyContacts = deduped.map(c => ({
@@ -135,24 +202,26 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
 
         try {
             setSaving(true)
-            await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, {
+            const updated = await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: payload
             }) as Child
-            refetch()
+
+            if (refetchChildren) await refetchChildren()
+            onPatched?.(updated.id)
             setEditingChildId(null)
         } catch (err) {
             console.error("update failed", err)
+            setServerError(err instanceof Error ? err.message : "Update failed. Please try again later")
         } finally {
             setSaving(false)
         }
     }
 
-    const addEC = () => setEcs(prev => (prev.length < 3 ? [...prev, blankEC()] : prev))
-    const removeEC = (i: number) => {
-        setEcs(prev => prev.filter((_, idx) => idx !== i));
-        setEcErrors(prev => prev.filter((_, idx) => idx !== i));
+    const addEC = () => {
+        setEcs(prev => (prev.length < 3 ? [...prev, blankEC()] : prev))
+        setRowKeys(prev => (prev.length < 3 ? [...prev, String(keySeq.current++)] : prev))
     }
 
     return (
@@ -163,8 +232,9 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                         <div className="w-[300px]">
                             <div className="grid grid-cols-2 gap-2">
                                 <input
+                                    name="firstName"
                                     type="text"
-                                    value={currChild?.firstName}
+                                    value={form.firstName}
                                     onChange={handleChange}
                                     placeholder="Legal First Name"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
@@ -172,8 +242,9 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                                 />
 
                                 <input
+                                    name="lastName"
                                     type="text"
-                                    value={currChild?.lastName}
+                                    value={form.lastName}
                                     onChange={handleChange}
                                     placeholder="Legal Last Name"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
@@ -181,8 +252,9 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                                 />
 
                                 <input
+                                    name="preferredName"
                                     type="text"
-                                    value={currChild.preferredName}
+                                    value={form.preferredName ?? ""}
                                     onChange={handleChange}
                                     placeholder="OPTIONAL: Preferred Name"
                                     className="col-span-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
@@ -215,8 +287,10 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                 <div className="mb-4">
                     <div className="font-bold mb-2">BIRTHDAY</div>
                     <input
+                        name="birthday"
                         type="date"
-                        value={currChild.birthday.split("T")[0]}
+                        value={form.birthday}
+                        max={new Date().toISOString().split("T")[0]}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                         disabled={saving}
@@ -227,8 +301,9 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                     <div>
                         <div className="font-bold mb-2">GRADE (OPTIONAL)</div>
                         <select
+                            name="grade"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
-                            value={currChild.grade || ""}
+                            value={form.grade ?? ""}
                             onChange={handleChange}
                         >
                             <option value="">N/A</option>
@@ -241,8 +316,9 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                     <div>
                         <div className="font-bold mb-2">PHOTO CONSENT</div>
                         <input
+                            name="photoConsent"
                             type="checkbox"
-                            checked={currChild.photoConsent}
+                            checked={form.photoConsent}
                             onChange={handleChange}
                             disabled={saving}
                         />
@@ -253,7 +329,14 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                     <div className="font-bold">EMERGENCY CONTACTS</div>
                     <div className="text-gray-500 text-sm my-1 ml-2">
                         <div className="space-y-3">
-                            <EmergencyContactField ecs={ecs} setEcs={setEcs} ecErrors={ecErrors} setEcErrors={setEcErrors} />
+                            <EmergencyContactField
+                                ecs={ecs}
+                                setEcs={setEcs}
+                                ecErrors={ecErrors}
+                                setEcErrors={setEcErrors}
+                                rowKeys={rowKeys}
+                                setRowKeys={setRowKeys}
+                            />
 
                             <div className="flex justify-end">
                                 <button type="button" onClick={addEC} disabled={saving || ecs.length >= 3}
@@ -269,7 +352,8 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                 <div className="mb-4 border-t pt-4">
                     <div className="font-bold">MEDICAL ACCOMMODATIONS</div>
                     <textarea
-                        value={currChild.allergiesMedical || ""}
+                        name="allergiesMedical"
+                        value={form.allergiesMedical ?? ""}
                         onChange={handleChange}
                         placeholder="List any allergies or medical accommodations"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
@@ -280,7 +364,8 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId }) => {
                 <div className="mb-4 border-t pt-4">
                     <div className="font-bold">ADDITIONAL NOTES</div>
                     <textarea
-                        value={currChild.notes || ""}
+                        name="notes"
+                        value={form.notes ?? ""}
                         onChange={handleChange}
                         placeholder="Optional: Please note any information that would be beneficial for instructor"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"

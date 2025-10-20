@@ -1,5 +1,5 @@
 export type EmergencyContact = {
-    id?: string
+    // id?: string
     firstName: string
     lastName: string
     phoneNumber: string | null

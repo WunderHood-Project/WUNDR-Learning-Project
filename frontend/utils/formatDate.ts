@@ -3,7 +3,8 @@ export const numericFormatDate = (dateString: string) => {
     return date.toLocaleDateString('en-US', {
         month: "numeric",
         day: "numeric",
-        year: "numeric"
+        year: "numeric",
+        timeZone: 'UTC'
     })
 }
 
