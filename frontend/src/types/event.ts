@@ -4,6 +4,7 @@ export type Event = {
 
     name: string
     description: string
+    notes?: string | null
     date: string
     startTime: string
     endTime: string

@@ -18,6 +18,7 @@ const initialEventForm = (): CreateEventPayload => ({
     activityId: "",
     name: "",
     description: "",
+    notes: "",
     date: "",
     startTime: "",
     endTime: "",
@@ -77,6 +78,9 @@ export default function AddEvent() {
 
         // Validate description length:
         if (form.description.length <= 1) newErrors.description = "Description must be greater than one character"
+
+        // Validate description notes
+        if (form.notes && form.notes.length < 2) newErrors.notes = "Notes must be at least 2 characters";
 
         // Validate date format:
         if (!dateYMD.test(form.date)) newErrors.date = "Please pick a valid date"

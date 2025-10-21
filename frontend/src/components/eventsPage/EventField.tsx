@@ -63,6 +63,26 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
                 {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
             </div>
 
+            {/* Notes (optional) */}
+            <div>
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+                Notes (optional)
+            </label>
+            <textarea
+                id="notes"
+                name="notes"
+                value={form.notes ?? ""}
+                onChange={onChange}
+                rows={3}
+                placeholder="What to bring, attire, special instructions..."
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wondergreen focus:ring-wondergreen"
+            />
+            {errors.notes && (
+                <p className="mt-1 text-sm text-red-600">{errors.notes}</p>
+            )}
+            </div>
+
+
             <div>
                 <label className="block mb-1 font-medium">Date <span className="text-rose-600">*</span></label>
                 <input

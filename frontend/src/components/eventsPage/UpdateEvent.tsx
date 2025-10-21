@@ -17,6 +17,7 @@ const WONDERHOOD_URL = determineEnv()
 const toEventForm = (ev: Event): CreateEventPayload => ({
     activityId: ev.activityId ?? "",
     name: ev.name ?? "",
+    notes: ev.notes ?? "", 
     description: ev.description ?? "",
     date: toYMDForInput(ev.date ?? ""),
     startTime: ev.startTime ?? "",
