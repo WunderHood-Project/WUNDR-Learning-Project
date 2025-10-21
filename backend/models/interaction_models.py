@@ -32,6 +32,7 @@ class Event(BaseModel):
 
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
+    notes: str = Field(default="")
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=1)
     participants: int = Field(default=0)
@@ -51,6 +52,7 @@ class EventCreate(BaseModel):
 
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
+    notes: str = Field(default="")
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=0)
     participants: int = Field(default=0)
@@ -77,6 +79,7 @@ class EventUpdate(BaseModel):
 
     name: Optional[str] = Field(default=None)
     description: Optional[str] = Field(default=None)
+    notes: Optional[str] = Field(default=None)
     date: Optional[datetime] = Field(default=None)
 
     city: Optional[str] = Field(default=None)

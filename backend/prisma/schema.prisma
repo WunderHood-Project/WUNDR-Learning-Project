@@ -189,6 +189,7 @@ model Events {
 
     name          String      @unique
     description   String
+    notes         String?
     date          DateTime
     image         String
     participants  Int @default(0)
