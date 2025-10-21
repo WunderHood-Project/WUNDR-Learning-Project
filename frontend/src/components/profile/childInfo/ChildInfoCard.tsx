@@ -15,8 +15,6 @@ type Props = {
 }
 
 const ChildInfoCard: React.FC<Props> = ({ child, onEdit }) => {
-    console.log('child info', child)
-
     return (
         <div className="bg-white rounded-lg p-6 min-h-[350px]">
             <div className="flex justify-between items-center mb-6">

@@ -9,6 +9,7 @@ import { dedupeECs, ecsEqual } from "../../../../utils/emergencyContactHelpers"
 import { e164toUS, formatUs, toE164US } from "../../../../utils/formatPhoneNumber"
 import { determineEnv } from "../../../../utils/api"
 import EmergencyContactField from "./emergencyContact/EmergencyContactField"
+import { buildAddEC, buildChildHandleChange } from "../../../../utils/childFormShared"
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -27,7 +28,6 @@ const blankEC = (): ECUpdateForm => ({
 });
 
 const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatched, refetchChildren }) => {
-    console.log('look here', currChild)
     const hydratedIdRef = useRef<string | null>(null)
     const keySeq = useRef(0)
     const [ecs, setEcs] = useState<ECUpdateForm[]>([blankEC()])
@@ -88,6 +88,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
 
     const isValid = useMemo(() => Boolean(form.firstName?.trim() && form.lastName?.trim()), [form.firstName, form.lastName])
 
+    // const handleChange = buildChildHandleChange(setForm, setServerError)
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const target = e.currentTarget as HTMLInputElement
         const { type, name, value } = target
@@ -219,10 +220,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         }
     }
 
-    const addEC = () => {
-        setEcs(prev => (prev.length < 3 ? [...prev, blankEC()] : prev))
-        setRowKeys(prev => (prev.length < 3 ? [...prev, String(keySeq.current++)] : prev))
-    }
+    const addEC = buildAddEC(blankEC, keySeq, setEcs, setRowKeys, setEcErrors)
 
     return (
         <div className="bg-white rounded-lg p-6">
