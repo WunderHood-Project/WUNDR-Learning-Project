@@ -1,13 +1,14 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { ChildErrorsForm, CreateChildForm, CreateChildResponse } from "@/types/child";
-import { makeApiRequest } from "../../../../utils/api";
-import { calculateAge } from "../../../../utils/calculateAge";
-import { gradeOptions } from "../../../../utils/displayGrade";
+import { makeApiRequest } from "../../../../../utils/api";
+import { calculateAge } from "../../../../../utils/calculateAge";
 import { ECErrors, EmergencyContact } from "@/types/emergencyContact";
-import { toE164US } from "../../../../utils/formatPhoneNumber";
+import { toE164US } from "../../../../../utils/formatPhoneNumber";
 import { Child } from "@/types/child";
-import { determineEnv } from "../../../../utils/api";
-import EmergencyContactField from "./emergencyContact/EmergencyContactField";
+import { determineEnv } from "../../../../../utils/api";
+import EmergencyContactField from "../emergencyContact/EmergencyContactField";
+import { buildAddEC, buildChildHandleChange } from "../../../../../utils/childFormShared";
+import AddChildField from "./AddChildField";
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -18,7 +19,6 @@ type Props = {
 }
 
 const blankEC = (): EmergencyContact => ({
-    id: "",
     firstName: "",
     lastName: "",
     relationship: "",
@@ -26,10 +26,12 @@ const blankEC = (): EmergencyContact => ({
 });
 
 const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
+    const keySeq = useRef(0)
     const [errors, setErrors] = useState<ChildErrorsForm>({})
     const [ecs, setEcs] = useState<EmergencyContact[]>([blankEC()])
     const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
     const [serverError, setServerError] = useState<string | null>(null)
+    const [rowKeys, setRowKeys] = useState<string[]>([String(keySeq.current++)])
     const [currentStep, setCurrentStep] = useState(1)
     const [submitting, setSubmitting] = useState(false)
     const [child, setChild] = useState<CreateChildForm>({
@@ -46,6 +48,7 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
         emergencyContacts: []
     })
 
+    // const handleChange = buildChildHandleChange(setChild, setServerError)
     const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> = (e) => {
         const target = e.currentTarget as HTMLInputElement
         const { name, type, value } = target
@@ -67,7 +70,7 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
         setServerError(null)
     }
 
-    const addEC = () => setEcs(prev => (prev.length < 3 ? [...prev, blankEC()] : prev))
+    const addEC = buildAddEC(blankEC, keySeq, setEcs, setRowKeys, setEcErrors)
 
     const validations = () => {
         const newErrors: ChildErrorsForm = {}
@@ -167,18 +170,19 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
                 emergencyContacts: []
             })
             setEcs([blankEC()])
+            setRowKeys([String(keySeq.current++)])
+            setEcErrors([])
             setErrors({})
         } catch (err) {
             setServerError(err instanceof Error ? err.message : "Fail to join child to account. Please try again later.")
         } finally {
-            showForm = false
             setSubmitting(false)
         }
     }
 
     const nextStep = () => {
         if (currentStep === 1) {
-            if (!child.firstName || !child.lastName || !child.homeschool || !child.birthday) {
+            if (!child.firstName || !child.lastName || !child.birthday) {
                 setServerError("Please fill in all required fields.");
                 return;
             }
@@ -205,108 +209,10 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
                     {serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
                     <div className="space-y-3">
-                        <div className="flex flex-row gap-3 w-full">
-                            <div>
-                                <input
-                                    name="firstName"
-                                    placeholder="Legal First Name"
-                                    value={child.firstName}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    maxLength={50}
-                                    required
-                                />
-                                {errors.firstName && <p className="text-sm text-red-600 mt-1">{String(errors.firstName)}</p>}
-                            </div>
-
-                            <div>
-                                <input
-                                    name="lastName"
-                                    placeholder="Legal Last Name"
-                                    value={child.lastName}
-                                    onChange={handleChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    maxLength={50}
-                                    required
-                                />
-                                {errors.lastName && <p className="text-sm text-red-600 mt-1">{String(errors.lastName)}</p>}
-                            </div>
-                        </div>
-
-                        <div>
-                            <input
-                                name="preferredName"
-                                placeholder="Preferred Name"
-                                value={child.preferredName ?? ""}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                maxLength={50}
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <div className="font-bold mb-2">BIRTHDAY</div>
-                            <input
-                                type="date"
-                                name="birthday"
-                                value={child.birthday}
-                                max={new Date().toISOString().split("T")[0]}
-                                onChange={handleChange}
-                                className="w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent mx-auto"
-                                required
-                            />
-                            {errors.birthday && <p className="text-sm text-red-600 mt-1">{String(errors.birthday)}</p>}
-                        </div>
-
-                        <label className="inline-flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                name="homeschool"
-                                checked={child.homeschool ?? false}
-                                onChange={handleChange}
-                                className="h-4 w-4"
-                            />
-                            <span>Homeschool?</span>
-                        </label>
-
-                        <div className="font-bold mb-2">GRADE (OPTIONAL)</div>
-                        <select
-                            name="grade"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
-                            value={child.grade ?? ""}
+                        <AddChildField
+                            child={child}
                             onChange={handleChange}
-                        >
-                            <option value="">N/A</option>
-                            {gradeOptions.map(o => (
-                                <option key={o.value} value={o.value}>{o.label}</option>
-                            ))}
-                        </select>
-
-                        <div className="font-bold mb-2">PHOTO CONSENT</div>
-                        <input
-                            name="photoConsent"
-                            type="checkbox"
-                            checked={child.photoConsent}
-                            onChange={handleChange}
-                        />
-
-                        <div className="font-bold">MEDICAL ACCOMMODATIONS</div>
-                        <textarea
-                            name="allergiesMedical"
-                            value={child.allergiesMedical ?? ""}
-                            onChange={handleChange}
-                            placeholder="List any allergies or medical accommodations"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
-                        />
-
-                        <div className="font-bold">ADDITIONAL NOTES</div>
-                        <textarea
-                            name="notes"
-                            value={child.notes ?? ""}
-                            onChange={handleChange}
-                            placeholder="Optional: Please note any information that would be beneficial for instructor"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
+                            errors={errors}
                         />
 
                         <button type="button" onClick={nextStep}
@@ -327,7 +233,14 @@ const AddChild: React.FC<Props> = ({ showForm, onSuccess }) => {
                     {serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
                     <div className="space-y-3">
-                        <EmergencyContactField ecs={ecs} setEcs={setEcs} ecErrors={ecErrors} setEcErrors={setEcErrors}/>
+                        <EmergencyContactField
+                            ecs={ecs}
+                            setEcs={setEcs}
+                            ecErrors={ecErrors}
+                            setEcErrors={setEcErrors}
+                            rowKeys={rowKeys}
+                            setRowKeys={setRowKeys}
+                        />
 
                         <div className="flex items-center justify-between">
                             <button type="button" onClick={prevStep}

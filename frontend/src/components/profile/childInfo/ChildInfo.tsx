@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react"
 import { Child } from "@/types/child"
 import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6"
-import JoinChildForm from "./AddChildForm"
+import JoinChildForm from "./addChild/AddChildForm"
 import UpdateChildForm from "./UpdateChild"
 import { useChild } from "../../../../hooks/useChild"
 import ChildInfoCard from "./ChildInfoCard"
@@ -69,7 +69,7 @@ const ChildInfo = () => {
         setSelectedId(items[prev].id)
     }
 
-    if (loading) return <div className="flex justify-center items-center min-h-[200px]">No children displayable at this moment</div>
+    if (loading && !items.length) return <div className="flex justify-center items-center min-h-[200px]">No children displayable at this moment</div>
 
     return (
         <div>
@@ -97,7 +97,12 @@ const ChildInfo = () => {
 
                     <div key={visibleChild.id} className="basis-full max-w-3xl w-full mx-auto">
                         {editingChildId === visibleChild.id ? (
-                            <UpdateChildForm setEditingChildId={setEditingChildId} currChild={visibleChild} />
+                            <UpdateChildForm
+                                setEditingChildId={setEditingChildId}
+                                currChild={visibleChild}
+                                onPatched={(id) => setPendingId(id)}
+                                refetchChildren={refetch}
+                            />
                         ) : (
                             <ChildInfoCard
                                 child={visibleChild}

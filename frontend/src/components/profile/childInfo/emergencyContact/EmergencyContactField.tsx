@@ -2,35 +2,22 @@ import { EmergencyContact } from "@/types/emergencyContact"
 import React from "react";
 import { formatUs } from "../../../../../utils/formatPhoneNumber";
 
-// const blankEC = (): EmergencyContact => ({
-//     id: "",
-//     firstName: "",
-//     lastName: "",
-//     relationship: "",
-//     phoneNumber: ""
-// });
 
 type Props = {
     ecs: EmergencyContact[]
     setEcs: React.Dispatch<React.SetStateAction<EmergencyContact[]>>
     ecErrors: Partial<Record<"firstName" | "lastName" | "phoneNumber" | "relationship", string>>[]
     setEcErrors: React.Dispatch<React.SetStateAction<Partial<Record<"firstName" | "lastName" | "phoneNumber" | "relationship", string>>[]>>
+    rowKeys: string[]
+    setRowKeys: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcErrors }) => {
+const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcErrors, rowKeys, setRowKeys }) => {
     const handleECChange = (i: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.currentTarget
+        const { name, value } = e.currentTarget as { name: keyof EmergencyContact; value: string}
 
         setEcs(prev => prev.map((contact, idx) =>
-            idx === i ?
-                {
-                    ...contact,
-                    ...(name === "emergencyFirstName" ? { firstName: value }
-                        : name === "emergencyLastName" ? { lastName: value }
-                            : name === "relationship" ? { relationship: value }
-                                : {})
-                }
-                : contact
+            idx === i ? { ...contact, [name]: value } : contact
         ))
     }
 
@@ -38,23 +25,19 @@ const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcEr
         const { value } = e.currentTarget
 
         setEcs(prev => prev.map((contact, idx) =>
-            idx === i ?
-                {
-                    ...contact,
-                    phoneNumber: formatUs(value)
-                }
-                : contact
+            idx === i ? { ...contact, phoneNumber: formatUs(value) } : contact
         ))
     }
 
     const removeEC = (i: number) => {
-        setEcs(prev => prev.filter((_, idx) => idx !== i));
-        setEcErrors(prev => prev.filter((_, idx) => idx !== i));
+        setEcs(prev => prev.filter((_, idx) => idx !== i))
+        setEcErrors(prev => prev.filter((_, idx) => idx !== i))
+        setRowKeys(prev => prev.filter((_, idx) => idx !== i))
     }
     return (
         <div>
             {ecs.map((c, i) => (
-                <div key={i} className="p-3 border rounded-lg">
+                <div key={rowKeys[i]} className="p-3 border rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                         <div className="font-semibold">Contact {i + 1}</div>
                         {i > 0 && (
@@ -67,7 +50,7 @@ const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcEr
                     <div className="flex flex-row gap-3 w-full">
                         <div className="flex-1">
                             <input
-                                name="emergencyFirstName"
+                                name="firstName"
                                 placeholder="First Name"
                                 value={c.firstName}
                                 onChange={handleECChange(i)}
@@ -80,7 +63,7 @@ const EmergencyContactField: React.FC<Props> = ({ ecs, setEcs, ecErrors, setEcEr
 
                         <div className="flex-1">
                             <input
-                                name="emergencyLastName"
+                                name="lastName"
                                 placeholder="Last Name"
                                 value={c.lastName}
                                 onChange={handleECChange(i)}
