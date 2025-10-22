@@ -266,3 +266,10 @@ class VolunteerOpportunityUpdate(BaseModel):
         if v is None or v == []:
             return None
         return [item.strip() for item in v if item and item.strip()]
+
+# ! Donations
+
+class DonationCreate(BaseModel):
+    donationType: str
+    amount: int
+    userId: List[str] = Field(default_factory=list)
