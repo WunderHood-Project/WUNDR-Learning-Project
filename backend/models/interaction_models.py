@@ -272,4 +272,5 @@ class VolunteerOpportunityUpdate(BaseModel):
 class DonationCreate(BaseModel):
     donationType: str
     amount: int
-    userId: List[str] = Field(default_factory=list)
+    email: Optional[str]
+    userId: Optional[str]
