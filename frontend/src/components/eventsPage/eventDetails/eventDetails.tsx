@@ -76,17 +76,11 @@ export default function EventDetails() {
         return <div className="min-h-[60vh] grid place-items-center">Event not found</div>;
     }
 
-    // hero calendar badge
-    // const d = new Date(event.date);
-    // const calMonth = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-    // const calDay = d.getDate();
-    // const calYear = d.getFullYear();
-
     return (
         <div className="pb-12 bg-wonderbg min-h-screen">
         {/* HERO */}
         <header className="relative">
-            <div className="relative h-56 sm:h-72 md:h-96 w-full overflow-hidden rounded-b-3xl shadow-md">
+            <div className="relative h-56 sm:h-72 md:h-96 w-full overflow-hidden rounded-none shadow-md">
             {event.image ? (
                 <img src={event.image} alt={event.name} className="absolute inset-0 h-full w-full object-cover" />
             ) : (
@@ -98,20 +92,13 @@ export default function EventDetails() {
                     <Image src={AppIcon} alt="WonderHood" width={112} height={112} className="opacity-40" priority={false} />
                 </div>
             )}
-
-            {/* mini calendar badge */}
-            {/* <div className="absolute top-4 right-4 rounded-lg overflow-hidden shadow-md bg-white/95 text-center">
-                <div className="bg-wondersun text-gray-900 px-2 py-1 text-[10px] font-extrabold tracking-wide">{calMonth}</div>
-                <div className="px-2 leading-none py-1 text-xl font-black text-gray-900">{calDay}</div>
-                <div className="px-2 pb-1 text-[10px] font-semibold text-gray-600">{calYear}</div>
-            </div> */}
             </div>
         </header>
 
         {/* TITLE */}
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center mt-8 mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-wondergreen leading-tight mb-6">
-                {event.name} <span className="text-wondergreen">in {event.city}</span>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center md:text-left mt-6 sm:mt-8 mb-10 sm:mb-12">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-wondergreen leading-tight">
+                {event.name} <span className="text-gray-700">in {event.city}</span>
             </h1>
         </div>
 
@@ -136,7 +123,7 @@ export default function EventDetails() {
             <>
                 {user ? (
                 user.children?.length ? (
-                    <form onSubmit={handleEnroll} className="mt-8 bg-white rounded-2xl border-2 border-wonderorange/20 p-6 sm:p-8 shadow-md">
+                    <form onSubmit={handleEnroll} className="mt-8 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 p-6 sm:p-8 shadow-md">
                     <h3 className="text-lg font-bold text-wondergreen mb-5">Select your child(ren) to enroll</h3>
 
                     <fieldset className="space-y-3 mb-6">
@@ -205,12 +192,12 @@ export default function EventDetails() {
                     </div>
                     </form>
                 ) : (
-                    <div className="mt-8 rounded-2xl border-2 border-amber-200 bg-amber-50 p-6 text-amber-900 font-semibold">
+                    <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
                     You don't have any children in your account. Please add a child to enroll in events.
                     </div>
                 )
                 ) : (
-                <div className="mt-8 rounded-2xl border-2 border-amber-200 bg-amber-50 p-6 text-amber-900 font-semibold">
+                <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
                     Please create an account or log in to enroll in events.
                 </div>
                 )}

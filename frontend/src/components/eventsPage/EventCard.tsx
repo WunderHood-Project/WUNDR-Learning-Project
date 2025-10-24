@@ -40,59 +40,50 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
   const timeLabel = formatTimeRange12h(event.date, event.startTime, event.endTime);
 
   return (
-    <article className="flex-shrink-0 w-80 bg-white rounded-2xl border-2 border-wonderorange/20 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full">
-      {/* Cover image */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-b from-wondergreen to-wonderleaf">
-      {event.image ? (
-        <img
-        src={event.image}
-        alt={`${event.name} cover`}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-        loading="lazy"
-        />
-      ) : (
-        <>
-        {/* soft bg */}
-        <div className="absolute inset-0 bg-gradient-to-br from-wondergreen via-wonderleaf to-wondergreen" />
-        {/* logo */}
-        <div className="absolute inset-0 grid place-content-center">
-          <Image
-            src={AppIcon}
-            alt="WonderHood"
-            width={96}
-            height={96}
-            className="opacity-40 rounded-full"
-            priority={false}
-          />
-        </div>
-        </>
-      )}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-        {/* Date badge */}
-        <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
-          {formatDate(event.date)}
-        </div>
-      </div>
-
+    <article className="flex-shrink-0 w-full sm:w-80 max-w-[22rem] bg-white/20 rounded-2xl border-2 border-wonderorange/30 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full relative">
       {/* Body */}
-      <div className="flex-1 p-6 sm:p-6 flex flex-col gap-3">
+      <div className="flex-1 p-4 sm:p-6 flex flex-col gap-3">
         {/* Title (fixed height to keep cards aligned) */}
-        <h3 className="text-center text-wondergreen font-bold text-lg sm:text-xl leading-snug line-clamp-2 min-h-[2rem] ">
+       <h3 className="text-center text-wondergreen font-bold text-lg sm:text-xl leading-snug line-clamp-2 min-h-[2rem]">
           {event.name}
         </h3>
 
-        {/* Description (fixed height to keep cards aligned) */}
-        {event.description ? (
-          <p className="text-sm text-gray-700 leading-5 line-clamp-2 min-h-[2.5rem] mb-1">
-            {event.description}
-          </p>
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-b rounded-xl from-wondergreen to-wonderleaf ">
+        {event.image ? (
+          <img
+          src={event.image}
+          alt={`${event.name} cover`}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+          loading="lazy"
+          />
         ) : (
-          <div className="min-h-[2.5rem]" />
+          <>
+          {/* soft bg */}
+          <div className="absolute inset-0 bg-gradient-to-br from-wondergreen via-wonderleaf to-wondergreen" />
+          {/* logo */}
+          <div className="absolute inset-0 grid place-content-center">
+            <Image
+              src={AppIcon}
+              alt="WonderHood"
+              width={96}
+              height={96}
+              className="opacity-40 rounded-full"
+              priority={false}
+            />
+          </div>
+          </>
         )}
+
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+          {/* Date badge */}
+          <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
+            {formatDate(event.date)}
+          </div>
+        </div>
 
         {/* Location + Time (centered, single line each) */}
         <div className="flex justify-center">
-          <div className="flex items-center gap-2 whitespace-nowrap overflow-hidden mb-1">
+          <div className="flex items-center gap-2 whitespace-nowrap overflow-hidden mt-2 mb-1">
             <span
               className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-full bg-gray-50 text-gray-700 border border-gray-200"
               title={`${event.city}, ${event.state}`}

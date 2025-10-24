@@ -3,76 +3,75 @@
 import type { Event } from '@/types/event';
 
 export default function EventAboutSection({ event }: { event: Event }) {
-  // Optional fields you may add to your DB later:
-  // event.notes?: string
-  // event.requirements?: string
-
-  // Fallback text so the section is visible even with no data yet
-  const hasNotes =
-    Boolean((event as any).notes) || Boolean((event as any).requirements);
+  const hasNotes = Boolean((event as any).notes) || Boolean((event as any).requirements);
   const notesText = String((event as any).notes || '').trim();
   const reqText = String((event as any).requirements || '').trim();
 
   return (
     <section className="lg:col-span-2">
-      <div className="bg-white/50 rounded-xl p-6 backdrop-blur-sm border border-white/60">
-        {/* About */}
-        <h2 className="text-lg font-bold text-wondergreen mb-4">About {event.name} Event</h2>
-        <p className="text-gray-800 leading-relaxed text-base">
+      {/* About This Event Card */}
+      <div className="bg-white/50 rounded-2xl p-5 sm:p-6 lg:p-8 backdrop-blur-sm border border-white/60 mb-6">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-wondergreen mb-4 sm:mb-5">
+          About This Event
+        </h2>
+        <p className="text-sm sm:text-base text-gray-800 leading-relaxed">
           {event.description}
         </p>
+      </div>
 
-        {/* Notes / What to bring — ALWAYS render the section */}
-        <div className="mt-6 pt-6 border-t border-white/50">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30 text-xs font-bold">
-              !
-            </span>
-            <h3 className="text-sm font-bold text-wondergreen uppercase tracking-wide">
-              Notes &amp; What to Bring
-            </h3>
-          </div>
+      {/* Notes & What to Bring Card - Full Width */}
+      <div className="bg-white/50 rounded-2xl p-5 sm:p-6 lg:p-8 backdrop-blur-sm border border-white/60">
+        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-wondergreen mb-6 sm:mb-8">
+          Notes & What to Bring
+        </h3>
 
-          {/* If you have notes/requirements, show them nicely. Otherwise show a soft placeholder. */}
-          {hasNotes ? (
-            <div className="space-y-4">
-              {notesText && (
-                <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+        {hasNotes ? (
+          <div className="space-y-8">
+            {/* Notes section */}
+            {notesText && (
+              <div>
+                <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 uppercase tracking-wide">
+                  Important Notes
+                </h4>
+                <ul className="list-disc pl-5 sm:pl-6 space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
                   {notesText
                     .split('\n')
                     .filter(Boolean)
                     .map((line, i) => (
-                      <li key={`note-${i}`}>{line}</li>
+                      <li key={`note-${i}`} className="leading-relaxed">
+                        {line}
+                      </li>
                     ))}
                 </ul>
-              )}
+              </div>
+            )}
 
-              {reqText && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-600 mb-1">
-                    Suggested items / requirements
-                  </p>
-                  <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                    {reqText
-                      .split('\n')
-                      .filter(Boolean)
-                      .map((line, i) => (
-                        <li key={`req-${i}`}>{line}</li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="rounded-lg border border-dashed border-gray-200 bg-white/60 p-4">
-              <p className="text-sm text-gray-600">
-                Organizers can add extra details here (e.g., clothing, supplies to
-                bring, parking, check-in instructions). This is just a placeholder
-                until notes are added.
-              </p>
-            </div>
-          )}
-        </div>
+            {/* Requirements section */}
+            {reqText && (
+              <div className={notesText ? 'border-t border-white/50 pt-8' : ''}>
+                <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-3 sm:mb-4 uppercase tracking-wide">
+                  What to Bring
+                </h4>
+                <ul className="list-disc pl-5 sm:pl-6 space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
+                  {reqText
+                    .split('\n')
+                    .filter(Boolean)
+                    .map((line, i) => (
+                      <li key={`req-${i}`} className="leading-relaxed">
+                        {line}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="bg-white/60 rounded-lg border border-gray-200 p-4 sm:p-6">
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Organizers can add extra details here (e.g., clothing, supplies to bring, parking, check-in instructions).
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
