@@ -73,7 +73,7 @@ export default function EventAsideCard({
                 </div>
 
                 {/* Date & Time */}
-                <div className="mb-4 sm:mb-5 pb-4 sm:pb-5 border-b border-white/50">
+                <div className="mb-3 sm:mb-4 pb-4 sm:pb-5 border-b border-white/50">
                     <div className="flex items-center justify-between mb-3">
                         <p className="text-sm sm:text-base font-bold text-wondergreen uppercase tracking-wide">
                             Event Date &amp; Time
