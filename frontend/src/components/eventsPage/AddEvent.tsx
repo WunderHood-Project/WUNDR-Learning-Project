@@ -10,6 +10,9 @@ import { determineEnv } from '../../../utils/api';
 import { parseFloatOrNull, parseIntOrZero } from '../../../utils/parseHelpers';
 import EventFields from './EventField';
 import { useActivity } from '../../../hooks/useActivity';
+// import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
+import { compressImage } from '../../../utils/image/compressImage';
+
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -18,6 +21,7 @@ const initialEventForm = (): CreateEventPayload => ({
     activityId: "",
     name: "",
     description: "",
+    notes: "",
     date: "",
     startTime: "",
     endTime: "",
@@ -41,6 +45,21 @@ export default function AddEvent() {
     const { events } = useEvent(undefined)
     const router = useRouter()
     const todayYMD = useMemo<string>(() => toYMDLocal(), [])
+
+    const handleImageChange = async (fileOrUrl: File | string | null) => {
+        if (fileOrUrl instanceof File) {
+            // Compress file to ±1600×1200, WebP/0.8
+            const dataUrl = await compressImage(fileOrUrl, {
+                maxWidth: 1600,
+                maxHeight: 1200,
+                quality: 0.8,
+                type: 'image/webp',     
+            });
+            setForm(prev => ({ ...prev, image: dataUrl }));
+        } else {
+            setForm(prev => ({ ...prev, image: fileOrUrl ?? '' }));
+        }
+    };
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -77,6 +96,9 @@ export default function AddEvent() {
 
         // Validate description length:
         if (form.description.length <= 1) newErrors.description = "Description must be greater than one character"
+
+        // Validate description notes
+        if (form.notes && form.notes.length < 2) newErrors.notes = "Notes must be at least 2 characters";
 
         // Validate date format:
         if (!dateYMD.test(form.date)) newErrors.date = "Please pick a valid date"
@@ -140,6 +162,7 @@ export default function AddEvent() {
                     activities={activities}
                     minDate={todayYMD}
                     onChange={handleChange}
+                    onImageChange={handleImageChange}
                 />
 
                 <div className="flex justify-end gap-4">

@@ -44,6 +44,19 @@ export const formatDate = (dateString: string) => {
     })
 }
 
+export function formatTimeRange12h(dateISO: string, start?: string | null, end?: string | null): string {
+  const fmt = (hhmm?: string | null) =>
+    hhmm
+      ? combineLocal(dateISO, hhmm).toLocaleTimeString([], {
+          hour: 'numeric', minute: '2-digit', hour12: true,
+        })
+      : '';
+
+  const s = fmt(start);
+  const e = fmt(end);
+  return s && e ? `${s} – ${e}` : (s || e);
+}
+
 export const combineLocal = (isoOrDateOnly: string, timeStr = "00:00") => {
     if (!isoOrDateOnly) return new Date(NaN);
 

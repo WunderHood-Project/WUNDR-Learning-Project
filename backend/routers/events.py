@@ -68,6 +68,7 @@ async def create_event(
            data={
                "name": event_data.name,
                "description": event_data.description,
+               "notes": event_data.notes,
                "date": event_data.date,
                "image": event_data.image,
                "participants": event_data.participants,
@@ -258,6 +259,9 @@ async def update_event(
 
    if event_data.description is not None:
        update_payload["description"] = event_data.description
+
+   if event_data.notes is not None:
+        update_payload["notes"] = event_data.notes
 
    if event_data.date is not None:
        update_payload["date"] = event_data.date

@@ -22,15 +22,6 @@ export default function EventsPageContent() {
   const [groupedEvents, setGroupedEvents] = useState<GroupedEvents[]>([]);
   const [loading, setLoading] = useState(true);
   const isAdmin: boolean = user?.role === "admin"
-  // const [isAdmin, setIsAdmin] = useState(false);
-
-  // useEffect(() => {
-  //   const user = localStorage.getItem("user");
-  //   if (user) {
-  //     const userObj = JSON.parse(user);
-  //     setIsAdmin(userObj.role === "admin");
-  //   }
-  // }, []);
 
   useEffect(() => {
     const fetchActivitiesWithEvents = async () => {
