@@ -12,7 +12,7 @@ import { formatDate, formatTimeRange12h } from '../../../utils/formatDate';
 import type { Event } from '@/types/event';
 import Image from "next/image";
 import AppIcon from "@/app/icon.png"; 
-
+import { normalizeNextImageSrc } from "../../../utils/image/normalizeNextImageSrc";
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -44,42 +44,56 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
       {/* Body */}
       <div className="flex-1 p-4 sm:p-6 flex flex-col gap-3">
         {/* Title (fixed height to keep cards aligned) */}
-       <h3 className="text-center text-wondergreen font-bold text-lg sm:text-xl leading-snug line-clamp-2 min-h-[2rem]">
-          {event.name}
+        <h3 className="text-center text-wondergreen font-bold text-lg sm:text-xl leading-snug line-clamp-2 min-h-[2rem]">
+            {event.name}
         </h3>
 
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-b rounded-xl from-wondergreen to-wonderleaf ">
-        {event.image ? (
-          <img
-          src={event.image}
-          alt={`${event.name} cover`}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-          loading="lazy"
-          />
-        ) : (
-          <>
-          {/* soft bg */}
-          <div className="absolute inset-0 bg-gradient-to-br from-wondergreen via-wonderleaf to-wondergreen" />
-          {/* logo */}
-          <div className="absolute inset-0 grid place-content-center">
-            <Image
-              src={AppIcon}
-              alt="WonderHood"
-              width={96}
-              height={96}
-              className="opacity-40 rounded-full"
-              priority={false}
-            />
-          </div>
-          </>
-        )}
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-b rounded-xl from-wondergreen to-wonderleaf">
+        {(() => {
+          const p = normalizeNextImageSrc(event.image);
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-          {/* Date badge */}
-          <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
-            {formatDate(event.date)}
-          </div>
+          if (p) {
+            return (
+              <>
+                <Image
+                  src={p.src}
+                  alt={`${event.name} cover`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 320px"
+                  className="absolute inset-0 object-cover transition-transform duration-300 hover:scale-105"
+                  priority={false}
+                  unoptimized={p.unoptimized}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
+                  {formatDate(event.date)}
+                </div>
+              </>
+            );
+          }
+
+          return (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-wondergreen via-wonderleaf to-wondergreen" />
+              <div className="absolute inset-0 grid place-content-center">
+                <Image
+                  src={AppIcon}
+                  alt="WonderHood"
+                  width={96}
+                  height={96}
+                  className="opacity-40 rounded-full"
+                  priority={false}
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
+                {formatDate(event.date)}
+              </div>
+            </>
+          );
+        })()}
         </div>
+
 
         {/* Location + Time (centered, single line each) */}
         <div className="flex justify-center">

@@ -4,6 +4,7 @@ import React from "react"
 import { CITIES_CO } from "@/data/citiesCO"
 import type { Activity } from "@/types/activity"
 import type { CreateEventPayload, EventFormErrors } from '@/types/event'
+import EventImagePicker from "@/components/common/EventImagePicker";
 
 
 type Props = {
@@ -12,9 +13,12 @@ type Props = {
     activities: Activity[]
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
     minDate?: string
+    onImageChange?: (fileOrUrl: File | string | null) => void;
 }
 
-const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onChange }) => {
+const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onChange, onImageChange, }) => {
+    const handleImageChange = onImageChange ?? (() => {});
+
     return (
         <fieldset className="space-y-4">
             <div>
@@ -128,13 +132,12 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
 
             <div>
                 <label className="block mb-1 font-medium">Image</label>
-                <input
-                    name="image"
-                    placeholder="Image (optional)"
-                    value={form.image}
-                    onChange={onChange}
-                    className="w-full border rounded px-3 py-2"
+                <EventImagePicker
+                value={form.image || null}
+                onChange={handleImageChange}
                 />
+                {errors.image && <p className="text-sm text-red-600">{errors.image}</p>}
+
             </div>
 
             <div>

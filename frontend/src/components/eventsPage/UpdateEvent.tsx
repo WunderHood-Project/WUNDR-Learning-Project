@@ -10,6 +10,8 @@ import { determineEnv } from "../../../utils/api"
 import { parseFloatOrNull, parseIntOrZero } from "../../../utils/parseHelpers"
 import EventFields from "./EventField"
 import { useActivity } from "../../../hooks/useActivity"
+// import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
+import { compressImage } from '../../../utils/image/compressImage';
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -148,6 +150,21 @@ export default function UpdateEvent() {
         }
     }
 
+    const handleImageChange = async (fileOrUrl: File | string | null) => {
+        if (fileOrUrl instanceof File) {
+            const dataUrl = await compressImage(fileOrUrl, {
+                maxWidth: 1600,
+                maxHeight: 1200,
+                quality: 0.8,
+                type: 'image/webp',
+            });
+            setFormEvent(prev => (prev ? { ...prev, image: dataUrl } : prev));
+        } else {
+            setFormEvent(prev => (prev ? { ...prev, image: fileOrUrl ?? '' } : prev));
+        }
+    };
+
+
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-center mb-4">Update Event</h1>
@@ -158,6 +175,7 @@ export default function UpdateEvent() {
                     errors={errors}
                     activities={activities}
                     onChange={handleChange}
+                    onImageChange={handleImageChange}
                 />
 
                 {/* Buttons */}
