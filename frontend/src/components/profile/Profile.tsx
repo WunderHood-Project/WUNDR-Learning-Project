@@ -6,6 +6,7 @@ import ChildInfo from "./childInfo/ChildInfo"
 import { useRouter, useSearchParams } from "next/navigation";
 import Notifications from "./notifications/NotifInfo"
 import YourEvents from "./events/yourEvents";
+import ProfileSidebar from "./ProfileSidebar"
 
 type TabKey = 'user' | 'child' | 'events' | 'notifications';
 
@@ -36,24 +37,23 @@ const Profile = () => {
     };
 
     return (
-        <div className="flex flex-row bg-wonderbg">
-            {/* Left menu */}
-            <div className="flex flex-col w-1/4">
-                {profileTabs.map((tab, idx) => (
-                    <button
-                        key={idx}
-                        className={`${idx === tabIdx ? 'active' : ""}`}
-                        onClick={() => openTab(idx)}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-            <div className="w-3/4">
-                {tabIdx === 0 && <UserInfo />}
-                {tabIdx === 1 && <ChildInfo />}
-                {tabIdx === 2 && <YourEvents />}
-                {tabIdx === 3 && <Notifications />}
+        <div className="bg-wonderbg">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Left menu */}
+                <aside className="lg:col-span-4">
+                    <ProfileSidebar
+                    tabs={profileTabs as unknown as string[]}
+                    activeIdx={tabIdx}
+                    onSelect={openTab}
+                    />
+                </aside>
+                {/* Content */}
+                <main className="lg:col-span-8">
+                    {tabIdx === 0 && <UserInfo />}
+                    {tabIdx === 1 && <ChildInfo />}
+                    {tabIdx === 2 && <YourEvents />}
+                    {tabIdx === 3 && <Notifications />}
+                </main>
             </div>
         </div>
     )
