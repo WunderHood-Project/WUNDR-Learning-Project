@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef, useMemo } from "react"
 import { Child } from "@/types/child"
 import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6"
 import JoinChildForm from "../addChild/AddChildForm"
-import UpdateChildForm from "../UpdateChild"
 import { useChild } from "../../../../../hooks/useChild"
 import ChildInfoCard from "./ChildInfoCard"
+import UpdateChildForm from "../updateChild/UpdateChild"
 
 
 const NO_CHILDREN: readonly Child[] = Object.freeze([] as const);
