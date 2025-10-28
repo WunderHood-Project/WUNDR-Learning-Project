@@ -73,7 +73,10 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		setCurrentStep(s => s + 1)
 	}
 
-	const prevStep = () => { setCurrentStep(s => s - 1); setServerError(null) }
+	const prevStep = () => {
+		setCurrentStep(s => s - 1)
+		setServerError(null)
+	}
 
 	const toCreatePayload = (form: CreateChildForm): CreateChildForm => ({
 		...form,
@@ -88,12 +91,22 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		setServerError(null)
 
 		const childErrors: ChildErrorsForm = validateChildBasics({ firstName: form.firstName, lastName: form.lastName, birthday: form.birthday }) as ChildErrorsForm
-
-		if (Object.keys(childErrors).length) { setServerError("Please fix the errors above."); return }
+		if (Object.keys(childErrors).length) {
+			setServerError("Please fix the errors above.")
+			return
+		}
 
 		const { errs, ok } = validateECs(ecs)
 		setEcErrors(errs)
-		if (!ok) { setServerError("Please fix the Emergency Contact errors"); return }
+		if (!ok) {
+			setServerError("Please fix the Emergency Contact errors")
+			return
+		}
+
+		if (!form.waiver) {
+			setServerError("Please acknowledge the waiver to continue")
+			return
+		}
 
 		const payload = { ...toCreatePayload(form), emergencyContacts: toPayload }
 
