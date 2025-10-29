@@ -41,9 +41,9 @@ export default function Profile() {
         <div className="bg-wonderbg">
 
             {/* TOP controls: mobile + tablet */}
-            <div className="px-4 sm:px-6 pt-0 md:pt-0 lg:pt-0 mb-0 flex gap-3">
+            <div className="-mx-2 px-2 sm:mx-0 sm:px-6 pt-0 md:pt-0 lg:pt-0 mb-0 flex gap-3">
                 {/* Mobile ONLY (<768) */}
-                <div className="block md:hidden -mt-12 mb-2">
+                <div className="block md:hidden -mt-14 mb-2">
                     <MobileMenuDrawer
                     className="md:hidden" 
                     tabs={TABS as unknown as string[]}
@@ -66,8 +66,8 @@ export default function Profile() {
             {/* Desktop grid */}
             <div
             className="
-            max-w-7xl mx-auto px-4 sm:px-6 pt-0 pb-8
-            grid grid-cols-1 gap-6
+            max-w-none lg:max-w-7xl mx-auto px-2 sm:px-6 pt-0 pb-8
+            grid grid-cols-1 gap-2
             lg:[grid-template-columns:240px_1fr]
             xl:[grid-template-columns:260px_1fr]
             "
@@ -81,7 +81,7 @@ export default function Profile() {
                     />
                 </aside>
 
-                <main className="lg:pl-6 xl:pl-12">
+                <main className="-mx-2 sm:mx-0 lg:pl-6 xl:pl-12">
                     {tabIdx === 0 && <UserInfo />}
                     {tabIdx === 1 && <ChildInfo />}
                     {tabIdx === 2 && <YourEvents />}
