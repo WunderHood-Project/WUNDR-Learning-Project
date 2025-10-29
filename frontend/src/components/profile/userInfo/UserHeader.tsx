@@ -33,9 +33,9 @@ export default function UserHeader({
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-wondergreen">
                         {name}
                         </h2>
-                        {subtitle && (
+                        {/* {subtitle && (
                         <p className="mt-1 text-wondergreen/70">{subtitle}</p>
-                        )}
+                        )} */}
                         <div className="mt-3 flex flex-wrap items-center gap-4 mt-5">
                         <span className="inline-flex items-center rounded-full bg-wonderleaf/15 text-wondergreen px-3 py-1 text-sm font-semibold">
                             {formatRole(user?.role)}
@@ -50,7 +50,9 @@ export default function UserHeader({
                         onClick={onEdit}
                         className="inline-flex items-center gap-2 h-9 px-4 rounded-xl bg-wondergreen text-white font-semibold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-wonderleaf"
                     >
-                        ✏️ Edit Profile
+                        Edit Profile
+                        <span className="inline-block -scale-x-100">✏️</span>
+                         
                     </button>
                 </div>
             </div>

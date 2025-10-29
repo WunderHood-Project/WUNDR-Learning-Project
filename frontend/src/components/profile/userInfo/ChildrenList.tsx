@@ -1,10 +1,15 @@
 'use client';
+import Link from 'next/link';
 
 export default function ChildrenList({
-    items,
+    items, showCTA = true,ctaHref = '/profile?tab=child&open=add',
 }: {
     items: { id: string; name: string; subtitle?: string }[];
+    showCTA?: boolean;
+    ctaHref?: string;
 }) {
+
+    const isEmpty = items.length === 0;
 
     return (
         <section className="bg-white rounded-2xl shadow-lg border border-wondergreen/10 overflow-hidden">
@@ -14,6 +19,21 @@ export default function ChildrenList({
                     <span>👨‍👩‍👧</span>
                     Your Children
                 </h3>
+                 {isEmpty ? (
+                    <div className="rounded-xl border border-wonderleaf/30 bg-wonderleaf/10 p-4">
+                        <p className="text-wondergreen mb-3">
+                        You haven’t registered any children yet.
+                        </p>
+                        {showCTA && (
+                        <Link
+                            href={ctaHref}
+                            className="inline-flex items-center gap-2 rounded-lg bg-wondergreen text-white px-4 py-2 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-wonderleaf"
+                        >
+                            Add a child
+                        </Link>
+                        )}
+                    </div>
+                    ) : (
 
                 <div className="space-y-3">
                     {items.map((c) => (
@@ -28,6 +48,7 @@ export default function ChildrenList({
                         </div>
                     ))}
                 </div>
+            )}
             </div>
         </section>
     );

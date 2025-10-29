@@ -1,36 +1,37 @@
-'use client'
+'use client';
 
-import { useState, useMemo, useEffect } from "react"
-import UserInfo from "./userInfo/UserInfo"
-import ChildInfo from "./childInfo/ChildInfo"
-import { useRouter, useSearchParams } from "next/navigation";
-import Notifications from "./notifications/NotifInfo"
-import YourEvents from "./events/yourEvents";
-import ProfileSidebar from "./ProfileSidebar"
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import UserInfo from './userInfo/UserInfo';
+import ChildInfo from './childInfo/ChildInfo';
+import Notifications from './notifications/NotifInfo';
+import YourEvents from './events/yourEvents';
+import ProfileSidebar from './ProfileSidebar';
+import MobileMenuDrawer from './MobileMenuDrawer';
+import TabletMenuDropdown from './TabletMenuDropdown';
 
 type TabKey = 'user' | 'child' | 'events' | 'notifications';
 
-const profileTabs = ['User Information', "Child's Information", 'Your Events', 'Notifications'] as const;
+const TABS = ['User Information', "Child's Information", 'Your Events', 'Notifications'] as const;
 const keyToIdx: Record<TabKey, number> = { user: 0, child: 1, events: 2, notifications: 3 };
-const idxToKey = (idx: number): TabKey =>
-    (['user', 'child', 'events', 'notifications'] as TabKey[])[idx];
+const idxToKey = (i: number) => (['user', 'child', 'events', 'notifications'] as TabKey[])[i];
 
-const Profile = () => {
+export default function Profile() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const initialKey = (searchParams.get('tab') ?? 'user') as TabKey;
-    const [tabIdx, setTabIdx] = useState<number>(() => keyToIdx[initialKey] ?? 0);
+    const search = useSearchParams();
 
-    const tabFromUrl = useMemo(
-        () => (searchParams.get('tab') ?? 'user') as TabKey,
-        [searchParams]
-    );
+    // initial tab from URL (?tab=...), default 'user'
+    const initial = (search.get('tab') ?? 'user') as TabKey;
+    const [tabIdx, setTabIdx] = useState<number>(() => keyToIdx[initial] ?? 0);
+
+    // keep tab in sync with URL changes
+    const tabFromUrl = useMemo(() => (search.get('tab') ?? 'user') as TabKey, [search]);
 
     useEffect(() => {
-        const next = keyToIdx[tabFromUrl] ?? 0;
-        setTabIdx(next);
+        setTabIdx(keyToIdx[tabFromUrl] ?? 0);
     }, [tabFromUrl]);
 
+    // change active tab + update URL (shallow)
     const openTab = (idx: number) => {
         setTabIdx(idx);
         router.replace(`/profile?tab=${idxToKey(idx)}`);
@@ -38,17 +39,49 @@ const Profile = () => {
 
     return (
         <div className="bg-wonderbg">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Left menu */}
-                <aside className="lg:col-span-4">
+
+            {/* TOP controls: mobile + tablet */}
+            <div className="px-4 sm:px-6 pt-0 md:pt-0 lg:pt-0 mb-0 flex gap-3">
+                {/* Mobile ONLY (<768) */}
+                <div className="block md:hidden -mt-12 mb-2">
+                    <MobileMenuDrawer
+                    className="md:hidden" 
+                    tabs={TABS as unknown as string[]}
+                    activeIdx={tabIdx}
+                    onSelect={openTab}
+                    />
+                </div>
+
+                {/* Tablet ONLY (768–1023) */}
+            
+                    <TabletMenuDropdown
+                    className="hidden md:block lg:hidden -mt-12 mb-2"
+                    tabs={TABS as unknown as string[]}
+                    activeIdx={tabIdx}
+                    onSelect={openTab}
+                    />
+
+            </div>
+
+            {/* Desktop grid */}
+            <div
+            className="
+            max-w-7xl mx-auto px-4 sm:px-6 pt-0 pb-8
+            grid grid-cols-1 gap-6
+            lg:[grid-template-columns:240px_1fr]
+            xl:[grid-template-columns:260px_1fr]
+            "
+            >
+                {/* Sidebar ONLY (>=1024) */}
+                <aside className="hidden lg:block lg:-ml-6 xl:-ml-10">
                     <ProfileSidebar
-                    tabs={profileTabs as unknown as string[]}
+                    tabs={TABS as unknown as string[]}
                     activeIdx={tabIdx}
                     onSelect={openTab}
                     />
                 </aside>
-                {/* Content */}
-                <main className="lg:col-span-8">
+
+                <main className="lg:pl-6 xl:pl-12">
                     {tabIdx === 0 && <UserInfo />}
                     {tabIdx === 1 && <ChildInfo />}
                     {tabIdx === 2 && <YourEvents />}
@@ -56,7 +89,5 @@ const Profile = () => {
                 </main>
             </div>
         </div>
-    )
+    );
 }
-
-export default Profile

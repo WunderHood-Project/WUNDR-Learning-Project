@@ -35,7 +35,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
     }
 
     return (
-        <div className="bg-white rounded-lg p-6 max-w-lg mx-auto">
+        <div className="bg-white rounded-2xl w-[92vw] max-w-[28rem] sm:max-w-lg p-4 sm:p-6 mx-auto">
             <div className="flex items-center mb-4">
                 <FaExclamationTriangle className="text-red-500 text-2xl mr-3" />
                 <h2 className="text-xl font-bold text-gray-800">Delete Your Account</h2>
