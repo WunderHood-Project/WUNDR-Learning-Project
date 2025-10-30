@@ -64,6 +64,7 @@ async def stripe_webhook(request: Request):
 
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+        print(event["type"])
 
     except:
         raise HTTPException(status_code=400, detail="Invalid signature")
@@ -81,6 +82,7 @@ async def stripe_webhook(request: Request):
 
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
+        # print(session["id"])
         
         # Check for existing donation -> idempotent       
         existing_donation = await db.donations.find_unique(
@@ -89,18 +91,26 @@ async def stripe_webhook(request: Request):
 
         user_id = session["metadata"].get("userId")
 
-        # Create donation
+        print("USERID", user_id)
+
+    #     # Create donation
         if existing_donation:
             return {"status": "duplicate_ignored"}
         
-        donation_data = {
-            "donationType": session["metadata"]["donationType"],
-            "amount": int(session["amount_total"] / 100),
-            "email": session.get("customer_email"),
-            "sessionId": session["id"],
-            "user": {"connect": {"id": user_id}} if user_id else None,
-            }
+        try:
+            donation_data = {
+                "donationType": session["metadata"].get("donationType", "Donation"),
+                "amount": int(session["amount_total"] / 100),
+                "email": session.get("customer_email"),
+                "sessionId": session["id"]
+                }
+            
+            if user_id:
+                donation_data["user"] = {"connect": {"id": user_id}}
+            
+            await db.donations.create(data=donation_data)
 
-        await db.donations.create(data=donation_data)
+        except Exception as e:
+             print("❌ Donation creation failed:", e)
 
     return {"status": "success"}
