@@ -16,6 +16,7 @@ export type Child = {
     waiver: boolean
     parents: User[]
     emergencyContacts?: EmergencyContact[]
+    updatedAt?: string
 }
 
 type ServerManaged = "id" | "parents"

@@ -12,9 +12,10 @@ import { displayGrade } from "../../../../../utils/displayGrade"
 type Props = {
     child: Child
     onEdit: () => void
+    onDeleted: (deletedId: string) => void
 }
 
-const ChildInfoCard: React.FC<Props> = ({ child, onEdit }) => {
+const ChildInfoCard: React.FC<Props> = ({ child, onEdit, onDeleted }) => {
     return (
         <div className="bg-white rounded-lg p-6 min-h-[350px]">
             <div className="flex justify-between items-center mb-6">
@@ -24,7 +25,7 @@ const ChildInfoCard: React.FC<Props> = ({ child, onEdit }) => {
 
                 <div className="flex flex-row gap-2">
                     <FaPen onClick={onEdit} />
-                    <OpenModalButton buttonText={<FaTrash />} modalComponent={<DeleteChild currChild={child} />} />
+                    <OpenModalButton buttonText={<FaTrash />} modalComponent={<DeleteChild currChild={child} onDeleted={onDeleted}/>} />
                 </div>
             </div>
 

@@ -1,10 +1,10 @@
-import type { EmergencyContact, ECErrors } from "@/types/emergencyContact"
+import type { ECErrors, ECShape } from "@/types/emergencyContact"
 
 type RowProps = {
 	idx: number
-	value: EmergencyContact
+	value: ECShape
 	error: ECErrors
-	onChange: (idx: number, patch: Partial<EmergencyContact>) => void
+	onChange: (idx: number, patch: Partial<ECShape>) => void
 	onPhone: (idx: number, raw: string) => void
 	onRemove?: (idx: number) => void
 	required?: boolean

@@ -1,15 +1,17 @@
 import { CreateChildForm, type Child, type UpdateChildForm } from "@/types/child"
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { makeApiRequest } from "../../../../../utils/api"
-import { ECErrors, ECUpdateForm } from "@/types/emergencyContact"
-import { dedupeECs, ecsEqual } from "../../../../../utils/emergencyContactHelpers"
+import { EmergencyContact } from "@/types/emergencyContact"
+import { ecsEqual, validateECs } from "../../../../../utils/emergencyContactHelpers"
 import { e164toUS, formatUs, toE164US } from "../../../../../utils/formatPhoneNumber"
 import { determineEnv } from "../../../../../utils/api"
-import { buildAddEC } from "../../../../../utils/childFormShared"
 import UpdateChildHeaderFields from "./UpdateChildHeaderFields"
 import UpdateChildMetaFields from "./UpdateChildMetaFields"
-import UpdateEmergencyContactsSection from "../emergencyContact/UpdateEmergencyContactSection"
 import UpdateChildNotes from "./UpdateChildNotes"
+import { useAuth } from "@/context/auth"
+import { useEmergencyContactsUpdate } from "../emergencyContact/useEmergencyContactsUpdate"
+import EmergencyContactsList from "../emergencyContact/EmergencyContactsList"
+
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -20,21 +22,12 @@ type Props = {
     refetchChildren?: () => Promise<void> | void
 }
 
-const blankEC = (): ECUpdateForm => ({
-    firstName: "",
-    lastName: "",
-    relationship: "",
-    phoneNumber: ""
-});
-
 const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatched, refetchChildren }) => {
-    const hydratedIdRef = useRef<string | null>(null)
-    const keySeq = useRef(0)
-    const [ecs, setEcs] = useState<ECUpdateForm[]>([blankEC()])
-    const [ecErrors, setEcErrors] = useState<ECErrors[]>([])
+    const { refetchUser } = useAuth()
+    const hydrateKey = `${currChild?.id ?? ""} | ${currChild?.updatedAt ?? ""}`
+    const { ecs, ecErrors, rowKeys, setEcErrors, addEC, removeEC, changeEC, changePhone } = useEmergencyContactsUpdate(currChild.emergencyContacts, hydrateKey)
     const [saving, setSaving] = useState(false)
     const [serverError, setServerError] = useState<string | null>(null)
-    const [rowKeys, setRowKeys] = useState<string[]>([String(keySeq.current++)])
     const [form, setForm] = useState<CreateChildForm>({
         firstName: "",
         lastName: '',
@@ -50,11 +43,6 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
     })
 
     useEffect(() =>{
-        const id = currChild?.id
-        if (!id) return
-
-        if (hydratedIdRef.current === id) return
-
         setForm({
             firstName: currChild.firstName ?? '',
             lastName: currChild.lastName ?? "",
@@ -69,24 +57,10 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
             emergencyContacts: []
         })
 
-        const initialFromServer: ECUpdateForm[] =
-            (currChild.emergencyContacts ?? []).map(ec => ({
-                firstName: ec.firstName ?? "",
-                lastName: ec.lastName ?? "",
-                relationship: ec.relationship ?? "",
-                phoneNumber: e164toUS(ec.phoneNumber) ?? formatUs(ec.phoneNumber ?? "")
-            }))
-
-        const initial = initialFromServer.length ? initialFromServer : [blankEC()]
-        setEcs(initial)
-        setEcErrors(initial.map(() => ({})))
-        setRowKeys(initial.map(() => String(keySeq.current++)))
         setServerError(null)
+    }, [hydrateKey])
 
-        hydratedIdRef.current = id
-    }, [currChild.id])
-
-    const isValid = useMemo(() => Boolean(form.firstName?.trim() && form.lastName?.trim()), [form.firstName, form.lastName])
+    const isValid = Boolean(form.firstName?.trim() && form.lastName?.trim())
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const target = e.currentTarget as HTMLInputElement
@@ -108,28 +82,6 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
 
         setForm(prev => ({ ...prev, [name]: value }))
         setServerError(null)
-    }
-
-    const validateECs = (contacts: ECUpdateForm[]) => {
-        const filled = (c: ECUpdateForm) => !!(c.firstName.trim() || c.lastName.trim() || c.relationship.trim() || (c.phoneNumber ?? "").trim())
-        const errs: ECErrors[] = contacts.map(() => ({}))
-
-        contacts.forEach((c, i) => {
-            const required = i === 0 || filled(c)
-            if (!required) return
-            if (!c.firstName.trim()) errs[i].firstName = "Required"
-            if (!c.lastName.trim()) errs[i].lastName = "Required"
-            if (!c.relationship.trim()) errs[i].relationship = "Required"
-            if (!toE164US(c.phoneNumber)) errs[i].phoneNumber = "Enter a valid US phone"
-        })
-
-        const deduped = dedupeECs(contacts)
-        const ok =
-            deduped.length >= 1 &&
-            deduped.length <= 3 &&
-            errs.every(e => Object.keys(e).length === 0)
-
-        return { ok, errs, deduped }
     }
 
     const buildUpdatePayload = (form: CreateChildForm, curr: Child): UpdateChildForm => {
@@ -172,14 +124,14 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
     const submitUpdate = async () => {
         if (!isValid || saving) return
 
-        const { ok: ecOk, errs, deduped } = validateECs(ecs)
+        const { ok: ecOk, errs, deduped } = validateECs(ecs as EmergencyContact[])
         setEcErrors(errs)
         if (!ecOk) {
             setServerError("Please fix the Emergency Contact errors")
             return
         }
 
-        const currentECs: ECUpdateForm[] = (currChild.emergencyContacts ?? []).map(ec => ({
+        const currentECs = (currChild.emergencyContacts ?? []).map(ec => ({
             firstName: ec.firstName ?? "",
             lastName: ec.lastName ?? "",
             relationship: ec.relationship ?? "",
@@ -189,7 +141,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         const includeECs = !ecsEqual(deduped, currentECs)
         const payload = buildUpdatePayload(form, currChild)
 
-        if (includeECs) {
+        if (includeECs && deduped.length > 0) {
             payload.emergencyContacts = deduped.map(c => ({
                 firstName: c.firstName.trim(),
                 lastName: c.lastName.trim(),
@@ -200,12 +152,14 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
 
         try {
             setSaving(true)
-            const updated = await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, {
+            const response = await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: payload
-            }) as Child
+            }) as { child: Child, message: string }
 
+            const updated = response.child
+            refetchUser()
             if (refetchChildren) await refetchChildren()
             onPatched?.(updated.id)
             setEditingChildId(null)
@@ -221,8 +175,6 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         e.preventDefault()
         await submitUpdate()
     }
-
-    const addEC = buildAddEC(blankEC, keySeq, setEcs, setRowKeys, setEcErrors)
 
     return (
         <div className="bg-white rounded-lg p-6">
@@ -242,15 +194,14 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
                     saving={saving}
                 />
 
-                <UpdateEmergencyContactsSection
+                <EmergencyContactsList
                     ecs={ecs}
                     ecErrors={ecErrors}
                     rowKeys={rowKeys}
-                    setEcs={setEcs}
-                    setEcErrors={setEcErrors}
-                    setRowKeys={setRowKeys}
-                    onAdd={addEC}
-                    saving={saving}
+                    addEC={addEC}
+                    removeEC={removeEC}
+                    changeEC={changeEC}
+                    changePhone={changePhone}
                 />
 
                 <UpdateChildNotes

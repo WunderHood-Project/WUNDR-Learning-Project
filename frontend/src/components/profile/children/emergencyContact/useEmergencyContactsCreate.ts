@@ -1,8 +1,7 @@
-import { ECErrors, EmergencyContact } from "@/types/emergencyContact"
+import { ECCreateForm, ECErrors, EmergencyContact } from "@/types/emergencyContact"
 import { useId, useMemo, useState } from "react"
 import { formatUs, toE164US } from "../../../../../utils/formatPhoneNumber"
-// import type { EmergencyContact, ECErrors } from "@/types/emergencyContact"
-// import { formatUs, toE164US } from "@/utils/phone"
+
 
 const blankEC = (): EmergencyContact => ({
   firstName: "",
@@ -11,11 +10,11 @@ const blankEC = (): EmergencyContact => ({
   phoneNumber: ""
 })
 
-export function useEmergencyContacts(initial?: EmergencyContact[]) {
+export function useEmergencyContactsCreate() {
 	const rowPrefix = useId()
-	const [ecs, setEcs] = useState<EmergencyContact[]>(initial?.length ? initial : [blankEC()])
-	const [ecErrors, setEcErrors] = useState<ECErrors[]>(ecs.map(() => ({})))
-	const [rowKeys, setRowKeys] = useState<string[]>(ecs.map((_, i) => `${rowPrefix}-${i}`))
+	const [ecs, setEcs] = useState<ECCreateForm[]>([blankEC()])
+	const [ecErrors, setEcErrors] = useState<ECErrors[]>([{}])
+	const [rowKeys, setRowKeys] = useState<string[]>([`${rowPrefix}-0`])
 
 	const addEC = () => {
 		if (ecs.length >= 3) return
@@ -41,9 +40,10 @@ export function useEmergencyContacts(initial?: EmergencyContact[]) {
 
 	const toPayload = useMemo(() => ecs
 		.map(c => {
-			const phoneE164 = toE164US(c.phoneNumber)
 			const empty = !(c.firstName?.trim() || c.lastName?.trim() || c.relationship?.trim() || c.phoneNumber)
 			if (empty) return null
+			const phoneE164 = toE164US(c.phoneNumber)
+			if (!phoneE164) return null
 
 			return {
 				firstName: c.firstName.trim(),

@@ -4,11 +4,13 @@ import { makeApiRequest } from "../../../../../utils/api";
 import { Child } from "@/types/child";
 import { determineEnv } from "../../../../../utils/api";
 import AddChildField from "./AddChildField";
-import { useEmergencyContacts } from "../emergencyContact/useEmergencyContacts";
-import { validateChildBasics, validateECs } from "../../../../../utils/childValidations";
+import { useEmergencyContactsCreate } from "../emergencyContact/useEmergencyContactsCreate";
+import { validateChildBasics } from "../../../../../utils/childValidations";
 import EmergencyContactsList from "../emergencyContact/EmergencyContactsList";
 import Stepper from "./Stepper";
 import Waiver from "./Waiver";
+import { validateECs } from "../../../../../utils/emergencyContactHelpers";
+
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -37,6 +39,8 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 	const [submitting, setSubmitting] = useState(false)
 	const [currentStep, setCurrentStep] = useState(1)
 
+	const {ecs, ecErrors, rowKeys, setEcErrors, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys } = useEmergencyContactsCreate()
+
 	const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> = (e) => {
 		const target = e.currentTarget as HTMLInputElement
 		const { type, name, value, checked } = target
@@ -54,8 +58,6 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 
 		setForm(p => ({ ...p, [name]: value }))
 	}
-
-	const { ecs, ecErrors, rowKeys, setEcErrors, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys } = useEmergencyContacts()
 
 	if (!showForm) return null
 
@@ -164,8 +166,13 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					{serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
 					<EmergencyContactsList
-						ecs={ecs} ecErrors={ecErrors} rowKeys={rowKeys}
-						addEC={addEC} removeEC={removeEC} changeEC={changeEC} changePhone={changePhone}
+						ecs={ecs}
+						ecErrors={ecErrors}
+						rowKeys={rowKeys}
+						addEC={addEC}
+						removeEC={removeEC}
+						changeEC={changeEC}
+						changePhone={changePhone}
 					/>
 
 					<div className="flex items-center justify-between mt-4">

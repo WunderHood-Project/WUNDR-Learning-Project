@@ -2,10 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react"
 import UserInfo from "./userInfo/UserInfo"
-import ChildInfo from "./childInfo/ChildInfo"
 import { useRouter, useSearchParams } from "next/navigation";
 import Notifications from "./notifications/NotifInfo"
 import YourEvents from "./events/yourEvents";
+import ChildInfo from "./children/childInfo/ChildInfo";
 
 type TabKey = 'user' | 'child' | 'events' | 'notifications';
 

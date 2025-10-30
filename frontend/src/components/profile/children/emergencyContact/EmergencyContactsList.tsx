@@ -1,14 +1,13 @@
-// import EmergencyContactRow from "./EmergencyContactRow"
-import type { EmergencyContact, ECErrors } from "@/types/emergencyContact"
+import type { ECErrors, ECShape } from "@/types/emergencyContact"
 import EmergencyContactRow from "./EmergencyContactRow"
 
 type Props = {
-	ecs: EmergencyContact[]
+	ecs: ECShape[]
 	ecErrors: ECErrors[]
 	rowKeys: string[]
 	addEC: () => void
 	removeEC: (i: number) => void
-	changeEC: (i: number, patch: Partial<EmergencyContact>) => void
+	changeEC: (i: number, patch: Partial<ECShape>) => void
 	changePhone: (i: number, raw: string) => void
 	disabled?: boolean
 }
