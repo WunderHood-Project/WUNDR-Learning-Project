@@ -77,6 +77,31 @@ export default function Navbar() {
     setModalContent(<LoginModal />);
   };
 
+//   // 4) Lock body scroll when mobile menu is open (robust)
+// useEffect(() => {
+//   const lock = () => {
+//     document.body.style.overflow = 'hidden';
+//     document.documentElement.style.overflow = 'hidden'; // iOS/Safari
+//   };
+//   const unlock = () => {
+//     document.body.style.overflow = '';
+//     document.documentElement.style.overflow = '';
+//   };
+
+//   if (isMenuOpen) lock(); else unlock();
+
+//   // страховка на размонтирование
+//   return unlock;
+// }, [isMenuOpen]);
+
+// // 3.1) Доп. страховка: при смене маршрута всегда разблокировать
+// useEffect(() => {
+//   document.body.style.overflow = '';
+//   document.documentElement.style.overflow = '';
+//   setIsMenuOpen(false);
+// }, [pathname]);
+
+
   return (
     <nav className="bg-gradient-to-r from-wonderbg via-white to-wondersun/20 backdrop-blur-sm border-b border-wonderleaf/20 shadow-lg sticky top-0 z-50">
       {/* smaller horizontal padding on mobile, none on sm+ as you asked */}
