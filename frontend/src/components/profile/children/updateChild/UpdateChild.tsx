@@ -1,9 +1,7 @@
 import { ChildErrorsForm, CreateChildForm, type Child, type UpdateChildForm } from "@/types/child"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { makeApiRequest } from "../../../../../utils/api"
-import { EmergencyContact } from "@/types/emergencyContact"
-import { ecsEqual, validateECs } from "../../../../../utils/emergencyContactHelpers"
-import { e164toUS, formatUs, toE164US } from "../../../../../utils/formatPhoneNumber"
+import { toE164US } from "../../../../../utils/formatPhoneNumber"
 import { determineEnv } from "../../../../../utils/api"
 import UpdateChildHeaderFields from "./UpdateChildHeaderFields"
 import UpdateChildMetaFields from "./UpdateChildMetaFields"
@@ -38,37 +36,36 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         emergencyContacts: []
     })
 
-    useEffect(() =>{
-        const hydrated: CreateChildForm = {
-            firstName: currChild.firstName ?? '',
-            lastName: currChild.lastName ?? "",
-            preferredName: currChild.preferredName ?? "",
-            homeschool: Boolean(currChild.homeschool),
-            grade: currChild.grade ?? null,
-            birthday: currChild.birthday ? currChild.birthday.split("T")[0] : "",
-            allergiesMedical: currChild.allergiesMedical ?? "",
-            notes: currChild.notes ?? "",
-            photoConsent: Boolean(currChild.photoConsent),
-            waiver: Boolean(currChild.waiver),
-            emergencyContacts: []
-        }
+    const uiSnapshot = useMemo<CreateChildForm>(() => ({
+        firstName: currChild.firstName ?? '',
+        lastName: currChild.lastName ?? '',
+        preferredName: currChild.preferredName ?? '',
+        homeschool: Boolean(currChild.homeschool),
+        grade: currChild.grade ?? null,
+        birthday: currChild.birthday ? currChild.birthday.split('T')[0] : '',
+        allergiesMedical: currChild.allergiesMedical ?? '',
+        notes: currChild.notes ?? '',
+        photoConsent: Boolean(currChild.photoConsent),
+        waiver: Boolean(currChild.waiver),
+        emergencyContacts: [],
+    }), [hydrateKey])
 
-        setForm(hydrated)
+    useEffect(() => {
+        setForm(uiSnapshot)
         setServerError(null)
 
         const initialErrs = validateChildBasics({
-            firstName: hydrated.firstName,
-            lastName: hydrated.lastName,
-            birthday: hydrated.birthday,
-            allergiesMedical: hydrated.allergiesMedical
+            firstName: uiSnapshot.firstName,
+            lastName: uiSnapshot.lastName,
+            birthday: uiSnapshot.birthday,
+            allergiesMedical: uiSnapshot.allergiesMedical,
         }) as ChildErrorsForm
 
         setErrors(initialErrs)
         setEcErrors([])
         setEcErrorMap({})
-    }, [hydrateKey, setEcErrors, setEcErrorMap])
+    }, [uiSnapshot])
 
-    // const isValid = Boolean(form.firstName?.trim() && form.lastName?.trim())
     const isValid = Object.keys(errors).length === 0
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -100,21 +97,6 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
 
             return data
         })
-
-        // if (type === "checkbox") {
-        //     setForm(prev => ({ ...prev, [name]: target.checked }))
-        //     setServerError(null)
-        //     return
-        // }
-
-        // if (name === 'grade') {
-        //     setForm(prev => ({ ...prev, grade: value === "" ? null : Number(value)}))
-        //     setServerError(null)
-        //     return
-        // }
-
-        // setForm(prev => ({ ...prev, [name]: value }))
-        // setServerError(null)
     }
 
     const buildUpdatePayload = (form: CreateChildForm, curr: Child): UpdateChildForm => {
@@ -124,7 +106,6 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         const prefNext = form.preferredName?.trim() ?? ""
         const medNext = (form.allergiesMedical ?? "").trim()
         const notesNext = form.notes?.trim() ?? ""
-        // const gradesNext = form.grade ?? null
         const uiCurrBirthday = curr.birthday ? curr.birthday.split("T")[0] : ""
 
         if (form.firstName.trim() !== curr.firstName) set("firstName", form.firstName.trim())
@@ -132,10 +113,8 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         if (prefNext && prefNext !== (curr.preferredName ?? "")) set('preferredName', prefNext)
         if (notesNext && notesNext !== (curr.notes ?? "")) set("notes", notesNext)
         if (medNext !== (curr.allergiesMedical ?? "")) set("allergiesMedical", medNext)
-        // if (form.allergiesMedical.trim() !== curr.allergiesMedical) set("allergiesMedical", form.allergiesMedical.trim())
         if (form.homeschool !== curr.homeschool) set("homeschool", form.homeschool)
         if (form.photoConsent !== curr.photoConsent) set("photoConsent", form.photoConsent)
-        // if (gradesNext && gradesNext !== (curr.grade ?? null)) set('grade', form.grade)
         if (form.birthday && form.birthday !== uiCurrBirthday) set('birthday', new Date(form.birthday).toISOString())
         if ((form.grade ?? null) !== (curr.grade ?? null)) {
             if (form.grade !== null) set("grade", form.grade)
@@ -165,36 +144,18 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         }
 
         const { ok: ecOk, deduped } = validateNow()
-        // setEcErrors(errs)
         if (!ecOk || deduped.length === 0) {
             setServerError("Please fix the Emergency Contact errors")
             return
         }
 
-        // const currentECs = (currChild.emergencyContacts ?? []).map(ec => ({
-        //     firstName: ec.firstName ?? "",
-        //     lastName: ec.lastName ?? "",
-        //     relationship: ec.relationship ?? "",
-        //     phoneNumber: e164toUS(ec.phoneNumber) ?? formatUs(ec.phoneNumber ?? "")
-        // }))
-
-        // const includeECs = !ecsEqual(deduped, currentECs)
         const payload = buildUpdatePayload(form, currChild)
-
-        // if (!includeECs && Object.keys(payload).length === 0) {
-        //     onPatched?.(currChild.id)
-        //     setEditingChildId(null)
-        //     return
-        // }
-
-        // if (includeECs && deduped.length > 0) {
         payload.emergencyContacts = deduped.map(c => ({
             firstName: c.firstName.trim(),
             lastName: c.lastName.trim(),
             relationship: c.relationship.trim(),
             phoneNumber: c.phoneNumber ? toE164US(c.phoneNumber) : null
         }))
-        // }
 
         try {
             setSaving(true)

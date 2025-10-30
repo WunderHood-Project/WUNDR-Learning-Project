@@ -13,7 +13,7 @@ type Props = {
 	disabled?: boolean
 }
 
-export default function EmergencyContactsList({ ecs, ecErrors, ecErrorMap, rowKeys, addEC, removeEC, changeEC, changePhone, disabled }: Props) {
+export default function EmergencyContactsList({ ecs, ecErrorMap, rowKeys, addEC, removeEC, changeEC, changePhone, disabled }: Props) {
 	return (
 		<div className="space-y-3">
 			{ecs.map((c, i) => {

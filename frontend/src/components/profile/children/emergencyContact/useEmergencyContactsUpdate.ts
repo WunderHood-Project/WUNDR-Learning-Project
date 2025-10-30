@@ -60,14 +60,15 @@ export function useEmergencyContactsUpdate(initial: EmergencyContact[] | undefin
         setEcs(prev => prev.filter((_, idx) => idx !== i))
         setEcErrors(prev => prev.filter((_, idx) => idx !== i))
         setRowKeys(prev => prev.filter((_, idx) => idx !== i))
-        setEcErrorMap(prev => {
+
+        setEcErrorMap((currMap) => {
             const next: ECErrorMap = {}
             rowKeys.forEach((k, idx) => {
                 if (idx === i) return
-                const srcKey = k
                 const destIdx = idx > i ? idx - 1 : idx
                 const destKey = `${rowPrefix}-${destIdx}`
-                if (prev[srcKey as any]) next[destKey] = prev[srcKey as any]
+                const err = currMap[k]
+                if (err) next[destKey] = err
             })
             return next
         })
@@ -76,25 +77,21 @@ export function useEmergencyContactsUpdate(initial: EmergencyContact[] | undefin
     const changeEC = useCallback((i: number, patch: Partial<EmergencyContact>) => {
         setEcs(prev => prev.map((c, idx) => (idx === i ? { ...c, ...patch } : c)))
 
-        const key = rowKeys[i]
         setEcErrors(prev => {
             const copy = [...prev]
-            const row = { ...(copy[i] ?? {}) }
-            for (const f of toECFields(patch)) {
-                delete row[f]
-            }
+            const row: ECErrors = { ...(copy[i] ?? {}) }
+            for (const f of toECFields(patch)) delete row[f]
             copy[i] = row
             return copy
         })
+
         setEcErrorMap(prev => {
-            const next = { ...prev }
-            const key = rowKeys[i]
-            const row: ECErrors = { ...(next[key] ?? {}) }
-            for (const f of toECFields(patch)) {
-                delete row[f]
-            }
-            if (Object.keys(row).length) next[key] = row
-            else delete next[key]
+            const next: ECErrorMap = { ...prev }
+            const rk = rowKeys[i]
+            const row: ECErrors = { ...(next[rk] ?? {}) }
+            for (const f of toECFields(patch)) delete row[f]
+            if (Object.keys(row).length) next[rk] = row
+            else delete next[rk]
             return next
         })
     }, [rowKeys])
@@ -102,7 +99,6 @@ export function useEmergencyContactsUpdate(initial: EmergencyContact[] | undefin
     const changePhone = useCallback((i: number, raw: string) => {
         setEcs(prev => prev.map((c, idx) => (idx === i ? { ...c, phoneNumber: formatUs(raw) } : c)))
 
-        const key = rowKeys[i]
         setEcErrors(prev => {
             const copy = [...prev]
             const row: ECErrors = { ...(copy[i] ?? {}) }
@@ -110,13 +106,14 @@ export function useEmergencyContactsUpdate(initial: EmergencyContact[] | undefin
             copy[i] = row
             return copy
         })
+
         setEcErrorMap(prev => {
-            const next = { ...prev }
-            const key = rowKeys[i]
-            const row: ECErrors = { ...(next[key] ?? {}) }
+            const next: ECErrorMap = { ...prev }
+            const rk = rowKeys[i]
+            const row: ECErrors = { ...(next[rk] ?? {}) }
             delete row.phoneNumber
-            if (Object.keys(row).length) next[key] = row
-            else delete next[key]
+            if (Object.keys(row).length) next[rk] = row
+            else delete next[rk]
             return next
         })
     }, [rowKeys])
