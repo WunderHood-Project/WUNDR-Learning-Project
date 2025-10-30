@@ -13,11 +13,8 @@ export default function InfoCard({
   icon: ReactNode;
   label: string;
   value?: string;
-  /** Увеличить типографику на md+ (удобно для десктопа) */
   large?: boolean;
-  /** Точный оверрайд классов для значения (например только Email) */
   valueClassName?: string;
-  /** Точный оверрайд классов для лейбла */
   labelClassName?: string;
 }) {
   return (

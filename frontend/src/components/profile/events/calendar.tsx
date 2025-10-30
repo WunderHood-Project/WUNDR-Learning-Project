@@ -38,24 +38,30 @@ const EventCalendar: React.FC<Props> = ({ events, onPick }) => {
     }, [events])
 
     return (
-        <div className="h-[700px]">
-            <Calendar
-                localizer={localizer}
-                defaultView={Views.MONTH}
-                views={{month: true, week: false, day: false, agenda: false}}
-                events={calendarEvents}
-                date={date}
-                onNavigate={(newDate) => setDate(newDate)}
-                view={view}
-                onView={(v) => setView(v)}
-                popup
-                onSelectEvent={(ev: CalendarEvent) => {
-                    const id = ev?.resource?.id ?? ev?.id
-                    if (id && onPick) onPick(String(id))
-                }}
-            />
-        </div>
-    )
+        <section className="bg-white rounded-2xl shadow-lg border border-wondergreen/10 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-wondersun via-wonderleaf to-wondergreen" />
+            <div className="p-4 sm:p-6">
+                {/* <h3 className="text-wondergreen font-bold text-base sm:text-lg mb-3">Calendar</h3> */}
+                <div className="h-[440px] sm:h-[520px] md:h-[620px]">
+                    <Calendar
+                        localizer={localizer}
+                        defaultView={Views.MONTH}
+                        views={{ month: true }}
+                        events={calendarEvents}
+                        date={date}
+                        onNavigate={setDate}
+                        view={view}
+                        onView={(v) => setView(v)}
+                        popup
+                        onSelectEvent={(ev: CalendarEvent) => {
+                        const id = ev?.resource?.id ?? ev?.id;
+                        if (id) onPick(String(id));
+                        }}
+                    />
+                </div>
+            </div>
+        </section>
+  );
 }
 
 export default EventCalendar

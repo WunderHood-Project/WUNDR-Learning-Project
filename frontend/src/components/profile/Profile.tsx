@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import UserInfo from './userInfo/UserInfo';
 import ChildInfo from './childInfo/ChildInfo';
 import Notifications from './notifications/NotifInfo';
-import YourEvents from './events/yourEvents';
+import YourEvents from './events/yourEvents/YourEvents';
 import ProfileSidebar from './ProfileSidebar';
 import MobileMenuDrawer from './MobileMenuDrawer';
 import TabletMenuDropdown from './TabletMenuDropdown';
