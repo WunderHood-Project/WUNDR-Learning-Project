@@ -10,7 +10,7 @@ export type Child = {
     // homeschoolProgram?: string | null
     grade?: number | null
     birthday: string;
-    allergiesMedical?: string | null
+    allergiesMedical: string
     notes?: string | null
     photoConsent: boolean
     waiver: boolean

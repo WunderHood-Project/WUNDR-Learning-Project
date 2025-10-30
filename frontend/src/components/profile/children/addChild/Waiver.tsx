@@ -1,4 +1,4 @@
-import { CreateChildForm } from "@/types/child";
+import { ChildErrorsForm, CreateChildForm } from "@/types/child";
 import React from "react";
 
 const WAIVER_PLACEHOLDER = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -9,13 +9,13 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 
 type Props = {
     child: CreateChildForm
+    errors?: ChildErrorsForm
     onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     submitting?: boolean
     prevStep: () => void
 }
 
-const Waiver: React.FC<Props> = ({ child, onChange, submitting, prevStep }) => {
-
+const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep }) => {
     return (
         <>
             <h2 className="flex flex-col text-xl mt-4 mb-6 text-center">Waiver</h2>
@@ -40,11 +40,13 @@ const Waiver: React.FC<Props> = ({ child, onChange, submitting, prevStep }) => {
                     checked={child.waiver ?? false}
                     onChange={onChange}
                     className="h-4 w-4"
+                    required
                 />
                 <span>
                     I have read and agree to the waiver above. Checking this box constitutes my electronic signature.
                 </span>
             </label>
+            {errors?.waiver && (<p id="waiver-error" className="mt-2 text-sm text-red-600">{errors?.waiver}</p>)}
 
             <div className="flex space-x-3 pt-4">
                 <button

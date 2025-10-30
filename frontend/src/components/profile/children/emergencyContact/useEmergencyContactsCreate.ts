@@ -1,6 +1,7 @@
-import { ECCreateForm, ECErrors, EmergencyContact } from "@/types/emergencyContact"
-import { useId, useMemo, useState } from "react"
+import { ECCreateForm, ECErrorMap, ECErrors, EmergencyContact } from "@/types/emergencyContact"
+import { useCallback, useId, useMemo, useState } from "react"
 import { formatUs, toE164US } from "../../../../../utils/formatPhoneNumber"
+import { validateECs } from "../../../../../utils/emergencyContactHelpers"
 
 
 const blankEC = (): EmergencyContact => ({
@@ -14,6 +15,7 @@ export function useEmergencyContactsCreate() {
 	const rowPrefix = useId()
 	const [ecs, setEcs] = useState<ECCreateForm[]>([blankEC()])
 	const [ecErrors, setEcErrors] = useState<ECErrors[]>([{}])
+	const [ecErrorMap, setEcErrorMap] = useState<ECErrorMap>({})
 	const [rowKeys, setRowKeys] = useState<string[]>([`${rowPrefix}-0`])
 
 	const addEC = () => {
@@ -38,6 +40,13 @@ export function useEmergencyContactsCreate() {
 		setEcs(prev => prev.map((c, idx) => idx === i ? { ...c, phoneNumber: formatUs(raw) } : c))
 	}
 
+	const validateNow = useCallback(() => {
+		const { errs, errMap, ok, deduped } = validateECs(ecs as EmergencyContact[], rowKeys)
+		setEcErrors(errs)
+		setEcErrorMap(errMap)
+		return { ok, deduped }
+	}, [ecs, rowKeys])
+
 	const toPayload = useMemo(() => ecs
 		.map(c => {
 			const empty = !(c.firstName?.trim() || c.lastName?.trim() || c.relationship?.trim() || c.phoneNumber)
@@ -54,5 +63,5 @@ export function useEmergencyContactsCreate() {
 		})
 		.filter(Boolean) as EmergencyContact[], [ecs])
 
-	return { ecs, ecErrors, rowKeys, setEcErrors, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys }
+	return { ecs, ecErrors, ecErrorMap, rowKeys, setEcErrors, setEcErrorMap, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys, validateNow }
 }

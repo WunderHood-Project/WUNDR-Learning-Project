@@ -61,7 +61,7 @@ const ChildInfoCard: React.FC<Props> = ({ child, onEdit, onDeleted }) => {
 
         <div className="mb-4 border-t pt-4">
             <div className="font-bold">MEDICAL ACCOMMODATIONS</div>
-            <div className="text-gray-500 text-sm my-1 ml-2">{child.allergiesMedical || "List any allergies or medical accommodations"}</div>
+            <div className="text-gray-500 text-sm my-1 ml-2">{child.allergiesMedical || "List allergies/medical accommodations (N/A if none)"}</div>
         </div>
 
         <div className="mb-4 border-t pt-4">

@@ -1,4 +1,4 @@
-import { CreateChildForm } from "@/types/child"
+import { ChildErrorsForm, CreateChildForm } from "@/types/child"
 import React from "react"
 import { gradeOptions } from "../../../../../utils/displayGrade"
 
@@ -6,9 +6,12 @@ type Props = {
     form: CreateChildForm
     onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     saving: boolean
+    errors: ChildErrorsForm
 }
 
-export default function UpdateChildMetaFields({ form, onChange, saving }: Props) {
+export default function UpdateChildMetaFields({ errors, form, onChange, saving }: Props) {
+    const bdayErr = errors.birthday
+
     return (
         <>
             <div className="mb-4">
@@ -22,6 +25,8 @@ export default function UpdateChildMetaFields({ form, onChange, saving }: Props)
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                     disabled={saving}
                 />
+                {bdayErr && (<p id="firstName-error" className="mt-1 text-sm text-red-600">{bdayErr}</p>)}
+
             </div>
 
             <div className="flex flex-row justify-between mb-4">

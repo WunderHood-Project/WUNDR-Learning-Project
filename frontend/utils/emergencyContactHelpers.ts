@@ -1,4 +1,4 @@
-import { ECErrors, ECUpdateForm, EmergencyContact } from "@/types/emergencyContact"
+import { ECErrorMap, ECErrors, ECUpdateForm, EmergencyContact } from "@/types/emergencyContact"
 import { onlyDigitals, toE164US } from "./formatPhoneNumber"
 
 const normalizeEC = (c: EmergencyContact): EmergencyContact => ({
@@ -44,7 +44,7 @@ export const ecsEqual = (a: ECUpdateForm[], b: ECUpdateForm[]) => {
     return true
 }
 
-export const validateECs = (ecs: EmergencyContact[]) => {
+export const validateECs = (ecs: EmergencyContact[], rowKeys?: string[]) => {
     const errs: ECErrors[] = ecs.map(() => ({}))
 
     const isFilled = (c: EmergencyContact) =>
@@ -69,8 +69,14 @@ export const validateECs = (ecs: EmergencyContact[]) => {
         return !required || Object.keys(e).length === 0
     })
 
-
     const deduped = dedupeECs(ecs)
 
-  return { errs, ok: firstOk && allOk, deduped }
+    const errMap: ECErrorMap = {}
+    errs.forEach((e, i) => {
+        if (Object.keys(e).length === 0) return
+        const key = rowKeys?.[i] ?? String(i)
+        errMap[key] = e
+    })
+
+  return { errs, errMap, ok: firstOk && allOk, deduped }
 }

@@ -9,7 +9,6 @@ import { validateChildBasics } from "../../../../../utils/childValidations";
 import EmergencyContactsList from "../emergencyContact/EmergencyContactsList";
 import Stepper from "./Stepper";
 import Waiver from "./Waiver";
-import { validateECs } from "../../../../../utils/emergencyContactHelpers";
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -35,11 +34,12 @@ const initCreateForm = (): CreateChildForm => ({
 
 export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 	const [form, setForm] = useState<CreateChildForm>(initCreateForm())
+	const [errors, setErrors] = useState<ChildErrorsForm>({})
 	const [serverError, setServerError] = useState<string | null>(null)
 	const [submitting, setSubmitting] = useState(false)
 	const [currentStep, setCurrentStep] = useState(1)
 
-	const {ecs, ecErrors, rowKeys, setEcErrors, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys } = useEmergencyContactsCreate()
+	const {ecs, ecErrors, ecErrorMap, rowKeys, setEcErrors, setEcErrorMap, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys, validateNow } = useEmergencyContactsCreate()
 
 	const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> = (e) => {
 		const target = e.currentTarget as HTMLInputElement
@@ -48,6 +48,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		if (!name) return
 		if (type === "checkbox") {
 			setForm(p => ({ ...p, [name]: checked }))
+			if (name === 'waiver') setErrors(prev => ({ ...prev, waiver: undefined}))
 			 return
 		}
 
@@ -63,15 +64,33 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 
 	const nextStep = () => {
 		if (currentStep === 1) {
-			const errs = validateChildBasics({ firstName: form.firstName, lastName: form.lastName, birthday: form.birthday })
+			const errs = validateChildBasics({
+				firstName: form.firstName,
+				lastName: form.lastName,
+				birthday: form.birthday,
+				allergiesMedical: form.allergiesMedical
+			})
 
 			if (Object.keys(errs).length) {
+				setErrors(errs)
 				setServerError("Please fill in all required fields.")
 				return
 			}
 		}
 
+		if (currentStep === 2) {
+			const { ok, deduped } = validateNow()
+
+			if (!ok || deduped.length === 0) {
+				setServerError("Please fix the Emergency Contact errors")
+				return
+			}
+		}
+
 		setServerError(null)
+		setErrors({})
+		setEcErrors([])
+		setEcErrorMap({})
 		setCurrentStep(s => s + 1)
 	}
 
@@ -84,7 +103,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		...form,
 		preferredName: form.preferredName === "" ? null : form.preferredName?.trim(),
 		birthday: form.birthday ? new Date(form.birthday).toISOString() : "",
-		allergiesMedical: form.allergiesMedical === "" ? null : form.allergiesMedical?.trim(),
+		allergiesMedical: form.allergiesMedical?.trim(),
 		notes: form.notes === "" ? null : form.notes?.trim(),
 	})
 
@@ -92,20 +111,27 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		e.preventDefault()
 		setServerError(null)
 
-		const childErrors: ChildErrorsForm = validateChildBasics({ firstName: form.firstName, lastName: form.lastName, birthday: form.birthday }) as ChildErrorsForm
+		const childErrors: ChildErrorsForm = validateChildBasics({
+			firstName: form.firstName,
+			lastName: form.lastName,
+			birthday: form.birthday,
+			allergiesMedical: form.allergiesMedical
+		}) as ChildErrorsForm
+
 		if (Object.keys(childErrors).length) {
+			setErrors(childErrors)
 			setServerError("Please fix the errors above.")
 			return
 		}
 
-		const { errs, ok } = validateECs(ecs)
-		setEcErrors(errs)
-		if (!ok) {
+		const { ok, deduped } = validateNow()
+		if (!ok || deduped.length === 0) {
 			setServerError("Please fix the Emergency Contact errors")
 			return
 		}
 
 		if (!form.waiver) {
+			setErrors(prev => ({ ...prev, waiver: "Please acknowledge the waiver to continue" }))
 			setServerError("Please acknowledge the waiver to continue")
 			return
 		}
@@ -121,10 +147,11 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			})
 
 			onSuccess(response.child)
-			// reset local state
 			setForm(initCreateForm())
 			setEcs([{ firstName: "", lastName: "", relationship: "", phoneNumber: "" }])
 			setRowKeys([`${crypto.randomUUID()}`])
+			setEcErrors([{}])
+			setEcErrorMap({})
 			setServerError(null)
 			setCurrentStep(1)
 		} catch (err) {
@@ -145,7 +172,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					{serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
 					<div className="space-y-3">
-						<AddChildField child={form} onChange={onChange} />
+						<AddChildField child={form} onChange={onChange} errors={errors}/>
 						<button
 							type="button"
 							onClick={nextStep}
@@ -168,6 +195,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					<EmergencyContactsList
 						ecs={ecs}
 						ecErrors={ecErrors}
+						ecErrorMap={ecErrorMap}
 						rowKeys={rowKeys}
 						addEC={addEC}
 						removeEC={removeEC}
@@ -197,6 +225,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			{currentStep === 3 && (
 				<Waiver
 					child={form}
+					errors={errors}
 					onChange={onChange}
 					submitting={submitting}
 					prevStep={prevStep}

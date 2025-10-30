@@ -1,9 +1,10 @@
-import { CreateChildForm } from "@/types/child"
+import { ChildErrorsForm, CreateChildForm } from "@/types/child"
 import React from "react"
 import { FaX, FaCheck } from "react-icons/fa6"
 
 type Props = {
     form: CreateChildForm
+    errors: ChildErrorsForm
     onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     saving: boolean
     onSubmitClick: () => void
@@ -11,7 +12,10 @@ type Props = {
     isValid: boolean
 }
 
-export default function UpdateChildHeaderFields({ form, onChange, saving, onSubmitClick, onCancel, isValid }: Props) {
+export default function UpdateChildHeaderFields({ form, onChange, saving, onSubmitClick, onCancel, isValid, errors }: Props) {
+    const firstNameErr = errors.firstName
+    const lastNameErr = errors.lastName
+
     return (
         <div className="mb-6">
             <div className="flex items-start justify-between">
@@ -26,6 +30,7 @@ export default function UpdateChildHeaderFields({ form, onChange, saving, onSubm
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                             disabled={saving}
                         />
+                        {firstNameErr && (<p id="firstName-error" className="mt-1 text-sm text-red-600">{firstNameErr}</p>)}
 
                         <input
                             name="lastName"
@@ -36,6 +41,8 @@ export default function UpdateChildHeaderFields({ form, onChange, saving, onSubm
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                             disabled={saving}
                         />
+                        {lastNameErr && (<p id="firstName-error" className="mt-1 text-sm text-red-600">{lastNameErr}</p>)}
+
 
                         <input
                             name="preferredName"

@@ -19,7 +19,7 @@ const WONDERHOOD_URL = determineEnv()
 const toEventForm = (ev: Event): CreateEventPayload => ({
     activityId: ev.activityId ?? "",
     name: ev.name ?? "",
-    notes: ev.notes ?? "", 
+    notes: ev.notes ?? "",
     description: ev.description ?? "",
     date: toYMDForInput(ev.date ?? ""),
     startTime: ev.startTime ?? "",
@@ -139,7 +139,6 @@ export default function UpdateEvent() {
             })
 
             if (response) {
-                console.log("Event successfully created:", response)
                 setFormEvent(formEvent)
                 router.replace(`/events/${singleEvent?.id}`)
             }

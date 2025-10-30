@@ -12,7 +12,6 @@ import { useUser } from "../../../../hooks/useUser";
 const UserInfo = () => {
     const { user, loading, error, refetch } = useUser()
     const [editing, setEditing] = useState(false)
-    // console.log('user info', user)
 
     if (loading) return <div className="flex justify-center items-center min-h-[200px]">Loading...</div>
     if (error) return (

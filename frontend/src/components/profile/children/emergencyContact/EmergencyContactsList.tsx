@@ -1,9 +1,10 @@
-import type { ECErrors, ECShape } from "@/types/emergencyContact"
+import type { ECErrorMap, ECErrors, ECShape } from "@/types/emergencyContact"
 import EmergencyContactRow from "./EmergencyContactRow"
 
 type Props = {
 	ecs: ECShape[]
 	ecErrors: ECErrors[]
+	ecErrorMap: ECErrorMap
 	rowKeys: string[]
 	addEC: () => void
 	removeEC: (i: number) => void
@@ -12,21 +13,26 @@ type Props = {
 	disabled?: boolean
 }
 
-export default function EmergencyContactsList({ ecs, ecErrors, rowKeys, addEC, removeEC, changeEC, changePhone, disabled }: Props) {
+export default function EmergencyContactsList({ ecs, ecErrors, ecErrorMap, rowKeys, addEC, removeEC, changeEC, changePhone, disabled }: Props) {
 	return (
 		<div className="space-y-3">
-			{ecs.map((c, i) => (
-				<EmergencyContactRow
-					key={rowKeys[i]}
-					idx={i}
-					value={c}
-					error={ecErrors[i] ?? {}}
-					onChange={changeEC}
-					onPhone={changePhone}
-					onRemove={!disabled ? removeEC : undefined}
-					required={i === 0}
-				/>
-			))}
+			{ecs.map((c, i) => {
+				const key = rowKeys[i]
+				const errForRow = ecErrorMap[key] ?? {}
+
+				return (
+					<EmergencyContactRow
+						key={rowKeys[i]}
+						idx={i}
+						value={c}
+						error={errForRow}
+						onChange={changeEC}
+						onPhone={changePhone}
+						onRemove={!disabled ? removeEC : undefined}
+						required={i === 0}
+					/>
+				)
+			})}
 
 			<div className="flex justify-end">
 				<button

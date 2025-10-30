@@ -12,29 +12,33 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 	return (
 		<>
 			<div className="flex gap-3">
-				<input
-					name="firstName"
-					placeholder="Legal First Name"
-					value={child.firstName}
-					onChange={onChange}
-					className="w-full p-3 border rounded-lg"
-					maxLength={50}
-					required
-				/>
+				<div className="flex flex-col">
+					<input
+						name="firstName"
+						placeholder="Legal First Name"
+						value={child.firstName}
+						onChange={onChange}
+						className="w-full p-3 border rounded-lg"
+						maxLength={50}
+						required
+					/>
+					{errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
+				</div>
 
-				<input
-					name="lastName"
-					placeholder="Legal Last Name"
-					value={child.lastName}
-					onChange={onChange}
-					className="w-full p-3 border rounded-lg"
-					maxLength={50}
-					required
-				/>
+				<div className="flex flex-col">
+					<input
+						name="lastName"
+						placeholder="Legal Last Name"
+						value={child.lastName}
+						onChange={onChange}
+						className="w-full p-3 border rounded-lg"
+						maxLength={50}
+						required
+					/>
+					{errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
+				</div>
 			</div>
 
-			{errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
-			{errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
 
 			<input
 				name="preferredName"
@@ -98,9 +102,10 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 				name="allergiesMedical"
 				value={child.allergiesMedical ?? ""}
 				onChange={onChange}
-				placeholder="List any allergies or medical accommodations"
+				placeholder="List allergies/medical accommodations (N/A if none)"
 				className="w-full px-3 py-2 border rounded-md"
 			/>
+			{errors.allergiesMedical && <p className="text-sm text-red-600 mt-1">{errors.allergiesMedical}</p>}
 
 			<div className="font-bold">ADDITIONAL NOTES</div>
 			<textarea
