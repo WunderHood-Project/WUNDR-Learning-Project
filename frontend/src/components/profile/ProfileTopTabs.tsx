@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import {FaUser, FaChild, FaCalendarCheck, FaBell, FaEllipsisV, FaTrash} from 'react-icons/fa';
+import type { IconType } from 'react-icons';
 
-type Tab = { key: string; label: string; icon: React.ComponentType<any> };
+type Tab = { key: string; label: string; icon: IconType };
 
 export const DEFAULT_TABS: Tab[] = [
     { key: 'user',          label: 'User Information',    icon: FaUser },

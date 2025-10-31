@@ -23,6 +23,8 @@ export default function UserHeader({
     onEdit: () => void;
 }) {
     const { user } = useAuth();
+
+    const resolvedRole = role ?? user?.role;
     
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-wondergreen/10 overflow-hidden">
@@ -40,7 +42,7 @@ export default function UserHeader({
                         {/* Badges */}
                         <div className="mt-2 sm:mt-3 md:mt-4 flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3">
                             <span className="inline-flex items-center rounded-full bg-wonderleaf/15 text-wondergreen px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 text-xs md:text-sm font-semibold whitespace-nowrap">
-                                {formatRole(user?.role)}
+                                {formatRole(resolvedRole)}
                             </span>
                             <span className="inline-flex items-center rounded-full bg-wondersun/20 text-wondergreen px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 text-xs md:text-sm font-semibold whitespace-nowrap">
                                 {childrenCount} {childrenCount === 1 ? 'Child' : 'Children'}
