@@ -59,7 +59,7 @@ export function DesktopNavItems({ links, pathname }: CommonProps) {
           key={href}
           href={href}
           className={`
-            relative px-4 py-2 text-xl font-semibold transition-all duration-300 group
+            relative px-2 ld:px-4 xl:px-6 py-2 text-base lg:text-[19px] xl:text-[20px] font-semibold transition-all duration-300 group
             ${isActive ? 'text-wondergreen' : 'text-wondergreen hover:text-wondergreen'}
           `}
           >
