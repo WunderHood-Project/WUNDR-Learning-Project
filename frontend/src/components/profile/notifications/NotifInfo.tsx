@@ -10,13 +10,18 @@ import type { Notification, NotificationsResponse } from '@/types/notification';
 
 type TabKey = 'all' | 'unread' | 'event' | 'message';
 
+function getType(n: Notification): 'event' | 'message' | undefined {
+  const t = (n as { type?: unknown }).type;
+  return t === 'event' || t === 'message' ? t : undefined;
+}
+
 export default function Notifications() {
   const { token, authReady } = useAuth();
   const [items, setItems] = useState<Notification[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [loading, setLoading] = useState(false);
   const [loadErrors, setLoadErrors] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null); // id операции (для спиннера на кнопках)
+  const [busy, setBusy] = useState<string | null>(null); 
   const didFetchForToken = useRef<string | null>(null);
 
   const fetchNotifications = useCallback(async () => {
@@ -47,14 +52,14 @@ export default function Notifications() {
   }, [authReady, token, fetchNotifications]);
 
   const unreadCount = useMemo(() => items.filter(i => !i.isRead).length, [items]);
-  const eventCount  = useMemo(() => items.filter(i => (i as any).type === 'event').length, [items]);
-  const msgCount    = useMemo(() => items.filter(i => (i as any).type === 'message').length, [items]);
+  const eventCount  = useMemo(() => items.filter(i => getType(i) === 'event').length, [items]);
+  const msgCount    = useMemo(() => items.filter(i => getType(i) === 'message').length, [items]);
 
   const filtered = useMemo(() => {
     switch (tab) {
       case 'unread': return items.filter(i => !i.isRead);
-      case 'event' : return items.filter(i => (i as any).type === 'event');
-      case 'message':return items.filter(i => (i as any).type === 'message');
+      case 'event' : return items.filter(i => getType(i) === 'event');
+      case 'message':return items.filter(i => getType(i) === 'message');
       default      : return items;
     }
   }, [items, tab]);
