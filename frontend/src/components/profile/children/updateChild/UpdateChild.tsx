@@ -1,5 +1,5 @@
 import { ChildErrorsForm, CreateChildForm, type Child, type UpdateChildForm } from "@/types/child"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { makeApiRequest } from "../../../../../utils/api"
 import { toE164US } from "../../../../../utils/formatPhoneNumber"
 import { determineEnv } from "../../../../../utils/api"
@@ -36,35 +36,35 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         emergencyContacts: []
     })
 
-    const uiSnapshot = useMemo<CreateChildForm>(() => ({
-        firstName: currChild.firstName ?? '',
-        lastName: currChild.lastName ?? '',
-        preferredName: currChild.preferredName ?? '',
-        homeschool: Boolean(currChild.homeschool),
-        grade: currChild.grade ?? null,
-        birthday: currChild.birthday ? currChild.birthday.split('T')[0] : '',
-        allergiesMedical: currChild.allergiesMedical ?? '',
-        notes: currChild.notes ?? '',
-        photoConsent: Boolean(currChild.photoConsent),
-        waiver: Boolean(currChild.waiver),
-        emergencyContacts: [],
-    }), [hydrateKey])
+    useEffect(() =>{
+        const hydrated: CreateChildForm = {
+            firstName: currChild.firstName ?? '',
+            lastName: currChild.lastName ?? "",
+            preferredName: currChild.preferredName ?? "",
+            homeschool: Boolean(currChild.homeschool),
+            grade: currChild.grade ?? null,
+            birthday: currChild.birthday ? currChild.birthday.split("T")[0] : "",
+            allergiesMedical: currChild.allergiesMedical ?? "",
+            notes: currChild.notes ?? "",
+            photoConsent: Boolean(currChild.photoConsent),
+            waiver: Boolean(currChild.waiver),
+            emergencyContacts: []
+        }
 
-    useEffect(() => {
-        setForm(uiSnapshot)
+        setForm(hydrated)
         setServerError(null)
 
         const initialErrs = validateChildBasics({
-            firstName: uiSnapshot.firstName,
-            lastName: uiSnapshot.lastName,
-            birthday: uiSnapshot.birthday,
-            allergiesMedical: uiSnapshot.allergiesMedical,
+            firstName: hydrated.firstName,
+            lastName: hydrated.lastName,
+            birthday: hydrated.birthday,
+            allergiesMedical: hydrated.allergiesMedical
         }) as ChildErrorsForm
 
         setErrors(initialErrs)
         setEcErrors([])
         setEcErrorMap({})
-    }, [uiSnapshot])
+    }, [hydrateKey, setEcErrors, setEcErrorMap])
 
     const isValid = Object.keys(errors).length === 0
 
