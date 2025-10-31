@@ -8,7 +8,8 @@ import type { Child } from "@/types/child";
 
 type EventLite = {
     id?: string; name: string; description?: string;
-    city?: string; date: string; startTime?: string; endTime?: string;
+    city?: string; state?: string;
+    date: string; startTime?: string; endTime?: string;
     childIds?: string[]; image?: string;
 };
 
@@ -31,6 +32,7 @@ export default function EventCard({
 
     const timeLabel = formatTimeRange12h(event.date, event.startTime, event.endTime);
     const imageSrc = event.image ? normalizeNextImageSrc(event.image)?.src : null;
+    const locationLabel = event.city ? `${event.city}${event.state ? `, ${event.state}` : ""}` : null;
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-wondergreen/10 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col border-t-4 border-t-yellow-400">
@@ -63,34 +65,23 @@ export default function EventCard({
                     <div className="flex-1">
                         <h3 className="text-lg sm:text-xl font-bold text-wondergreen mb-1">{event.name}</h3>
                     </div>
-
-                    {!isEditing && (
-                        <button
-                        type="button"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleEdit(); }}
-                        className="bg-wondergreen/10 hover:bg-wondergreen/20 text-wondergreen p-2 rounded-lg transition-all flex-shrink-0"
-                        title="Edit"
-                        >
-                        <FaPen className="w-4 h-4" />
-                        </button>
-                    )}
-            </div>
+                </div>
 
             {/* Info */}
             <div className="space-y-2 mb-4 pb-4 border-b border-wondergreen/10">
-            {timeLabel && (
-                <div className="flex items-center gap-2">
+                {locationLabel && (
+                    <div className="flex items-center gap-2">
+                    <FaMapPin className="w-4 h-4 text-wonderleaf flex-shrink-0" />
+                    <span className="text-xs sm:text-sm font-semibold text-wondergreen">{locationLabel}</span>
+                    </div>
+                )}
+
+                {timeLabel && (
+                    <div className="flex items-center gap-2">
                     <FaClock className="w-4 h-4 text-wonderleaf flex-shrink-0" />
                     <span className="text-xs sm:text-sm font-semibold text-wondergreen">{timeLabel}</span>
-                </div>
-            )}
-            
-            {event.city && (
-                <div className="flex items-center gap-2">
-                    <FaMapPin className="w-4 h-4 text-wonderleaf flex-shrink-0" />
-                    <span className="text-xs sm:text-sm font-semibold text-wondergreen">{event.city}</span>
-                </div>
-            )}
+                    </div>
+                )}
             </div>
 
             {/* Enroll / Edit */}
@@ -105,18 +96,35 @@ export default function EventCard({
             </div>
                 ) : (
                     <>
-                    <p className="text-xs sm:text-sm font-semibold text-wondergreen/70 mb-2">Your Children Enrolled:</p>
-                    {enrolled.length ? (
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs sm:text-sm font-semibold text-wondergreen/70">
+                            Your Children Enrolled:
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleEdit(); }}
+                            className="bg-wondergreen/10 hover:bg-wondergreen/20 text-wondergreen p-2 rounded-lg transition-all"
+                            title="Edit enrollment"
+                        >
+                            <FaPen className="w-4 h-4" />
+                        </button>
+                        </div>
+
+                        {enrolled.length ? (
                         <div className="flex flex-wrap gap-2 mb-4">
                             {enrolled.map(ch => (
-                            <span key={ch.id} className="inline-flex items-center rounded-full bg-wonderleaf/15 text-wondergreen px-2.5 py-1 text-xs font-semibold">
+                            <span
+                                key={ch.id}
+                                className="inline-flex items-center rounded-full bg-wonderleaf/15 text-wondergreen px-2.5 py-1 text-xs font-semibold"
+                            >
                                 {(ch.preferredName ?? ch.firstName) + " " + ch.lastName}
                             </span>
                             ))}
                         </div>
-                    ) : (
+                        ) : (
                         <p className="text-xs text-wondergreen/60 mb-4">No children enrolled.</p>
-                    )}
+                        )}
 
                     <button
                     type="button"

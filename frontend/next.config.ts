@@ -41,6 +41,18 @@ const nextConfig: NextConfig = {
         hostname: "smalltownstops.com",
         pathname: "/wp-content/**",
       },
+      // ClickView 
+      {
+        protocol: "https",
+        hostname: "www.clickvieweducation.com",
+        pathname: "/**",
+      },
+      // ClickView CMS
+      {
+        protocol: "https",
+        hostname: "cms.clickvieweducation.com",
+        pathname: "/**",
+      },
       // If you also need 127.0.0.1:
       // { protocol: "http", hostname: "127.0.0.1", port: "8000", pathname: "/**" },
     ],
