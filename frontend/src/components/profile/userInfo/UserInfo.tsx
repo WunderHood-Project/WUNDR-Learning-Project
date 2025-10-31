@@ -1,81 +1,110 @@
 "use client";
 
 import React, { useState } from "react"
-import { FaPen } from "react-icons/fa"
 import UpdateUserForm from "./UpdateUserForm"
-import OpenModalButton from "@/context/openModalButton"
-import DeleteUser from "./DeleteUser"
 import { e164toUS } from "../../../../utils/formatPhoneNumber";
 import { useUser } from "../../../../hooks/useUser";
+import UserHeader from './UserHeader';
+import InfoCard from './InfoCard';
+import ChildrenList from './ChildrenList';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 
 
 const UserInfo = () => {
     const { user, loading, error, refetch } = useUser()
     const [editing, setEditing] = useState(false)
 
-    if (loading) return <div className="flex justify-center items-center min-h-[200px]">Loading...</div>
-    if (error) return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="text-red-500">
-                Error: {error}
-                <button onClick={refetch} className="ml-4 bg-blue-500 text-white px-4 py-2 rounded">
-                    Retry
-                </button>
-            </div>
-        </div>
-    )
-
-    return (
-        <div>
-            <div className="text-center mb-[35px]">
-                <h1 className="text-4xl font-bold text-wondergreen mb-4">Your Account Information</h1>
-                <div className="flex flex-row gap-2 max-w-2xl justify-center mx-auto">
-                    <h2 className="text-lg text-wondergreen">Manage your profile</h2>
-                    <FaPen onClick={() => setEditing(v => !v)}/>
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-[200px]">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wondergreen mx-auto mb-4"></div>
+                    <p className="text-wondergreen font-semibold">Loading...</p>
                 </div>
             </div>
+        )
+    }
 
+    if (error) {
+        return (
+            <div className="flex justify-center items-center min-h-[300px]">
+                <div className="text-center px-4">
+                    <p className="text-red-500 font-semibold mb-4">Error: {error}</p>
+                    <button 
+                        onClick={refetch} 
+                        className="bg-wondergreen hover:bg-wonderleaf text-white px-6 py-2.5 rounded-lg font-semibold transition-all"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
+    const childrenItems =
+        (user?.children ?? []).map((c) => ({
+            id: c.id,
+            name: `${c.firstName} ${c.lastName}`,
+            subtitle: 'Registered',
+        })) as { id: string; name: string; subtitle?: string }[];
+
+    return (
+        <div className="space-y-4 sm:space-y-5 md:space-y-6">
+            {/* Header with name and badges */}
+            <UserHeader
+                name={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()}
+                childrenCount={user?.children?.length ?? 0}
+                onEdit={() => setEditing((v) => !v)}
+            />
+
+            {/* Edit form OR Content */}
             {editing ? (
                 <UpdateUserForm
                     currUser={user}
                     onSaved={() => {
-                        refetch()
-                        setEditing(false)
+                        refetch();
+                        setEditing(false);
                     }}
                     onCancel={() => setEditing(false)}
                 />
             ) : (
-                <div className="bg-white shadow rounded-lg max-w-md mx-auto p-10">
-                    <div className="space-y-2">
-                        <div className="flex flex-row justify-around">
-                            <div className="flex flex-col text-center">
-                                <div className="mb-2">{user?.firstName} {user?.lastName}</div>
-                                <div className="mb-2">{user?.email}</div>
-                                <div className="mb-2">{e164toUS(user?.phoneNumber ?? "")}</div>
-                                <div>{user?.address}</div>
-                                <div>{user?.city}, {user?.state} {user?.zipCode}</div>
-                                <div>Children</div>
-                                {user?.children?.length ? (
-                                    <ul className="list-disc pl-5">
-                                        {user.children.map(child => (
-                                            <li key={child.id}>{child.firstName} {child.lastName}</li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p className="text-gray-500">No children yet.</p>
-                                )}
-                            </div>
-                        </div>
-
+                <>
+                    {/* Contact Info Cards - Stacked on mobile, 2 cols on md+ */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-4">
+                        <InfoCard
+                            icon={<FaEnvelope className="text-wondergreen" />}
+                            label="Email"
+                            value={user?.email}
+                        />
+                        <InfoCard
+                            icon={<FaPhone className="text-wondergreen" />}
+                            label="Phone"
+                            value={e164toUS(user?.phoneNumber ?? '')}
+                        />
                     </div>
-                </div>
-            )}
 
-            <OpenModalButton
-                buttonText="DELETE ACCOUNT"
-                className="block mx-auto mt-[100px] border rounded-lg py-3 px-5 bg-red-400 hover:bg-red-500 text-white"
-                modalComponent={<DeleteUser currUser={user} />}
-            />
+                    {/* Address Card */}
+                    <InfoCard
+                        icon={<FaMapMarkerAlt className="text-wondergreen" />}
+                        label="Address"
+                        value={
+                            [
+                                user?.address ?? '',
+                                [user?.city, user?.state, user?.zipCode].filter(Boolean).join(', ')
+                            ]
+                                .filter(Boolean)
+                                .join('\n')
+                        }
+                    />
+
+                    {/* Children Section */}
+                    <ChildrenList
+                        items={childrenItems}
+                        showCTA={true}
+                        ctaHref="/profile?tab=child&open=add"
+                    />
+                </>
+            )}
         </div>
     )
 }

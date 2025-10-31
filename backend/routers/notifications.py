@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks, Path
 from models.user_models import User
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string
@@ -278,3 +278,70 @@ async def update_notification(
         "notification": updated_notification,
         "message": "Notification updated successfully"
         }
+
+
+
+# =======================================================
+@router.delete("/{notification_id}", status_code=status.HTTP_200_OK)
+async def delete_notification(
+    current_user: Annotated[User, Depends(get_current_user)],
+    notification_id: str = Path(...),
+):
+    enforce_authentication(current_user, "delete notification")
+
+    notif = await db.notifications.find_unique(where={"id": notification_id})
+    if not notif:
+        raise HTTPException(status_code=404, detail="Notification not found")
+
+    is_owner = notif.userId == current_user.id
+    if not (is_owner or current_user.role == "admin"):
+        raise HTTPException(status_code=403, detail="Not allowed")
+
+    await db.notifications.delete(where={"id": notification_id})
+    return {"ok": True}
+
+
+# =======================================================
+@router.patch("/{notification_id}/read", status_code=status.HTTP_200_OK)
+async def mark_notification_read(
+    notification_id: str,
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    enforce_authentication(current_user, "update notification")
+
+    notif = await db.notifications.find_unique(where={"id": notification_id})
+    if not notif:
+        raise HTTPException(status_code=404, detail="Notification not found")
+
+    if notif.userId != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not allowed")
+
+    updated = await db.notifications.update(
+        where={"id": notification_id},
+        data={"isRead": True}
+    )
+    return {"notification": updated, "message": "Marked as read"}
+
+# =======================================================
+@router.post("/mark-all-read", status_code=status.HTTP_200_OK)
+async def mark_all_read(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    enforce_authentication(current_user, "mark all read")
+
+    await db.notifications.update_many(
+        where={"userId": current_user.id, "isRead": False},
+        data={"isRead": True}
+    )
+    return {"message": "All notifications marked as read"}
+
+# =======================================================
+@router.delete("/read", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_read_notifications(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    enforce_authentication(current_user, "delete read notifications")
+    await db.notifications.delete_many(
+        where={"userId": current_user.id, "isRead": True}
+    )
+    return

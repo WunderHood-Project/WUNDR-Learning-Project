@@ -77,10 +77,35 @@ export default function Navbar() {
     setModalContent(<LoginModal />);
   };
 
+//   // 4) Lock body scroll when mobile menu is open (robust)
+// useEffect(() => {
+//   const lock = () => {
+//     document.body.style.overflow = 'hidden';
+//     document.documentElement.style.overflow = 'hidden'; // iOS/Safari
+//   };
+//   const unlock = () => {
+//     document.body.style.overflow = '';
+//     document.documentElement.style.overflow = '';
+//   };
+
+//   if (isMenuOpen) lock(); else unlock();
+
+//   // страховка на размонтирование
+//   return unlock;
+// }, [isMenuOpen]);
+
+// // 3.1) Доп. страховка: при смене маршрута всегда разблокировать
+// useEffect(() => {
+//   document.body.style.overflow = '';
+//   document.documentElement.style.overflow = '';
+//   setIsMenuOpen(false);
+// }, [pathname]);
+
+
   return (
     <nav className="bg-gradient-to-r from-wonderbg via-white to-wondersun/20 backdrop-blur-sm border-b border-wonderleaf/20 shadow-lg sticky top-0 z-50">
       {/* smaller horizontal padding on mobile, none on sm+ as you asked */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-0">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Brand: logo + name */}
           <Link href="/" className="flex items-center space-x-1 shrink-0 group">
@@ -105,10 +130,12 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation (presentational only) */}
-          <DesktopNavItems links={NAV_LINKS} pathname={pathname} />
+          <div className="hidden md:flex flex-1 justify-center min-w-0">
+            <DesktopNavItems links={NAV_LINKS} pathname={pathname} />
+          </div>
 
           {/* Right side: Auth / Profile (desktop only) */}
-          <div className="hidden lg:flex items-center space-x-4 ml-6 border-l border-wonderleaf/30 pl-6">
+          <div className="hidden lg:flex items-center space-x-4 ml-6 border-l border-wonderleaf/30 pl-6 shrink-0">
             {isLoggedIn && <NotificationBell />}
 
             {!isLoggedIn && (
@@ -133,12 +160,12 @@ export default function Navbar() {
                 <button
                 onClick={() => setShowDropdown(v => !v)}
                 className={`
-                  flex items-center px-4 py-2 bg-white/70 backdrop-blur-sm border-2 rounded-xl font-semibold
-                  hover:shadow-lg transition-all duration-300 hover:scale-105
+                  flex items-center rounded-xl font-semibold transition-all duration-300
+                  border-2 bg-white/70 backdrop-blur-sm hover:shadow-lg hover:scale-105
+                  px-3 py-1.5 lg:px-3.5 lg:py-2               
                   ${pathname === "/profile"
                     ? "border-wondergreen bg-wondergreen/10 text-wondergreen shadow-lg"
-                    : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"
-                  }
+                    : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"}
                 `}
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
