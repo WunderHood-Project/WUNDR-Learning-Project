@@ -1,16 +1,15 @@
-'use client';
+import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "../../../hooks/useUser";
+import { useEffect, useMemo, useState } from "react";
+import { DEFAULT_TABS, ProfileTopTabs } from "./ProfileTopTabs";
+import OpenModalButton from "@/context/openModalButton";
+import { FaTrash } from "react-icons/fa";
+import DeleteUser from "./userInfo/DeleteUser";
+import UserInfo from "./userInfo/UserInfo";
+import ChildInfo from "./children/childInfo/ChildInfo";
+import YourEvents from "./events/yourEvents/YourEvents";
+import Notifications from "./notifications/NotifInfo";
 
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import UserInfo from './userInfo/UserInfo';
-import ChildInfo from './childInfo/ChildInfo';
-import Notifications from './notifications/NotifInfo';
-import YourEvents from './events/yourEvents/YourEvents';
-import OpenModalButton from '@/context/openModalButton';
-import DeleteUser from './userInfo/DeleteUser';
-import { useUser } from '../../../hooks/useUser';
-import { ProfileTopTabs, DEFAULT_TABS } from './ProfileTopTabs';
-import { FaTrash } from 'react-icons/fa';
 
 type TabKey = 'user' | 'child' | 'events' | 'notifications';
 const idxToKey = (i: number): TabKey => (['user','child','events','notifications'] as TabKey[])[i];
@@ -38,23 +37,23 @@ export default function Profile() {
         <div className="bg-wonderbg min-h-screen">
             <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-3">
                 <ProfileTopTabs
-                className="-mt-16 md:-mt-8"
-                tabs={DEFAULT_TABS}
-                activeKey={activeKey}
-                onChange={(key) => openTab(keyToIdx[key as TabKey])}
-                renderDelete={(closeMenu) => (
-                    <OpenModalButton
-                    buttonText={
-                        <span className="flex items-center gap-2">
-                            <FaTrash className="h-4 w-4" />
-                            Delete Account
-                        </span>
-                    }
-                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl"
-                    modalComponent={<DeleteUser currUser={user} />}
-                    onButtonClick={closeMenu}
-                    />
-                )}
+                    className="-mt-16 md:-mt-8"
+                    tabs={DEFAULT_TABS}
+                    activeKey={activeKey}
+                    onChange={(key) => openTab(keyToIdx[key as TabKey])}
+                    renderDelete={(closeMenu) => (
+                        <OpenModalButton
+                            buttonText={
+                                <span className="flex items-center gap-2">
+                                    <FaTrash className="h-4 w-4" />
+                                    Delete Account
+                                </span>
+                            }
+                            className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl"
+                            modalComponent={<DeleteUser currUser={user} />}
+                            onButtonClick={closeMenu}
+                        />
+                    )}
                 />
             </div>
 

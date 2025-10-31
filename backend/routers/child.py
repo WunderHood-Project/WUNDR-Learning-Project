@@ -51,7 +51,7 @@ async def create_child(
             # create/link emergency contacts
             contacts: list = []
             contact_ids: list[str] = []
-            for ec in getattr(child_data, "emergencyContacts", []):
+            for ec in getattr(child_data, "emergencyContacts", []) or []:
                 existing_contact = await tx.emergencycontact.find_first(
                     where={
                         "firstName": ec.firstName,
@@ -61,19 +61,14 @@ async def create_child(
                 )
 
                 if existing_contact:
-                    if created_child.id in existing_contact.childIds:
-                        contacts.append(existing_contact)
-                        contact_ids.append(existing_contact.id)
-                    else:
-                        updated_contact = await tx.emergencycontact.update(
+                    current_ids = existing_contact.childIds or []
+                    if created_child.id in current_ids:
+                        await tx.emergencycontact.update(
                             where={"id": existing_contact.id},
-                            data={
-                                "childIds": existing_contact.childIds + [created_child.id],
-                                "relationship": ec.relationship
-                            }
+                            data={"childIds": {"set": [*current_ids, created_child.id]}}
                         )
-                        contacts.append(updated_contact)
-                        contact_ids.append(updated_contact.id)
+                    contacts.append(existing_contact)
+                    contact_ids.append(existing_contact.id)
                 else:
                     new_contact = await tx.emergencycontact.create(
                         data={
@@ -89,6 +84,7 @@ async def create_child(
 
             # attach contacts to child and fetch with include
             if contact_ids:
+                contact_ids = list(dict.fromkeys(contact_ids))
                 created_child = await tx.children.update(
                     where={ "id": created_child.id },
                     data={ "emergencyContactIds": { "set": contact_ids } },
@@ -200,7 +196,7 @@ async def get_children_of_event(
         # Query for all children of event
         children = await db.children.find_many(
             where= {
-                "eventIds": {eventId}
+                "eventIds": {"has": eventId}
             }
         )
 
@@ -259,48 +255,63 @@ async def update_child(
 
             # if contacts were to be updated, they are reconciled and use same IDs
             if contacts is not None:
-                contact_ids: list[str] = []
-
-                for ec in contacts:
-                    existing_contact = await tx.emergencycontact.find_first(
-                        where={
-                            "firstName": ec.firstName,
-                            "lastName": ec.lastName,
-                            "phoneNumber": ec.phoneNumber,
-                            "relationship": ec.relationship
-                        }
-                    )
-
-                    # if we find the contact, we are making sure it is linked with child
-                    if existing_contact:
-                        if updated_child.id not in (existing_contact.childIds or []):
-                            new_childIds = [*existing_contact, updated_child.id]
-                            await tx.emergencycontact.update(
-                                where={"id": existing_contact.id},
-                                data={"childIds": {"set": new_childIds}}
-                            )
-                        # collect the existing contact id
-                        contact_ids.append(existing_contact.id)
-                    else:
-                        # create contact and link to child
-                        new_contact = await tx.emergencycontact.create(
-                            data={
+                if len(contacts) == 0:
+                    pass
+                else:
+                    contact_ids: list[str] = []
+                    for ec in contacts or []:
+                        existing_contact = await tx.emergencycontact.find_first(
+                            where={
                                 "firstName": ec.firstName,
                                 "lastName": ec.lastName,
                                 "phoneNumber": ec.phoneNumber,
-                                "relationship": ec.relationship,
-                                "childIds": {"set": [updated_child.id]}
+                                "relationship": ec.relationship
                             }
                         )
-                        contact_ids.append(new_contact.id)
 
-                # deduplicate collected ids and replace chlid's linked contacts
-                contact_ids = list(dict.fromkeys(contact_ids))
-                updated_child = await tx.children.update(
-                    where={"id": updated_child.id},
-                    data={"emergencyContactIds": {"set": contact_ids}},
-                    include={"emergencyContacts": True, "parents": True}
-                )
+                        # if we find the contact, we are making sure it is linked with child
+                        if existing_contact:
+                            current_ids = existing_contact.childIds or []
+                            if updated_child.id not in current_ids:
+                                new_childIds = [*current_ids, updated_child.id]
+
+                            # if updated_child.id not in (existing_contact.childIds or []):
+                                await tx.emergencycontact.update(
+                                    where={"id": existing_contact.id},
+                                    data={"childIds": {"set": new_childIds}}
+                                )
+                            # # collect the existing contact id
+                            contact_ids.append(str(existing_contact.id))
+                        else:
+                            # create contact and link to child
+                            new_contact = await tx.emergencycontact.create(
+                                data={
+                                    "firstName": ec.firstName,
+                                    "lastName": ec.lastName,
+                                    "phoneNumber": ec.phoneNumber,
+                                    "relationship": ec.relationship,
+                                    "childIds": [updated_child.id]
+                                }
+                            )
+                            contact_ids.append(str(new_contact.id))
+
+                    unique_ids: list[str] = []
+                    for cid in contact_ids:
+                        if isinstance(cid, list):
+                            for x in cid:
+                                if x not in unique_ids:
+                                    unique_ids.append(str(x))
+                        else:
+                            if cid not in unique_ids:
+                                unique_ids.append(str(cid))
+
+
+                    # deduplicate collected ids and replace chlid's linked contacts
+                    updated_child = await tx.children.update(
+                        where={"id": updated_child.id},
+                        data={"emergencyContactIds": {"set": unique_ids}},
+                        include={"emergencyContacts": True, "parents": True}
+                    )
 
         return {
             "child": updated_child,

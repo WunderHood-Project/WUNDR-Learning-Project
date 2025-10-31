@@ -86,7 +86,7 @@ type Props = {
   enrolledChildren: Child[];
   eventId: string | undefined;
   onAfterUnenroll?: () => void;
-  onCancel?: () => void;    
+  onCancel?: () => void;
 };
 
 const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventId, onAfterUnenroll, onCancel }) => {
@@ -123,7 +123,7 @@ const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventId, onAfterUnen
                 body: { childIds },
             });
             setSelected(new Set());
-            onAfterUnenroll?.();           
+            onAfterUnenroll?.();
         } catch (err) {
             setServerError(err instanceof Error ? err.message : "Failed to unenroll child(ren)");
         } finally {
@@ -135,20 +135,20 @@ const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventId, onAfterUnen
         <form onSubmit={handleUnenroll} className="space-y-4">
             <fieldset className="space-y-2">
                 {enrolledChildren?.map(child => {
-                const isChecked = selected.has(child.id);
-                return (
-                    <label key={child.id} className="flex items-center gap-3 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleChild(child.id)}
-                        className="h-4 w-4"
-                    />
-                    <span className="text-wondergreen font-medium">
-                        {(child.preferredName ?? child.firstName) + " " + child.lastName}
-                    </span>
-                    </label>
-                );
+                    const isChecked = selected.has(child.id);
+                    return (
+                        <label key={child.id} className="flex items-center gap-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => toggleChild(child.id)}
+                                className="h-4 w-4"
+                            />
+                            <span className="text-wondergreen font-medium">
+                                {(child.preferredName ?? child.firstName) + " " + child.lastName}
+                            </span>
+                        </label>
+                    );
                 })}
             </fieldset>
 
@@ -156,21 +156,22 @@ const UnenrollEvent: React.FC<Props> = ({ enrolledChildren, eventId, onAfterUnen
 
             <div className="mt-4 flex flex-col sm:flex-row gap-3">
                 <button
-                type="button"
-                onClick={onCancel}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-wondergreen/30 text-wondergreen hover:bg-wonderleaf/10 font-semibold">
+                    type="button"
+                    onClick={onCancel}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-wondergreen/30 text-wondergreen hover:bg-wonderleaf/10 font-semibold"
+                >
                     Cancel
                 </button>
 
                 <button
-                type="submit"
-                disabled={!hasSelection || submitting}
-                aria-disabled={!hasSelection || submitting}
-                title={!hasSelection ? "Select at least one child" : "Unenroll"}
-                className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-bold text-white transition
-                    ${(!hasSelection || submitting)
-                    ? "bg-red-300 cursor-not-allowed"
-                    : "bg-red-600 hover:bg-red-700 shadow-md"}`}
+                    type="submit"
+                    disabled={!hasSelection || submitting}
+                    aria-disabled={!hasSelection || submitting}
+                    title={!hasSelection ? "Select at least one child" : "Unenroll"}
+                    className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-bold text-white transition
+                        ${(!hasSelection || submitting)
+                        ? "bg-red-300 cursor-not-allowed"
+                        : "bg-red-600 hover:bg-red-700 shadow-md"}`}
                 >
                     {submitting ? "Unenrolling..." : "Unenroll"}
                 </button>

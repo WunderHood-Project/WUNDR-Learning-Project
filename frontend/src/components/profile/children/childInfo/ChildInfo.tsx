@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef, useMemo } from "react"
 import { Child } from "@/types/child"
 import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6"
-import JoinChildForm from "./addChild/AddChildForm"
-import UpdateChildForm from "./UpdateChild"
-import { useChild } from "../../../../hooks/useChild"
+import JoinChildForm from "../addChild/AddChildForm"
+import { useChild } from "../../../../../hooks/useChild"
 import ChildInfoCard from "./ChildInfoCard"
+import UpdateChildForm from "../updateChild/UpdateChild"
+import { useAuth } from "@/context/auth"
 
 
 const NO_CHILDREN: readonly Child[] = Object.freeze([] as const);
 
 const ChildInfo = () => {
+    const { refetchUser } = useAuth()
     const { children, loading, refetch } = useChild(undefined)
     const formAnchorRef = useRef<HTMLDivElement | null>(null)
     const [showForm, setShowForm] = useState<boolean>(false)
@@ -55,6 +57,7 @@ const ChildInfo = () => {
             setPendingId(createdChild.id)
         }
         refetch()
+        refetchUser()
     }
 
     const handleNext = () => {
@@ -67,6 +70,17 @@ const ChildInfo = () => {
         if (!items.length) return
         const prev = (selectedIndex - 1 + items.length) % items.length
         setSelectedId(items[prev].id)
+    }
+
+    const handleDeleted = async (deletedId: string) => {
+        const i = items.findIndex(c => c.id === deletedId)
+        if (i >=0) {
+            const nextIdx = items.length > 1 ? (i === items.length - 1 ? i- 1 : i + 1) : -1
+            setSelectedId(nextIdx >= 0 ? items[nextIdx].id : null)
+        }
+
+        refetch()
+        refetchUser()
     }
 
     if (loading && !items.length) return <div className="flex justify-center items-center min-h-[200px]">No children displayable at this moment</div>
@@ -91,7 +105,7 @@ const ChildInfo = () => {
                     {items.length > 1 && (
                         <FaCircleChevronLeft
                             className="w-[50px] h-[50px] cursor-pointer my-auto"
-                            onClick={handlePrev}
+                            onClick={!editingChildId ? handlePrev : undefined}
                         />
                     )}
 
@@ -107,6 +121,7 @@ const ChildInfo = () => {
                             <ChildInfoCard
                                 child={visibleChild}
                                 onEdit={() => setEditingChildId(visibleChild.id)}
+                                onDeleted={handleDeleted}
                             />
                         )}
                     </div>
@@ -114,7 +129,7 @@ const ChildInfo = () => {
                     {items.length > 1 && (
                         <FaCircleChevronRight
                             className="w-[50px] h-[50px] cursor-pointer my-auto"
-                            onClick={handleNext}
+                            onClick={!editingChildId ? handleNext : undefined}
                         />
                     )}
                 </div>

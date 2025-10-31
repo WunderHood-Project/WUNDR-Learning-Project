@@ -1,20 +1,21 @@
 import OpenModalButton from "@/context/openModalButton"
 import { Child } from "@/types/child"
 import { FaCheck, FaPen, FaTrash } from "react-icons/fa"
-import DeleteChild from "./DeleteChild"
 import React from "react"
-import { numericFormatDate } from "../../../../utils/formatDate"
-import { calculateAge } from "../../../../utils/calculateAge"
-import { displayGrade } from "../../../../utils/displayGrade"
 import { FaX } from "react-icons/fa6"
+import DeleteChild from "../DeleteChild"
+import { numericFormatDate } from "../../../../../utils/formatDate"
+import { calculateAge } from "../../../../../utils/calculateAge"
+import { displayGrade } from "../../../../../utils/displayGrade"
 
 
 type Props = {
     child: Child
     onEdit: () => void
+    onDeleted: (deletedId: string) => void
 }
 
-const ChildInfoCard: React.FC<Props> = ({ child, onEdit }) => {
+const ChildInfoCard: React.FC<Props> = ({ child, onEdit, onDeleted }) => {
     return (
         <div className="bg-white rounded-lg p-6 min-h-[350px]">
             <div className="flex justify-between items-center mb-6">
@@ -24,7 +25,7 @@ const ChildInfoCard: React.FC<Props> = ({ child, onEdit }) => {
 
                 <div className="flex flex-row gap-2">
                     <FaPen onClick={onEdit} />
-                    <OpenModalButton buttonText={<FaTrash />} modalComponent={<DeleteChild currChild={child} />} />
+                    <OpenModalButton buttonText={<FaTrash />} modalComponent={<DeleteChild currChild={child} onDeleted={onDeleted}/>} />
                 </div>
             </div>
 
@@ -60,7 +61,7 @@ const ChildInfoCard: React.FC<Props> = ({ child, onEdit }) => {
 
         <div className="mb-4 border-t pt-4">
             <div className="font-bold">MEDICAL ACCOMMODATIONS</div>
-            <div className="text-gray-500 text-sm my-1 ml-2">{child.allergiesMedical || "List any allergies or medical accommodations"}</div>
+            <div className="text-gray-500 text-sm my-1 ml-2">{child.allergiesMedical || "List allergies/medical accommodations (N/A if none)"}</div>
         </div>
 
         <div className="mb-4 border-t pt-4">

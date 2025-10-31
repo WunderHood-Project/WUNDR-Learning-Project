@@ -19,33 +19,33 @@ export default function ChildrenList({
                     <span className="text-base sm:text-xl">👨‍👩‍👧</span>
                     Your Children
                 </h3>
-                 {isEmpty ? (
+
+                {isEmpty ? (
                     <div className="rounded-xl border border-wonderleaf/30 bg-wonderleaf/10 p-4">
                         <p className="text-wondergreen mb-3 text-sm sm:text-base">
-                        You haven’t registered any children yet.
+                            You haven’t registered any children yet.
                         </p>
                         {showCTA && (
-                        <Link
-                            href={ctaHref}
-                            className="inline-flex items-center gap-2 rounded-lg bg-wondergreen text-white px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-wonderleaf mt-2"
-                        >
-                            Add a child
-                        </Link>
+                            <Link
+                                href={ctaHref}
+                                className="inline-flex items-center gap-2 rounded-lg bg-wondergreen text-white px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-wonderleaf mt-2"
+                            >
+                                Add a child
+                            </Link>
                         )}
                     </div>
-                    ) : (
-
-                <div className="space-y-3">
-                    {items.map((c) => (
-                        <div
-                        key={c.id}
-                        className="rounded-xl border border-wonderleaf/30 bg-gradient-to-r from-wonderleaf/10 to-white px-4 py-3"
-                        >
-                        <div className="font-semibold text-wondergreen text-base sm:text-lg">{c.name}</div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                ) : (
+                    <div className="space-y-3">
+                        {items.map((c) => (
+                            <div
+                                key={c.id}
+                                className="rounded-xl border border-wonderleaf/30 bg-gradient-to-r from-wonderleaf/10 to-white px-4 py-3"
+                            >
+                                <div className="font-semibold text-wondergreen text-base sm:text-lg">{c.name}</div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );

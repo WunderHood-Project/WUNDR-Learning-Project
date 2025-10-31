@@ -75,7 +75,8 @@ model Children {
   events                Events[] @relation(fields: [eventIds], references: [id])
 
   emergencyContactIds   String[] @db.ObjectId
-  emergencyContacts     EmergencyContact[] @relation(fields: [emergencyContactIds], references: [id])
+  emergencyContacts     EmergencyContact[]    @relation(name: "ChildToEmergencyContacts", fields: [emergencyContactIds], references: [id])
+
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
@@ -170,7 +171,8 @@ model EmergencyContact{
   updatedAt             DateTime? @updatedAt
 
   childIds              String[] @db.ObjectId
-  child                 Children[] @relation(fields: [childIds], references: [id])
+  child                 Children[] @relation(name: "ChildToEmergencyContacts", fields: [childIds], references: [id])
+
 }
 
 // ! Activities     =============================================================================
@@ -294,7 +296,7 @@ model Jobs{
 
 enum DonationType {
   Sponsorship
-  Donation  
+  Donation
 }
 
 model Donations {
@@ -302,12 +304,13 @@ model Donations {
   donationType       DonationType
   amount             Int
   email              String?
-  sessionId          String?       @unique 
+  sessionId          String?       @unique
 
   // One-to-Many Relationship
   user   Users?   @relation(fields: [userId], references: [id])
-  userId String? @db.ObjectId 
+  userId String? @db.ObjectId
 }
+
 
 // ! StripeEvents  =============================================================================
 

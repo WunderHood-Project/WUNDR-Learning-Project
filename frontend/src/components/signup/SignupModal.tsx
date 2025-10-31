@@ -34,8 +34,6 @@ const SignupModal = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [creating, setCreating] = useState(false)
 
-    console.log("sign up modal", errors)
-
     // Form fields for each step
     const [form1, setForm1] = useState({
         firstName: '',

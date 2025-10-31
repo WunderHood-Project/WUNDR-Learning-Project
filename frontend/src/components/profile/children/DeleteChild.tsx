@@ -4,15 +4,16 @@ import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa"
 import { determineEnv } from "../../../../utils/api"
-import { useChild } from "../../../../hooks/useChild"
 
 const WONDERHOOD_URL = determineEnv()
 
 
-type Props = { currChild: Child }
+type Props = {
+    currChild: Child
+    onDeleted: (deletedId: string) => void
+}
 
-const DeleteChild: React.FC<Props> = ({ currChild }) => {
-    const { refetch } = useChild(undefined)
+const DeleteChild: React.FC<Props> = ({ currChild, onDeleted }) => {
     const { closeModal } = useModal()
     const [isDeleting, setIsDeleting] = useState(false)
 
@@ -21,7 +22,7 @@ const DeleteChild: React.FC<Props> = ({ currChild }) => {
 
         try {
             await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, { method: "DELETE" })
-            refetch()
+            onDeleted(currChild.id)
             closeModal()
         } catch (err) {
             console.error("delete child failed", err)

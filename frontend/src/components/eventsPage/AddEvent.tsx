@@ -53,7 +53,7 @@ export default function AddEvent() {
                 maxWidth: 1600,
                 maxHeight: 1200,
                 quality: 0.8,
-                type: 'image/webp',     
+                type: 'image/webp',
             });
             setForm(prev => ({ ...prev, image: dataUrl }));
         } else {
@@ -129,7 +129,6 @@ export default function AddEvent() {
             ...form,
             date: convertStringToIsoFormat(form.date),
         }
-        console.log('payload', payload)
 
         try {
             const response = await makeApiRequest(`${WONDERHOOD_URL}/event`, {
@@ -139,7 +138,6 @@ export default function AddEvent() {
             })
 
             if (response) {
-                console.log("Event successfully created:", response)
                 setForm(initialEventForm())
                 router.replace("/events")
             }
