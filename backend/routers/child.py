@@ -10,6 +10,8 @@ from datetime import datetime, time, timezone
 
 
 router = APIRouter()
+WAIVER_VER = "1.0"
+CONSENT_VER = "1.0"
 
 
 # ! Create Child
@@ -41,10 +43,14 @@ async def create_child(
                     "notes": child_data.notes,
                     "waiver": child_data.waiver,
                     "photoConsent": child_data.photoConsent,
+                    "waiverVersion": WAIVER_VER if child_data.waiver else None,
+                    "waiverSignedAt": datetime.now(timezone.utc) if child_data.waiver else None,
+                    "photoConsentVer": CONSENT_VER if child_data.photoConsent else None,
+                    "photoConsentAt": datetime.now(timezone.utc) if child_data.photoConsent else None,
                     "parentIds": [current_user.id], # Add the current user's ID to parentIDs
                     "eventIds": [], # Create activityIDs array so we can easily add to it later
-                    "createdAt": child_data.createdAt,
-                    "updatedAt": child_data.updatedAt
+                    # "createdAt": child_data.createdAt,
+                    # "updatedAt": child_data.updatedAt
                 },
             )
 
@@ -62,10 +68,11 @@ async def create_child(
 
                 if existing_contact:
                     current_ids = existing_contact.childIds or []
-                    if created_child.id in current_ids:
+                    next_ids = list(dict.fromkeys([*current_ids, created_child.id]))
+                    if next_ids != current_ids:
                         await tx.emergencycontact.update(
                             where={"id": existing_contact.id},
-                            data={"childIds": {"set": [*current_ids, created_child.id]}}
+                            data={"childIds": {"set": next_ids}}
                         )
                     contacts.append(existing_contact)
                     contact_ids.append(existing_contact.id)
@@ -117,6 +124,40 @@ async def create_child(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create child and emergency contacts: {str(e)}"
         )
+    
+# ! Get children of an event
+@router.get("/event", status_code=status.HTTP_200_OK)
+async def get_children_of_event(
+    eventId: str,
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    """
+        Get the children for an event
+        Is only for admin
+    """
+
+    # Authenticate
+    enforce_authentication(current_user)
+
+    # Check if admin
+    enforce_admin(current_user)
+
+    try:
+        # Query for all children of event
+        children = await db.children.find_many(
+            where= {
+                "eventIds": {"has": eventId}
+            }
+        )
+
+    except:
+        raise HTTPException(
+            status_code=400,
+            detail="Children not found"
+        )
+
+    return children
+
 
 
 # ! Get Children of the Current User
@@ -175,126 +216,110 @@ async def get_child_by_id(
 
     return child
 
-# ! Get children of an event
-@router.get("/event", status_code=status.HTTP_200_OK)
-async def get_children_of_event(
-    eventId: str,
-    current_user: Annotated[User, Depends(get_current_user)]
-):
-    """
-        Get the children for an event
-        Is only for admin
-    """
-
-    # Authenticate
-    enforce_authentication(current_user)
-
-    # Check if admin
-    enforce_admin(current_user)
-
-    try:
-        # Query for all children of event
-        children = await db.children.find_many(
-            where= {
-                "eventIds": {"has": eventId}
-            }
-        )
-
-    except:
-        raise HTTPException(
-            status_code=400,
-            detail="Children not found"
-        )
-
-    return children
-
 
 # ! Update Child
 @router.patch("/{child_id}", status_code=status.HTTP_200_OK)
 async def update_child(
     child_id: str,
-    # use ChildUpdate pydantic model for data validation
     update_data: ChildUpdate,
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
-    # Make sure the user is authenticated
+    # Auth
     enforce_authentication(current_user, "update your child's information")
 
-    # Fetch the child
+    # Child exists?
     child = await db.children.find_unique(where={"id": child_id})
     if not child:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Child not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Child not found.")
 
-    # Make sure the current user is a parent of the child
+    # Is parent?
     if current_user.id not in child.parentIds:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a parent of this child.")
 
+    # Split payload
     non_contact_data = update_data.model_dump(exclude_unset=True, exclude={"emergencyContacts"})
-    contacts = update_data.emergencyContacts
+    new_contacts = update_data.emergencyContacts
+
+    # Add waiver/photoConsent versioning if toggled
+    extra_updates: dict = {}
+    if update_data.waiver is not None:
+        if update_data.waiver:
+            extra_updates.update({
+                "waiverVersion": WAIVER_VER,
+                "waiverSignedAt": datetime.now(timezone.utc),
+            })
+        else:
+            extra_updates.update({
+                "waiverVersion": None,
+                "waiverSignedAt": None,
+            })
+
+    if update_data.photoConsent is not None:
+        if update_data.photoConsent:
+            extra_updates.update({
+                "photoConsentVer": CONSENT_VER,
+                "photoConsentAt": datetime.now(timezone.utc),
+            })
+        else:
+            extra_updates.update({
+                "photoConsentVer": None,
+                "photoConsentAt": None,
+            })
 
     try:
         async with db.tx() as tx:
-            # Make the non-emergency contact update
-            if non_contact_data:
+            # 1) Update non-contact fields (+ extra_updates)
+            if non_contact_data or extra_updates:
                 updated_child = await tx.children.update(
                     where={"id": child.id},
-                    data=non_contact_data,
-                    include={
-                        "parents": True,
-                        "emergencyContacts": True,
-                    }
+                    data={**non_contact_data, **extra_updates},
+                    include={"parents": True, "emergencyContacts": True},
                 )
             else:
                 updated_child = await tx.children.find_unique(
                     where={"id": child.id},
-                    include={
-                        "parents": True,
-                        "emergencyContacts": True
-                    }
+                    include={"parents": True, "emergencyContacts": True},
                 )
 
-            # if contacts were to be updated, they are reconciled and use same IDs
-            if contacts is not None:
-                if len(contacts) == 0:
+            # 2) Reconcile emergency contacts if provided
+            if new_contacts is not None:
+                if len(new_contacts) == 0:
                     pass
                 else:
                     contact_ids: list[str] = []
-                    for ec in contacts or []:
+
+                    for ec in new_contacts or []:
                         existing_contact = await tx.emergencycontact.find_first(
                             where={
                                 "firstName": ec.firstName,
                                 "lastName": ec.lastName,
                                 "phoneNumber": ec.phoneNumber,
-                                "relationship": ec.relationship
+                                "relationship": ec.relationship,
                             }
                         )
 
-                        # if we find the contact, we are making sure it is linked with child
                         if existing_contact:
                             current_ids = existing_contact.childIds or []
-                            if updated_child.id not in current_ids:
-                                new_childIds = [*current_ids, updated_child.id]
-
-                            # if updated_child.id not in (existing_contact.childIds or []):
+                            next_ids = list(dict.fromkeys([*current_ids, updated_child.id]))
+                            if next_ids != current_ids:
                                 await tx.emergencycontact.update(
                                     where={"id": existing_contact.id},
-                                    data={"childIds": {"set": new_childIds}}
+                                    data={"childIds": {"set": next_ids}},
                                 )
-                            # # collect the existing contact id
                             contact_ids.append(str(existing_contact.id))
                         else:
-                            # create contact and link to child
                             new_contact = await tx.emergencycontact.create(
                                 data={
                                     "firstName": ec.firstName,
                                     "lastName": ec.lastName,
                                     "phoneNumber": ec.phoneNumber,
                                     "relationship": ec.relationship,
-                                    "childIds": [updated_child.id]
+                                    "childIds": [updated_child.id],
                                 }
                             )
                             contact_ids.append(str(new_contact.id))
 
+                    # dedupe
                     unique_ids: list[str] = []
                     for cid in contact_ids:
                         if isinstance(cid, list):
@@ -305,25 +330,20 @@ async def update_child(
                             if cid not in unique_ids:
                                 unique_ids.append(str(cid))
 
-
-                    # deduplicate collected ids and replace chlid's linked contacts
                     updated_child = await tx.children.update(
                         where={"id": updated_child.id},
                         data={"emergencyContactIds": {"set": unique_ids}},
-                        include={"emergencyContacts": True, "parents": True}
+                        include={"emergencyContacts": True, "parents": True},
                     )
 
-        return {
-            "child": updated_child,
-            "message": "Child updated successfully"
-        }
+        return {"child": updated_child, "message": "Child updated successfully"}
 
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update child and emergency contacts: {str(e)}"
+            detail=f"Failed to update child and emergency contacts: {str(e)}",
         )
 
 
@@ -418,29 +438,6 @@ async def create_emergency_contact(
             detail="You are not authorized to create emergency contacts for this child"
         )
 
-
-    # Validate priority range (assuming 1-3 is acceptable range)
-    # if not (1 <= emergency_contact_data.priority <= 3):
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail="Priority must be between 1 and 3"
-    #     )
-
-    # Check for priority conflicts (if you want unique priorities per child)
-    # existing_priority = await db.emergencycontact.find_first(
-    #     where={
-    #         "childIDs": {
-    #             "has": child_id
-    #         },
-    #         "priority": emergency_contact_data.priority
-    #     }
-    # )
-    # if existing_priority:
-    #     raise HTTPException(
-    #         status_code=409,
-    #         detail=f"Priority {emergency_contact_data.priority} is already assigned to another emergency contact for this child"
-    #     )
-
     try:
         existing_contact = await db.emergencycontact.find_first(
             where={
@@ -457,12 +454,20 @@ async def create_emergency_contact(
                 )
 
             # Update existing contact to add this child
+            # updated_contact = await db.emergencycontact.update(
+            #     where={"id": existing_contact.id},
+            #     data={
+            #         "childIds": existing_contact.childIds + [child_id],
+            #         "relationship": emergency_contact_data.relationship
+            #         # "priority": emergency_contact_data.priority  # Update priority for this relationship
+            #     }
+            # )
+            next_ids = list(dict.fromkeys([*(existing_contact.childIds or []), child_id]))
             updated_contact = await db.emergencycontact.update(
                 where={"id": existing_contact.id},
                 data={
-                    "childIds": existing_contact.childIds + [child_id],
+                    "childIds": { "set": next_ids },
                     "relationship": emergency_contact_data.relationship
-                    # "priority": emergency_contact_data.priority  # Update priority for this relationship
                 }
             )
 
@@ -549,7 +554,6 @@ async def update_emergency_contact(
     # Verify that user is a parent of child to make update
     child = await db.children.find_unique(
         where={"id": child_id}
-
     )
 
     if current_user.id not in child.parentIds:
@@ -559,7 +563,7 @@ async def update_emergency_contact(
         )
 
     # Ensure the emergecy contact exists
-    contact = await db.emergencycontact.find_unique(
+    contact = await db.emergencycontact.find_first(
         where={
             "id": contact_id,
             "childIds": { "has": child_id }
@@ -584,7 +588,7 @@ async def update_emergency_contact(
             update_payload["lastName"] = emergency_contact_data.lastName
 
         if emergency_contact_data.relationship is not None:
-            update_payload["relaltionship"] = emergency_contact_data.relationship
+            update_payload["relationship"] = emergency_contact_data.relationship
 
         if emergency_contact_data.phoneNumber is not None:
             update_payload["phoneNumber"] = emergency_contact_data.phoneNumber
@@ -668,3 +672,5 @@ async def delete_emergency_contact(
             status_code=500,
             detail=f"Unable to delete emergency contact {e}"
         )
+
+
