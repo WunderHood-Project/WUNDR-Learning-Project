@@ -176,28 +176,27 @@ export default function ActivityBlock({
         "
         style={{ scrollbarGutter: 'stable', WebkitOverflowScrolling: 'touch' }}
       >
-          {events.length > 0 ? (
-            events.map((event) => (
-              <div
-                key={event.id}
-                className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
-              >
-                <EventCard
-                  event={event}
-                  isAdmin={isAdmin}
-                  events={events}
-                  onDelete={onDelete}
-                />
-              </div>
-            ))
-          ) : (
-            <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
-              <p className="text-lg font-medium text-gray-600">No events scheduled yet</p>
-              <p className="mt-2 text-sm text-gray-500">
-                Check back soon for upcoming {activityName.toLowerCase()} events!
-              </p>
+        {events.length > 0 ? (
+          events.map((event, i) => (
+            <div
+              key={event.id ?? `${event.name}-${event.date}-${event.startTime}-${i}`}
+              className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
+            >
+              <EventCard
+                event={event}
+                isAdmin={isAdmin}
+                onDelete={onDelete}
+              />
             </div>
-          )}
+          ))
+        ) : (
+          <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
+            <p className="text-lg font-medium text-gray-600">No events scheduled yet</p>
+            <p className="mt-2 text-sm text-gray-500">
+              Check back soon for upcoming {activityName.toLowerCase()} events!
+            </p>
+          </div>
+        )}
         </div>
 
         {/* right arrow (desktop) */}

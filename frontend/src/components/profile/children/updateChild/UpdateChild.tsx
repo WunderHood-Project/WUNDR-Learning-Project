@@ -27,7 +27,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
     const { ecs, ecErrors, ecErrorMap, rowKeys, setEcErrors, setEcErrorMap, addEC, removeEC, changeEC, changePhone, validateNow } = useEmergencyContactsUpdate(currChild.emergencyContacts, hydrateKey)
     const [saving, setSaving] = useState(false)
     const [errors, setErrors] = useState<ChildErrorsForm>({})
-    const [serverError, setServerError] = useState<string | null>(null)
+    const [serverError, setServerError] = useState<string | null>(null);
     const [form, setForm] = useState<CreateChildForm>({
         firstName: "", lastName: '', preferredName: "",
         homeschool: true, grade: null, birthday: '',
@@ -36,7 +36,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         emergencyContacts: []
     })
 
-    useEffect(() =>{
+    useEffect(() => {
         const hydrated: CreateChildForm = {
             firstName: currChild.firstName ?? '',
             lastName: currChild.lastName ?? "",
@@ -49,22 +49,23 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
             photoConsent: Boolean(currChild.photoConsent),
             waiver: Boolean(currChild.waiver),
             emergencyContacts: []
-        }
+        };
 
-        setForm(hydrated)
-        setServerError(null)
+        setForm(hydrated);
+        setServerError(null);
 
         const initialErrs = validateChildBasics({
             firstName: hydrated.firstName,
             lastName: hydrated.lastName,
             birthday: hydrated.birthday,
-            allergiesMedical: hydrated.allergiesMedical
-        }) as ChildErrorsForm
+            allergiesMedical: (hydrated.allergiesMedical ?? "")
+        }) as ChildErrorsForm;
 
-        setErrors(initialErrs)
-        setEcErrors([])
-        setEcErrorMap({})
-    }, [hydrateKey, setEcErrors, setEcErrorMap])
+        setErrors(initialErrs);
+        setEcErrors([]);
+        setEcErrorMap({});
+        // currChild (and/or hydrateKey)me: hydrated.firstName,
+    }, [currChild, hydrateKey, setEcErrors, setEcErrorMap]); 
 
     const isValid = Object.keys(errors).length === 0
 
@@ -90,7 +91,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
                     firstName: data.firstName.trim(),
                     lastName: data.lastName.trim(),
                     birthday: data.birthday.trim(),
-                    allergiesMedical: data.allergiesMedical.trim()
+                    allergiesMedical: (data.allergiesMedical ?? "").trim()
                 }) as ChildErrorsForm
                 setErrors(basicValidations)
             }
@@ -101,30 +102,41 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
 
     const buildUpdatePayload = (form: CreateChildForm, curr: Child): UpdateChildForm => {
         const payload: UpdateChildForm = {}
-        const set = <K extends keyof UpdateChildForm>(k: K, v: UpdateChildForm[K]) => {payload[k] = v}
+        const set = <K extends keyof UpdateChildForm>(k: K, v: UpdateChildForm[K]) => { payload[k] = v }
 
-        const prefNext = form.preferredName?.trim() ?? ""
-        const medNext = (form.allergiesMedical ?? "").trim()
-        const notesNext = form.notes?.trim() ?? ""
+        const prefNext  = (form.preferredName ?? "").trim()
+        const medNext   = (form.allergiesMedical ?? "").trim()
+        const notesNext = (form.notes ?? "").trim()
         const uiCurrBirthday = curr.birthday ? curr.birthday.split("T")[0] : ""
 
         if (form.firstName.trim() !== curr.firstName) set("firstName", form.firstName.trim())
-        if (form.lastName.trim() !== curr.lastName) set("lastName", form.lastName.trim())
-        if (prefNext && prefNext !== (curr.preferredName ?? "")) set('preferredName', prefNext)
-        if (notesNext && notesNext !== (curr.notes ?? "")) set("notes", notesNext)
+        if (form.lastName.trim()  !== curr.lastName)  set("lastName",  form.lastName.trim())
+
+        const currPref = curr.preferredName ?? ""
+        if (prefNext !== currPref) set("preferredName", prefNext === "" ? null : prefNext)
+
+        const currNotes = curr.notes ?? ""
+        if (notesNext !== currNotes) set("notes", notesNext === "" ? null : notesNext)
+
         if (medNext !== (curr.allergiesMedical ?? "")) set("allergiesMedical", medNext)
         if (form.homeschool !== curr.homeschool) set("homeschool", form.homeschool)
         if (form.photoConsent !== curr.photoConsent) set("photoConsent", form.photoConsent)
-        if (form.birthday && form.birthday !== uiCurrBirthday) set('birthday', new Date(form.birthday).toISOString())
+
+        if (form.birthday && form.birthday !== uiCurrBirthday) {
+            set("birthday", new Date(form.birthday).toISOString())
+        }
+
         if ((form.grade ?? null) !== (curr.grade ?? null)) {
-            if (form.grade !== null) set("grade", form.grade)
+            set("grade", form.grade == null ? null : form.grade)
         }
 
         return payload
     }
 
+
     const submitUpdate = async () => {
         if (saving) return
+
         if (!isValid) {
             setServerError("Please fix the errors above")
             return
@@ -134,7 +146,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
             firstName: form.firstName.trim(),
             lastName: form.lastName.trim(),
             birthday: form.birthday.trim(),
-            allergiesMedical: form.allergiesMedical.trim()
+            allergiesMedical: (form.allergiesMedical ?? "").trim()
         }) as ChildErrorsForm
 
         setErrors(childErrors)
@@ -148,35 +160,43 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
             setServerError("Please fix the Emergency Contact errors")
             return
         }
-
-        const payload = buildUpdatePayload(form, currChild)
-        payload.emergencyContacts = deduped.map(c => ({
+        // normalize phones -> E.164
+        const transformedECs = deduped.map(c => ({
             firstName: c.firstName.trim(),
             lastName: c.lastName.trim(),
             relationship: c.relationship.trim(),
-            phoneNumber: c.phoneNumber ? toE164US(c.phoneNumber) : null
-        }))
+            phoneNumber: toE164US(c.phoneNumber || "")
+        }));
+
+        if (transformedECs.some(ec => !ec.phoneNumber)) {
+            setServerError("Please provide valid phone numbers (E.164, e.g. +12025550123)");
+            return;
+        }
+
+        // final payload: use ONLY transformedECs
+        const payload = buildUpdatePayload(form, currChild);
+        payload.emergencyContacts = transformedECs;
 
         try {
-            setSaving(true)
+            setSaving(true);
             const response = await makeApiRequest(`${WONDERHOOD_URL}/child/${currChild.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: payload
-            }) as { child: Child, message: string }
+            }) as { child: Child, message: string };
 
-            const updated = response.child
-            refetchUser()
-            if (refetchChildren) await refetchChildren()
-            onPatched?.(updated.id)
-            setEditingChildId(null)
+            const updated = response.child;
+            refetchUser();
+            if (refetchChildren) await refetchChildren();
+            onPatched?.(updated.id);
+            setEditingChildId(null);
         } catch (err) {
-            console.error("update failed", err)
-            setServerError(err instanceof Error ? err.message : "Update failed. Please try again later")
+            console.error("update failed", err);
+            setServerError(err instanceof Error ? err.message : "Update failed. Please try again later");
         } finally {
-            setSaving(false)
+            setSaving(false);
         }
-    }
+    };
 
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -185,6 +205,11 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
 
     return (
         <div className="bg-white rounded-lg p-6">
+            {serverError && (
+                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
+                    {serverError}
+                </div>
+            )}
             <form onSubmit={handleUpdate}>
                 <UpdateChildHeaderFields
                     form={form}

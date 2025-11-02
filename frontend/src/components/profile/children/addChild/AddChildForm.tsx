@@ -68,7 +68,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 				firstName: form.firstName,
 				lastName: form.lastName,
 				birthday: form.birthday,
-				allergiesMedical: form.allergiesMedical
+				allergiesMedical: form.allergiesMedical ?? ""
 			})
 
 			if (Object.keys(errs).length) {
@@ -103,7 +103,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		...form,
 		preferredName: form.preferredName === "" ? null : form.preferredName?.trim(),
 		birthday: form.birthday ? new Date(form.birthday).toISOString() : "",
-		allergiesMedical: form.allergiesMedical?.trim(),
+		allergiesMedical: (form.allergiesMedical ?? "").trim(), 
 		notes: form.notes === "" ? null : form.notes?.trim(),
 	})
 
@@ -115,7 +115,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			firstName: form.firstName,
 			lastName: form.lastName,
 			birthday: form.birthday,
-			allergiesMedical: form.allergiesMedical
+			allergiesMedical: form.allergiesMedical ?? ""
 		}) as ChildErrorsForm
 
 		if (Object.keys(childErrors).length) {
