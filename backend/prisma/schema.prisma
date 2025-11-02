@@ -68,6 +68,13 @@ model Children {
   photoConsent          Boolean
   waiver                Boolean
 
+  waiverVersion         String?
+  waiverSignedAt        DateTime?
+  waiverSignedByName    String?
+  
+  photoConsentVer       String?
+  photoConsentAt        DateTime?
+
   parentIds             String[]  @db.ObjectId
   parents               Users[]   @relation(fields: [parentIds], references: [id])
 

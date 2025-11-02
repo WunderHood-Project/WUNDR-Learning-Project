@@ -10,16 +10,25 @@ export type Child = {
     // homeschoolProgram?: string | null
     grade?: number | null
     birthday: string;
-    allergiesMedical: string
+    allergiesMedical?: string | null | undefined
     notes?: string | null
     photoConsent: boolean
+    photoConsentVer?: string | null;
+    photoConsentAt?: string | null;
     waiver: boolean
+    waiverVersion?: string | null;
+    waiverSignedAt?: string | null;
+
+
+
     parents: User[]
     emergencyContacts?: EmergencyContact[]
+
+    createdAt?: string;
     updatedAt?: string
 }
 
-type ServerManaged = "id" | "parents"
+type ServerManaged = "id" | "parents" | "createdAt" | "updatedAt" | "waiverVersion" | "waiverSignedAt" | "photoConsentVer" | "photoConsentAt";
 type ChildMutable = Omit<Child, ServerManaged>
 
 export type CreateChildForm = ChildMutable

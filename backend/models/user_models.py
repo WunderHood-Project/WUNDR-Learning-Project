@@ -33,9 +33,8 @@ class User(BaseModel):
 
     children: List["Child"] = Field(default_factory=list)  # Default to empty list
     events: List["Event"] = Field(default_factory=list)
-
-    createdAt: datetime = Field(default_factory=datetime.now(timezone.utc))
-    updatedAt: datetime = Field(default_factory=datetime.now(timezone.utc))
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     notifications: Optional[List["Notification"]] = Field(default_factory=list)
     reviews: Optional[List["Review"]] = Field(default_factory=list)
 
@@ -191,7 +190,7 @@ class Child(BaseModel):
   firstName: str = Field(min_length=1, max_length=50)
   lastName: str = Field(min_length=1, max_length=50)
   preferredName: Optional[str] = Field(default=None, max_length=50)
-  birthday: datetime = Field(default_factory=..., description="Child's birthday")
+  birthday: datetime = Field(description="Child's birthday")
 
   homeschool: bool = Field(default=False)
   grade: Optional[int] = Field(default=None, ge=-1, le=12)
@@ -202,11 +201,16 @@ class Child(BaseModel):
   allergiesMedical: Optional[str] = Field(default=None, max_length=1000)
   notes: Optional[str] = Field(default=None, max_length=1000)
 
-  photoConsent: bool = False
   waiver: bool = False
+  waiverVersion: Optional[str] = None
+  waiverSignedAt: Optional[datetime] = None
 
-  createdAt: datetime = Field(default_factory=datetime.now(timezone.utc))
-  updatedAt: datetime = Field(default_factory=datetime.now(timezone.utc))
+  photoConsent: bool = False
+  photoConsentVer: Optional[str] = None
+  photoConsentAt: Optional[datetime] = None
+
+  createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+  updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ChildCreate(BaseModel):
@@ -235,15 +239,15 @@ class ChildCreate(BaseModel):
 
   emergencyContacts: List["EmergencyContactCreate"] = Field(default_factory=list)
 
-  createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-  updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+  # createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+  # updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class ChildUpdate(BaseModel):
   firstName: Optional[str] = Field(default=None)
   lastName: Optional[str] = Field(default=None)
   preferredName: Optional[str] = Field(default=None, max_length=50)
-  birthday: Optional[datetime] = Field(
+  birthday: Optional[date] = Field(
     default=None,
     description="Child's date of birth"
   )
@@ -254,13 +258,10 @@ class ChildUpdate(BaseModel):
   allergiesMedical: Optional[str] = Field(default=None, max_length=1000)
   notes: Optional[str] = Field(default=None, max_length=1000)
 
-  photoConsent: bool = False
-  waiver: bool = False
+  photoConsent: Optional[bool] = None
+  waiver: Optional[bool] = None
 
   emergencyContacts: List["EmergencyContactCreate"] = Field(default_factory=list)
-
-
-
 
 #! Emergency Contact
 class EmergencyContactCreate(BaseModel):
@@ -282,3 +283,18 @@ class EmergencyContactResponse(EmergencyContactCreate):
     childId: str
     createdAt: datetime
     updatedAt: datetime
+
+
+
+class WaiverAcknowledgePayload(BaseModel):
+    version: str
+    legalName: str
+    signedAt: Optional[datetime] = None  
+    
+
+class PhotoConsentPayload(BaseModel):
+    allow: bool
+    version: str
+    legalName: str
+    signedAt: Optional[datetime] = None
+

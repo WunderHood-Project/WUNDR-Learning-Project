@@ -1,13 +1,19 @@
 import { ECErrorMap, ECErrors, ECUpdateForm, EmergencyContact } from "@/types/emergencyContact"
 import { onlyDigitals, toE164US } from "./formatPhoneNumber"
 
+const trimSpaces = (s = "") => s.replace(/\s+/g, " ").trim();
+
 const normalizeEC = (c: EmergencyContact): EmergencyContact => ({
-    firstName: (c.firstName || "").trim().toLowerCase(),
-    lastName: (c.lastName || "").trim().toLowerCase(),
-    relationship: (c.relationship || "").trim().toLowerCase(),
+    firstName: trimSpaces(c.firstName || ""),
+    lastName:  trimSpaces(c.lastName  || ""),
+    relationship: trimSpaces(c.relationship || ""),
     phoneNumber: onlyDigitals(c.phoneNumber || ""),
     id: c.id
 })
+
+const ecKey = (c: EmergencyContact) =>
+  `${(c.firstName||"").toLowerCase()}|${(c.lastName||"").toLowerCase()}|${(c.relationship||"").toLowerCase()}|${onlyDigitals(c.phoneNumber||"")}`;
+
 
 // removes duplicate contacts within array
 export const dedupeECs = (ecs: EmergencyContact[]): EmergencyContact[] => {
@@ -18,8 +24,8 @@ export const dedupeECs = (ecs: EmergencyContact[]): EmergencyContact[] => {
         const c = normalizeEC(raw)
 
         if (!(c.firstName || c.lastName || c.relationship || c.phoneNumber)) continue
-        const key = `${c.firstName}|${c.lastName}|${c.relationship}|${c.phoneNumber ?? ""}`
 
+        const key = ecKey(c);
         if (!seen.has(key)) {
             seen.add(key)
             out.push(c)
@@ -32,7 +38,8 @@ export const dedupeECs = (ecs: EmergencyContact[]): EmergencyContact[] => {
 // compares currentContact array and potential edited array
 //this is necessary to see if we run patch request with or w/o emergenecy contacts
 export const ecsEqual = (a: ECUpdateForm[], b: ECUpdateForm[]) => {
-    const toKeySet = (xs: ECUpdateForm[]) => new Set(xs.map(x => JSON.stringify(normalizeEC(x))))
+    const toKeySet = (xs: ECUpdateForm[]) => new Set(xs.map(x => ecKey(normalizeEC(x as EmergencyContact))));
+
 
     //converts each each to a normalized set
     const A = toKeySet(a)

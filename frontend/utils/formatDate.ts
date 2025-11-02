@@ -88,3 +88,12 @@ export const toYMDForInput = (s: string): string => {
     const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
     return m ? `${m[3]}-${m[1]}-${m[2]}` : ""
 }
+
+export const formatDateTimeLocal = (iso?: string | null) =>
+  iso
+    ? new Date(iso).toLocaleString('en-US', {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true
+      })
+    : '';
+

@@ -7,6 +7,7 @@ export type ECShape = {
 
 export type EmergencyContact = ECShape & {
     id?: string
+    childIds?: string[];
 }
 
 export type ECUpdateForm = ECShape

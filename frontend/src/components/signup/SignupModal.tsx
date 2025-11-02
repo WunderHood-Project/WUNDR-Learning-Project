@@ -1,5 +1,4 @@
 import { useModal } from "@/context/modal"
-import { FormErrors } from "@/types/forms"
 import React, { useState } from "react"
 import { handleSignup, SignupPayload } from "../../../utils/auth";
 import { formatUs, toE164US } from "../../../utils/formatPhoneNumber";
@@ -24,7 +23,6 @@ const SignupModal = () => {
         : pathname || '/';
 
     // State for errors, step, roles, child info, etc.
-    const [errors, setErrors] = useState<FormErrors>({})
     const [serverError, setServerError] = useState<string | null>(null)
     const [currentStep, setCurrentStep] = useState(1)
     const [selectedRole, setSelectedRole] = useState<'parent' | 'volunteer' | null>(null)
@@ -79,14 +77,11 @@ const SignupModal = () => {
         } else if (name in form2) {
             setForm2(prev => ({ ...prev, [name]: value}))
         }
-
-        setErrors(prev => ({ ...prev, [name]: undefined}))
         setServerError(null)
     }
 
     const createAccount = async (parentNext?: ParentNext) => {
         if (creating) return
-        setErrors({});
         setServerError(null);
 
         const phoneE164 = toE164US(form1.phoneNumber)

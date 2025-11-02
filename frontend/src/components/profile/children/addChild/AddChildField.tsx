@@ -1,6 +1,10 @@
 import { ChildErrorsForm, CreateChildForm } from "@/types/child"
 import { gradeOptions } from "../../../../../utils/displayGrade"
 import React from "react"
+// import OpenModalButton from "@/context/openModalButton";
+// import PhotoConsentText from "./PhotoConsentText";
+import PhotoConsentDisclosure from "./PhotoConsentDisclosure";
+import { PHOTO_CONSENT_VERSION } from "@/constants/policies";
 
 type Props = {
 	child: CreateChildForm
@@ -71,7 +75,7 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 					onChange={onChange}
 					className="h-4 w-4"
 				/>
-				<span>Homeschool?</span>
+				<span>Homeschool</span>
 			</label>
 
 			<div className="font-bold mb-2">GRADE (OPTIONAL)</div>
@@ -89,13 +93,28 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 				)}
 			</select>
 
-			<div className="font-bold mb-2">PHOTO CONSENT</div>
-			<input
-				name="photoConsent"
-				type="checkbox"
-				checked={child.photoConsent}
-				onChange={onChange}
-			/>
+			<div className="mt-4">
+				<div className="font-bold mb-1">PHOTO CONSENT</div>
+
+				<label className="inline-flex items-start gap-2">
+				<input
+					name="photoConsent"
+					type="checkbox"
+					checked={child.photoConsent}
+					onChange={onChange}
+					className="mt-1 h-4 w-4"
+					aria-describedby="photo-consent-help"
+				/>
+				<span className="text-sm">
+					I allow WonderHood to use photos/videos of my child for website and social updates (v{PHOTO_CONSENT_VERSION}).
+					<span id="photo-consent-help" className="block text-xs text-gray-600 mt-1">
+						You may withdraw consent anytime via <b>wonderhood.project@gmail.com</b>.
+					</span>
+				</span>
+				</label>
+				
+				<PhotoConsentDisclosure />
+			</div>
 
 			<div className="font-bold">MEDICAL ACCOMMODATIONS</div>
 			<textarea

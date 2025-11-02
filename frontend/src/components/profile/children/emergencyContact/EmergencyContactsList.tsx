@@ -34,16 +34,17 @@ export default function EmergencyContactsList({ ecs, ecErrorMap, rowKeys, addEC,
 				)
 			})}
 
-			<div className="flex justify-end">
+			<div className="flex w-full justify-center">
 				<button
 					type="button"
 					onClick={addEC}
 					disabled={disabled || ecs.length >= 3}
-					className="px-4 py-2 rounded-lg border border-green-600 text-green-700 hover:bg-green-50 disabled:opacity-50"
+					className="px-4 py-2 rounded-lg border border-green-600 text-green-700 hover:bg-green-50 disabled:opacity-50 mt-2 -mb-3"
 				>
 					+ Add another ({ecs.length}/3)
 				</button>
 			</div>
+
 		</div>
 	)
 }
