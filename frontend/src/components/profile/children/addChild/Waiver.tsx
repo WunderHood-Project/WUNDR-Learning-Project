@@ -52,9 +52,11 @@ const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep
         <>
         <h2 className="flex flex-col text-xl mt-4 text-center">
             Liability Waiver
-            <span className="text-xs text-gray-500">
-                Version {WAIVER_VERSION} • Your agreement time is recorded automatically.
-            </span>
+            <div className="text-xs text-gray-500 space-y-1">
+                <p>Version {WAIVER_VERSION} • Your agreement time is recorded automatically.</p>
+                <p className="font-bold">Instructions: Please check all boxes in each dropdown menu to proceed.</p>
+            </div>
+
         </h2>
 
         {/* Accordion-style sections; each must be acknowledged */}

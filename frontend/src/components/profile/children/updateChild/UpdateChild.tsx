@@ -204,50 +204,94 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
     }
 
     return (
-        <div className="bg-white rounded-lg p-6">
-            {serverError && (
-                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
-                    {serverError}
-                </div>
-            )}
-            <form onSubmit={handleUpdate}>
-                <UpdateChildHeaderFields
-                    form={form}
-                    errors={errors}
-                    onChange={handleChange}
-                    saving={saving}
-                    onSubmitClick={submitUpdate}
-                    onCancel={() => setEditingChildId(null)}
-                    isValid={isValid}
-                />
+  <div className="bg-white rounded-2xl ring-1 ring-black/5 shadow-sm p-4 sm:p-6 max-w-7xl mx-auto">
+    {serverError && (
+      <div className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
+        {serverError}
+      </div>
+    )}
 
-                <UpdateChildMetaFields
-                    form={form}
-                    errors={errors}
-                    onChange={handleChange}
-                    saving={saving}
-                />
+    <form onSubmit={handleUpdate} className="space-y-6 sm:space-y-8">
+      {/* Sticky actions (tablet/desktop) */}
+      <div className="hidden sm:flex sticky top-0 z-10 -mx-6 px-6 py-3 bg-white/90 backdrop-blur border-b border-wondergreen/10 justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => setEditingChildId(null)}
+          className="inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium
+                     bg-white text-wonderforest ring-1 ring-wonderforest/20 hover:bg-wonderleaf/10 transition"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          onClick={submitUpdate}
+          disabled={saving || !isValid}
+          className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium
+                     bg-wondergreen text-white hover:bg-wonderforest shadow
+                     focus:outline-none focus:ring-2 focus:ring-wondergreen/40
+                     disabled:opacity-60 disabled:cursor-not-allowed transition"
+        >
+          {saving ? "Saving…" : "Save changes"}
+        </button>
+      </div>
 
-                <EmergencyContactsList
-                    ecs={ecs}
-                    ecErrors={ecErrors}
-                    ecErrorMap={ecErrorMap}
-                    rowKeys={rowKeys}
-                    addEC={addEC}
-                    removeEC={removeEC}
-                    changeEC={changeEC}
-                    changePhone={changePhone}
-                />
+      {/* Section Form */}
+      <UpdateChildHeaderFields
+        form={form}
+        errors={errors}
+        onChange={handleChange}
+        saving={saving}
+        onSubmitClick={submitUpdate}
+        onCancel={() => setEditingChildId(null)}
+        isValid={isValid}
+      />
 
-                <UpdateChildNotes
-                    form={form}
-                    errors={errors}
-                    onChange={handleChange}
-                    saving={saving}
-                />
-            </form>
+      <hr className="border-wondergreen/10" />
+      <UpdateChildMetaFields form={form} errors={errors} onChange={handleChange} saving={saving} />
+
+      <hr className="border-wondergreen/10" />
+      <EmergencyContactsList
+        ecs={ecs}
+        ecErrors={ecErrors}
+        ecErrorMap={ecErrorMap}
+        rowKeys={rowKeys}
+        addEC={addEC}
+        removeEC={removeEC}
+        changeEC={changeEC}
+        changePhone={changePhone}
+      />
+
+      <hr className="border-wondergreen/10" />
+      <UpdateChildNotes form={form} errors={errors} onChange={handleChange} saving={saving} />
+
+      {/* Mobile actions */}
+      <div className="sm:hidden sticky bottom-0 left-0 right-0 -mx-4 mt-2 px-4 py-3
+                      bg-white/95 backdrop-blur border-t border-wondergreen/10">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setEditingChildId(null)}
+            className="flex-1 inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium
+                       bg-white text-wonderforest ring-1 ring-wonderforest/20 hover:bg-wonderleaf/10 transition"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            onClick={submitUpdate}
+            disabled={saving || !isValid}
+            className="flex-[1.4] inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium
+                       bg-wondergreen text-white hover:bg-wonderforest shadow
+                       disabled:opacity-60 disabled:cursor-not-allowed transition"
+          >
+            {saving ? "Saving…" : "Save"}
+          </button>
         </div>
-    )
+      </div>
+    </form>
+  </div>
+);
+
 }
 
 export default UpdateChildForm

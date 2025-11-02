@@ -29,34 +29,50 @@ export default function UpdateChildMetaFields({ errors, form, onChange, saving }
 
             </div>
 
-            <div className="flex flex-row justify-between mb-4">
-                <div>
-                    <div className="font-bold mb-2">GRADE (OPTIONAL)</div>
-                    <select
-                        name="grade"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
-                        value={form.grade ?? ""}
-                        onChange={onChange}
-                        disabled={saving}
-                    >
-                        <option value="">N/A</option>
-                        {gradeOptions.map(o => (
-                            <option key={o.value} value={o.value}>{o.label}</option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <div className="font-bold mb-2">PHOTO CONSENT</div>
-                    <input
-                        name="photoConsent"
-                        type="checkbox"
-                        checked={form.photoConsent}
-                        onChange={onChange}
-                        disabled={saving}
-                    />
-                </div>
+        {/* GRADE + PHOTO CONSENT */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 items-start">
+            {/* Grade */}
+            <div>
+            <label htmlFor="grade" className="block font-semibold tracking-wide text-wondergreen mb-2">
+                GRADE (OPTIONAL)
+            </label>
+            <select
+                id="grade"
+                name="grade"
+                value={form.grade ?? ""}
+                onChange={onChange}
+                disabled={saving}
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-wondergreen/40"
+            >
+                <option value="">N/A</option>
+                {gradeOptions.map(o => (
+                <option key={o.value} value={o.value}>
+                    {o.label}
+                </option>
+                ))}
+            </select>
             </div>
+
+            {/* Photo consent */}
+            <div>
+            <span className="block font-semibold tracking-wide text-wondergreen mb-2.5 ml-8">
+                PHOTO CONSENT
+            </span>
+
+            <label htmlFor="photoConsent" className="inline-flex items-center gap-3 ml-8">
+                <input
+                id="photoConsent"
+                name="photoConsent"
+                type="checkbox"
+                checked={!!form.photoConsent}
+                onChange={onChange}
+                disabled={saving}
+                className="h-5 w-5 rounded accent-wondergreen focus:ring-wondergreen"
+                />
+                <span className="text-wonderforest">Allowed to appear in photos</span>
+            </label>
+            </div>
+        </div>
         </>
     )
 }

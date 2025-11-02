@@ -12,7 +12,7 @@ export default function UpdateChildNotes({ form, errors, onChange, saving }: Pro
     return (
         <>
             <div className="mb-4 border-t pt-4">
-                <div className="font-bold">MEDICAL ACCOMMODATIONS</div>
+                <div className="font-bold mb-2">MEDICAL ACCOMMODATIONS</div>
                 <textarea
                     name="allergiesMedical"
                     value={form.allergiesMedical ?? ""}
@@ -26,7 +26,7 @@ export default function UpdateChildNotes({ form, errors, onChange, saving }: Pro
             </div>
 
             <div className="mb-4 border-t pt-4">
-                <div className="font-bold">ADDITIONAL NOTES</div>
+                <div className="font-bold mb-2">ADDITIONAL NOTES</div>
                 <textarea
                     name="notes"
                     value={form.notes ?? ""}

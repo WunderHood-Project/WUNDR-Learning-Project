@@ -75,7 +75,7 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 					onChange={onChange}
 					className="h-4 w-4"
 				/>
-				<span>Homeschool?</span>
+				<span>Homeschool</span>
 			</label>
 
 			<div className="font-bold mb-2">GRADE (OPTIONAL)</div>
