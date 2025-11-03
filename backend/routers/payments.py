@@ -28,6 +28,7 @@ async def create_payment(
     if current_user:
         metadata["userId"] = str(current_user.id)
         metadata["donationType"] = donation_data.donationType
+        metadata['email'] = donation_data.email
 
     try:
         session = stripe.checkout.Session.create(

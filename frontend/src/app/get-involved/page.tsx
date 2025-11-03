@@ -5,14 +5,14 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import GradientBanner from '@/components/ui/GradientBanner';
-import {VolunteerBadge, PartnershipBadge, DonationBadge} from '@/components/ui/BadgedIcons';
+import { VolunteerBadge, PartnershipBadge, DonationBadge } from '@/components/ui/BadgedIcons';
 
 export default function GetInvolved() {
   return (
     <div>
       {/* HEADER */}
       <GradientBanner
-        size="lg"  
+        size="lg"
         from="from-wondergreen"
         to="to-wonderleaf"
         title="Get Involved with WonderHood"
@@ -38,7 +38,7 @@ export default function GetInvolved() {
             <div className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
               {/* Color bar on top */}
               <div className="h-1 bg-gradient-to-r from-wondergreen to-wonderleaf"></div>
-              
+
               {/* Card content */}
               <div className="p-6 md:p-8 flex flex-col h-full">
                 {/* Icon */}
@@ -46,15 +46,15 @@ export default function GetInvolved() {
                   👤
                 </div> */}
                 <VolunteerBadge className="w-14 h-14 md:w-16 md:h-16 mb-4 md:mb-5" />
-                
+
                 {/* Title */}
                 <h3 className="text-xl md:text-2xl font-bold text-wondergreen mb-3">Volunteer</h3>
-                
+
                 {/* Description */}
                 <p className="text-sm md:text-base text-gray-700 mb-4 leading-relaxed">
                   Share your skills and passions by leading clubs, assisting with events, or mentoring families.
                 </p>
-                
+
                 {/* Checklist */}
                 <ul className="space-y-2 mb-6 flex-1">
                   <li className="flex items-start gap-2 text-sm md:text-base text-gray-700">
@@ -74,7 +74,7 @@ export default function GetInvolved() {
                     <span>Support activities</span>
                   </li>
                 </ul>
-                
+
                 {/* Button */}
                 <Link
                   href="/volunteer"
@@ -89,7 +89,7 @@ export default function GetInvolved() {
             <div className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
               {/* Color bar on top */}
               <div className="h-1 bg-gradient-to-r from-wonderorange to-wondersun"></div>
-              
+
               {/* Card content */}
               <div className="p-6 md:p-8 flex flex-col h-full">
                 {/* Icon */}
@@ -97,15 +97,15 @@ export default function GetInvolved() {
                   🤝
                 </div> */}
                 <PartnershipBadge className="w-14 h-14 md:w-16 md:h-16 mb-4 md:mb-5" />
-                
+
                 {/* Title */}
                 <h3 className="text-xl md:text-2xl font-bold text-wondergreen mb-3">Partnership</h3>
-                
+
                 {/* Description */}
                 <p className="text-sm md:text-base text-gray-700 mb-4 leading-relaxed">
                   Partner with us as an organization to provide resources, venues, or educational opportunities.
                 </p>
-                
+
                 {/* Checklist */}
                 <ul className="space-y-2 mb-6 flex-1">
                   <li className="flex items-start gap-2 text-sm md:text-base text-gray-700">
@@ -125,7 +125,7 @@ export default function GetInvolved() {
                     <span>Guest speaking</span>
                   </li>
                 </ul>
-                
+
                 {/* Button */}
                 <Link
                   href="/partnership"
@@ -140,7 +140,7 @@ export default function GetInvolved() {
             <div className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
               {/* Color bar on top */}
               <div className="h-1 bg-gradient-to-r from-wondergreen to-wonderleaf"></div>
-              
+
               {/* Card content */}
               <div className="p-6 md:p-8 flex flex-col h-full">
                 {/* Icon */}
@@ -148,15 +148,15 @@ export default function GetInvolved() {
                   💝
                 </div> */}
                 <DonationBadge className="w-14 h-14 md:w-16 md:h-16 mb-4 md:mb-5" />
-                
+
                 {/* Title */}
                 <h3 className="text-xl md:text-2xl font-bold text-wondergreen mb-3">Make a Donation</h3>
-                
+
                 {/* Description */}
                 <p className="text-sm md:text-base text-gray-700 mb-4 leading-relaxed">
                   Support our mission with a financial contribution to help us reach more families and expand programs.
                 </p>
-                
+
                 {/* Checklist */}
                 <ul className="space-y-2 mb-6 flex-1">
                   <li className="flex items-start gap-2 text-sm md:text-base text-gray-700">
@@ -176,10 +176,10 @@ export default function GetInvolved() {
                     <span>New club creation</span>
                   </li>
                 </ul>
-                
+
                 {/* Button */}
                 <Link
-                  href="/support"
+                  href="/donate"
                   className="w-full py-3 px-4 rounded-full text-base font-semibold text-white text-center bg-gradient-to-r from-wondergreen to-wonderleaf hover:from-wonderleaf hover:to-wondergreen transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
                 >
                   Donate Now
