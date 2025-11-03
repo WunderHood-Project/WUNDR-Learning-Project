@@ -5,8 +5,7 @@ import Alert from "./Alert";
 import { makeApiRequest, BASE } from "../../../utils/api";
 import { useModal } from "@/context/modal";
 import { errorMessage } from "../../../utils/errorHelpers";
-
-const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+import { isEmail } from "../../../utils/emailValidation";
 
 export default function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
   const [email, setEmail] = useState("");
