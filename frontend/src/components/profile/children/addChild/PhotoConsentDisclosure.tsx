@@ -12,7 +12,7 @@ export default function PhotoConsentDisclosure() {
         <p className="mb-2">
           By checking “I agree,” I, as the parent/guardian, grant WonderHood (a 501(c)(3) nonprofit)
           permission to photograph and/or record my child during WonderHood programs and events, and
-          to use those images or short videos to share program highlights on WonderHood's website
+          to use those images or short videos to share program highlights on WonderHood&apos;s website
           and social media (e.g., Facebook, Instagram, LinkedIn).
         </p>
         <p className="mb-2">

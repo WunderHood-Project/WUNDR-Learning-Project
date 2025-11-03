@@ -4,9 +4,10 @@ export type Payment = {
     donationType: "Donation" | "Sponsorship"
     amount: number
     sessionId: string
+    userId: string
 }
 
-type serverManaged = "id" | "sessionId"
+type serverManaged = "id" | "sessionId" | "userId"
 type PaymentMutable = Omit<Payment, serverManaged>
 
 export type CreatePaymentPayload = PaymentMutable

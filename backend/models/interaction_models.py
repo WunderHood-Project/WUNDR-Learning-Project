@@ -275,5 +275,5 @@ class VolunteerOpportunityUpdate(BaseModel):
 class DonationCreate(BaseModel):
     donationType: str
     amount: int
-    email: Optional[str]
-    userId: Optional[str]
+    email: Optional[str] = None
+    userId: Optional[str] = None

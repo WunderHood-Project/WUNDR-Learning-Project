@@ -53,6 +53,8 @@
 
     e.g. STRIPE_WEBHOOK_SECRET=whsec_12345abcde
 
+## How to 
+
 # Deploy on ...
 
 ADD INSTRUCTIONS FOR HOW WE ARE DEPLOYING HERE

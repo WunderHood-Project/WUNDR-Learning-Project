@@ -5,9 +5,7 @@ export default function Donate() {
 
     return (
         <>
-            <PaymentPage>
-
-            </PaymentPage>
+            <PaymentPage></PaymentPage>
         </>
     )
 }

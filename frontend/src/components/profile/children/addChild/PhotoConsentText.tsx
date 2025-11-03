@@ -8,7 +8,7 @@ export default function PhotoConsentText() {
       <p>
         By checking “I agree,” I, as the parent/guardian, grant WonderHood permission to
         photograph and/or record my child during WonderHood programs and events, and to use those
-        images or short videos to share program highlights on WonderHood's website and social media
+        images or short videos to share program highlights on WonderHood&apos;s website and social media
         (e.g., Facebook, Instagram, LinkedIn). No images will be sold and no compensation is
         provided. Personally identifying information (e.g., full name) will not be posted with
         images without separate explicit permission.
