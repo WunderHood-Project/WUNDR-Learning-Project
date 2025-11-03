@@ -1,4 +1,4 @@
-import { useModal } from "@/app/context/modal";
+import { useModal } from "@/context/modal";
 import React, { useState } from "react";
 import { makeApiRequest } from "../../../utils/api";
 import { NotificationPayload } from "../../../utils/auth";
@@ -64,7 +64,7 @@ export function NotificationModal({ url }: NotificationModalProps) {
     }
 
     return (
-        <div 
+        <div
         className="rounded-lg p-6 w-full max-w-md mx-auto bg-white shadow-md"
         aria-busy={isNotifying}>
             <h1 className="text-xl font-bold text-center">Send a Notification to All Users</h1>

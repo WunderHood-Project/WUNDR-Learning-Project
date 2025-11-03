@@ -1,7 +1,7 @@
-import UpdateEventForm from "@/components/eventsPage/UpdateEventForm";
+import UpdateEvent from "@/components/eventsPage/UpdateEvent";
 
 export default function UpdateEventPage() {
     return (
-        <UpdateEventForm />
+        <UpdateEvent />
     )
 }

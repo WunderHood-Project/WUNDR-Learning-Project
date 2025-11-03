@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useAuth } from "@/app/context/auth";
+import { useAuth } from "@/context/auth";
 import { useEffect } from 'react';
-
 
 export default function UserDropdown({ onLogout, onClose, }: {
   onLogout: () => void;
@@ -24,6 +23,7 @@ export default function UserDropdown({ onLogout, onClose, }: {
         {user?.firstName} {user?.lastName}
         <div className="text-xs text-wonderleaf font-normal">{user?.role}</div>
       </div>
+
       <Link
         href="/profile"
         onClick={onClose}
@@ -51,13 +51,7 @@ export default function UserDropdown({ onLogout, onClose, }: {
           Administration
         </Link>
       )}
-
-      <button
-        type="button"
-        className="block w-full text-left px-4 py-2 hover:bg-wonderorange/10 text-wonderorange font-semibold rounded-b-xl"
-        onClick={() => { onClose(); onLogout(); }}
-      >
-      </button>
+      
       <button
         type="button"
         className="block w-full text-left px-4 py-2 hover:bg-wonderorange/10 text-wonderorange font-semibold rounded-b-xl"

@@ -12,6 +12,7 @@ from routers.emergency_contact import router as emergency_contact_router
 from routers.volunteer import router as volunteer_router
 # from backend.routers.volunteer_opportunity import router as volunteer_opportunity_router
 from routers.volunteer_opportunity import router as opportunities_router
+from routers.payments import router as donation_router
 from db.prisma_client import db
 from routers.notifications import start_scheduler, scheduler
 from contextlib import asynccontextmanager
@@ -40,7 +41,8 @@ app = FastAPI(lifespan=lifespan)
 # CORS Policy
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://wonderhood-frontend.onrender.com", "https://wundr-learning-project-35lyz5el9-andrewlizon12-6415s-projects.vercel.app", "https://whproject.org", "https://www.whproject.org"],
+
+    allow_origins=["http://localhost:3000", "https://wonderhood-frontend.onrender.com", "https://whproject.org", "https://www.whproject.org"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -70,3 +72,4 @@ app.include_router(emergency_contact_router, prefix="/emergency_contact")
 app.include_router(volunteer_router, prefix="/volunteer")
 # app.include_router(volunteer_opportunity_router, prefix="/volunteer_opportunity")
 app.include_router(opportunities_router, prefix="/opportunities", tags=["opportunities"])
+app.include_router(donation_router, prefix='/payments')

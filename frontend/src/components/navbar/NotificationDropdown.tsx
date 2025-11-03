@@ -2,39 +2,48 @@
 
 import Link from 'next/link';
 import { API, makeApiRequest } from '../../../utils/api';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Notification, NotificationsResponse } from '@/types/notification';
 import { formatNotificationTime } from '../../../utils/formatDate';
+import { useAuth } from '@/context/auth';
 
 interface Props {
   onClose: () => void;
 }
 
 export default function NotificationDropdown({ onClose }: Props) {
+  const { token, authReady } = useAuth()
   const [loading, setLoading] = useState<boolean>(false)
   const [loadErrors, setLoadErrors] = useState<string | null>(null)
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const didFetch = useRef(false)
 
   // Fetch the notifications here:
   const fetchNotifications = useCallback(async () => {
-    setLoading(true)
-
-    try {
-      const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`)
-      setNotifications(response?.Notifications)
+    if (!token) {
+      setNotifications([])
       setLoadErrors(null)
+      return
+    }
+
+    setLoading(true)
+    setLoadErrors(null)
+    try {
+        const response: NotificationsResponse = await makeApiRequest(`${API}/notifications/`, {token})
+        setNotifications(response?.Notifications ?? [])
     } catch (e) {
-      if (e instanceof Error) {
-        setLoadErrors(e.message)
-      }
+      setNotifications([])
+      if (e instanceof Error) setLoadErrors(e.message)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [token])
 
   useEffect(() => {
-    void fetchNotifications()
-  }, [fetchNotifications])
+    if (!authReady || didFetch.current) return
+    didFetch.current = true
+    fetchNotifications()
+  }, [authReady, fetchNotifications])
 
   // const hasUnread = notifications?.some((n) => !n.isRead) ?? false;
 
@@ -56,10 +65,10 @@ export default function NotificationDropdown({ onClose }: Props) {
       <div className="max-h-80 overflow-y-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
-        ) : loadErrors? (
+        ) : loadErrors ? (
           <div className="p-8 text-center text-gray-500">
             <div className="text-3xl mb-2">✨</div>
-            <div className="font-medium mb-1">You&aposre all caught up!</div>
+            <div className="font-medium mb-1">You&apos;re all caught up!</div>
             <div className="text-sm">No new notifications right now.</div>
           </div>
         ) : (

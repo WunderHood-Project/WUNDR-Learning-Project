@@ -26,18 +26,13 @@ async def create_event(
    Return the created event
    """
 
-
    enforce_authentication(current_user, "create an event")
-
-
    enforce_admin(current_user, "create an event")
-
 
    # Verify that the activity ID is valid
    activity = await db.activities.find_unique(where={
        "id": event_data.activityId
    })
-
 
    if not activity:
        raise HTTPException(
@@ -45,29 +40,25 @@ async def create_event(
            detail="Activity not found."
        )
 
-
    # Verify that the userIDs and childIDs are valid
    valid_users = await db.users.find_many(
-       where={"id": {"in": event_data.userIDs}}
+       where={"id": {"in": event_data.userIds}}
    )
 
-
-   if len(valid_users) != len(event_data.userIDs):
+   if len(valid_users) != len(event_data.userIds):
        raise HTTPException(
            status_code=400,
-           detail="One or more user IDs are invalid."
+           detail="One or more user ids are invalid."
        )
 
-
    valid_children = await db.children.find_many(
-       where={"id": {"in": event_data.childIDs}}
+       where={"id": {"in": event_data.childIds}}
    )
 
-
-   if len(valid_children) != len(event_data.childIDs):
+   if len(valid_children) != len(event_data.childIds):
        raise HTTPException(
            status_code=400,
-           detail="One or more child IDs are invalid."
+           detail="One or more child ids are invalid."
        )
 
 
@@ -77,6 +68,7 @@ async def create_event(
            data={
                "name": event_data.name,
                "description": event_data.description,
+               "notes": event_data.notes,
                "date": event_data.date,
                "image": event_data.image,
                "participants": event_data.participants,
@@ -91,12 +83,10 @@ async def create_event(
                "endTime": event_data.endTime,
                "volunteerLimit": event_data.volunteerLimit,
                "activityId": event_data.activityId,
-               "userIDs": event_data.userIDs,
-               "childIDs": event_data.childIDs,
+               "userIds": event_data.userIds,
+               "childIds": event_data.childIds,
                "createdAt": event_data.createdAt,
                "updatedAt": event_data.updatedAt
-
-
            }
        )
 
@@ -105,10 +95,8 @@ async def create_event(
        users = await db.users.find_many()
        user_emails = [user.email for user in users]
 
-
        subject = f'Check Out Our New Event at Wonderhood: {new_event.name}'
        contents = f'Hello,\n\n Check out our new event at Wonderhood. We hope to see you there.\n\nBest,\n\nWonderhood Team'
-
 
        background_tasks.add_task(
            send_email_multiple_users,
@@ -117,13 +105,11 @@ async def create_event(
            contents
        )
 
-
    except Exception as e:
        raise HTTPException(
            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
            detail=f"Failed to create event: {str(e)}"
        )
-
 
    return {"event": new_event, "message": "Event created successfully"}
 
@@ -135,8 +121,6 @@ async def get_all_events(
    # skip: int = 0,
    # limit: int = 10,
 ):
-
-
    """
    Get All Events
 
@@ -144,7 +128,6 @@ async def get_all_events(
    Returns every event in the system
    Applies pagination
    """
-
 
    try:
        events = await db.events.find_many(
@@ -154,7 +137,6 @@ async def get_all_events(
        )
        return {"events": events}
 
-
    except Exception as e:
        raise HTTPException(
            status_code=500,
@@ -162,12 +144,8 @@ async def get_all_events(
        )
 
 
-
-
 @router.get("/{event_id}", status_code=status.HTTP_200_OK)
 async def get_event_by_id(event_id: str):
-
-
    """
    Get Event by ID
 
@@ -175,7 +153,6 @@ async def get_event_by_id(event_id: str):
    Fetches an event by its ID
    Hydrates the event with its user/children/activity data
    """
-
 
    try:
        # Fetch the event
@@ -188,7 +165,6 @@ async def get_event_by_id(event_id: str):
                "children": True
            }
        )
-
 
        if not event:
            raise HTTPException(
@@ -232,15 +208,12 @@ async def update_event(
 
    # Make sure the user is authenticated
    enforce_authentication(current_user, "update an event")
-
-
    # Verify admin status
    enforce_admin(current_user, "update an event")
 
 
    # Find the event
    event = await db.events.find_unique(where={"id": event_id})
-
 
    if not event:
        raise HTTPException(
@@ -250,21 +223,21 @@ async def update_event(
 
 
    # Validate user, child, and activity IDs
-   if event_data.userIDs:
-       users = await db.users.find_many(where={"id": {"in": event_data.userIDs}})
-       if len(users) != len(event_data.userIDs):
+   if event_data.userIds:
+       users = await db.users.find_many(where={"id": {"in": event_data.userIds}})
+       if len(users) != len(event_data.userIds):
            raise HTTPException(
                status_code=status.HTTP_400_BAD_REQUEST,
-               detail="One or more user IDs are invalid"
+               detail="One or more user ids are invalid"
            )
 
 
-   if event_data.childIDs:
-       children = await db.children.find_many(where={"id": {"in": event_data.childIDs}})
-       if len(children) != len(event_data.childIDs):
+   if event_data.childIds:
+       children = await db.children.find_many(where={"id": {"in": event_data.childIds}})
+       if len(children) != len(event_data.childIds):
            raise HTTPException(
                status_code=status.HTTP_400_BAD_REQUEST,
-               detail="One or more child IDs is invalid"
+               detail="One or more child ids is invalid"
            )
 
 
@@ -273,7 +246,7 @@ async def update_event(
        if not activity:
            raise HTTPException(
                status_code=status.HTTP_400_BAD_REQUEST,
-               detail="Activity ID is invalid"
+               detail="Activity Id is invalid"
            )
 
 
@@ -284,79 +257,61 @@ async def update_event(
    if event_data.name is not None:
        update_payload["name"] = event_data.name
 
-
    if event_data.description is not None:
        update_payload["description"] = event_data.description
 
+   if event_data.notes is not None:
+        update_payload["notes"] = event_data.notes
 
    if event_data.date is not None:
        update_payload["date"] = event_data.date
 
-
    if event_data.image is not None:
        update_payload["image"] = event_data.image
-
 
    if event_data.participants is not None:
        update_payload["participants"] = event_data.participants
 
-
    if event_data.limit is not None:
        update_payload["limit"] = event_data.limit
-
 
    if event_data.city is not None:
        update_payload["city"] = event_data.city
 
-
    if event_data.state is not None:
        update_payload["state"] = event_data.state
-
 
    if event_data.address is not None:
        update_payload["address"] = event_data.address
 
-
    if event_data.zipCode is not None:
        update_payload["zipCode"] = event_data.zipCode
-
 
    if event_data.latitude is not None:
        update_payload["latitude"] = event_data.latitude
 
-
    if event_data.longitude is not None:
        update_payload["longitude"] = event_data.longitude
-
 
    if event_data.startTime is not None:
        update_payload["startTime"] = event_data.startTime
 
-
    if event_data.endTime is not None:
        update_payload["endTime"] = event_data.endTime
-
 
    if event_data.volunteerLimit is not None:
        update_payload["volunteerLimit"] = event_data.volunteerLimit
 
-
    if event_data.activityId is not None:
        update_payload["activityId"] = event_data.activityId
 
+   if event_data.userIds is not None:
+       update_payload["userIds"] = event_data.userIds
 
-   if event_data.userIDs is not None:
-       update_payload["userIDs"] = event_data.userIDs
-
-
-   if event_data.childIDs is not None:
-       update_payload["childIDs"] = event_data.childIDs
-
+   if event_data.childIds is not None:
+       update_payload["childIds"] = event_data.childIds
 
    update_payload["updatedAt"] = datetime.utcnow()
-
-
-   # print(event_data.dict(exclude_unset=True))
 
 
    updated_event = await db.events.update(
@@ -366,9 +321,9 @@ async def update_event(
 
 
    # Send email notification for event date update
-   user_IDs =  event.userIDs
+   user_Ids =  event.userIds
    users = await db.users.find_many(
-       where={"id": {"in": user_IDs}}
+       where={"id": {"in": user_Ids}}
    )
 
 
@@ -503,7 +458,7 @@ async def add_user_to_event(
 
 
    # Check if user is already enrolled
-   if current_user.id in event.userIDs:
+   if current_user.id in event.userIds:
        raise HTTPException(
            status_code=400,
            detail="User is already enrolled"
@@ -591,8 +546,8 @@ async def add_children_to_event(
            detail="Event not found")
 
 
-   incoming_ids = set(payload.childIDs)
-   existing_ids = set(event.childIDs or [])
+   incoming_ids = set(payload.childIds)
+   existing_ids = set(event.childIds or [])
 
 
    to_add = list(incoming_ids - existing_ids)
@@ -615,7 +570,7 @@ async def add_children_to_event(
 
    # validate parenthood
    for c in children:
-       if current_user.id not in (c.parentIDs or []):
+       if current_user.id not in (c.parentIds or []):
            raise HTTPException(
                status_code=403,
                detail="You are not the parent of this child."
@@ -708,7 +663,7 @@ async def remove_user_from_event(
 
 
    # Check if user is enrolled
-   if current_user.id not in event.userIDs:
+   if current_user.id not in event.userIds:
        raise HTTPException(
            status_code=400,
            detail="User is not enrolled"
@@ -732,13 +687,13 @@ async def remove_user_from_event(
 
 
    # Remove the user from the event
-   updated_user_list = [uid for uid in event.userIDs if uid != current_user.id]
+   updated_user_list = [uid for uid in event.userIds if uid != current_user.id]
 
 
    updated_event = await db.events.update(
        where={"id": event_id},
          data={
-           "userIDs": updated_user_list,
+           "userIds": updated_user_list,
            "participants": {"decrement":1}
            }
    )
@@ -786,7 +741,7 @@ async def remove_child_from_event(
            detail="Event not found")
 
 
-   selected_ids = set(payload.childIDs or [])
+   selected_ids = set(payload.childIds or [])
    if not selected_ids:
        return {
            "event": event,
@@ -794,7 +749,7 @@ async def remove_child_from_event(
        }
 
 
-   existing_ids = set(event.childIDs or [])
+   existing_ids = set(event.childIds or [])
 
 
    to_remove = list(selected_ids & existing_ids)
@@ -817,7 +772,7 @@ async def remove_child_from_event(
 
    # validate parenthood
    for c in children:
-       if current_user.id not in (c.parentIDs or []):
+       if current_user.id not in (c.parentIds or []):
            raise HTTPException(
                status_code=403,
                detail="You are not the parent of this child."
@@ -825,14 +780,14 @@ async def remove_child_from_event(
 
 
    # Remove child from event
-   updated_child_list = [cid for cid in (event.childIDs or []) if cid not in to_remove]
+   updated_child_list = [cid for cid in (event.childIds or []) if cid not in to_remove]
 
 
    updated_event = await db.events.update(
        where={"id": event_id},
         data={
            "children": {"disconnect": [{"id": cid} for cid in to_remove]},
-           "childIDs": updated_child_list,
+           "childIds": updated_child_list,
            "participants": {"decrement": len(to_remove)}
            }
    )
@@ -1056,11 +1011,11 @@ async def send_message_to_users_of_enrolled_child(
    # Add the parent IDs to a set
    parent_ids = set()
    for child in event.children:
-       parent_ids.update(child.parentIDs)
+       parent_ids.update(child.parentIds)
 
 
    if not parent_ids:
-       raise HTTPException(status_code=404, detail="Unable to obtain parent IDs")
+       raise HTTPException(status_code=404, detail="Unable to obtain parent ids")
 
 
    # Query for the parents' email(s)
@@ -1151,7 +1106,7 @@ async def send_enrolled_user_notification(
        "time": event.date,
        # "icon": icon
        }
-       for id in event.userIDs
+       for id in event.userIds
    ]
 
 
@@ -1162,7 +1117,7 @@ async def send_enrolled_user_notification(
 
    # create email notification
    users_emails = list()
-   for id in event.userIDs:
+   for id in event.userIds:
        users = await db.users.find_unique(
            where={"id":id}
        )
@@ -1217,7 +1172,7 @@ async def volunteer_signup_for_event(
        raise HTTPException(status_code=400, detail="Volunteer is not approved to sign up for an event")
 
    # Validate whether volunteer is already enrolled
-   if volunteer.id in event.volunteerIDs:
+   if volunteer.id in event.volunteerIds:
        raise HTTPException(status_code=400, detail="Volunteer is already enrolled to the event")
 
 
@@ -1307,7 +1262,7 @@ async def unenroll_volunteer_from_event(
 
 
    # Validate that the volunteer is signed up to the event
-   if volunteer.id not in event.volunteerIDs:
+   if volunteer.id not in event.volunteerIds:
        raise HTTPException(status_code=400, detail="Volunteer is not enrolled to the event")
 
    try:

@@ -1,7 +1,7 @@
 "use client";
 
-import { User } from "@/types/user"
-import React, { useEffect, useMemo, useState } from "react"
+import { UpdateUserPayload, User } from "@/types/user"
+import React, { useEffect, useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { e164toUS, formatUs, onlyDigitals, toE164US } from "../../../../utils/formatPhoneNumber";
 import { determineEnv } from "../../../../utils/api";
@@ -15,71 +15,64 @@ type Props = {
 }
 
 const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
-    // const [avatar, setAvatar] = useState<string>("")
-    const [firstName, setFirstName] = useState<string>("")
-    const [lastName, setLastName] = useState<string>("")
-    const [email, setEmail] = useState<string>("")
-    const [phoneNumber, setPhoneNumber] = useState<string>("")
-    const [address, setAddress] = useState<string>("")
-    const [city, setCity] = useState<string>("")
-    const [state, setState] = useState<string>("")
-    const [zipCode, setZipCode] = useState<string>("")
     const [saving, setSaving] = useState(false)
+    const [form, setForm] = useState<UpdateUserPayload>({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        address: "",
+        city: "",
+        state: "",
+        zipCode: ""
+    })
 
     useEffect(() => {
-        // setAvatar(currUser?.avatar ?? "")
-        setFirstName(currUser?.firstName ?? "")
-        setLastName(currUser?.lastName ?? "")
-        setEmail(currUser?.email ?? "")
-        setPhoneNumber(e164toUS(currUser?.phoneNumber) ?? "")
-        setAddress(currUser?.address ?? "")
-        setCity(currUser?.city ?? "")
-        setState(currUser?.state ?? "")
-        setZipCode(currUser?.zipCode != null ? String(currUser.zipCode).padStart(5, "0") : "")
+        if (!currUser) return
+        setForm({
+            firstName: currUser?.firstName ?? "",
+            lastName: currUser?.lastName ?? "",
+            email: currUser?.email ?? "",
+            phoneNumber: e164toUS(currUser?.phoneNumber) ?? "",
+            address: currUser?.address ?? "",
+            city: currUser?.city ?? "",
+            state: currUser?.state ?? "",
+            zipCode: currUser?.zipCode != null ? String(currUser.zipCode).padStart(5, "0") : ""
+        })
     }, [currUser])
 
-    const isValid = useMemo(() => {
-        const ok =
-            !!firstName?.trim() &&
-            !!lastName?.trim() &&
-            !!email?.trim() &&
-            !!address?.trim() &&
-            !!city?.trim() &&
-            !!state?.trim() &&
-            zipCode?.length === 5
+    const isValid =
+        !!form.firstName?.trim() &&
+        !!form.lastName?.trim() &&
+        !!form.email?.trim() &&
+        !!form.address?.trim() &&
+        !!form.city?.trim() &&
+        !!form.state?.trim() &&
+        form.zipCode?.length === 5
 
-        return ok
-    }, [firstName, lastName, email, address, city, state, zipCode?.length])
-
-    // const updateAvatar
-    const updateFirstName = (e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)
-    const updateLastName = (e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)
-    const updateEmail = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)
-    const updatePhoneNumber = (e: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(formatUs(e.target.value))
-    const updateAddress = (e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)
-    const updateCity = (e: React.ChangeEvent<HTMLInputElement>) => setCity(e.target.value)
-    const updateState = (e: React.ChangeEvent<HTMLInputElement>) => setState(e.target.value)
+    const updateFirstName = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, firstName: e.target.value }))
+    const updateLastName = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, lastName: e.target.value }))
+    const updateEmail = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, email: e.target.value }))
+    const updatePhoneNumber = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, phoneNumber: formatUs(e.target.value) }))
+    const updateAddress = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, address: e.target.value }))
+    const updateCity = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, city: e.target.value }))
+    const updateState = (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, state: e.target.value }))
     const updateZipCode = (e: React.ChangeEvent<HTMLInputElement>) => {
         const digits = onlyDigitals(e.target.value).slice(0, 5)
-        setZipCode(digits)
+        setForm(f => ({ ...f, zipCode: digits }))
     }
 
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!isValid || saving) return
 
-        const phoneE164 = toE164US(phoneNumber)
+        const phoneE164 = toE164US(form.phoneNumber)
         if (!phoneE164) return
 
-        const payload = {
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            email: email.trim(),
+        const payload: UpdateUserPayload = {
+            ...form,
             phoneNumber: phoneE164,
-            address: address.trim(),
-            city: city.trim(),
-            state: state.trim(),
-            zipCode: String(zipCode).trim()
+            zipCode: String(form.zipCode).trim()
         }
 
         try {
@@ -101,17 +94,11 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
         <div className="bg-white shadow rounded-lg max-w-md mx-auto p-10">
             <form onSubmit={handleUpdate}>
                 <div className="flex flex-row justify-around space-y-2">
-                    {/* {currUser?.avatar ? (
-                        <img className='h-24 w-24 rounded-full object-cover' src={currUser.avatar} alt={`Profile Image of ${currUser.firstName}`}/>
-                    ): (
-                        <img className='h-24 w-24' src="./profile-picture.png" alt="Default profile"/>
-                    )} */}
-
                     <div className="flex flex-col text-center">
                         <div className="flex flex-row mb-2">
                             <input
                                 type="text"
-                                value={firstName}
+                                value={form.firstName}
                                 onChange={updateFirstName}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                                 disabled={saving}
@@ -119,7 +106,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
 
                             <input
                                 type="text"
-                                value={lastName}
+                                value={form.lastName}
                                 onChange={updateLastName}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                                 disabled={saving}
@@ -129,7 +116,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
                         <div className="mb-2">
                             <input
                                 type="email"
-                                value={email}
+                                value={form.email}
                                 onChange={updateEmail}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                                 disabled={saving}
@@ -141,7 +128,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
                                 type="tel"
                                 inputMode="tel"
                                 autoComplete="tel"
-                                value={phoneNumber}
+                                value={form.phoneNumber}
                                 onChange={updatePhoneNumber}
                                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                                 disabled={saving}
@@ -150,7 +137,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
 
                         <input
                             type="text"
-                            value={address}
+                            value={form.address}
                             onChange={updateAddress}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                             disabled={saving}
@@ -159,7 +146,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
                         <div className="flex flex-row">
                             <input
                                 type="text"
-                                value={city}
+                                value={form.city}
                                 onChange={updateCity}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                                 disabled={saving}
@@ -167,7 +154,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
 
                             <input
                                 type="text"
-                                value={state}
+                                value={form.state}
                                 maxLength={2}
                                 onChange={updateState}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
@@ -181,7 +168,7 @@ const UpdateUserForm: React.FC<Props> = ({ currUser, onSaved, onCancel }) => {
                                 inputMode="numeric"
                                 pattern="[0-9]{5}"
                                 maxLength={5}
-                                value={zipCode}
+                                value={form.zipCode}
                                 onChange={updateZipCode}
                                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-wondergreen focus:border-transparent"
                                 disabled={saving}

@@ -16,3 +16,10 @@ export interface User {
     children: Child[]
     role: Role
 }
+
+export type UpdateUserPayload = Pick<
+  User,
+  "firstName" | "lastName" | "email" | "phoneNumber" | "address" | "city" | "state" | "zipCode"
+>
+
+// export type UpdateUserForm = UpdateUserPayload

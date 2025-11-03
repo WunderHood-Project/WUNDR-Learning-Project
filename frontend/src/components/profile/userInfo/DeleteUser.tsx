@@ -1,9 +1,9 @@
-import { useModal } from "@/app/context/modal"
+import { useModal } from "@/context/modal"
 import { User } from "@/types/user"
 import React, { useState } from "react"
 import { makeApiRequest } from "../../../../utils/api"
 import { FaExclamationTriangle, FaTrash } from "react-icons/fa"
-import { useAuth } from "@/app/context/auth"
+import { useAuth } from "@/context/auth"
 import { useRouter } from "next/navigation"
 import { determineEnv } from "../../../../utils/api"
 
@@ -17,6 +17,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
     const { logout } = useAuth()
     const router = useRouter()
     const [isDeleting, setIsDeleting] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const handleDelete = async () => {
         setIsDeleting(true)
@@ -27,14 +28,14 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
             logout()
             router.replace("/")
         } catch (err) {
-            console.error("delete user failed", err)
+            setError(err instanceof Error ? err.message : "A network error occurred. Please try again later.")
         } finally {
             setIsDeleting(false)
         }
     }
 
     return (
-        <div className="bg-white rounded-lg p-6 max-w-lg mx-auto">
+        <div className="bg-white rounded-2xl w-[92vw] max-w-[28rem] sm:max-w-lg p-4 sm:p-6 mx-auto">
             <div className="flex items-center mb-4">
                 <FaExclamationTriangle className="text-red-500 text-2xl mr-3" />
                 <h2 className="text-xl font-bold text-gray-800">Delete Your Account</h2>
@@ -44,6 +45,7 @@ const DeleteUser: React.FC<Props> = ({ currUser }) => {
                 <p className="text-gray-600 mb-2">
                     Are you sure you want to delete <strong>{currUser?.firstName} {currUser?.lastName}&apos;s</strong> account?
                 </p>
+                {error && <p className="text-red-600 text-sm">{error}</p>}
             </div>
 
             <div className="flex gap-3 justify-end">

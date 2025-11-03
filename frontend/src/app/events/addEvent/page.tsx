@@ -1,9 +1,7 @@
-import EventForm from "@/components/eventsPage/AddEventForm"
+import AddEvent from "@/components/eventsPage/AddEvent"
 
 export default function addEventPage() {
     return (
-        <>
-            <EventForm />
-        </>
+        <AddEvent />
     )
 }

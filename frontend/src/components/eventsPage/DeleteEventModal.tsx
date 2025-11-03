@@ -1,4 +1,4 @@
-import { useModal } from "@/app/context/modal";
+import { useModal } from "@/context/modal";
 import { useState } from "react";
 import { Event } from "@/types/event";
 import React from "react";
@@ -9,23 +9,27 @@ import { determineEnv } from "../../../utils/api";
 const WONDERHOOD_URL = determineEnv()
 
 type props = {
-  event: Event;
+  event: Event
+  onDelete: (id: string) => void
 };
 
-const DeleteEventModal: React.FC<props> = ({ event }) => {
+const DeleteEventModal: React.FC<props> = ({ event, onDelete }) => {
   const { closeModal } = useModal();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null)
 
   const handleDelete = async () => {
+    if (!event.id) return
     setIsDeleting(true);
+    setError(null)
 
     try {
-      await makeApiRequest(`${WONDERHOOD_URL}/event/${event.id}`, {
-        method: "DELETE",
-      });
+      await makeApiRequest(`${WONDERHOOD_URL}/event/${event.id}`, { method: "DELETE" });
+      onDelete(event.id)
       closeModal();
     } catch (error) {
-      console.error("Error deleting event:", error);
+      setError(error instanceof Error ? error.message : "Error deleting event");
+      // console.error("Error deleting event:", error);
     } finally {
       setIsDeleting(false);
     }
@@ -40,22 +44,18 @@ const DeleteEventModal: React.FC<props> = ({ event }) => {
         </div>
 
         <div className="mb-6">
-          <p className="text-gray-600 mb-2">
-            Are you sure you want to delete ${event.name}?
-          </p>
+          <p className="text-gray-600 mb-2">Are you sure you want to delete ${event.name}?</p>
+          {error && <p className="text-red-600 text-sm">{error}</p>}
         </div>
 
         <div className="flex gap-3 justify-end">
-          <button
-            onClick={closeModal}
-            disabled={isDeleting}
+          <button onClick={closeModal} disabled={isDeleting}
             className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
+
+          <button onClick={handleDelete} disabled={isDeleting}
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isDeleting ? (

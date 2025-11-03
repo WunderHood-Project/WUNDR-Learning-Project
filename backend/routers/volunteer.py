@@ -17,7 +17,7 @@ async def my_opportunities(current_user: Annotated[User, Depends(get_current_use
     enforce_authentication(current_user)
 
     vol = await db.volunteers.find_unique(where={"userId": current_user.id})
-    ids = vol.volunteerOpportunityIDs if vol and vol.volunteerOpportunityIDs else []
+    ids = vol.volunteerOpportunityIds if vol and vol.volunteerOpportunityIds else []
     # `hasGeneral` is true only if a volunteer record exists AND it has the general timestamp
     has_general = bool(vol and getattr(vol, "generalAppliedAt", None))
 
@@ -108,7 +108,7 @@ async def volunteer_sign_up_general(
 #     existing_volunteer = await db.volunteers.find_unique(
 #             where={"userId": current_user.id}
 #         )
-        
+
 #     if existing_volunteer:
 #         raise HTTPException(
 #             status_code=400,
@@ -119,17 +119,17 @@ async def volunteer_sign_up_general(
 #     opportunity = await db.volunteeropportunities.find_unique(
 #         where={"id": opportunity_id}
 #     )
-    
+
 #     if not opportunity:
 #         raise HTTPException(
 #             status_code=404,
 #             detail="Volunteer opportunity not found"
 #         )
-    
+
 #     try:
 #         data = volunteer_data.model_dump()
 #         data["userId"] = current_user.id
-        
+
 #         volunteer = await db.volunteers.create(
 #             data={
 #                 **data,
@@ -235,7 +235,7 @@ async def update_volunteer(
             status_code=400,
             detail="Unable to located volunteer"
         )
-    
+
     # Handle update
     try:
         data = volunteer_data.model_dump(exclude_unset=True)
@@ -245,7 +245,7 @@ async def update_volunteer(
 
         updated_volunteer = await db.volunteers.update(
             where={"userId": current_user.id},
-            data = data        
+            data = data
         )
 
         return {"Updated Volunteer": updated_volunteer}
@@ -289,7 +289,7 @@ async def delete_volunteer(
         )
 
         return {"Deleted Volunteer": deleted_volunteer}
-    
+
     except Exception as e:
         raise HTTPException(
             status_code=500,

@@ -1,10 +1,9 @@
-import { useModal } from "@/app/context/modal"
-import { FormErrors } from "@/types/forms"
+import { useModal } from "@/context/modal"
 import React, { useState } from "react"
 import { handleSignup, SignupPayload } from "../../../utils/auth";
 import { formatUs, toE164US } from "../../../utils/formatPhoneNumber";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useAuth } from "@/app/context/auth";
+import { useAuth } from "@/context/auth";
 import { User } from "@/types/user";
 
 type UserInfo = SignupPayload
@@ -24,7 +23,6 @@ const SignupModal = () => {
         : pathname || '/';
 
     // State for errors, step, roles, child info, etc.
-    const [errors, setErrors] = useState<FormErrors>({})
     const [serverError, setServerError] = useState<string | null>(null)
     const [currentStep, setCurrentStep] = useState(1)
     const [selectedRole, setSelectedRole] = useState<'parent' | 'volunteer' | null>(null)
@@ -33,8 +31,6 @@ const SignupModal = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [creating, setCreating] = useState(false)
-
-    console.log("sign up modal", errors)
 
     // Form fields for each step
     const [form1, setForm1] = useState({
@@ -81,14 +77,11 @@ const SignupModal = () => {
         } else if (name in form2) {
             setForm2(prev => ({ ...prev, [name]: value}))
         }
-
-        setErrors(prev => ({ ...prev, [name]: undefined}))
         setServerError(null)
     }
 
     const createAccount = async (parentNext?: ParentNext) => {
         if (creating) return
-        setErrors({});
         setServerError(null);
 
         const phoneE164 = toE164US(form1.phoneNumber)
@@ -121,13 +114,13 @@ const SignupModal = () => {
         try {
             const response = await handleSignup(userInfo)
             await loginWithToken(response.token, response.user as User | undefined)
-            closeModal();
 
             let redirectTo = safeNext;
             if (selectedRole === "parent") {
                 redirectTo = parentNext === 'now' ? "/profile?tab=child" : safeNext;
             }
             router.replace(redirectTo);
+            closeModal();
 
         } catch (err) {
             setServerError("A network error occurred. Please try again later.");

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { FaExclamationTriangle, FaTrash } from 'react-icons/fa';
-import { useModal } from '@/app/context/modal';
+import { useModal } from '@/context/modal';
 import { makeApiRequest } from '../../../utils/api';
 import { determineEnv } from '../../../utils/api';
 

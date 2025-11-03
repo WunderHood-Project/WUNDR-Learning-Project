@@ -32,6 +32,7 @@ class Event(BaseModel):
 
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
+    notes: str = Field(default="")
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=1)
     participants: int = Field(default=0)
@@ -51,6 +52,7 @@ class EventCreate(BaseModel):
 
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
+    notes: str = Field(default="")
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=0)
     participants: int = Field(default=0)
@@ -66,8 +68,8 @@ class EventCreate(BaseModel):
     endTime: str = Field(min_length=1)
     volunteerLimit: int = Field(default=3)
 
-    userIDs: List[str] = Field(default_factory=list)
-    childIDs: List[str] = Field(default_factory=list)
+    userIds: List[str] = Field(default_factory=list)
+    childIds: List[str] = Field(default_factory=list)
 
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -77,6 +79,7 @@ class EventUpdate(BaseModel):
 
     name: Optional[str] = Field(default=None)
     description: Optional[str] = Field(default=None)
+    notes: Optional[str] = Field(default=None)
     date: Optional[datetime] = Field(default=None)
 
     city: Optional[str] = Field(default=None)
@@ -92,12 +95,12 @@ class EventUpdate(BaseModel):
     image: Optional[str] = Field(default=None)
     participants: Optional[int] = Field(default=None)
     limit: Optional[int] = Field(default=None)
-    userIDs: Optional[List[str]] = Field(default=None)
-    childIDs: Optional[List[str]] = Field(default=None)
+    userIds: Optional[List[str]] = Field(default=None)
+    childIds: Optional[List[str]] = Field(default=None)
 
 
 class EnrollChildren(BaseModel):
-    childIDs: List[str]
+    childIds: List[str]
 
 # ! Reviews
 class Review(BaseModel):
@@ -222,7 +225,7 @@ class VolunteerOpportunityCreate(BaseModel):
   tags: List[str] = Field(default_factory=list, description="Tags for volunteer opportunity")
   minAge: int = Field(ge=16, description="Age requirement")
   bgCheckRequired: bool = Field(default=True, description="Background check requirement")
-  volunteerIDs: List[str] = Field(default_factory=list, description="Enrolled Volunteers")
+  volunteerIds: List[str] = Field(default_factory=list, description="Enrolled Volunteers")
 
   @field_validator("duties", "skills", "requirements", "tags", mode="before")
   def clean_string_lists(cls, v):
@@ -266,3 +269,11 @@ class VolunteerOpportunityUpdate(BaseModel):
         if v is None or v == []:
             return None
         return [item.strip() for item in v if item and item.strip()]
+
+# ! Donations
+
+class DonationCreate(BaseModel):
+    donationType: str
+    amount: int
+    email: Optional[str] = None
+    userId: Optional[str] = None

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useModal } from '@/app/context/modal';
+import { useModal } from '@/context/modal';
 import { makeApiRequest } from '../../../utils/api';
 import { determineEnv } from '../../../utils/api';
 
@@ -82,7 +82,3 @@ export default function DeleteAppModal({ applicationId, appTitle, onDeleted }: D
   )
 
 }
-
-
-
-

@@ -27,11 +27,11 @@ model Users {
   zipCode           String
 
   // m-to-n
-  childIDs String[]   @db.ObjectId
-  children  Children[]   @relation(fields: [childIDs], references: [id])
+  childIds String[]   @db.ObjectId
+  children  Children[]   @relation(fields: [childIds], references: [id])
 
-  eventIDs String[] @db.ObjectId
-  events Events[] @relation(fields: [eventIDs], references: [id])
+  eventIds String[] @db.ObjectId
+  events Events[] @relation(fields: [eventIds], references: [id])
 
   createdAt         DateTime
   updatedAt         DateTime
@@ -39,6 +39,7 @@ model Users {
   // One-to-m
   notifications     Notifications[]
   reviews           Reviews[]
+  donations         Donations[]
 
   // One-to-one
   volunteer Volunteers?
@@ -67,14 +68,22 @@ model Children {
   photoConsent          Boolean
   waiver                Boolean
 
-  parentIDs             String[]  @db.ObjectId
-  parents               Users[]   @relation(fields: [parentIDs], references: [id])
+  waiverVersion         String?
+  waiverSignedAt        DateTime?
+  waiverSignedByName    String?
+  
+  photoConsentVer       String?
+  photoConsentAt        DateTime?
 
-  eventIDs              String[] @db.ObjectId
-  events                Events[] @relation(fields: [eventIDs], references: [id])
+  parentIds             String[]  @db.ObjectId
+  parents               Users[]   @relation(fields: [parentIds], references: [id])
 
-  emergencyContactIDs   String[] @db.ObjectId
-  emergencyContacts     EmergencyContact[] @relation(fields: [emergencyContactIDs], references: [id])
+  eventIds              String[] @db.ObjectId
+  events                Events[] @relation(fields: [eventIds], references: [id])
+
+  emergencyContactIds   String[] @db.ObjectId
+  emergencyContacts     EmergencyContact[]    @relation(name: "ChildToEmergencyContacts", fields: [emergencyContactIds], references: [id])
+
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
@@ -109,16 +118,16 @@ model Volunteers{
   backgroundCheckConsent Boolean
   status                 AppStatus @default(New)
 
-  eventIDs String[] @db.ObjectId
-  events Events[] @relation(fields: [eventIDs], references: [id])
+  eventIds String[] @db.ObjectId
+  events Events[] @relation(fields: [eventIds], references: [id])
 
   // One-to-one relationship
   user Users @relation(fields: [userId], references: [id])
   userId String @unique @db.ObjectId
 
   // Many-to-many relationship
-  volunteerOpportunityIDs String[] @db.ObjectId
-  volunteerOpportunities  VolunteerOpportunities[] @relation(fields: [volunteerOpportunityIDs], references: [id])
+  volunteerOpportunityIds String[] @db.ObjectId
+  volunteerOpportunities  VolunteerOpportunities[] @relation(fields: [volunteerOpportunityIds], references: [id])
 
   generalAppliedAt      DateTime?
 
@@ -150,8 +159,8 @@ model VolunteerOpportunities{
   bgCheckRequired Boolean
 
   // Many-to-many relationship
-  volunteerIDs String[]     @db.ObjectId
-  volunteers   Volunteers[] @relation(fields: [volunteerIDs], references: [id])
+  volunteerIds String[]     @db.ObjectId
+  volunteers   Volunteers[] @relation(fields: [volunteerIds], references: [id])
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
@@ -168,8 +177,9 @@ model EmergencyContact{
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
 
-  childIDs              String[] @db.ObjectId
-  child                 Children[] @relation(fields: [childIDs], references: [id])
+  childIds              String[] @db.ObjectId
+  child                 Children[] @relation(name: "ChildToEmergencyContacts", fields: [childIds], references: [id])
+
 }
 
 // ! Activities     =============================================================================
@@ -189,6 +199,7 @@ model Events {
 
     name          String      @unique
     description   String
+    notes         String?
     date          DateTime
     image         String
     participants  Int @default(0)
@@ -207,14 +218,14 @@ model Events {
     updatedAt         DateTime? @default(now())
 
     // m-to-n relationship
-    volunteerIDs  String[] @db.ObjectId
-    volunteers Volunteers[] @relation(fields: [volunteerIDs], references: [id])
+    volunteerIds  String[] @db.ObjectId
+    volunteers Volunteers[] @relation(fields: [volunteerIds], references: [id])
 
-    childIDs  String[] @db.ObjectId
-    children  Children[] @relation(fields: [childIDs], references: [id])
+    childIds  String[] @db.ObjectId
+    children  Children[] @relation(fields: [childIds], references: [id])
 
-    userIDs   String[] @db.ObjectId
-    users     Users[] @relation(fields: [userIDs], references: [id])
+    userIds   String[] @db.ObjectId
+    users     Users[] @relation(fields: [userIds], references: [id])
 
     // One-to-m relationship
     activity    Activities   @relation(fields: [activityId], references: [id])
@@ -286,4 +297,32 @@ model Jobs{
 
    event             Events? @relation(fields:[eventId], references: [id], onDelete: Cascade)
    eventId           String @db.ObjectId
+}
+
+// ! Donations          =============================================================================
+
+enum DonationType {
+  Sponsorship
+  Donation
+}
+
+model Donations {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  donationType       DonationType
+  amount             Int
+  email              String?
+  sessionId          String?       @unique
+
+  // One-to-Many Relationship
+  user   Users?   @relation(fields: [userId], references: [id])
+  userId String? @db.ObjectId
+}
+
+
+// ! StripeEvents  =============================================================================
+
+model StripeEvents {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId   String   @unique
+  createdAt DateTime @default(now())
 }

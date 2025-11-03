@@ -30,23 +30,23 @@ export function useEvent(eventId: string | string[] | undefined) {
         setEvents(eventsData.events)
         setEvent(null)
       } else {
-        setError("Invalid event ID")
+        setError("Invalid event id")
         setEvent(null)
         setEvents(null)
       }
 
-      } catch (err) {
+    } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch event")
         setEvent(null)
         setEvents(null)
-      } finally {
+    } finally {
         setLoading(false)
-      }
     }
+  }
 
-    useEffect(() => {
-        fetchData()
-    }, [eventId])
+  useEffect(() => {
+      fetchData()
+  }, [eventId])
 
   const refetch = () => {
       fetchData()

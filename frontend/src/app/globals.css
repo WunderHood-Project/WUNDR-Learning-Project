@@ -7,6 +7,11 @@
   --foreground: #2f5d3e; 
 }
 
+/* @media (min-width: 768px) {
+  .no-scrollbar::-webkit-scrollbar { display: none; } 
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } 
+} 
+*/
 /* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -47,4 +52,32 @@ img, video, canvas {
 .swiper,
 .hero {
   overflow: hidden;
+}
+
+/* hide scrollbars cross-browser */
+.no-scrollbar {
+  -ms-overflow-style: none;   /* IE/Edge */
+  scrollbar-width: none;      /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;              /* Chrome/Safari */
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+/* RBC – compact grid for mobiles/tablets */
+.rbc-header { padding: .7rem .25rem; font-weight: 700; color: #2f5d3e; }
+.rbc-today { background: rgba(144,179,92,.10); }
+.rbc-off-range-bg { background: #f5f5f5; }
+.rbc-day-bg, .rbc-day-cell { border-color: rgba(47,93,62,.10); background: #fff; }
+.rbc-event { margin: .2rem; background: transparent !important; border: none !important; }
+.rbc-event-label { display: none; }           /* we hide duplicates of time, we draw our own */
+.rbc-month-view { border-color: transparent; }
+.rbc-month-row { min-height: 78px; border-bottom: 1px solid rgba(47,93,62,.10); }
+
+@media (max-width: 640px) {
+  .rbc-header { font-size: .85rem; padding: .55rem .2rem; }
+  .rbc-month-row { min-height: 66px; }
+  .rbc-show-more { font-size: .8rem; padding: .15rem .4rem; }
 }
