@@ -6,7 +6,6 @@ import { EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { useMemo } from "react";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { determineEnv } from "../../../utils/api";
-import { makeApiRequest } from "../../../utils/api";
 import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
 import { isEmail } from "../../../utils/emailValidation";
 import { useAuth } from "@/context/auth";
