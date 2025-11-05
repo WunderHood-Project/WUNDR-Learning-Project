@@ -25,7 +25,7 @@ const SignupModal = () => {
     // State for errors, step, roles, child info, etc.
     const [serverError, setServerError] = useState<string | null>(null)
     const [currentStep, setCurrentStep] = useState(1)
-    const [selectedRole, setSelectedRole] = useState<'parent' | 'volunteer' | null>(null)
+    const [selectedRole, setSelectedRole] = useState<'parent' | 'instructor' | 'volunteer' | null>(null)
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [passwordTouched, setPasswordTouched] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
