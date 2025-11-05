@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from typing import List, TYPE_CHECKING, Optional
 from enum import Enum
 from datetime import datetime, timezone
@@ -275,5 +275,13 @@ class VolunteerOpportunityUpdate(BaseModel):
 class DonationCreate(BaseModel):
     donationType: str
     amount: int
-    email: Optional[str] = None
     userId: Optional[str] = None
+
+# ! WaiverCredentials
+
+class WaiverCredentialsCreate(BaseModel):
+    firstName: str = Field(..., min_length=1, max_length=100, description="First Name")
+    lastName: str = Field(..., min_length=1, max_length=100, description="Last Name")
+    email: EmailStr = Field(None, description="Email")
+    address: str = Field(min_length=3, max_length=200)
+    phoneNumber: str  = Field(None, min_length = 10, max_length= 20, description="Phone number")
