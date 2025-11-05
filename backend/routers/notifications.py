@@ -279,13 +279,29 @@ async def update_notification(
         "message": "Notification updated successfully"
         }
 
+# =======================================================
+# @router.delete("/read", status_code=status.HTTP_204_NO_CONTENT)
+# async def delete_read_notifications(current_user: Annotated[User, Depends(get_current_user)]):
+#     enforce_authentication(current_user, "delete read notifications")
+#     await db.notifications.delete_many(
+#         where={"userId": current_user.id, "isRead": True}
+#     )
+#     return
+@router.delete("/read", status_code=status.HTTP_200_OK)
+async def delete_read_notifications(current_user: Annotated[User, Depends(get_current_user)]):
+    enforce_authentication(current_user, "delete read notifications")
+    result = await db.notifications.delete_many(
+        where={"userId": current_user.id, "isRead": True}
+    )
+    return {"ok": True, "deleted": getattr(result, "count", None)}
+
 
 
 # =======================================================
 @router.delete("/{notification_id}", status_code=status.HTTP_200_OK)
 async def delete_notification(
     current_user: Annotated[User, Depends(get_current_user)],
-    notification_id: str = Path(...),
+    notification_id: str = Path(..., pattern="^[0-9a-fA-F]{24}$"),
 ):
     enforce_authentication(current_user, "delete notification")
 
@@ -335,13 +351,4 @@ async def mark_all_read(
     )
     return {"message": "All notifications marked as read"}
 
-# =======================================================
-@router.delete("/read", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_read_notifications(
-    current_user: Annotated[User, Depends(get_current_user)]
-):
-    enforce_authentication(current_user, "delete read notifications")
-    await db.notifications.delete_many(
-        where={"userId": current_user.id, "isRead": True}
-    )
-    return
+

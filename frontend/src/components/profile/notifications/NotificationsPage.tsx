@@ -2,26 +2,23 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Bell, Calendar as CalIcon, MessageSquare, Check, Dot, Trash2 } from 'lucide-react';
-import { formatWhen } from '../../../../utils/formatDate';
+import { Bell, Check, Trash2, Dot } from 'lucide-react';
 import { API, makeApiRequest } from '../../../../utils/api';
 import { useAuth } from '@/context/auth';
 import type { Notification, NotificationsResponse } from '@/types/notification';
+import { formatWhen } from '../../../../utils/formatDate';
 
-type TabKey = 'all' | 'unread' | 'event' | 'message';
-
-function getType(n: Notification): 'event' | 'message' | undefined {
-  const t = (n as { type?: unknown }).type;
-  return t === 'event' || t === 'message' ? t : undefined;
-}
+type TabKey = 'all' | 'unread' | 'read';
 
 export default function Notifications() {
   const { token, authReady } = useAuth();
+
+  // --- все хуки объявляем безусловно ---
   const [items, setItems] = useState<Notification[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [loading, setLoading] = useState(false);
   const [loadErrors, setLoadErrors] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null); 
+  const [busy, setBusy] = useState<string | null>(null);
   const didFetchForToken = useRef<string | null>(null);
 
   const fetchNotifications = useCallback(async () => {
@@ -33,8 +30,16 @@ export default function Notifications() {
     setLoading(true);
     setLoadErrors(null);
     try {
-      const res: NotificationsResponse = await makeApiRequest(`${API}/notifications/`, { token });
-      setItems(res?.Notifications ?? []);
+      const res: NotificationsResponse = await makeApiRequest(
+        `${API}/notifications/`,
+        { token: token || undefined }
+      );
+
+      const normalized = (res?.Notifications ?? [])
+        .map(n => ({ ...n, isRead: Boolean((n as any).isRead) }))
+        .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+
+      setItems(normalized);
     } catch (e) {
       setItems([]);
       setLoadErrors(e instanceof Error ? e.message : 'Failed to load');
@@ -52,26 +57,28 @@ export default function Notifications() {
   }, [authReady, token, fetchNotifications]);
 
   const unreadCount = useMemo(() => items.filter(i => !i.isRead).length, [items]);
-  const eventCount  = useMemo(() => items.filter(i => getType(i) === 'event').length, [items]);
-  const msgCount    = useMemo(() => items.filter(i => getType(i) === 'message').length, [items]);
+  const readCount   = useMemo(() => items.filter(i =>  i.isRead).length,  [items]);
 
   const filtered = useMemo(() => {
     switch (tab) {
       case 'unread': return items.filter(i => !i.isRead);
-      case 'event' : return items.filter(i => getType(i) === 'event');
-      case 'message':return items.filter(i => getType(i) === 'message');
+      case 'read'  : return items.filter(i =>  i.isRead);
       default      : return items;
     }
   }, [items, tab]);
 
   // ---- actions ----
   const markAsRead = async (id: string) => {
+    setLoadErrors(null);
     try {
       setBusy(`read:${id}`);
-      await makeApiRequest(`${API}/notifications/${id}/read`, { method: 'PATCH' });
-      setItems(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+      await makeApiRequest(`${API}/notifications/${id}/read`, {
+        method: 'PATCH',
+        token: token || undefined,
+      });
+      setItems(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
     } catch (e) {
-      console.error('Failed to mark read', e);
+      setLoadErrors(e instanceof Error ? e.message : 'Failed to fetch');
     } finally {
       setBusy(null);
     }
@@ -79,41 +86,53 @@ export default function Notifications() {
 
   const markAllRead = async () => {
     if (!unreadCount) return;
+    setLoadErrors(null);
     try {
       setBusy('read:all');
-      await makeApiRequest(`${API}/notifications/mark-all-read`, { method: 'POST' });
+      await makeApiRequest(`${API}/notifications/mark-all-read`, {
+        method: 'POST',
+        token: token || undefined,
+      });
       setItems(prev => prev.map(i => ({ ...i, isRead: true })));
     } catch (e) {
-      setLoadErrors(e instanceof Error ? e.message : 'Failed to update');
+      setLoadErrors(e instanceof Error ? e.message : 'Failed to fetch');
     } finally {
       setBusy(null);
     }
   };
 
   const deleteOne = async (id: string) => {
+    setLoadErrors(null);
     try {
       setBusy(`del:${id}`);
-      await makeApiRequest(`${API}/notifications/${id}`, { method: 'DELETE' });
+      await makeApiRequest(`${API}/notifications/${id}`, {
+        method: 'DELETE',
+        token: token || undefined,
+      });
       setItems(prev => prev.filter(n => n.id !== id));
     } catch (e) {
-      setLoadErrors(e instanceof Error ? e.message : 'Failed to delete');
+      setLoadErrors(e instanceof Error ? e.message : 'Failed to fetch');
     } finally {
       setBusy(null);
     }
   };
 
   const deleteAllRead = async () => {
+    setLoadErrors(null);
     try {
       setBusy('del:read');
-      await makeApiRequest(`${API}/notifications/read`, { method: 'DELETE' });
+      await makeApiRequest(`${API}/notifications/read`, {
+        method: 'DELETE',
+        token: token || undefined,
+      });
       setItems(prev => prev.filter(n => !n.isRead));
+      setTab('all');
     } catch (e) {
-      setLoadErrors(e instanceof Error ? e.message : 'Failed to delete');
+      setLoadErrors(e instanceof Error ? e.message : 'Failed to fetch');
     } finally {
       setBusy(null);
     }
   };
-
   return (
     <section className="w-full">
       <div className="bg-white rounded-2xl shadow-lg border border-wondergreen/10 overflow-hidden">
@@ -129,6 +148,7 @@ export default function Notifications() {
               <h1 className="text-xl sm:text-2xl font-extrabold text-wondergreen">Notifications</h1>
             </div>
 
+            {/* actions */}
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -140,7 +160,7 @@ export default function Notifications() {
                 title="Clear all read"
               >
                 <Trash2 className="w-4 h-4" />
-                Clear read
+                <span className="hidden xs:inline">Clear read</span>
               </button>
 
               <button
@@ -153,20 +173,19 @@ export default function Notifications() {
                 title={unreadCount ? 'Mark all as read' : 'No unread'}
               >
                 <Check className="w-4 h-4" />
-                Mark all as read
+                <span className="hidden xs:inline">Mark all as read</span>
               </button>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Tab active={tab === 'all'} onClick={() => setTab('all')} label="All" />
-            <Tab active={tab === 'unread'} onClick={() => setTab('unread')}
-                 label="Unread" count={unreadCount} />
-            <Tab active={tab === 'event'} onClick={() => setTab('event')}
-                 label="Events" count={eventCount} />
-            <Tab active={tab === 'message'} onClick={() => setTab('message')}
-                 label="Messages" count={msgCount} />
+          <div className="mt-3">
+            <NotifTabs
+              tab={tab}
+              setTab={setTab}
+              unreadCount={unreadCount}
+              readCount={readCount}
+            />
           </div>
         </div>
 
@@ -175,7 +194,11 @@ export default function Notifications() {
           {loading ? (
             <SkeletonList />
           ) : loadErrors ? (
-            <div className="rounded-xl border border-red-200 bg-white p-6 text-center text-red-600 text-sm">
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="rounded-xl border border-red-200 bg-white p-6 text-center text-red-600 text-sm"
+            >
               {loadErrors}
               <div className="mt-3">
                 <button
@@ -208,13 +231,44 @@ export default function Notifications() {
   );
 }
 
-/* ---------- UI bits ---------- */
+/* ---------- Tabs ---------- */
 
-function Tab({ active, onClick, label, count }: { active: boolean; onClick: () => void; label: string; count?: number }) {
+function NotifTabs({
+  tab,
+  setTab,
+  unreadCount,
+  readCount,
+}: {
+  tab: TabKey;
+  setTab: (t: TabKey) => void;
+  unreadCount: number;
+  readCount: number;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Tab active={tab === 'all'} onClick={() => setTab('all')} label="All" />
+      <Tab active={tab === 'unread'} onClick={() => setTab('unread')} label="Unread" count={unreadCount} />
+      <Tab active={tab === 'read'} onClick={() => setTab('read')} label="Read" count={readCount} />
+    </div>
+  );
+}
+
+function Tab({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  count?: number;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`px-3 sm:px-4 py-1.5 rounded-full text-sm font-semibold transition
         ${active
           ? 'bg-white text-wondergreen border border-wondergreen shadow-sm'
@@ -230,23 +284,26 @@ function Tab({ active, onClick, label, count }: { active: boolean; onClick: () =
   );
 }
 
+/* ---------- Row ---------- */
+
 function NotificationRow({
   n,
   onMarkRead,
   onDelete,
   busy,
 }: {
-  n: Notification & { type?: 'event' | 'message'; link?: string };
+  n: Notification & { link?: string };
   onMarkRead: () => void;
   onDelete: () => void;
   busy: string | null;
 }) {
-  const Icon = n.type === 'message' ? MessageSquare : CalIcon;
   const isUnread = !n.isRead;
 
   const content = (
-    <div className={`rounded-xl border p-4 sm:p-5 transition bg-white
-        ${isUnread ? 'border-wondergreen bg-wondergreen/5' : 'border-wonderleaf/40'}`}>
+    <div
+      className={`rounded-xl border p-4 sm:p-5 transition bg-white
+      ${isUnread ? 'border-wondergreen bg-wondergreen/5' : 'border-wonderleaf/40'}`}
+    >
       <div className="flex items-start gap-4">
         {/* unread dot */}
         <div className="pt-1">
@@ -255,22 +312,15 @@ function NotificationRow({
 
         {/* icon */}
         <div className="shrink-0 rounded-lg bg-wonderleaf/10 text-wonderleaf p-2">
-          <Icon className="w-4 h-4" />
+          <Bell className="w-4 h-4" />
         </div>
 
         {/* text */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-semibold text-wondergreen truncate">{n.title}</p>
-            {n.type && (
-              <span className="rounded-full bg-wondergreen/10 text-wondergreen text-xs px-2 py-0.5">
-                {n.type}
-              </span>
-            )}
+            <p className="font-semibold text-wondergreen break-words">{n.title}</p>
           </div>
-          {n.description && (
-            <p className="text-gray-700 mt-1 line-clamp-2">{n.description}</p>
-          )}
+          {n.description && <p className="text-gray-700 mt-1 break-words">{n.description}</p>}
           <div className="mt-2 text-xs text-gray-500">{formatWhen(n.time)}</div>
         </div>
 
@@ -295,10 +345,7 @@ function NotificationRow({
             <Trash2 className="w-4 h-4" />
           </button>
           {n.link && (
-            <Link
-              href={n.link}
-              className="text-xs font-semibold text-wondergreen hover:underline"
-            >
+            <Link href={n.link} className="text-xs font-semibold text-wondergreen hover:underline">
               Open
             </Link>
           )}
@@ -307,9 +354,10 @@ function NotificationRow({
     </div>
   );
 
-  // кликабельная карточка, если есть link
   return n.link ? <Link href={n.link}>{content}</Link> : content;
 }
+
+/* ---------- States ---------- */
 
 function SkeletonList() {
   return (
