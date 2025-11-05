@@ -35,7 +35,7 @@
     - After starting the server, navigate to http://127.0.0.1:8000/ on your local device to being viewing endpoint responses.
     -Navigate to http://127.0.0.1:8000/docs for interactive API docs.
 
-## How to set up Stripe sandbox
+## How to set up Stripe sandbox (Test from the backend)
 
 1. Install Stripe on your local device:
 
@@ -53,8 +53,28 @@
 
     e.g. STRIPE_WEBHOOK_SECRET=whsec_12345abcde
 
-## How to 
+## How to Test Stripe form in Development
+
+1. Obtain the test secret key and add it to the backend/.env:
+
+    e.g. STRIPE_SECRET_KEY=""
+
+2. Generate a 'whsec' key using the below command, and add it to backend.env:
+
+    stripe listen --forward-to localhost:4242/payments/webhook
+
+3. Obtain the test publishable key and add it to the frontend/.env.local:
+
+    e.g. NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=""
+
+3. Ensure that all routes and fetch calls are properly using .env.local keys
+
+4. Restart the backend and frontend servers
+
+5. Navigate to 'localhost:3000/donate' and fill out Stripe fields using test credit card info:
+
+    credit card: 4242 4242 4242 4242
+    Exp. Date: Any date in the future
+    CSV: 123
 
 # Deploy on ...
-
-ADD INSTRUCTIONS FOR HOW WE ARE DEPLOYING HERE

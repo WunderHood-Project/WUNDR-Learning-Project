@@ -12,6 +12,7 @@ from routers.emergency_contact import router as emergency_contact_router
 from routers.volunteer import router as volunteer_router
 # from backend.routers.volunteer_opportunity import router as volunteer_opportunity_router
 from routers.volunteer_opportunity import router as opportunities_router
+from routers.waiver_credentials import router as waiver_router
 from routers.payments import router as donation_router
 from db.prisma_client import db
 from routers.notifications import start_scheduler, scheduler
@@ -73,3 +74,4 @@ app.include_router(volunteer_router, prefix="/volunteer")
 # app.include_router(volunteer_opportunity_router, prefix="/volunteer_opportunity")
 app.include_router(opportunities_router, prefix="/opportunities", tags=["opportunities"])
 app.include_router(donation_router, prefix='/payments')
+app.include_router(waiver_router, prefix="/1024-waiver")
