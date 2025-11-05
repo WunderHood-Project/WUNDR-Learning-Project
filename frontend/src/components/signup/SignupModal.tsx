@@ -18,9 +18,9 @@ const SignupModal = () => {
 
     const nextParam = searchParams.get('next');
     const safeNext =
-    nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//')
-        ? nextParam
-        : pathname || '/';
+        nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//')
+            ? nextParam
+            : pathname || '/';
 
     // State for errors, step, roles, child info, etc.
     const [serverError, setServerError] = useState<string | null>(null)
@@ -73,9 +73,9 @@ const SignupModal = () => {
         const { name, value } = e.target
 
         if (name in form1) {
-            setForm1(prev => ({ ...prev, [name]: value}))
+            setForm1(prev => ({ ...prev, [name]: value }))
         } else if (name in form2) {
-            setForm2(prev => ({ ...prev, [name]: value}))
+            setForm2(prev => ({ ...prev, [name]: value }))
         }
         setServerError(null)
     }
@@ -104,7 +104,7 @@ const SignupModal = () => {
             email: form1.email.trim().toLowerCase(),
             phoneNumber: phoneE164,
             password: form1.password,
-            role: selectedRole as "parent" | "instructor",
+            role: selectedRole as "parent" | "instructor" | "volunteer",
             address: form2.address,
             city: form2.city,
             state: form2.state.trim().toUpperCase(),
@@ -216,6 +216,7 @@ const SignupModal = () => {
                                 <input
                                     type="text"
                                     name="firstName"
+                                    autoComplete="given-name"
                                     placeholder="First Name"
                                     value={form1.firstName}
                                     onChange={handleChange}
@@ -226,6 +227,7 @@ const SignupModal = () => {
                                 <input
                                     type="text"
                                     name="lastName"
+                                    autoComplete="family-name"
                                     placeholder="Last Name"
                                     value={form1.lastName}
                                     onChange={handleChange}
@@ -238,6 +240,9 @@ const SignupModal = () => {
                             <input
                                 type="email"
                                 name="email"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                autoComplete="email"
                                 placeholder="Email Address"
                                 value={form1.email}
                                 onChange={handleChange}
@@ -251,7 +256,7 @@ const SignupModal = () => {
                                 name="phoneNumber"
                                 inputMode="tel"
                                 autoComplete="tel"
-                                maxLength={12}
+                                // maxLength={12}
                                 placeholder="Phone Number"
                                 value={form1.phoneNumber}
                                 onChange={handlePhoneChange}
@@ -262,6 +267,9 @@ const SignupModal = () => {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     name="password"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                    autoComplete="new-password"
                                     placeholder="Password"
                                     value={form1.password}
                                     onChange={handlePasswordChange}
@@ -284,6 +292,9 @@ const SignupModal = () => {
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
                                     name="confirmPassword"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                    autoComplete="new-password"
                                     placeholder="Confirm Password"
                                     value={form1.confirmPassword}
                                     onChange={handleChange}
@@ -301,7 +312,7 @@ const SignupModal = () => {
                                 </button>
                             </div>
 
-                            { passwordError && passwordTouched && (<div className="text-red-500 text-sm mt-1">{passwordError}</div>) }
+                            {passwordError && passwordTouched && (<div className="text-red-500 text-sm mt-1">{passwordError}</div>)}
 
                             <button
                                 type="button"
@@ -322,6 +333,7 @@ const SignupModal = () => {
                             <input
                                 type="text"
                                 name="address"
+                                autoComplete="address-line1"
                                 placeholder="Address"
                                 value={form2.address}
                                 onChange={handleChange}
@@ -333,6 +345,7 @@ const SignupModal = () => {
                             <input
                                 type="text"
                                 name="city"
+                                autoComplete="address-level2"
                                 placeholder="City"
                                 value={form2.city}
                                 onChange={handleChange}
@@ -344,6 +357,8 @@ const SignupModal = () => {
                             <input
                                 type="text"
                                 name="state"
+                                autoComplete="address-level1"
+                                autoCapitalize="characters"
                                 placeholder="State"
                                 value={form2.state}
                                 onChange={handleChange}
@@ -354,6 +369,7 @@ const SignupModal = () => {
 
                             <input
                                 type="text"
+                                autoComplete="postal-code"
                                 inputMode="numeric"
                                 pattern="[0-9]{5}"
                                 name="zipcode"
@@ -393,16 +409,14 @@ const SignupModal = () => {
                                 <button
                                     type="button"
                                     onClick={() => setSelectedRole('parent')}
-                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                        selectedRole === 'parent'
-                                            ? 'border-green-500 bg-green-50 text-green-700'
-                                            : 'border-gray-300 hover:border-gray-400'
-                                    }`}
+                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'parent'
+                                        ? 'border-green-500 bg-green-50 text-green-700'
+                                        : 'border-gray-300 hover:border-gray-400'
+                                        }`}
                                 >
                                     <div className="flex items-center space-x-3">
-                                        <div className={`w-4 h-4 rounded-full border-2 ${
-                                            selectedRole === 'parent' ? 'border-green-500 bg-green-500' : 'border-gray-300'
-                                        }`}>
+                                        <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'parent' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                                            }`}>
                                             {selectedRole === 'parent' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
                                         </div>
                                         <div>
@@ -415,16 +429,14 @@ const SignupModal = () => {
                                 <button
                                     type="button"
                                     onClick={() => setSelectedRole('volunteer')}
-                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                        selectedRole === 'volunteer'
-                                            ? 'border-green-500 bg-green-50 text-green-700'
-                                            : 'border-gray-300 hover:border-gray-400'
-                                    }`}
+                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'volunteer'
+                                        ? 'border-green-500 bg-green-50 text-green-700'
+                                        : 'border-gray-300 hover:border-gray-400'
+                                        }`}
                                 >
                                     <div className="flex items-center space-x-3">
-                                        <div className={`w-4 h-4 rounded-full border-2 ${
-                                            selectedRole === 'volunteer' ? 'border-green-500 bg-green-500' : 'border-gray-300'
-                                        }`}>
+                                        <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'volunteer' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                                            }`}>
                                             {selectedRole === 'volunteer' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
                                         </div>
                                         <div>
@@ -494,9 +506,8 @@ const SignupModal = () => {
                                 {[1, 2, 3, 4].map((step) => (
                                     <div
                                         key={step}
-                                        className={`w-3 h-3 rounded-full transition-colors ${
-                                            step <= currentStep ? 'bg-green-500' : 'bg-gray-300'
-                                        }`}
+                                        className={`w-3 h-3 rounded-full transition-colors ${step <= currentStep ? 'bg-green-500' : 'bg-gray-300'
+                                            }`}
                                     />
                                 ))}
                             </div>

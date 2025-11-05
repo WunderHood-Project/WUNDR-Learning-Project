@@ -28,7 +28,7 @@ async def create_payment(
     if current_user:
         metadata["userId"] = str(current_user.id)
         metadata["donationType"] = donation_data.donationType
-        metadata['email'] = donation_data.email
+        # metadata['email'] = donation_data.email
 
     try:
         session = stripe.checkout.Session.create(
@@ -92,8 +92,6 @@ async def stripe_webhook(request: Request):
 
         user_id = session["metadata"].get("userId")
 
-        print("USERID", user_id)
-
     #     # Create donation
         if existing_donation:
             return {"status": "duplicate_ignored"}
@@ -102,7 +100,7 @@ async def stripe_webhook(request: Request):
             donation_data = {
                 "donationType": session["metadata"].get("donationType", "Donation"),
                 "amount": int(session["amount_total"] / 100),
-                "email": session.get("customer_email"),
+                # "email": session.get("customer_email"),
                 "sessionId": session["id"]
                 }
             
