@@ -46,19 +46,19 @@ export default function ChildInfoCard({ child, onEdit, onDeleted }: Props) {
 
           {/* DELETE  */}
           <OpenModalButton
-            buttonText={
-              <span
-                aria-label="Delete child"
-                className="inline-flex h-6 w-6 sm:h-8 sm:w-8 md:h-9 md:w-9 items-center justify-center rounded-full
-                           bg-wonderorange text-white shadow-sm
-                           hover:bg-red-500 active:scale-[0.98]
-                           focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300
-                           transition touch-manipulation"
-              >
-                <FaTrash className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5" />
-              </span>
-            }
-            modalComponent={<DeleteChild currChild={child} onDeleted={onDeleted} />}
+          buttonText={
+            <span
+              aria-label="Delete child"
+              className="inline-flex h-6 w-6 sm:h-8 sm:w-8 md:h-9 md:w-9 items-center justify-center rounded-full
+                          bg-wonderorange text-white shadow-sm
+                          hover:bg-red-500 active:scale-[0.98]
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300
+                          transition touch-manipulation"
+            >
+              <FaTrash className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5" />
+            </span>
+          }
+          modalComponent={<DeleteChild currChild={child} onDeleted={onDeleted} />}
           />
         </div>
       </header>
