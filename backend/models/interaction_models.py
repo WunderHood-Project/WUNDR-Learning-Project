@@ -284,4 +284,4 @@ class WaiverCredentialsCreate(BaseModel):
     lastName: str = Field(..., min_length=1, max_length=100, description="Last Name")
     email: EmailStr = Field(None, description="Email")
     address: str = Field(min_length=3, max_length=200)
-    phoneNumber: str  = Field(None, min_length = 10, max_length= 20, description="Phone number")
+    phoneNumber: str = Field(pattern=r'^\+[1-9]\d{1,14}$')
