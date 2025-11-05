@@ -15,7 +15,6 @@ const WONDERHOOD_URL = determineEnv()
 
 const initialPaymentForm = (): CreatePaymentPayload => ({
     amount: 0,
-    email: "",
     donationType: "Donation"
 })
 
@@ -41,10 +40,6 @@ export default function PaymentPage() {
         // Add validations
         if (form?.amount < 0) {
             newErrors.amount = "The donation amount must be greater than 0"
-        }
-
-        if (!isEmail(form?.email)) {
-            newErrors.email = "Please enter a valid email address"
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -88,19 +83,6 @@ export default function PaymentPage() {
                         placeholder="0"
                     />
                     {errors.amount && <p className="text-red-500 text-sm">{errors.amount}</p>}
-                </div>
-
-                <div>
-                    <label className="block mb-2 font-semibold">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        className="border rounded-md p-2 w-64"
-                        placeholder="you@example.com"
-                    />
-                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                 </div>
 
                 <div className="mt-4">
