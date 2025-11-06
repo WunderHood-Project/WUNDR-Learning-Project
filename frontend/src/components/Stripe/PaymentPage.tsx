@@ -5,7 +5,7 @@ import { useState } from "react";
 import { EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { useMemo } from "react";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
-import { determineEnv } from "../../../utils/api";
+import { determineEnv, makeApiRequest } from "../../../utils/api";
 import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
 import { useAuth } from "@/context/auth";
 
@@ -33,6 +33,7 @@ export default function PaymentPage() {
     const createSession = async (e: React.FormEvent) => {
         e.preventDefault()
         setErrors({})
+        type PaymentSessionResponse = { "client-secret": string };
 
         const newErrors: PaymentFormErrors = {}
 
@@ -51,18 +52,28 @@ export default function PaymentPage() {
         }
 
 
+        // const response = await makeApiRequest(`${WONDERHOOD_URL}/payments`, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json", },
+        //     body: payload
+        // })
+
+        // const data = response.json() as { "client-secret": string };
+        // console.log(data["client-secret"])
+
+        // setClientSecret(data["client-secret"]);
+
         const response = await fetch(`${WONDERHOOD_URL}/payments`, {
             method: "POST",
-            // headers: { "Content-Type": "application/json" },
-            headers: {
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify(payload)
-        }) as Response;
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
 
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`Failed to create payment session: ${response.statusText}`);
+        }
 
+        const data: PaymentSessionResponse = await response.json();
         setClientSecret(data["client-secret"]);
     };
 
