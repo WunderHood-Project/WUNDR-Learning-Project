@@ -260,8 +260,9 @@ model Notifications {
   title                 String
   description           String
   isRead                Boolean @default(false)
-  time                  DateTime
-  createdAt             DateTime @default(now())
+  // time                  DateTime
+  eventDate             DateTime?  
+  createdAt             DateTime  @default(now())
 
   user   Users   @relation(fields: [userId], references: [id])
   userId String @db.ObjectId

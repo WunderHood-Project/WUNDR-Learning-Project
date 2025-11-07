@@ -26,15 +26,25 @@ export default function Notifications() {
     setLoading(true); setError(null);
     try {
       const res: NotificationsResponse = await makeApiRequest(`${API}/notifications/`, { token });
+
       const normalized = (res?.Notifications ?? [])
-        .map(n => ({ ...n, isRead: Boolean((n as any).isRead) }))
-        .sort((a,b)=> new Date(b.time).getTime() - new Date(a.time).getTime());
-      setItems(normalized);
+        .map((n: any) => ({
+          ...n,
+          isRead: Boolean(n.isRead),
+          _displayTime: n.createdAt ?? n.eventDate ?? n.time, 
+        }))
+        .sort((a: any, b: any) =>
+          new Date(b._displayTime).getTime() - new Date(a._displayTime).getTime()
+        );
+
+      setItems(normalized); 
     } catch (e) {
       setItems([]);
       setError(e instanceof Error ? e.message : 'Failed to load');
     } finally { setLoading(false); }
   }, [token]);
+
+  
 
   useEffect(() => {
     if (!authReady) return;
@@ -127,7 +137,7 @@ export default function Notifications() {
             </div>
           ) : (
             <List
-              items={filtered as (Notification & { link?: string })[]}
+              items={filtered as (Notification)[]}
               busy={busy}
               onMarkRead={markAsRead}
               onDelete={deleteOne}

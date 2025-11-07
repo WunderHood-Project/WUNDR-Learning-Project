@@ -200,7 +200,8 @@ async def blast_notification(
         "description": notification.description,
         "userId": user.id,
         "isRead": False,
-        "time": notification.time,
+        # "time": notification.time,
+        "eventDate": notification.time,
         # "icon": icon
     }
     for user in users
@@ -231,8 +232,9 @@ async def get_user_notifications(
     enforce_authentication(current_user, "retireve notifications")
 
     notifications = await db.notifications.find_many(
-        where={"userId": current_user.id}
-    )
+        where={"userId": current_user.id},
+        order={"createdAt": "desc"}  
+)
     
     return {"Notifications": notifications}
 
