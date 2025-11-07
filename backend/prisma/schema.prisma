@@ -330,11 +330,12 @@ model StripeEvents {
 
 // ! 1024-Waiver Credentials =============================================================================
 
-model WaiverCredentials {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstName   String
-	lastName    String
-	address     String
-	phoneNumber String   @unique
-  email       String  @unique
+model PaymentAcknowledgment {
+  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
+  acknowledgementRequested Boolean
+  firstName                String
+	lastName                 String
+	address                  String
+	phoneNumber              String  @unique
+  email                    String  @unique
 }

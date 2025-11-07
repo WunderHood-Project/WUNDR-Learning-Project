@@ -277,11 +277,12 @@ class DonationCreate(BaseModel):
     amount: int
     userId: Optional[str] = None
 
-# ! WaiverCredentials
+# ! Payment Acknowledgment Credentials
 
-class WaiverCredentialsCreate(BaseModel):
+class AcknowledgmentCredentialsCreate(BaseModel):
     firstName: str = Field(..., min_length=1, max_length=100, description="First Name")
     lastName: str = Field(..., min_length=1, max_length=100, description="Last Name")
+    ackknowledgmentRequested: bool = Field(False, description="Tax Return Request")
     email: EmailStr = Field(None, description="Email")
     address: str = Field(min_length=3, max_length=200)
     phoneNumber: str = Field(pattern=r'^\+[1-9]\d{1,14}$')
