@@ -4,6 +4,7 @@ import NotificationDropdown from './NotificationDropdown';
 import { useUnreadNotifications } from '../../../hooks/useUnreadNotifications';
 import { useAuth } from '@/context/auth';
 
+
 export default function NotificationBell() {
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

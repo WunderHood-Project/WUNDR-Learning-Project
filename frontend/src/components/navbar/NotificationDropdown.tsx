@@ -7,6 +7,9 @@ import { Notification, NotificationsResponse } from '@/types/notification';
 import { formatNotificationTime } from '../../../utils/formatDate';
 import { useAuth } from '@/context/auth';
 
+const displayTime = (n: Notification) =>
+  n.createdAt ?? n.eventDate ?? new Date().toISOString();
+
 interface Props {
   onClose: () => void;
 }
@@ -83,7 +86,7 @@ export default function NotificationDropdown({ onClose }: Props) {
                 <div className="flex-1">
                   <div className="font-medium text-sm text-gray-900">{notification?.title}</div>
                   <div className="text-xs text-gray-600 mt-1">{notification?.description}</div>
-                  <div className="text-xs text-gray-400 mt-1">{formatNotificationTime(notification?.time)}</div>
+                  <div className="text-xs text-gray-400 mt-1">{formatNotificationTime(displayTime(notification))}</div>
                 </div>
               </div>
             </div>

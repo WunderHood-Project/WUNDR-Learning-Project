@@ -3,36 +3,31 @@ import type { Notification } from '@/types/notification';
 import { Bell, Trash2, Check } from 'lucide-react';
 import { formatWhen } from '../../../../utils/formatDate';
 
-//helper what time to show
-function pickDisplayTime(n: Notification): string {
-  return n.createdAt ?? n.eventDate ?? new Date().toISOString();
-}
-
 /* ================= List ================= */
 
 export function List({
-  items, busy, onMarkRead, onDelete,
+    items, busy, onMarkRead, onDelete,
 }: {
-  items: Notification[];
-  busy: string | null;
-  onMarkRead: (id: string) => void;
-  onDelete:   (id: string) => void;
+    items: Notification[];
+    busy: string | null;
+    onMarkRead: (id: string) => void;
+    onDelete:   (id: string) => void;
 }) {
-  if (!items.length) return <EmptyState />;
-  return (
-    <ul className="space-y-2.5 md:space-y-3">
-      {items.map(n => (
-        <li key={n.id}>
-          <Row
-            n={n}
-            busy={busy}
-            onMarkRead={() => onMarkRead(n.id)}
-            onDelete={() => onDelete(n.id)}
-          />
-        </li>
-      ))}
-    </ul>
-  );
+    if (!items.length) return <EmptyState />;
+    return (
+        <ul className="space-y-2.5 md:space-y-3">
+            {items.map(n => (
+                <li key={n.id}>
+                    <Row
+                        n={n}
+                        busy={busy}
+                        onMarkRead={() => onMarkRead(n.id)}
+                        onDelete={() => onDelete(n.id)}
+                    />
+                </li>
+            ))}
+        </ul>
+    );
 }
 
 /* ================= Row ================= */

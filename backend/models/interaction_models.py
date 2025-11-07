@@ -144,8 +144,9 @@ class Notification(BaseModel):
         max_length=80,
     )
     isRead: bool = Field(default=False)
-    time: datetime = Field(default_factory=datetime.now(timezone.utc))
-    userId: str = Field(..., description="User id associated with the notification")
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    eventDate: Optional[datetime] = None
+    userId: str
 
     class Config:
         form_attributes = True
@@ -161,8 +162,8 @@ class NotificationCreate(BaseModel):
         max_length=80,
     )
     isRead: bool = Field(default=False)
-    time: datetime = Field(default_factory=datetime.now(timezone.utc))
-    userId: str | None = None
+    eventDate: Optional[datetime] = None
+    userId: Optional[str] = None
 
     class Config:
         form_attributes = True
@@ -171,8 +172,9 @@ class NotificationUpdate(BaseModel):
     description: Optional[str] = Field(default=None)
     title: Optional[str] = Field(default=None)
     isRead: Optional[bool] = Field(default=None)
-    userId: Optional[str] = Field(default=None)
-
+    eventDate: Optional[datetime] = None
+    userId: Optional[str] = None
+    
 #! Jobs
 class Jobs(BaseModel):
     id: str
