@@ -25,12 +25,12 @@ export function Header({
                 </div>
 
                 {/* Buttons on the right */}
-                <div className="ml-auto flex items-center gap-2">
+                <div className="ml-auto flex items-center gap-3">
                 <button
                     type="button"
                     onClick={onClearRead}
                     disabled={busy === 'del:read' || !hasAnyRead}
-                    className="inline-flex h-7 md:h-9 items-center justify-center gap-2 rounded-lg px-2 text-sm font-semibold
+                    className="inline-flex h-7 md:h-9 items-center justify-center rounded-lg px-2 text-sm font-semibold
                             border disabled:opacity-50 shrink-0
                             border-wondergreen/20 text-wondergreen hover:bg-wonderbg hover:border-wondergreen/40"
                     title="Clear all read"
@@ -45,7 +45,7 @@ export function Header({
                     type="button"
                     onClick={onMarkAllRead}
                     disabled={!unreadCount || busy === 'read:all' || loading}
-                    className="inline-flex h-7 md:h-9 items-center justify-center gap-2 rounded-lg px-2 text-sm font-semibold
+                    className="inline-flex h-7 md:h-9 items-center justify-center rounded-lg px-2 text-sm font-semibold
                             border disabled:opacity-50 shrink-0
                             border-wondergreen/20 text-wondergreen hover:bg-wonderbg hover:border-wondergreen/40"
                     title={unreadCount ? 'Mark all as read' : 'No unread'}

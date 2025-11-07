@@ -113,7 +113,7 @@ export default function Notifications() {
 
         <Tabs tab={tab} setTab={setTab} unreadCount={unreadCount} readCount={readCount} />
 
-        <div className="p-4 sm:p-6">
+        <div className="p-2 sm:p-4">
           {loading ? (
             <List.Skeleton />
           ) : error ? (
