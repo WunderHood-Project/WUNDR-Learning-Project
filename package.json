@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@squoosh/cli": "^0.7.1",
     "prisma": "^5.17.0"
   },
   "dependencies": {
