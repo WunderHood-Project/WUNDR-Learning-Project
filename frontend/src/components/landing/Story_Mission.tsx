@@ -25,11 +25,11 @@ export default function Story_Mission(){
               We believe that learning outside traditional classrooms can be powerful, but it can also feel isolating.
             </p>
             <p className="text-base sm:text-lg md:text-xl leading-relaxed">
-              That&aposs why we build programs where teens can make friends, explore their interests, and grow through outdoor adventures, creative arts, and community projects.
+              That&apos;s why we build programs where teens can make friends, explore their interests, and grow through outdoor adventures, creative arts, and community projects.
             </p>
-            <p className="text-base sm:text-lg md:text-xl leading-relaxed">
+            {/* <p className="text-base sm:text-lg md:text-xl leading-relaxed">
               We believe that learning outside traditional classrooms is powerful, but it can also feel isolating.
-            </p>
+            </p> */}
           </div>
         </div>
 
@@ -86,11 +86,12 @@ export default function Story_Mission(){
                 <SwiperSlide>
                   <div className="relative w-full h-full">
                     <Image
-                      src="/ourStory/story1.png"
+                      src="/ourStory/story1.webp"
                       alt="Kids event"
                       fill
                       className="object-cover"
                       priority
+                      sizes="(max-width: 768px) 100vw, 560px"
                     />
                   </div>
                 </SwiperSlide>
@@ -99,10 +100,11 @@ export default function Story_Mission(){
                 <SwiperSlide>
                   <div className="relative w-full h-full">
                     <Image
-                      src="/ourStory/story2.png"
+                      src="/ourStory/story2.webp"
                       alt="Kids outdoors"
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 560px"
                     />
                   </div>
                 </SwiperSlide>
@@ -111,10 +113,11 @@ export default function Story_Mission(){
                 <SwiperSlide>
                   <div className="relative w-full h-full">
                     <Image
-                      src="/ourStory/story3.png"
+                      src="/ourStory/story3.webp"
                       alt="Indoor learning"
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 560px"
                     />
                   </div>
                 </SwiperSlide>

@@ -20,11 +20,12 @@ export default function HeroSection() {
                 <SwiperSlide>
                     <div className="relative h-full w-full">
                         <Image
-                            src="/hero.png"
+                            src="/hero.webp"
                             alt="Kids outdoors"
                             fill
                             className="object-cover object-[center_40%]"
                             priority
+                            sizes="100vw"
                         />
                         {/* <div className="absolute inset-0 bg-black/20" aria-hidden /> */}
                         {/* <div className="absolute inset-0 bg-white/10 z-10 pointer-events-none" /> */}
@@ -61,11 +62,11 @@ export default function HeroSection() {
             <SwiperSlide>
                 <div className="relative h-full w-full">
                     <Image
-                        src="/test4.png"
+                        src="/test4.webp"
                         alt="Kids outdoors"
                         fill
                         className="object-cover object-[center_25%]"
-                        priority
+                        sizes="100vw"
                     />
                     <div className="absolute inset-0 bg-black/1" aria-hidden />
                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 mt-17 md:mt-16">
@@ -100,11 +101,11 @@ export default function HeroSection() {
             <SwiperSlide>
                 <div className="relative h-full w-full">
                     <Image
-                        src="/hero3.png"
+                        src="/hero3.webp"
                         alt="Kids outdoors"
                         fill
                         className="object-cover object-[center_35%]"
-                        priority
+                        sizes="100vw"
                     />
 
                     <div className="absolute inset-0 bg-black/1" aria-hidden />
