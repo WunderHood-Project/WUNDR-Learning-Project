@@ -53,10 +53,11 @@ export default function LandingPage() {
     <main>
       {/* Top sections of the landing page */}
       <HeroSection />
-      <ImpactStats />
-      <Story_Mission />
-      <OurPrograms />
-      
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+        <ImpactStats />
+        <Story_Mission />
+        <OurPrograms />
+      </div>
       {/* Volunteer section container */}
       <div className="mt-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#f9faf7] rounded-3xl shadow-lg p-6 sm:p-8 relative overflow-hidden">
@@ -94,7 +95,6 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
-
     </main>
   )
 }
