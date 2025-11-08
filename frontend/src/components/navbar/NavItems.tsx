@@ -12,7 +12,7 @@ type CommonProps = {
 // Desktop version of the nav bar items
 export function DesktopNavItems({ links, pathname }: CommonProps) {
   return (
-    <div className="hidden lg:flex items-center space-x-6 ml-10">
+    <div className="hidden lg:flex items-center lg:space-x-4 xl:space-x-4 ml-10">
       {links.map(({ href, label, disabled, badge }) => {
         const isActive = pathname === href;
 
@@ -24,27 +24,30 @@ export function DesktopNavItems({ links, pathname }: CommonProps) {
               role="link"
               aria-disabled="true"
               title="Coming soon"
-              className="
+              className={`
                 relative inline-flex items-center
-                px-4 py-2 text-xl font-semibold
-                text-wondergreen cursor-not-allowed select-none
-              "
+                py-2
+                px-3 lg:px-3 xl:px-6
+                text-[17px] lg:text-[17px] xl:text-[20px]
+                font-semibold text-wondergreen cursor-not-allowed select-none
+                whitespace-nowrap
+              `}
               onClick={(e) => e.preventDefault()}
             >
               {/* Anchor for absolute-positioned badge */}
-              <span className="relative">
+              <span className="relative inline-block">
                 {label}
                 {badge === 'coming-soon' && (
                   <span
                     className="
-                      absolute -top-3 right-0
-                      left-1/4 -translate-x-1/2 translate-x-4
-                      px-2 py-0.5 rounded-full whitespace-nowrap
-                      text-[10px] font-semibold leading-none
+                      pointer-events-none
+                      absolute left-1/2 -translate-x-1/2 translate-x-[2px] lg:translate-x-[3px]
+                      -top-3 lg:-top-[15px]
+                      px-2 lg:px-2.5 py-[2px] lg:py-[3px]
+                      rounded-full whitespace-nowrap
+                      text-[10px] lg:text-[11px] font-semibold leading-none
                       bg-amber-200/90 text-amber-800 border border-amber-300 shadow-sm
                     "
-                    aria-label="Coming soon"
-                    title="Coming soon"
                   >
                     Soon
                   </span>
@@ -56,23 +59,25 @@ export function DesktopNavItems({ links, pathname }: CommonProps) {
 
         return (
           <Link
-          key={href}
-          href={href}
-          className={`
-            relative px-2 ld:px-4 xl:px-6 py-2 text-base lg:text-[19px] xl:text-[20px] font-semibold transition-all duration-300 group
+            key={href}
+            href={href}
+            className={`
+            relative py-2
+            px-3 lg:px-3 xl:px-6
+            text-[18px] lg:text-[18px] xl:text-[20px]
+            font-semibold transition-all duration-300 group whitespace-nowrap
             ${isActive ? 'text-wondergreen' : 'text-wondergreen hover:text-wondergreen'}
           `}
           >
             <span className="relative z-10">{label}</span>
 
-            {/* Hover background */}
             <div className="absolute inset-0 bg-gradient-to-r from-wonderleaf/10 to-wondergreen/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            {/* Active underline */}
             {isActive && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full" />
             )}
           </Link>
+
         );
       })}
     </div>

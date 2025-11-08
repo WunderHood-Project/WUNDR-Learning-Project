@@ -20,7 +20,7 @@ export default function Navbar() {
   // --- App state ---
   const { setModalContent } = useModal();
   const pathname = usePathname();
-  const { user, isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, logout, authReady, loadingUser } = useAuth();
 
   // --- UI state ---
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -77,36 +77,11 @@ export default function Navbar() {
     setModalContent(<LoginModal />);
   };
 
-//   // 4) Lock body scroll when mobile menu is open (robust)
-// useEffect(() => {
-//   const lock = () => {
-//     document.body.style.overflow = 'hidden';
-//     document.documentElement.style.overflow = 'hidden'; // iOS/Safari
-//   };
-//   const unlock = () => {
-//     document.body.style.overflow = '';
-//     document.documentElement.style.overflow = '';
-//   };
-
-//   if (isMenuOpen) lock(); else unlock();
-
-//   // страховка на размонтирование
-//   return unlock;
-// }, [isMenuOpen]);
-
-// // 3.1) Доп. страховка: при смене маршрута всегда разблокировать
-// useEffect(() => {
-//   document.body.style.overflow = '';
-//   document.documentElement.style.overflow = '';
-//   setIsMenuOpen(false);
-// }, [pathname]);
-
-
   return (
     <nav className="bg-gradient-to-r from-wonderbg via-white to-wondersun/20 backdrop-blur-sm border-b border-wonderleaf/20 shadow-lg sticky top-0 z-50">
       {/* smaller horizontal padding on mobile, none on sm+ as you asked */}
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16 md:h-20">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center h-16 md:h-20">
           {/* Brand: logo + name */}
           <Link href="/" className="flex items-center space-x-1 shrink-0 group">
             <div className="relative">
@@ -124,65 +99,98 @@ export default function Navbar() {
                 />
               </div>
             </div>
-            <span className="text-lg md:text-[23px] text-wondergreen font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
+            <span className="text-lg lg:text-[21px] xl:text-[23px] text-wondergreen font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
               WonderHood
             </span>
           </Link>
 
           {/* Desktop Navigation (presentational only) */}
-          <div className="hidden md:flex flex-1 justify-center min-w-0">
+          <div className="hidden md:flex justify-center justify-self-center lg:pl-6 xl:pl-14">
             <DesktopNavItems links={NAV_LINKS} pathname={pathname} />
           </div>
 
+
           {/* Right side: Auth / Profile (desktop only) */}
-          <div className="hidden lg:flex items-center space-x-4 ml-6 border-l border-wonderleaf/30 pl-6 shrink-0">
-            {isLoggedIn && <NotificationBell />}
+          <div className="hidden lg:flex items-center
+            ml-6 lg:ml-6 xl:ml-6
+            pr-24
+            border-l border-wonderleaf/30
+            shrink-0 lg:w-[320px] xl:w-[360px] justify-end gap-4">
 
-            {!isLoggedIn && (
-              <>
-                <div
-                  className="px-6 py-1 text-wondergreen font-semibold hover:text-wonderleaf cursor-pointer transition-colors duration-300 hover:bg-wondergreen/5 rounded-lg text-lg border-2 border-wondergreen hover:bg-wondergreen hover:text-white"
-                  onClick={handleLogin}
-                >
-                  Login
-                </div>
-                <div
-                  className="px-6 py-2 bg-gradient-to-r from-wonderleaf to-wondergreen text-white font-semibold rounded-lg cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300"
-                  onClick={handleSignup}
-                >
-                  Sign Up
-                </div>
-              </>
-            )}
-
-            {isLoggedIn && user && (
-              <div ref={userMenuRef} className="relative">
-                <button
-                onClick={() => setShowDropdown(v => !v)}
-                className={`
-                  flex items-center rounded-xl font-semibold transition-all duration-300
-                  border-2 bg-white/70 backdrop-blur-sm hover:shadow-lg hover:scale-105
-                  px-3 py-1.5 lg:px-3.5 lg:py-2               
-                  ${pathname === "/profile"
-                    ? "border-wondergreen bg-wondergreen/10 text-wondergreen shadow-lg"
-                    : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"}
-                `}
-                >
-                  <div className="w-8 h-8 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                    {user.firstName.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="text-sm md:text-lg font-bold text-wondergreen">{user.firstName}</span>
-                  <svg className="w-4 h-4 ml-2 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {showDropdown && <UserDropdown onLogout={logout} onClose={() => setShowDropdown(false)} />}
+            {!authReady ? (
+              <div className="invisible flex items-center gap-4">
+                <div className="h-11 w-11 rounded-full" />
+                <div className="h-11 w-[230px] rounded-xl" />
               </div>
+            ) : (
+              <>
+                <div className="shrink-0 flex justify-center">
+                  {isLoggedIn && <NotificationBell />}
+                </div>
+
+                {!isLoggedIn && (
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleLogin}
+                      className="
+                        h-11 px-5 rounded-2xl border-2 border-wondergreen
+                        text-wondergreen font-semibold transition hover:bg-wondergreen/5
+                        whitespace-nowrap
+                        lg:h-10 lg:px-4 lg:text-[15px] lg:min-w-[100px]
+                        xl:h-11 xl:px-5 xl:text-[17px]
+                      "
+                    >
+                      Login
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleSignup}
+                      className="
+                        h-11 px-5 rounded-2xl font-semibold text-white
+                        bg-gradient-to-r from-wonderleaf to-wondergreen transition hover:shadow-lg
+                        whitespace-nowrap
+                        lg:h-10 lg:px-4 lg:text-[15px] lg:min-w-[116px]
+                        xl:h-11 xl:px-5 xl:text-[17px]
+                      "
+                    >
+                      Sign Up
+                    </button>
+                  </div>
+                )}
+
+                {isLoggedIn && user && (
+                  <div ref={userMenuRef} className="relative">
+                    <button
+                      onClick={() => setShowDropdown(v => !v)}
+                      className={`h-11 pl-2 pr-3.5 rounded-xl font-semibold flex items-center
+                                  border-2 bg-white/70 backdrop-blur-sm hover:shadow-lg transition
+                                  ${pathname === "/profile"
+                                    ? "border-wondergreen bg-wondergreen/10 text-wondergreen"
+                                    : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"}`}
+                    >
+                      <div className="w-8 h-8 mr-3 rounded-full bg-gradient-to-r from-wonderleaf to-wondergreen
+                                      text-white font-bold text-sm flex items-center justify-center">
+                        {user.firstName.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="text-base md:text-lg font-bold">{user.firstName}</span>
+                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {showDropdown && (
+                      <UserDropdown onLogout={logout} onClose={() => setShowDropdown(false)} />
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
 
           {/* Mobile menu toggle */}
-          <div className="lg:hidden">
+          <div className="lg:hidden justify-self-end">
             <button
             ref={menuToggleRef}
             onClick={(e) => { e.stopPropagation(); setIsMenuOpen(prev => !prev); }}
@@ -221,32 +229,33 @@ export default function Navbar() {
             </div>
 
             {/* Auth / Profile block (not sticky) */}
-            {isLoggedIn ? (
+            {authReady && isLoggedIn && (
               <div className="px-3 sm:px-4 pb-3">
                 <MobileUserBlock
-                fullName={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()}
-                role={(user?.role ?? 'parent') as UserRole}
-                onLogout={logout}
-                onNavigate={() => setIsMenuOpen(false)}
+                  fullName={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()}
+                  role={(user?.role ?? 'parent') as UserRole}
+                  onLogout={logout}
+                  onNavigate={() => setIsMenuOpen(false)}
                 />
               </div>
-            ) : null}
+            )}
 
             {/* Sticky safe-area footer (only when logged OUT) */}
-            {!isLoggedIn && (
+            {authReady && !isLoggedIn && (
               <div className="sticky bottom-0 bg-white/90 backdrop-blur-sm border-t border-wonderleaf/20 px-3 sm:px-4 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)]">
                 <div className="grid grid-cols-2 gap-2.5">
                   <button
-                  type="button"
-                  className="h-11 rounded-2xl border-2 border-wondergreen text-wondergreen font-semibold hover:bg-wondergreen/5 focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
-                  onClick={(e) => { handleLogin(e); setIsMenuOpen(false); }}
+                    type="button"
+                    className="h-11 rounded-2xl border-2 border-wondergreen text-wondergreen font-semibold hover:bg-wondergreen/5 focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
+                    
+                    onClick={(e) => { handleLogin(e); setIsMenuOpen(false); }}
                   >
                     Login
                   </button>
                   <button
-                  type="button"
-                  className="h-11 rounded-2xl font-semibold text-white bg-gradient-to-r from-wonderleaf to-wondergreen hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
-                  onClick={(e) => { handleSignup(e); setIsMenuOpen(false); }}
+                    type="button"
+                    className="h-11 rounded-2xl font-semibold text-white bg-gradient-to-r from-wonderleaf to-wondergreen hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
+                    onClick={(e) => { handleSignup(e); setIsMenuOpen(false); }}
                   >
                     Sign Up
                   </button>
