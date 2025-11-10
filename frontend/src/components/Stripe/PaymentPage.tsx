@@ -8,7 +8,6 @@ import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { determineEnv } from "../../../utils/api";
 import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
 // import { useAuth } from "@/context/auth";
-import TaxReturnWaiver from "../TaxReturnWaiver/TaxReturnWaiver";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const WONDERHOOD_URL = determineEnv()
@@ -70,7 +69,6 @@ export default function PaymentPage() {
 
     return (
         <>
-            <TaxReturnWaiver />
             <form onSubmit={createSession}>
                 <div>
                     <div>

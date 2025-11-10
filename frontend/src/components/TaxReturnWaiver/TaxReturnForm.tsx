@@ -2,6 +2,7 @@ import { useState } from "react"
 import { CreateTaxReturnPayload, TaxReturnErrors } from "@/types/taxReturn"
 import { makeApiRequest } from "../../../utils/api"
 import { determineEnv } from "../../../utils/api"
+import { Navigate } from 'react-router-dom';
 
 type Props = {
     acknowledge: boolean
@@ -16,6 +17,10 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
     const [email, setEmail] = useState<string>("")
     const [phone, setPhone] = useState<string>("")
     const [errors, setErrors] = useState<TaxReturnErrors>({})
+
+    const handleClick = () => {
+        return <Navigate to="/donate" replace />
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -69,7 +74,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
                             className="border rounded-md p-2 w-[25%]"
                             placeholder="First Name"
                         />
-
+                        {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName}</p>}
                     </div>
                     <div>
                         <input
@@ -80,6 +85,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
                             className="border rounded-md p-2 w-[25%]"
                             placeholder="Last Name"
                         />
+                        {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
                     </div>
                     <div>
                         <input
@@ -90,6 +96,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
                             className="border rounded-md p-2 w-[25%]"
                             placeholder="Phone Number"
                         />
+                        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
                     </div>
                     <div>
                         <input
@@ -100,23 +107,19 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
                             className="border rounded-md p-2 w-[25%]"
                             placeholder="example@example.com"
                         />
+                        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                     </div>
 
                     <button
                         className="border solid rounded py-1 px-2 bg-wonderleaf text-white"
                         type="submit"
-                    // onClick={""}
+                        onClick={handleClick}
                     >
                         Next
                     </button>
                 </form>
                 :
                 <div>
-                    <button
-                        className="border solid rounded py-1 px-2 bg-wonderleaf text-white"
-                    >
-                        Next
-                    </button>
                 </div>
             }
 
