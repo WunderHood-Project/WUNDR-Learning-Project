@@ -279,10 +279,14 @@ class DonationCreate(BaseModel):
 
 # ! Payment Acknowledgment Credentials
 
-class AcknowledgmentCredentialsCreate(BaseModel):
+class TaxReturnCredentialsCreate(BaseModel):
     firstName: str = Field(..., min_length=1, max_length=100, description="First Name")
     lastName: str = Field(..., min_length=1, max_length=100, description="Last Name")
     ackknowledgmentRequested: bool = Field(False, description="Tax Return Request")
     email: EmailStr = Field(None, description="Email")
     address: str = Field(min_length=3, max_length=200)
-    phoneNumber: str = Field(pattern=r'^\+[1-9]\d{1,14}$')
+    address2: Optional[str] = Field(default=None, min_length=3, max_length=200)
+    city: str = Field(min_length=1)
+    state: str = Field(min_length=1)
+    zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
+    phoneNumber: Optional[str] = Field(default=None, pattern=r'^\+[1-9]\d{1,14}$')

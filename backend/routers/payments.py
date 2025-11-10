@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
-from typing import Annotated, Optional
-from .auth.login import get_current_user
-from models.user_models import User
+# from typing import Annotated, Optional
+# from .auth.login import get_current_user
+# from models.user_models import User
 from models.interaction_models import DonationCreate
 from db.prisma_client import db
 import stripe

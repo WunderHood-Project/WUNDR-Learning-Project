@@ -1,8 +1,14 @@
 export type TaxReturn= {
     id: string
+    acknowledgementRequested: boolean
     firstName: string
     lastName: string
-    phone: string
+    phoneNumber?: string
+    address: string
+    address2?: string
+    city: string
+    state: string
+    zipCode: string
     email: string
 }
 

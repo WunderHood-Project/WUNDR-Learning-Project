@@ -20,13 +20,13 @@ export default function TaxReturnWaiver() {
                     />
                     <p className="ml-3 text-sm text-amber-900 leading-relaxed">
                         I agree to receive a donation/sponsorship acknowledgement from <strong>Wonderhood Project</strong>.
-                        Opt out by proceeding with the “Next” button below.
+                        Continue by clicking with the “Next” button below.
                     </p>
                 </div>
 
                 <details open={acknowledgement} className="mt-5 bg-white border border-amber-200 rounded-xl shadow-sm overflow-hidden">
                     <summary className="cursor-pointer select-none px-4 py-3 text-base font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 transition">
-                        Read the 1024-waiver policy and fill out the fields to receive a tax return
+                        Read the Tax Return Acknowledgment policy and fill out the fields to receive a tax return
                     </summary>
 
                     <div className="px-5 pb-5 pt-3 text-sm text-amber-900 leading-relaxed space-y-3">

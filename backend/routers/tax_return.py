@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
-from models.interaction_models import AcknowledgmentCredentialsCreate
+from models.interaction_models import TaxReturnCredentialsCreate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
 
@@ -11,8 +11,8 @@ router = APIRouter()
 # * May want to add emaill notifications about filling out waiver
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_waiver_credentials(
-    waiver_data: AcknowledgmentCredentialsCreate
+async def create_tax_return_credentials(
+    waiver_data: TaxReturnCredentialsCreate
 ):
     
     """
