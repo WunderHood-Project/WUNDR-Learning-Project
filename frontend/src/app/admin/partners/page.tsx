@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AdministrationPage from '@/components/Administration/AdministrationPage';
+import Partners from '@/components/Administration/Partners';
 
-export default function AdministrationRoute() {
+export default function PartnersRoute() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
 
@@ -18,5 +18,5 @@ export default function AdministrationRoute() {
   }, [router]);
 
   if (!ready) return null;
-  return <AdministrationPage />;
+  return <Partners />;
 }

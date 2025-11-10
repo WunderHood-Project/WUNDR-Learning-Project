@@ -25,7 +25,7 @@ export default function Benefits() {
                     gap-3 sm:gap-4 lg:gap-5
                 "
                 >
-                {items.map((t, i) => (
+                {items.map((t) => (
                     <li
                     key={t}
                     className="

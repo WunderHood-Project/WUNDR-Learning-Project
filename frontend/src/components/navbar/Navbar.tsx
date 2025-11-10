@@ -20,7 +20,7 @@ export default function Navbar() {
   // --- App state ---
   const { setModalContent } = useModal();
   const pathname = usePathname();
-  const { user, isLoggedIn, logout, authReady, loadingUser } = useAuth();
+  const { user, isLoggedIn, logout, authReady } = useAuth();
 
   // --- UI state ---
   const [isMenuOpen, setIsMenuOpen] = useState(false);
