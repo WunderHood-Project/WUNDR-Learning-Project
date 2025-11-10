@@ -8,7 +8,7 @@ export default function TaxReturnWaiver() {
     const [acknowledgement, setAcknowledgement] = useState<boolean>(false)
 
     return (
-        <div className="flex flex-col mt-6 items-center">
+        <div className="flex flex-col mt-6 items-center h-full">
             <div className="bg-amber-50 border border-amber-200 rounded-2xl shadow-sm w-full max-w-3xl p-5">
                 <div className="flex flex-row items-start">
                     <input
@@ -26,7 +26,7 @@ export default function TaxReturnWaiver() {
 
                 <details open={acknowledgement} className="mt-5 bg-white border border-amber-200 rounded-xl shadow-sm overflow-hidden">
                     <summary className="cursor-pointer select-none px-4 py-3 text-base font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 transition">
-                        Read the Tax Return Acknowledgment policy and fill out the fields to receive a tax return
+                        Read the Tax Return Acknowledgment policy and fill out the fields to receive an acknowledgement.
                     </summary>
 
                     <div className="px-5 pb-5 pt-3 text-sm text-amber-900 leading-relaxed space-y-3">
