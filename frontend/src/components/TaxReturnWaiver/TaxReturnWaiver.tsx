@@ -1,3 +1,5 @@
+"use client"
+
 import TaxReturnForm from "./TaxReturnForm";
 import { useState } from "react"
 
@@ -13,7 +15,7 @@ export default function TaxReturnWaiver() {
                     type="checkbox"
                     name="waiverRequest"
                     className="mt-1 h-4 w-4"
-                    onChange={(e) => e.target.value}
+                    onChange={() => setAcknowledgement(!acknowledgement)}
                     aria-describedby="waiver-request"
                 />
                 <span>
@@ -54,7 +56,7 @@ export default function TaxReturnWaiver() {
                         </p>
 
                         <p className="mb-2">
-                            6. Record Keeping. You will receive an acknowledgement from [Your Organization Name] with the date and amount of your gift. Please retain that acknowledgement for your records and for any tax-filing purposes.
+                            6. Record Keeping. You will receive an acknowledgement from Wonderhood Project with the date and amount of your gift. Please retain that acknowledgement for your records and for any tax-filing purposes.
                         </p>
 
                         <p className="mb-2">

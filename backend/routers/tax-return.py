@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
-from models.interaction_models import WaiverCredentialsCreate
+from models.interaction_models import AcknowledgmentCredentialsCreate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
 
@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_waiver_credentials(
-    waiver_data: WaiverCredentialsCreate
+    waiver_data: AcknowledgmentCredentialsCreate
 ):
     
     """
@@ -80,7 +80,7 @@ async def get_unique_user_waiver_credentials(
             detail=f"Unable to find the user's waiver credentials"
         )
     
-@router.get("/all-user-waivers", status_code=200)
+@router.get("/all-users", status_code=200)
 async def get_all_users_waivers_credentials(
     current_user: Annotated[User, Depends(get_current_user)]
     ):
