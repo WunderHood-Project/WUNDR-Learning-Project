@@ -5,9 +5,9 @@ import { useState } from "react";
 import { EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { useMemo } from "react";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
-import { determineEnv, makeApiRequest } from "../../../utils/api";
+import { determineEnv } from "../../../utils/api";
 import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
-import { useAuth } from "@/context/auth";
+// import { useAuth } from "@/context/auth";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const WONDERHOOD_URL = determineEnv()
@@ -19,7 +19,7 @@ const initialPaymentForm = (): CreatePaymentPayload => ({
 
 
 export default function PaymentPage() {
-    const { token } = useAuth()
+    // const { token } = useAuth()
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [form, setForm] = useState<CreatePaymentPayload>(() => initialPaymentForm())
     const [errors, setErrors] = useState<PaymentFormErrors>({})

@@ -7,7 +7,7 @@ import { useAuth } from "@/context/auth";
 import { useModal } from "@/context/modal";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { BASE } from "../../../utils/api";
-import { handleLogin, setToken } from "../../../utils/auth";
+import { handleLogin } from "../../../utils/auth";
 import { errorMessage } from "../../../utils/errorHelpers";
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
