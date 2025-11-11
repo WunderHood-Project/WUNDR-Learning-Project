@@ -51,7 +51,7 @@ export function ProfileTopTabs({
             {/* ===== single relative wrapper for bar + underline + spacer ===== */}
             <div className="relative">
                 {/* Tabs bar — sits above the underline */}
-                <div className="relative z-[1] flex items-center justify-between gap-4 py-3 md:py-3">
+                <div className="relative z-[1] flex items-center justify-between gap-4 py-3 md:py-3 mb-3 sm:mb-4">
                     {/* Tabs */}
                     <div
                         role="tablist"

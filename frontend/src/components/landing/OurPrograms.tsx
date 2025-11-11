@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Mountain,
-  Paintbrush,
-  Atom,
-  HeartPulse,
-  UsersRound,
-} from "lucide-react";
+import {Mountain, Paintbrush, Atom, HeartPulse, UsersRound } from "lucide-react";
 
 type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
@@ -46,26 +40,34 @@ const clubs: Club[] = [
 
 export default function OurPrograms() {
   return (
-    <section className="w-full py-12 sm:py-16 text-wondergreen bg-[#FAF7ED]">
+    <section className="w-full py-12 sm:py-12 text-wondergreen bg-[#FAF7ED] ">
       <div className="max-w-7xl mx-auto flex flex-col px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <div className="flex flex-col items-center sm:items-start">
-          <div className="w-full mb-3 flex flex-col items-center lg:flex-row lg:items-end gap-2 lg:gap-3">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center lg:text-left">
-                WonderHood Signature Clubs
-            </h2>
+        <div className="flex flex-col items-center xl:items-start">
+          <div className="w-full mb-3 flex flex-col items-center xl:flex-row xl:items-end gap-2 xl:gap-3">
+            {/* Badge: top on <xl, right on xl+ */}
             <span
-                className="mt-2 lg:mt-0 ml-0 lg:ml-3 text-[11px] sm:text-xs px-3 py-2.5 rounded-full
+              className="order-1 xl:order-2
+                        -mt-8 xl:mt-0
+                        text-[11px] sm:text-xs md:text-sm
+                        px-3 py-2 rounded-full
                         bg-gradient-to-br from-amber-300 via-amber-400 to-amber-300 text-amber-950
-                        font-semibold tracking-wide shadow-md ring-1 ring-amber-500/35"
+                        font-semibold tracking-wide shadow-md ring-1 ring-amber-500/35 mb-4"
             >
-                COMING SOON
+              COMING SOON
             </span>
-        </div>
 
+            <h2
+              className="order-2 xl:order-1
+                        text-3xl sm:text-4xl md:text-[34px] lg:text-[36px] xl:text-[40px]
+                        font-bold text-center xl:text-left"
+            >
+              WonderHood Signature Clubs
+            </h2>
+          </div>
 
           {/* underline */}
-          <div className="h-1 w-3/4 sm:w-2/3 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-4 mt-1" />
+          <div className="h-1 w-3/4 sm:w-2/3 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-4 mt-2" />
 
           <p className="text-base sm:text-lg lg:text-[20px] text-gray-600 max-w-5xl text-center sm:text-left mb-8 sm:mb-10 mt-1">
             Year-round communities (in planning) where homeschool and online learners (ages 10-18) connect, learn, and grow together.

@@ -14,7 +14,7 @@ export default function ImpactStats() {
     <section className="w-full py-10 text-wondergreen bg-[#FAF7ED] mt-8">
       <div className="max-w-7xl mx-auto flex flex-col items-center px-4">
         {/* Title */}
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-center leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-[34px] lg:text-[36px] xl:text-[42px] font-bold mb-4 text-center leading-tight">
           Empowering Families Through Connection
         </h2>
         {/* Line horizontal */}
@@ -22,7 +22,7 @@ export default function ImpactStats() {
 
         {/* Sub Title */}
         <div className="w-full mt-2">
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-5xl mx-auto text-center leading-relaxed">
+          <p className="text-base md:text-base lg:text-base xl:text-xl text-gray-600 max-w-5xl mx-auto text-center leading-relaxed">
             We believe that learning flourishes when children and families come together.
             <br className="hidden sm:block"/>
             WonderHood connects homeschool and online learners through real experiences, new friendships, and joyful discovery — helping them feel part of a vibrant community.

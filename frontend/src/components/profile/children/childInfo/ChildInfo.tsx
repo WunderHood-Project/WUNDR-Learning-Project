@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6";
-import { Plus } from "lucide-react";
+// import { Plus } from "lucide-react";
 import { useChild } from "../../../../../hooks/useChild";
 import { useAuth } from "@/context/auth";
 import AddChildForm from "../addChild/AddChildForm";
 import UpdateChildForm from "../updateChild/UpdateChild";
 import ChildInfoCard from "./ChildInfoCard";
 import type { Child } from "@/types/child";
+import ChildCardsRail from "./ChildCardsRail";
+
 
 const NO_CHILDREN: readonly Child[] = Object.freeze([] as const);
 type Mode = "list" | "add";
@@ -91,6 +93,13 @@ export default function ChildrenInfoPage() {
         );
     }
 
+    const handleEdit = (id: string) => {
+        setSelectedId(id);
+        setEditingChildId(id);
+        requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+    };
+
+
     return (
         <div className="mx-auto w-full max-w-7xl px-0 lg:px-8 py-0 sm:py-4">
             {/* Header */}
@@ -119,7 +128,7 @@ export default function ChildrenInfoPage() {
                         mt-4 md:mt-0
                         px-3 py-1.5 text-sm
                         md:px-4 md:py-2 md:text-sm
-                        lg:px-5 lg:py-2.5 lg:text-base sm:mr-8 md:mr-16 
+                        lg:px-5 lg:py-2.5 lg:text-base sm:mr-8 md:mr-16
                     "
                     >
                     <span className="text-base sm:text-lg leading-none mr-1">＋</span>
@@ -157,16 +166,50 @@ export default function ChildrenInfoPage() {
                 </div>
             ) : (
                 <>
-                {items.length > 0 && visibleChild && (
-                    <div className="flex flex-row gap-3 sm:gap-4 md:gap-6 my-6 sm:my-8 items-stretch">
-                        {items.length > 1 && (
-                            <FaCircleChevronLeft
-                            className="hidden md:flex w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] cursor-pointer my-auto text-wonderforest/70 hover:text-wonderforest transition-colors"
-                            onClick={!editingChildId ? handlePrev : undefined}
+                {items.length > 0 && (
+                    <>
+                        {/* 1) Mobile */}
+                        <div className="md:hidden mt-4">
+                        {editingChildId
+                            ? (() => {
+                                const curr = items.find(c => c.id === editingChildId);
+                                if (!curr) return null;
+                                return (
+                                <div className="bg-white rounded-2xl ring-1 ring-black/5 shadow-sm overflow-hidden">
+                                    <div className="h-1 w-full bg-gradient-to-r from-wondersun via-wonderorange to-wondergreen" />
+                                    <div className="p-4 sm:p-5">
+                                    <UpdateChildForm
+                                        setEditingChildId={setEditingChildId}
+                                        currChild={curr}
+                                        onPatched={(id: string) => setPendingId(id)}
+                                        refetchChildren={refetch}
+                                    />
+                                    </div>
+                                </div>
+                                );
+                            })()
+                            : (
+                            <ChildCardsRail
+                                items={items}
+                                onEdit={handleEdit}
+                                onDeleted={handleDeleted}
                             />
-                        )}
+                            )
+                        }
+                        </div>
 
-                        <div className="basis-full max-w-5xl w-full mx-auto" key={visibleChild.id}>
+
+                        {/* 2) Tablet/Desktop: Your current block with arrows and one card */}
+                        {visibleChild && (
+                        <div className="hidden md:flex flex-row gap-3 sm:gap-4 md:gap-6 my-6 sm:my-8 items-stretch">
+                            {items.length > 1 && (
+                            <FaCircleChevronLeft
+                                className="w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] cursor-pointer my-auto text-wonderforest/70 hover:text-wonderforest transition-colors"
+                                onClick={!editingChildId ? handlePrev : undefined}
+                            />
+                            )}
+
+                            <div className="basis-full max-w-5xl w-full mx-auto" key={visibleChild.id}>
                             {editingChildId === visibleChild.id ? (
                                 <UpdateChildForm
                                 setEditingChildId={setEditingChildId}
@@ -176,35 +219,39 @@ export default function ChildrenInfoPage() {
                                 />
                             ) : (
                                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all overflow-hidden">
-                                    <div className="h-1 w-full bg-gradient-to-r from-wondersun via-wonderorange to-wondergreen" />
-                                    <div className="p-4 sm:p-5 md:p-6">
-                                        <ChildInfoCard
-                                        child={visibleChild}
-                                        onEdit={() => setEditingChildId(visibleChild.id)}
-                                        onDeleted={handleDeleted}
-                                        />
-                                    </div>
+                                <div className="h-1 w-full bg-gradient-to-r from-wondersun via-wonderorange to-wondergreen" />
+                                <div className="p-4 sm:p-5 md:p-6">
+                                    <ChildInfoCard
+                                    child={visibleChild}
+                                    onEdit={() => setEditingChildId(visibleChild.id)}
+                                    onDeleted={handleDeleted}
+                                    />
+                                </div>
                                 </div>
                             )}
-                        </div>
+                            </div>
 
-                        {items.length > 1 && (
+                            {items.length > 1 && (
                             <FaCircleChevronRight
-                            className="hidden md:flex w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] cursor-pointer my-auto text-wonderforest/70 hover:text-wonderforest transition-colors"
-                            onClick={!editingChildId ? handleNext : undefined}
+                                className="w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] cursor-pointer my-auto text-wonderforest/70 hover:text-wonderforest transition-colors"
+                                onClick={!editingChildId ? handleNext : undefined}
                             />
+                            )}
+                        </div>
                         )}
-                    </div>
+                    </>
                 )}
 
-                {/* FAB только на мобилке */}
-                <button
+
+
+                {/* FAB only for mobile */}
+                {/* <button
                     onClick={() => setMode("add")}
                     className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-2 rounded-full bg-wondergreen px-5 py-3 text-white shadow-lg sm:hidden"
                     aria-label="Add a child"
                 >
                     <Plus className="h-5 w-5" /> Add
-                </button>
+                </button> */}
                 </>
             )}
         </div>

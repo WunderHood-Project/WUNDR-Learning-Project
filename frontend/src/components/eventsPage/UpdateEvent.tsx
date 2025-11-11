@@ -5,13 +5,14 @@ import { useEvent } from "../../../hooks/useEvent"
 import { CreateEventPayload, Event, EventFormErrors, UpdateEventPayload } from "@/types/event"
 import { useEffect, useState } from "react"
 import { makeApiRequest } from "../../../utils/api"
-import { convertStringToIsoFormat, toYMDForInput } from "../../../utils/formatDate"
+// import { convertStringToIsoFormat, toYMDForInput } from "../../../utils/formatDate"
 import { determineEnv } from "../../../utils/api"
 import { parseFloatOrNull, parseIntOrZero } from "../../../utils/parseHelpers"
 import EventFields from "./EventField"
 import { useActivity } from "../../../hooks/useActivity"
 // import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
 import { compressImage } from '../../../utils/image/compressImage';
+import { ymdToIsoNoShift, isoToYMD } from '../../../utils/formatDate';
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -21,7 +22,7 @@ const toEventForm = (ev: Event): CreateEventPayload => ({
     name: ev.name ?? "",
     notes: ev.notes ?? "",
     description: ev.description ?? "",
-    date: toYMDForInput(ev.date ?? ""),
+    date: isoToYMD(ev.date ?? ''),
     startTime: ev.startTime ?? "",
     endTime: ev.endTime ?? "",
     image: ev.image ?? "",
@@ -127,8 +128,8 @@ export default function UpdateEvent() {
         // Create Payload
         const payload: UpdateEventPayload = {
             ...formEvent,
-            date: convertStringToIsoFormat(formEvent.date),
-        }
+            date: ymdToIsoNoShift(formEvent.date),
+        };
 
         // Try to add an event
         try {

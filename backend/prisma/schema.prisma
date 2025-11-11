@@ -260,8 +260,9 @@ model Notifications {
   title                 String
   description           String
   isRead                Boolean @default(false)
-  time                  DateTime
-  createdAt             DateTime @default(now())
+  // time                  DateTime
+  eventDate             DateTime?  
+  createdAt             DateTime  @default(now())
 
   user   Users   @relation(fields: [userId], references: [id])
   userId String @db.ObjectId
@@ -322,9 +323,53 @@ model Donations {
 // ! StripeEvents  =============================================================================
 
 model StripeEvents {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  eventId   String   @unique
-  createdAt DateTime @default(now())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId             String   @unique
+  createdAt           DateTime @default(now())
+}
+
+// ! Partnership  =============================================================================
+
+enum PartnerType {
+  venue
+  program
+  resource
+  education
+}
+
+enum PartnerStatus {
+  new
+  reviewing
+  approved
+  rejected
+}
+
+model PartnerApplications {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+
+  orgName         String
+  contactName     String
+  email           String
+  phone           String?
+
+  partnerType     PartnerType
+  website         String?
+  city            String?
+  state           String?
+
+  howCanYouHelp   String?
+  preferredDates  String?
+  budgetOrInKind  String?
+  notes           String?
+
+  status          PartnerStatus  @default(new)
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime?      @updatedAt
+
+  @@index([email])
+  @@index([partnerType])
+  @@index([status])
 }
 
 

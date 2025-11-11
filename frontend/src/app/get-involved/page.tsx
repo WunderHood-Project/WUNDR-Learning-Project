@@ -128,7 +128,7 @@ export default function GetInvolved() {
 
                 {/* Button */}
                 <Link
-                  href="/partnership"
+                  href="/get-involved/partnership"
                   className="w-full py-3 px-4 rounded-full text-base font-semibold text-white text-center bg-gradient-to-r from-wonderorange to-wondersun hover:from-wondersun hover:to-wonderorange transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
                 >
                   Explore Partnership
