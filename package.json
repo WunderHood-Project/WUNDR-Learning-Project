@@ -2,9 +2,5 @@
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",
     "prisma": "^5.17.0"
-  },
-  "dependencies": {
-    "@stripe/react-stripe-js": "2.7.1",
-    "@stripe/stripe-js": "3.1.0"
   }
 }
