@@ -1,6 +1,6 @@
 import { useModal } from "@/context/modal"
 import React, { useState } from "react"
-import { handleSignup, SignupPayload } from "../../../utils/auth";
+import { handleSignup, SignupPayload, handleLogin } from "../../../utils/auth";
 import { formatUs, toE164US } from "../../../utils/formatPhoneNumber";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth";
@@ -113,10 +113,14 @@ const SignupModal = () => {
 
         try {
             const response = await handleSignup(userInfo)
-            if(!response.token){
+            if(!response.user){
                 throw new Error("Signup fail");
             }
-            await loginWithToken(response.token, response.user as User | undefined)
+            const loginResp = await handleLogin(userInfo.email, userInfo.password);
+            const token = loginResp?.access_token || localStorage.getItem("token");
+            if(!token) throw new Error("Missing token on Signup")
+                
+            loginWithToken(token, response.user as User);
 
             let redirectTo = safeNext;
             if (selectedRole === "parent") {
