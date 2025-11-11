@@ -23,3 +23,6 @@ export const e164toUS = (e164?: string | null) => {
     const raw = m ? m[1] : onlyDigitals(e164).slice(0, 10)
     return formatUs(raw)
 }
+
+// Remove hyphens from phoneNumber (e.g. 122-122-1222 => 1221221222)
+export const normalizePhone = (s?: string) => s?.replace(/\D/g, "") ?? ""

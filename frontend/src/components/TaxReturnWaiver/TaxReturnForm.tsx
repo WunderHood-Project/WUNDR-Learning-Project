@@ -2,12 +2,13 @@ import { useState } from "react"
 import { CreateTaxReturnPayload, TaxReturnErrors } from "@/types/taxReturn"
 import { makeApiRequest } from "../../../utils/api"
 import { determineEnv } from "../../../utils/api"
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { isEmail } from "../../../utils/emailValidation";
 import { formatUs } from "../../../utils/formatPhoneNumber";
+import { normalizePhone } from "../../../utils/formatPhoneNumber";
 
 type Props = {
-    acknowledge: boolean
+    acknowledgementRequested: boolean
 }
 
 const WONDERHOOD_URL = determineEnv()
@@ -25,17 +26,19 @@ const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
     email: ""
 })
 
-const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
+const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
     const [form, setForm] = useState<CreateTaxReturnPayload>(() => initialTaxReturnForm())
     const [errors, setErrors] = useState<TaxReturnErrors>({})
+    const navigate = useNavigate()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setForm(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleClick = () => {
-        return <Navigate to="/donate" replace />
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target
+        setForm(prev => ({ ...prev, phoneNumber: formatUs(value) }))
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -53,7 +56,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
         if (!form.zipCode) validationErrors.zipCode = "Please provide a phone number"
 
         if (!isEmail(form.email)) validationErrors.email = "Please provide a valid email address"
-        if (form.phoneNumber && formatUs(form.phoneNumber)) validationErrors.phoneNumber = "Please provide a valid phone number"
+        if (form.phoneNumber && !formatUs(form.phoneNumber)) validationErrors.phoneNumber = "Please provide a valid phone number"
 
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors)
@@ -63,7 +66,8 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
         // Handle submit logic here
         const payload: CreateTaxReturnPayload = {
             ...form,
-            acknowledgementRequested: acknowledge
+            phoneNumber: normalizePhone(form.phoneNumber),
+            acknowledgementRequested: Boolean(acknowledgementRequested)
         }
 
         const response = await makeApiRequest(`${WONDERHOOD_URL}/tax-return`, {
@@ -72,17 +76,17 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
             body: payload
         }) as Response
 
-        if (!response.ok) {
+        if (!response) {
             throw new Error(`Failed to record tax return credentials`)
         }
 
-        const data = await response.json();
+        navigate("/donate", { replace: true })
 
     }
 
     return (
         <div className="mt-6 flex justify-center">
-            {acknowledge ? (
+            {acknowledgementRequested ? (
                 <form
                     onSubmit={handleSubmit}
                     className="w-full max-w-2xl bg-amber-50 border border-amber-200 rounded-2xl shadow-sm p-6 space-y-4"
@@ -132,7 +136,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
                                 type="tel"
                                 name="phoneNumber"
                                 value={form.phoneNumber}
-                                onChange={handleChange}
+                                onChange={handlePhoneChange}
                                 className="w-full border border-amber-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                                 placeholder="Phone"
                             />
@@ -236,7 +240,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledge }) => {
                     <div className="flex justify-end pt-4">
                         <button
                             type="submit"
-                            onClick={handleClick}
+                            // onClick={handleClick}
                             className="bg-wonderleaf text-white font-medium rounded-md py-2 px-4 hover:bg-green-700 transition"
                         >
                             Next

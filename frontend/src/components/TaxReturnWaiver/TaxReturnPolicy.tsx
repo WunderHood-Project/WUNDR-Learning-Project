@@ -5,7 +5,7 @@ import { useState } from "react"
 import Link from "next/link"
 
 export default function TaxReturnWaiver() {
-    const [acknowledgement, setAcknowledgement] = useState<boolean>(false)
+    const [acknowledgementRequested, setAcknowledgementRequested] = useState<boolean>(false)
 
     return (
         <div className="flex flex-col mt-6 items-center h-full">
@@ -15,16 +15,16 @@ export default function TaxReturnWaiver() {
                         type="checkbox"
                         name="waiverRequest"
                         className="mt-1 h-5 w-5 text-amber-800 border-amber-400 rounded focus:ring-amber-600 transition duration-150 ease-in-out"
-                        onChange={() => setAcknowledgement(!acknowledgement)}
+                        onChange={() => setAcknowledgementRequested(!acknowledgementRequested)}
                         aria-describedby="waiver-request"
                     />
                     <p className="ml-3 text-sm text-amber-900 leading-relaxed">
                         I agree to receive a donation/sponsorship acknowledgement from <strong>Wonderhood Project</strong>.
-                        Continue by clicking with the “Next” button below.
+                        Skip this step by clicking the “Next” button below.
                     </p>
                 </div>
 
-                <details open={acknowledgement} className="mt-5 bg-white border border-amber-200 rounded-xl shadow-sm overflow-hidden">
+                <details open={acknowledgementRequested} className="mt-5 bg-white border border-amber-200 rounded-xl shadow-sm overflow-hidden">
                     <summary className="cursor-pointer select-none px-4 py-3 text-base font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 transition">
                         Read the Tax Return Acknowledgment policy and fill out the fields to receive an acknowledgement.
                     </summary>
@@ -48,7 +48,7 @@ export default function TaxReturnWaiver() {
                             </li>
 
                             <li>
-                                <strong>Use of a “1024 Waiver”:</strong> In certain circumstances, the IRS Form 1024 applies to organizations seeking recognition under § 501(a) other than § 501(c)(3). Please note that if [Your Organization Name] is relying on such recognition (or has applied and is pending), the tax-deductibility of your donation may depend on final determination by the IRS.
+                                <strong>Use of a “1024 Waiver”:</strong> In certain circumstances, the IRS Form 1024 applies to organizations seeking recognition under § 501(a) other than § 501(c)(3). Please note that if Wonderhood Project is relying on such recognition (or has applied and is pending), the tax-deductibility of your donation may depend on final determination by the IRS.
                             </li>
 
                             <li>
@@ -72,12 +72,12 @@ export default function TaxReturnWaiver() {
                         <p className="font-medium text-amber-950">Thank you again for your generous support of our mission!</p>
 
                         <div className="mt-5">
-                            <TaxReturnForm acknowledge={acknowledgement} />
+                            <TaxReturnForm acknowledgementRequested={acknowledgementRequested} />
                         </div>
                     </div>
                 </details>
 
-                {acknowledgement === false ?
+                {acknowledgementRequested === false ?
                     <div className="mt-5">
                         <Link
                             href="/donate"
