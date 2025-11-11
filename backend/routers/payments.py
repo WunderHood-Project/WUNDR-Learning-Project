@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
-from typing import Annotated
+from typing import Annotated, Optional
 from .auth.login import get_current_user
 from models.user_models import User
 from models.interaction_models import DonationCreate
@@ -14,7 +14,7 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 @router.post("", status_code=status.HTTP_202_ACCEPTED)
 async def create_payment(
     donation_data: DonationCreate,
-    current_user: Annotated[User, Depends(get_current_user)],
+    # current_user: Annotated[Optional[User], Depends(get_current_user)] = None,
 ):
     """
         Create Donation
@@ -23,12 +23,12 @@ async def create_payment(
 
     """
 
+    metadata = {"donationType": donation_data.donationType}
+
     # Custom data to add to Stripe Event
-    metadata = {}
-    if current_user:
-        metadata["userId"] = str(current_user.id)
-        metadata["donationType"] = donation_data.donationType
-        metadata['email'] = donation_data.email
+    # if current_user:
+    #     metadata["userId"] = str(current_user.id)
+        # metadata['email'] = donation_data.email
 
     try:
         session = stripe.checkout.Session.create(
@@ -92,8 +92,6 @@ async def stripe_webhook(request: Request):
 
         user_id = session["metadata"].get("userId")
 
-        print("USERID", user_id)
-
     #     # Create donation
         if existing_donation:
             return {"status": "duplicate_ignored"}
@@ -102,7 +100,7 @@ async def stripe_webhook(request: Request):
             donation_data = {
                 "donationType": session["metadata"].get("donationType", "Donation"),
                 "amount": int(session["amount_total"] / 100),
-                "email": session.get("customer_email"),
+                # "email": session.get("customer_email"),
                 "sessionId": session["id"]
                 }
             

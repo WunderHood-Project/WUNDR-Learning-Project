@@ -349,3 +349,14 @@ class PartnerApplicationResponse(BaseModel):
 
     class Config:
         from_attributes = True 
+    userId: Optional[str] = None
+
+# ! WaiverCredentials
+
+class WaiverCredentialsCreate(BaseModel):
+    firstName: str = Field(..., min_length=1, max_length=100, description="First Name")
+    lastName: str = Field(..., min_length=1, max_length=100, description="Last Name")
+    email: EmailStr = Field(None, description="Email")
+    address: str = Field(min_length=3, max_length=200)
+    phoneNumber: str = Field(pattern=r'^\+[1-9]\d{1,14}$')
+

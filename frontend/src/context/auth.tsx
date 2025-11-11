@@ -82,10 +82,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoadingUser(true);
     setUserError(null);
     try {
-      const data = await makeApiRequest<User>(`${WONDERHOOD_URL}/user/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(data);
+      const data = await makeApiRequest<User>(`${WONDERHOOD_URL}/auth/users/me`, {
+          headers: { Authorization: `Bearer ${token}`}
+      })
+      setUser(data)
     } catch (err) {
       setUser(null);
       setUserError(err instanceof Error ? err.message : "Failed to fetch user");
