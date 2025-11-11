@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { makeApiRequest } from '../../../utils/api';
 import { CreateEventPayload, EventFormErrors } from '@/types/event';
-import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
+// import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
 import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
 import { determineEnv } from '../../../utils/api';
@@ -12,6 +12,7 @@ import EventFields from './EventField';
 import { useActivity } from '../../../hooks/useActivity';
 // import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
 import { compressImage } from '../../../utils/image/compressImage';
+import { ymdToIsoNoShift, todayYMDUTC } from '../../../utils/formatDate';
 
 
 
@@ -44,7 +45,7 @@ export default function AddEvent() {
     const { activities } = useActivity()
     const { events } = useEvent(undefined)
     const router = useRouter()
-    const todayYMD = useMemo<string>(() => toYMDLocal(), [])
+    const todayYMD = useMemo(() => todayYMDUTC(), []);
 
     const handleImageChange = async (fileOrUrl: File | string | null) => {
         if (fileOrUrl instanceof File) {
@@ -127,8 +128,8 @@ export default function AddEvent() {
 
         const payload: CreateEventPayload = {
             ...form,
-            date: convertStringToIsoFormat(form.date),
-        }
+            date: ymdToIsoNoShift(form.date),
+        };
 
         try {
             const response = await makeApiRequest(`${WONDERHOOD_URL}/event`, {

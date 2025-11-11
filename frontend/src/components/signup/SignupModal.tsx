@@ -113,6 +113,9 @@ const SignupModal = () => {
 
         try {
             const response = await handleSignup(userInfo)
+            if(!response.token){
+                throw new Error("Signup fail");
+            }
             await loginWithToken(response.token, response.user as User | undefined)
 
             let redirectTo = safeNext;

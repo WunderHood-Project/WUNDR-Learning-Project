@@ -1,24 +1,24 @@
-// import Link from "next/link";
+import Link from "next/link";
 // import { FaInstagram, FaFacebook, FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   return (
     <footer className="w-full bg-wondergreen text-white border-t py-10 mt-10">
         <div className="flex flex-wrap justify-center text-lg gap-6 mb-4">
-            <a href="/support" className="hover:underline">Support Us</a>
-            <a href="/volunteer" className="hover:underline">Volunteer</a>
-            <a href="/partners" className="hover:underline">Partner With Us</a>
-            <a href="/contact" className="hover:underline">Contact Us</a>
-            <div className="flex justify-center gap-4 mb-2">
-            {/* <a href="https://linkedin.com/-link" target="_blank" rel="noopener noreferrer">
-                <FaLinkedin  className="w-6 h-6 hover:opacity-80" />
-            </a>
-            <a href="https://instagram.com/-link" target="_blank" rel="noopener noreferrer">
-                <FaInstagram className="w-6 h-6 hover:opacity-80" />
-            </a>
-            <a href="https://facebook.com/-link" target="_blank" rel="noopener noreferrer">
-                <FaFacebook className="w-6 h-6 hover:opacity-80" />
-            </a> */}
+          <Link href="/support" className="hover:underline">Support Us</Link>
+          <Link href="/volunteer" className="hover:underline">Volunteer</Link>
+          <Link href="/get-involved/partnership" className="hover:underline">Partner With Us</Link>
+          <Link href="/contact" className="hover:underline">Contact Us</Link>
+          <div className="flex justify-center gap-4 mb-2">
+          {/* <a href="https://linkedin.com/-link" target="_blank" rel="noopener noreferrer">
+              <FaLinkedin  className="w-6 h-6 hover:opacity-80" />
+          </a>
+          <a href="https://instagram.com/-link" target="_blank" rel="noopener noreferrer">
+              <FaInstagram className="w-6 h-6 hover:opacity-80" />
+          </a>
+          <a href="https://facebook.com/-link" target="_blank" rel="noopener noreferrer">
+              <FaFacebook className="w-6 h-6 hover:opacity-80" />
+          </a> */}
         </div>
 
         </div>

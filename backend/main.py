@@ -17,6 +17,7 @@ from routers.payments import router as donation_router
 from db.prisma_client import db
 from routers.notifications import start_scheduler, scheduler
 from contextlib import asynccontextmanager
+from routers.partnership import router as partnership_router
 
 # When we start the app, connect to the db. When we shut down the app, disconnect
 # @app.on_event("startup")
@@ -74,4 +75,6 @@ app.include_router(volunteer_router, prefix="/volunteer")
 # app.include_router(volunteer_opportunity_router, prefix="/volunteer_opportunity")
 app.include_router(opportunities_router, prefix="/opportunities", tags=["opportunities"])
 app.include_router(donation_router, prefix='/payments')
+app.include_router(partnership_router, prefix="/partners", tags=["partnership"])
 app.include_router(waiver_router, prefix="/1024-waiver")
+

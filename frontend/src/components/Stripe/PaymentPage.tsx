@@ -7,21 +7,19 @@ import { useMemo } from "react";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { determineEnv } from "../../../utils/api";
 import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
-import { isEmail } from "../../../utils/emailValidation";
-import { useAuth } from "@/context/auth";
+// import { useAuth } from "@/context/auth";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const WONDERHOOD_URL = determineEnv()
 
 const initialPaymentForm = (): CreatePaymentPayload => ({
     amount: 0,
-    email: "",
     donationType: "Donation"
 })
 
 
 export default function PaymentPage() {
-    const { token } = useAuth()
+    // const { token } = useAuth()
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [form, setForm] = useState<CreatePaymentPayload>(() => initialPaymentForm())
     const [errors, setErrors] = useState<PaymentFormErrors>({})
@@ -35,16 +33,13 @@ export default function PaymentPage() {
     const createSession = async (e: React.FormEvent) => {
         e.preventDefault()
         setErrors({})
+        type PaymentSessionResponse = { "client-secret": string };
 
         const newErrors: PaymentFormErrors = {}
 
         // Add validations
         if (form?.amount < 0) {
             newErrors.amount = "The donation amount must be greater than 0"
-        }
-
-        if (!isEmail(form?.email)) {
-            newErrors.email = "Please enter a valid email address"
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -57,18 +52,28 @@ export default function PaymentPage() {
         }
 
 
+        // const response = await makeApiRequest(`${WONDERHOOD_URL}/payments`, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json", },
+        //     body: payload
+        // })
+
+        // const data = response.json() as { "client-secret": string };
+        // console.log(data["client-secret"])
+
+        // setClientSecret(data["client-secret"]);
+
         const response = await fetch(`${WONDERHOOD_URL}/payments`, {
             method: "POST",
-            // headers: { "Content-Type": "application/json" },
-            headers: {
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify(payload)
-        }) as Response;
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
 
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`Failed to create payment session: ${response.statusText}`);
+        }
 
+        const data: PaymentSessionResponse = await response.json();
         setClientSecret(data["client-secret"]);
     };
 
@@ -88,19 +93,6 @@ export default function PaymentPage() {
                         placeholder="0"
                     />
                     {errors.amount && <p className="text-red-500 text-sm">{errors.amount}</p>}
-                </div>
-
-                <div>
-                    <label className="block mb-2 font-semibold">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        className="border rounded-md p-2 w-64"
-                        placeholder="you@example.com"
-                    />
-                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                 </div>
 
                 <div className="mt-4">

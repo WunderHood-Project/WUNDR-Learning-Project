@@ -3,7 +3,8 @@ export type Notification = {
     title: string;
     description: string;
     isRead: boolean;
-    time: string;
+    createdAt: string;      
+    eventDate?: string | null;
 }
 
 export type NotificationsResponse = {

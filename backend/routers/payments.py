@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
-from typing import Annotated
+from typing import Annotated, Optional
 from .auth.login import get_current_user
 from models.user_models import User
 from models.interaction_models import DonationCreate
@@ -14,7 +14,7 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 @router.post("", status_code=status.HTTP_202_ACCEPTED)
 async def create_payment(
     donation_data: DonationCreate,
-    current_user: Annotated[User, Depends(get_current_user)],
+    # current_user: Annotated[Optional[User], Depends(get_current_user)] = None,
 ):
     """
         Create Donation
@@ -23,11 +23,11 @@ async def create_payment(
 
     """
 
+    metadata = {"donationType": donation_data.donationType}
+
     # Custom data to add to Stripe Event
-    metadata = {}
-    if current_user:
-        metadata["userId"] = str(current_user.id)
-        metadata["donationType"] = donation_data.donationType
+    # if current_user:
+    #     metadata["userId"] = str(current_user.id)
         # metadata['email'] = donation_data.email
 
     try:
