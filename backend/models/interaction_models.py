@@ -272,15 +272,6 @@ class VolunteerOpportunityUpdate(BaseModel):
             return None
         return [item.strip() for item in v if item and item.strip()]
 
-# ! Donations
-
-class DonationCreate(BaseModel):
-    donationType: str
-    amount: int
-    email: Optional[str] = None
-    userId: Optional[str] = None
-
-
 #! Partnership
 class PartnerType(str, Enum):
     venue     = "venue"
@@ -351,9 +342,19 @@ class PartnerApplicationResponse(BaseModel):
         from_attributes = True 
     userId: Optional[str] = None
 
-# ! Payment Acknowledgment Credentials
+# ! Donations
+
+class DonationCreate(BaseModel):
+    donationType: str
+    amount: int
+    email: Optional[str] = None
+    userId: Optional[str] = None
+
+
+# ! Tax Return Acknowledgment Credentials
 
 class TaxReturnCredentialsCreate(BaseModel):
+    donationId: Optional[str] = Field(default=None)
     firstName: str = Field(..., min_length=1, max_length=100, description="First Name")
     lastName: str = Field(..., min_length=1, max_length=100, description="Last Name")
     acknowledgementRequested: bool = Field(default=False, description="Tax Return Request")

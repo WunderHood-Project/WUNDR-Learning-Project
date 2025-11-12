@@ -24,8 +24,12 @@ const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
     state: "",
     zipCode: "",
     email: "",
-    requestSent: false
+    requestSent: false,
+    donationId: ""
 })
+
+const res = await fetch(`${WONDERHOOD_URL}/payments/latest`)
+const latestDonation = await res.json()
 
 const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
     const [form, setForm] = useState<CreateTaxReturnPayload>(() => initialTaxReturnForm())
@@ -46,6 +50,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
         e.preventDefault()
         setErrors({})
         const validationErrors: TaxReturnErrors = {}
+
 
         // Add validations here
         if (!form.firstName) validationErrors.firstName = "Please provide a first name"
@@ -68,7 +73,8 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
         const payload: CreateTaxReturnPayload = {
             ...form,
             phoneNumber: normalizePhone(form.phoneNumber),
-            acknowledgementRequested: Boolean(acknowledgementRequested)
+            acknowledgementRequested: Boolean(acknowledgementRequested),
+            donationId: latestDonation.id
         }
 
         const response = await makeApiRequest(`${WONDERHOOD_URL}/tax-return`, {
@@ -81,7 +87,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
             throw new Error(`Failed to record tax return credentials`)
         }
 
-        router.push("/donate")
+        router.push("/")
 
     }
 

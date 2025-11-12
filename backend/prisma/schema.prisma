@@ -299,34 +299,6 @@ model Jobs{
    eventId           String @db.ObjectId
 }
 
-// ! Donations          =============================================================================
-
-enum DonationType {
-  Sponsorship
-  Donation
-}
-
-model Donations {
-  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
-  donationType       DonationType
-  amount             Int
-  email              String?
-  sessionId          String?       @unique
-
-  // One-to-Many Relationship
-  user   Users?   @relation(fields: [userId], references: [id])
-  userId String? @db.ObjectId
-}
-
-
-// ! StripeEvents  =============================================================================
-
-model StripeEvents {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  eventId             String   @unique
-  createdAt           DateTime @default(now())
-}
-
 // ! Partnership  =============================================================================
 
 enum PartnerType {
@@ -371,8 +343,40 @@ model PartnerApplications {
   @@index([status])
 }
 
+// ! StripeEvents  =============================================================================
 
-// ! 1024-Waiver Credentials =============================================================================
+model StripeEvents {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId             String   @unique
+  createdAt           DateTime @default(now())
+}
+
+// ! Donations          =============================================================================
+
+enum DonationType {
+  Sponsorship
+  Donation
+}
+
+model Donations {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  donationType       DonationType
+  amount             Int
+  email              String?
+  sessionId          String?       @unique
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime?     @default(now())
+
+  // One-to-One Relationship
+  taxReturn          TaxReturnCredentials?
+
+  // One-to-Many Relationship
+  user   Users?   @relation(fields: [userId], references: [id])
+  userId String? @db.ObjectId
+}
+
+
+// ! Tax Return Credentials =============================================================================
 
 model TaxReturnCredentials {
   id                       String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -387,4 +391,10 @@ model TaxReturnCredentials {
 	phoneNumber              String?  @unique
   email                    String   @unique
   requestSent              Boolean
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime? @default(now())
+
+  // One-to-One
+  donation                 Donations  @relation(fields: [donationId], references: [id])
+  donationId               String   @unique @db.ObjectId
 }

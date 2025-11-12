@@ -123,43 +123,5 @@ export default function PaymentPage() {
                 </div>
             </form>
         </>
-
-        // <>
-        //     <form onSubmit={createSession}>
-        //         <div>
-        //             <div>
-        //                 <label className="block mb-2 font-semibold">Donation Amount ($)</label>
-        //                 <input
-        //                     type="number"
-        //                     name="amount"
-        //                     value={form.amount}
-        //                     onChange={handleChange}
-        //                     className="border rounded-md p-2 w-32"
-        //                     placeholder="0"
-        //                 />
-        //                 {errors.amount && <p className="text-red-500 text-sm">{errors.amount}</p>}
-        //             </div>
-
-
-
-        //             <div className="mt-4">
-        //                 {!clientSecret ? (
-        //                     <button
-        //                         type="submit"
-        //                         className="btn-primary border rounded-md bg-wonderleaf px-2 py-1 text-white"
-        //                     >
-        //                         Proceed with Donation
-        //                     </button>
-        //                 ) : (
-        //                     <EmbeddedCheckoutProvider stripe={stripePromise} options={options}>
-        //                         <EmbeddedCheckout />
-        //                     </EmbeddedCheckoutProvider>
-        //                 )}
-        //             </div>
-
-        //         </div>
-        //     </form>
-
-        // </>
     );
 }

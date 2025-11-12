@@ -37,7 +37,7 @@ export default function TaxReturnWaiver() {
                             />
                             <p className="ml-3 text-sm text-amber-900 leading-relaxed">
                                 I agree to receive a donation/sponsorship acknowledgement from <strong>Wonderhood Project</strong>.
-                                Skip this step by clicking the “Next” button below.
+                                Skip this step by clicking the “Next” button below. <strong>Donors that skip this step will not receive a tax return acknowledgement.</strong>
                             </p>
                         </div>
 
