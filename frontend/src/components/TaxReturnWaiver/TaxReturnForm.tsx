@@ -2,7 +2,7 @@ import { useState } from "react"
 import { CreateTaxReturnPayload, TaxReturnErrors } from "@/types/taxReturn"
 import { makeApiRequest } from "../../../utils/api"
 import { determineEnv } from "../../../utils/api"
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from "next/navigation"
 import { isEmail } from "../../../utils/emailValidation";
 import { formatUs } from "../../../utils/formatPhoneNumber";
 import { normalizePhone } from "../../../utils/formatPhoneNumber";
@@ -29,7 +29,7 @@ const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
 const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
     const [form, setForm] = useState<CreateTaxReturnPayload>(() => initialTaxReturnForm())
     const [errors, setErrors] = useState<TaxReturnErrors>({})
-    const navigate = useNavigate()
+    const router = useRouter()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -80,7 +80,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
             throw new Error(`Failed to record tax return credentials`)
         }
 
-        navigate("/donate", { replace: true })
+        router.push("/donate")
 
     }
 

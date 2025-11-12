@@ -342,4 +342,5 @@ model TaxReturnCredentials {
   zipCode                  String
 	phoneNumber              String?  @unique
   email                    String   @unique
+  requestSent              Boolean
 }
