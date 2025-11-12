@@ -8,7 +8,7 @@ import DeleteUser from "./userInfo/DeleteUser";
 import UserInfo from "./userInfo/UserInfo";
 import ChildInfo from "./children/childInfo/ChildInfo";
 import YourEvents from "./events/yourEvents/YourEvents";
-import Notifications from "./notifications/NotifInfo";
+import Notifications from "./notifications/Notifications";
 
 
 type TabKey = 'user' | 'child' | 'events' | 'notifications';

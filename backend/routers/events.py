@@ -606,7 +606,8 @@ async def add_children_to_event(
            "description": f"Confirmation for event {event.name}",
            "userId": current_user.id,
            "isRead": False,
-           "time": event.date,
+           "eventDate": event.date,
+           "userId": str(current_user.id),
            # "icon": icon
        }
    )

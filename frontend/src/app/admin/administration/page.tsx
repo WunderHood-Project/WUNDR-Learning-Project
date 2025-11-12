@@ -1,18 +1,22 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdministrationPage from '@/components/Administration/AdministrationPage';
 
-export default function Page() {
+export default function AdministrationRoute() {
   const router = useRouter();
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
     try {
-      const raw = localStorage.getItem('user');
-      const u = raw ? JSON.parse(raw) : null;
-      if (!u || u.role !== 'admin') router.replace('/');
+      const rawUser = localStorage.getItem('user');
+      const rawTok  = localStorage.getItem('token');
+      const u = rawUser ? JSON.parse(rawUser) : null;
+      if (!u || u.role !== 'admin' || !rawTok) { router.replace('/'); return; }
+      setReady(true);
     } catch { router.replace('/'); }
   }, [router]);
 
-  // return <AdminVolunteerOpportunities />;
-  return <AdministrationPage />
+  if (!ready) return null;
+  return <AdministrationPage />;
 }

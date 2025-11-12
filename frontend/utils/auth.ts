@@ -1,5 +1,5 @@
-import { Role } from "@/types/user";
-import { makeApiRequest } from "./api";
+import { Role, User } from "@/types/user";
+import { BASE, makeApiRequest } from "./api";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
@@ -21,105 +21,42 @@ export interface SignupPayload {
 }
 
 export async function handleSignup(payload: SignupPayload) {
-  const response = await makeApiRequest<{
-    user: Record<string, any>;
-    token: string;
-    message: string;
-  }>("http://localhost:8000/auth/signup", {
-    method: "POST",
-    body: payload,
-  });
+  const res = await makeApiRequest<{ token?: string; access_token?: string; user?: User; message?: string }>(
+    "/auth/signup",
+    { method: "POST", body: payload }
+  );
 
-  if (response.token) {
-    localStorage.setItem("token", response.token);
-    // console.log("✅ Token stored after signup");
-  }
+  // const tok = res.access_token || res.token;
+  // if (tok) localStorage.setItem("token", tok);
 
-  return response;
+  return res;
 }
-
-// & Example Body for handleSignup:
-
-// const payload: SignupPayload = {
-//   firstName: "Jane",
-//   lastName: "Doe",
-//   email: "jane.doe@example.com",
-//   password: "securePassword123",
-//   role: "parent",
-//   avatar: "https://example.com/avatar.jpg",
-//   city: "Austin",
-//   state: "TX",
-//   zipCode: 78701,
-//   children: [
-//     {
-//       firstName: "Ella",
-//       lastName: "Doe",
-//       homeschool: false,
-//       birthday: new Date("2015-06-15").toISOString(), // "2015-06-15T00:00:00.000Z",
-//       createdAt: new Date().toISOString(),
-//       updatedAt: new Date().toISOString(),
-//     },
-//     {
-//       firstName: "Max",
-//       lastName: "Doe",
-//       homeschool: true,
-//       birthday: new Date("2018-09-22").toISOString(),
-//       createdAt: new Date().toISOString(),
-//       updatedAt: new Date().toISOString(),
-//     },
-//   ],
-// };
-
-// & Example function call:
-
-// const response = await handleSignup(payload);
 
 // * Login  ===================================================
 
 export async function handleLogin(email: string, password: string) {
+    const formData = new URLSearchParams({ username: email, password });
+    // formData.append("username", email);
+    // formData.append("password", password);
 
-    const formData = new URLSearchParams();
-
-    formData.append("username", email);
-    formData.append("password", password);
-
-    const response = await fetch("http://localhost:8000/auth/token", {
+    const response = await fetch(`${BASE}/auth/token`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString(),
     });
 
-    const result = await response.json();
+    const text = await response.text()
+    let data: any = {}
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch { }
 
-    if (!response.ok) {
-        throw new Error(result.detail || "Login Failed");
+    if (!response || !data.access_token) {
+      throw new Error(data?.detail || `Login failed (${response.status})`)
     }
 
-    if (result.access_token) {
-        localStorage.setItem("token", result.access_token);
-    }
-
-    return result;
+    return { access_token: data.access_token }
 }
-
-// & Example Implementation
-
-// import { handleLogin } from "@/lib/api"; // adjust path as needed
-
-// function SomeComponent() {
-//   const loginUser = async () => {
-//     try {
-//       const result = await handleLogin("user@example.com", "securePassword123");
-//       console.log("Logged in!", result);
-//     } catch (error) {
-//       console.error("Login failed:", error);
-//     }
-//   };
-
-//   return <button onClick={loginUser}>Login</button>;
-// }
 
 // * Logout ===================================================
 
@@ -166,39 +103,15 @@ export function isTokenExpired(token: string): boolean {
     return true;
   }
 }
-// * Event ===================================================
-// export interface EventPayload {
 
-//   id?: string
-//   activityId: string
-//   name: string
-//   description: string
-//   date: string
-//   startTime: string
-//   endTime: string
-//   image: string
-//   participants?: number
-//   limit: number
-
-//   city: string
-//   state: string
-//   address: string
-//   zipCode: number
-//   latitude?: number
-//   longitude?: number
-
-//   userId: string[]
-//   childIDs: string[]
-// }
-
-// * Notification ===================================================
+// ! Notification ===================================================
 export interface NotificationPayload {
   title: string
   description: string
   time: string
 }
 
-// UserRole =================================================
+// ! UserRole =================================================
 export function getUserRole():
   | 'admin' | 'parent' | 'instructor' | 'volunteer' | null {
   try {

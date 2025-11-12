@@ -15,6 +15,10 @@ export function determineEnv() {
     // return baseURL
 }
 
+if (typeof window !== 'undefined') {
+    console.log('[API BASE]', BASE, 'NODE_ENV=', process.env.NODE_ENV);
+}
+
 export interface ApiRequestOptions {
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     body?: any
@@ -133,7 +137,7 @@ export async function makeApiRequest<T>(
 //     const errorData = isJson ? parseJson<{ detail?: string }>(text) as { detail?: string } : {};
 //     const message = errorData.detail || response.statusText || "Request failed";
 
-//     // 5xx — error 
+//     // 5xx — error
 //     if (response.status >= 500) {
 //       console.error("API 5xx", { url, status: response.status, errorData });
 //     } else {

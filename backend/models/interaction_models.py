@@ -1,6 +1,6 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field, field_validator, EmailStr
-from typing import List, TYPE_CHECKING, Optional
+from pydantic import BaseModel, Field, field_validator, EmailStr, HttpUrl
+from typing import List, TYPE_CHECKING, Optional, Literal
 from enum import Enum
 from datetime import datetime, timezone
 
@@ -144,8 +144,9 @@ class Notification(BaseModel):
         max_length=80,
     )
     isRead: bool = Field(default=False)
-    time: datetime = Field(default_factory=datetime.now(timezone.utc))
-    userId: str = Field(..., description="User id associated with the notification")
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    eventDate: Optional[datetime] = None
+    userId: str
 
     class Config:
         form_attributes = True
@@ -161,8 +162,8 @@ class NotificationCreate(BaseModel):
         max_length=80,
     )
     isRead: bool = Field(default=False)
-    time: datetime = Field(default_factory=datetime.now(timezone.utc))
-    userId: str | None = None
+    eventDate: Optional[datetime] = None
+    userId: Optional[str] = None
 
     class Config:
         form_attributes = True
@@ -171,8 +172,9 @@ class NotificationUpdate(BaseModel):
     description: Optional[str] = Field(default=None)
     title: Optional[str] = Field(default=None)
     isRead: Optional[bool] = Field(default=None)
-    userId: Optional[str] = Field(default=None)
-
+    eventDate: Optional[datetime] = None
+    userId: Optional[str] = None
+    
 #! Jobs
 class Jobs(BaseModel):
     id: str
@@ -275,6 +277,78 @@ class VolunteerOpportunityUpdate(BaseModel):
 class DonationCreate(BaseModel):
     donationType: str
     amount: int
+    email: Optional[str] = None
+    userId: Optional[str] = None
+
+
+#! Partnership
+class PartnerType(str, Enum):
+    venue     = "venue"
+    program   = "program"
+    resource  = "resource"
+    education = "education"
+
+class PartnerStatus(str, Enum):
+    new        = "new"
+    reviewing  = "reviewing"
+    approved   = "approved"
+    rejected   = "rejected"
+
+class PartnerApplicationBase(BaseModel):
+    orgName: str = Field(..., min_length=1, max_length=200)
+    contactName: str = Field(..., min_length=1, max_length=120)
+    email: EmailStr
+    phone: Optional[str] = Field(default=None, max_length=40)
+    partnerType: PartnerType
+
+    website: Optional[HttpUrl] = None
+    city: Optional[str] = Field(default=None, max_length=100)
+    state: Optional[str] = Field(default=None, max_length=100)
+
+    howCanYouHelp: Optional[str] = Field(default=None, max_length=2000)
+    preferredDates: Optional[str] = Field(default=None, max_length=300)
+    budgetOrInKind: Optional[str] = Field(default=None, max_length=300)
+    notes: Optional[str] = Field(default=None, max_length=2000)
+
+
+class PartnerApplicationCreate(PartnerApplicationBase):
+    """DTO for POST /partners"""
+    pass
+
+
+class PartnerApplicationUpdate(BaseModel):
+    """If need for future PATCH/PUT — all fields optional"""
+    orgName: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    contactName: Optional[str] = Field(default=None, min_length=1, max_length=120)
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = Field(default=None, max_length=40)
+    partnerType: Optional[PartnerType] = None
+
+    website: Optional[HttpUrl] = None
+    city: Optional[str] = Field(default=None, max_length=100)
+    state: Optional[str] = Field(default=None, max_length=100)
+
+    howCanYouHelp: Optional[str] = Field(default=None, max_length=2000)
+    preferredDates: Optional[str] = Field(default=None, max_length=300)
+    budgetOrInKind: Optional[str] = Field(default=None, max_length=300)
+    notes: Optional[str] = Field(default=None, max_length=2000)
+
+    # Changing status from the admin panel
+    status: Optional[PartnerStatus] = None
+
+
+class PartnerApplicationResponse(BaseModel):
+    """That is convenient to return to the outside"""
+    id: str
+    orgName: str
+    contactName: str
+    email: EmailStr
+    partnerType: PartnerType
+    status: PartnerStatus = PartnerStatus.new
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    class Config:
+        from_attributes = True 
     userId: Optional[str] = None
 
 # ! Payment Acknowledgment Credentials

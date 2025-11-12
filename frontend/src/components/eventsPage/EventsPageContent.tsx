@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import ActivityBlock from "@/components/eventsPage/ActivityBlock";
-import { makeApiRequest } from "../../../utils/api";
+import { determineEnv, makeApiRequest } from "../../../utils/api";
 import { Activity } from "@/types/activity";
 import { Event } from "@/types/event";
 import Link from "next/link";
-import { determineEnv } from "../../../utils/api";
+// import { determineEnv } from "../../../utils/api";
 import { useUser } from "../../../hooks/useUser";
 import GradientBanner from '@/components/ui/GradientBanner';
 
