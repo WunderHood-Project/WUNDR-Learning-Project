@@ -23,7 +23,8 @@ const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
     city: "",
     state: "",
     zipCode: "",
-    email: ""
+    email: "",
+    requestSent: false
 })
 
 const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {

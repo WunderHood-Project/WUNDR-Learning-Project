@@ -10,6 +10,7 @@ export type TaxReturn= {
     state: string
     zipCode: string
     email: string
+    requestSent: boolean
 }
 
 type serverManaged = "id"

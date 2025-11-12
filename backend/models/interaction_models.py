@@ -290,3 +290,4 @@ class TaxReturnCredentialsCreate(BaseModel):
     state: str = Field(min_length=1)
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
     phoneNumber: Optional[str] = Field(default=None, pattern=r'^[1-9]\d{1,12}$')
+    requestSent: bool = Field(default=False, description="Tax return sent to user")
