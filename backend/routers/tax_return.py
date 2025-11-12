@@ -2,9 +2,10 @@ from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
-from models.interaction_models import TaxReturnCredentialsCreate
+from models.interaction_models import TaxReturnCredentialsCreate, NotificationCreate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
+from .notifications import send_email_one_user
 
 router = APIRouter()
 
@@ -12,11 +13,13 @@ router = APIRouter()
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_tax_return_credentials(
-    tax_return_data: TaxReturnCredentialsCreate
+    tax_return_data: TaxReturnCredentialsCreate,
+    background_tasks: BackgroundTasks
 ):
     
     """
         Collect information from any user that wants to obtain a tax return acknolwedgment \n
+        Send an email to user upon succesful request creation\n
         Return {status: successful}
     """
 
@@ -41,6 +44,25 @@ async def create_tax_return_credentials(
                 **data
             }
         )
+
+        # Create notification and send email
+        subject = f'We Got Your Tax Return Request 📒'
+        contents = f'Hello,\n\nWe appreciate your generosity and our team will process your request as soon as possible. In the meantime, please check out all that we do on our About page. \n\nBest,\n\nWonderhood Team'
+
+        background_tasks.add_task(
+           send_email_one_user,
+           tax_return_data.email,
+           subject,
+           contents
+       )
+
+        await db.notifications.create(
+           data={
+               "title": subject,
+               "description": "Tax return confirmation",
+               "isRead": False
+           }
+       )
         
         return {"status": f"Successfully created tax return instance: {new_waiver}"}
     
