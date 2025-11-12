@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoadingUser(true);
     setUserError(null);
     try {
-      const data = await makeApiRequest<User>(`${WONDERHOOD_URL}/auth/users/me`, {
+      const data = await makeApiRequest<User>(`${WONDERHOOD_URL}/user/me`, {
           headers: { Authorization: `Bearer ${token}`}
       })
       setUser(data)

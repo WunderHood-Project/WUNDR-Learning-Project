@@ -9,6 +9,25 @@ from datetime import datetime, timezone
 from .notifications import send_email_one_user, schedule_reminder, send_email_multiple_users
 router = APIRouter()
 
+# helpers (можно к остальным хелперам вверху файла)
+async def get_event_recipient_user_ids(event_id: str) -> list[str]:
+    ev = await db.events.find_unique(where={"id": event_id})
+    if not ev:
+        return []
+
+    recipients: set[str] = set(ev.userIds or [])
+
+    # подтащим родителей детей
+    if ev.childIds:
+        children = await db.children.find_many(where={"id": {"in": ev.childIds}})
+        for ch in children:
+            pid = getattr(ch, "userId", None) or getattr(ch, "parentId", None)
+            if pid:
+                recipients.add(pid)
+
+    return list(recipients)
+
+
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_event(
@@ -94,6 +113,19 @@ async def create_event(
        # Send the email notification to all users upon event creation
        users = await db.users.find_many()
        user_emails = [user.email for user in users]
+
+       notif_batch = [
+        {
+            "title": f"New Event: {new_event.name}",
+            "description": f"Check out our new event: {new_event.name}",
+            "userId": u.id,
+            "isRead": False,
+            "time": new_event.date, 
+        }
+        for u in users
+    ] 
+       if notif_batch:
+            await db.notifications.create_many(data=notif_batch)
 
        subject = f'Check Out Our New Event at Wonderhood: {new_event.name}'
        contents = f'Hello,\n\n Check out our new event at Wonderhood. We hope to see you there.\n\nBest,\n\nWonderhood Team'
@@ -185,175 +217,331 @@ async def get_event_by_id(event_id: str):
 
 
 
+# @router.patch("/{event_id}", status_code=status.HTTP_200_OK)
+# async def update_event(
+#    event_id: str,
+#    event_data: EventUpdate,
+#    current_user: Annotated[User, Depends(get_current_user)],
+#    background_tasks: BackgroundTasks
+# ):
+
+
+#    """
+#    Update Event
+
+
+#    Verify authentication
+#    Verify admin status
+#    Find the existing event
+#    Validate data if necessary (if updating userIDs, childIDs, activityID)
+#    Update the event
+#    """
+
+
+#    # Make sure the user is authenticated
+#    enforce_authentication(current_user, "update an event")
+#    # Verify admin status
+#    enforce_admin(current_user, "update an event")
+
+
+#    # Find the event
+#    event = await db.events.find_unique(where={"id": event_id})
+
+#    if not event:
+#        raise HTTPException(
+#            status_code=status.HTTP_404_NOT_FOUND,
+#            detail="Event not found"
+#        )
+
+
+#    # Validate user, child, and activity IDs
+#    if event_data.userIds:
+#        users = await db.users.find_many(where={"id": {"in": event_data.userIds}})
+#        if len(users) != len(event_data.userIds):
+#            raise HTTPException(
+#                status_code=status.HTTP_400_BAD_REQUEST,
+#                detail="One or more user ids are invalid"
+#            )
+
+
+#    if event_data.childIds:
+#        children = await db.children.find_many(where={"id": {"in": event_data.childIds}})
+#        if len(children) != len(event_data.childIds):
+#            raise HTTPException(
+#                status_code=status.HTTP_400_BAD_REQUEST,
+#                detail="One or more child ids is invalid"
+#            )
+
+
+#    if event_data.activityId:
+#        activity = await db.activities.find_unique(where={"id": event_data.activityId})
+#        if not activity:
+#            raise HTTPException(
+#                status_code=status.HTTP_400_BAD_REQUEST,
+#                detail="Activity Id is invalid"
+#            )
+
+
+#    # Prepare the update data and update the event
+#    update_payload = {}
+
+
+#    if event_data.name is not None:
+#        update_payload["name"] = event_data.name
+
+#    if event_data.description is not None:
+#        update_payload["description"] = event_data.description
+
+#    if event_data.notes is not None:
+#         update_payload["notes"] = event_data.notes
+
+#    if event_data.date is not None:
+#        update_payload["date"] = event_data.date
+
+#    if event_data.image is not None:
+#        update_payload["image"] = event_data.image
+
+#    if event_data.participants is not None:
+#        update_payload["participants"] = event_data.participants
+
+#    if event_data.limit is not None:
+#        update_payload["limit"] = event_data.limit
+
+#    if event_data.city is not None:
+#        update_payload["city"] = event_data.city
+
+#    if event_data.state is not None:
+#        update_payload["state"] = event_data.state
+
+#    if event_data.address is not None:
+#        update_payload["address"] = event_data.address
+
+#    if event_data.zipCode is not None:
+#        update_payload["zipCode"] = event_data.zipCode
+
+#    if event_data.latitude is not None:
+#        update_payload["latitude"] = event_data.latitude
+
+#    if event_data.longitude is not None:
+#        update_payload["longitude"] = event_data.longitude
+
+#    if event_data.startTime is not None:
+#        update_payload["startTime"] = event_data.startTime
+
+#    if event_data.endTime is not None:
+#        update_payload["endTime"] = event_data.endTime
+
+#    if event_data.volunteerLimit is not None:
+#        update_payload["volunteerLimit"] = event_data.volunteerLimit
+
+#    if event_data.activityId is not None:
+#        update_payload["activityId"] = event_data.activityId
+
+#    if event_data.userIds is not None:
+#        update_payload["userIds"] = event_data.userIds
+
+#    if event_data.childIds is not None:
+#        update_payload["childIds"] = event_data.childIds
+
+#    update_payload["updatedAt"] = datetime.utcnow()
+
+
+#    updated_event = await db.events.update(
+#        where={"id": event_id},
+#        data=update_payload
+#    )
+
+
+#    # Send email notification for event date update
+#    user_Ids =  event.userIds or []
+
+#    new_time = update_payload.get("date") or event.date
+#    if user_Ids:
+#         notif_batch = [
+#             {
+#                 "title": subject,         
+#                 "description": contents,  
+#                 "userId": uid,
+#                 "isRead": False,
+#                 "time": new_time,        
+#             }
+#             for uid in user_Ids
+#         ]
+#         await db.notifications.create_many(data=notif_batch)
+
+#    users = await db.users.find_many(
+#        where={"id": {"in": user_Ids}}
+#    )
+
+
+#    user_emails = [user.email for user in users]
+
+
+#    # ? Add link to contents for having a user make changes to their event enrollment.
+#    if update_payload.get("name") and update_payload.get("date"):
+#        subject = f'Wonderhood: {update_payload["name"]} Update'
+#        contents = f'Hello,\n\nThe {update_payload["name"]} has been rescheduled to {update_payload["date"]}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
+#    elif update_payload.get("date") and not update_payload.get("name"):
+#        subject = f'Wonderhood: {event.name} Update'
+#        contents = f'Hello,\n\nThe {event.name} has been rescheduled to {update_payload["date"]}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
+#    elif update_payload.get("name") and not update_payload.get("date"):
+#        subject = f'Wonderhood: {update_payload["name"]} Update'
+#        contents = f'Hello,\n\nThe {update_payload["name"]} has been rescheduled to {convert_iso_date_to_string(event.date)}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
+#    else:
+#        subject = f'Wonderhood: {event.name} Update'
+#        contents = f'Hello,\n\nThe {event.name} has been rescheduled to {convert_iso_date_to_string(event.date)}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
+
+
+#    background_tasks.add_task(
+#        send_email_multiple_users,
+#        user_emails,
+#        subject,
+#        contents
+#    )
+
+
+#    return {"event": updated_event, "message": "Event updated successfully"}
+
+from datetime import datetime, timezone
+
 @router.patch("/{event_id}", status_code=status.HTTP_200_OK)
 async def update_event(
-   event_id: str,
-   event_data: EventUpdate,
-   current_user: Annotated[User, Depends(get_current_user)],
-   background_tasks: BackgroundTasks
+    event_id: str,
+    event_data: EventUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
 ):
+    """
+    Update Event
+    """
 
+    # auth / admin
+    enforce_authentication(current_user, "update an event")
+    enforce_admin(current_user, "update an event")
 
-   """
-   Update Event
+    # find existing
+    event = await db.events.find_unique(where={"id": event_id})
+    if not event:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
+    # validate ids
+    if event_data.userIds:
+        users = await db.users.find_many(where={"id": {"in": event_data.userIds}})
+        if len(users) != len(event_data.userIds):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="One or more user ids are invalid")
 
-   Verify authentication
-   Verify admin status
-   Find the existing event
-   Validate data if necessary (if updating userIDs, childIDs, activityID)
-   Update the event
-   """
+    if event_data.childIds:
+        children = await db.children.find_many(where={"id": {"in": event_data.childIds}})
+        if len(children) != len(event_data.childIds):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="One or more child ids is invalid")
 
+    if event_data.activityId:
+        activity = await db.activities.find_unique(where={"id": event_data.activityId})
+        if not activity:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Activity Id is invalid")
 
-   # Make sure the user is authenticated
-   enforce_authentication(current_user, "update an event")
-   # Verify admin status
-   enforce_admin(current_user, "update an event")
+    # build payload
+    update_payload: dict = {}
+    if event_data.name is not None:          update_payload["name"] = event_data.name
+    if event_data.description is not None:   update_payload["description"] = event_data.description
+    if event_data.notes is not None:         update_payload["notes"] = event_data.notes
+    if event_data.date is not None:          update_payload["date"] = event_data.date
+    if event_data.image is not None:         update_payload["image"] = event_data.image
+    if event_data.participants is not None:  update_payload["participants"] = event_data.participants
+    if event_data.limit is not None:         update_payload["limit"] = event_data.limit
+    if event_data.city is not None:          update_payload["city"] = event_data.city
+    if event_data.state is not None:         update_payload["state"] = event_data.state
+    if event_data.address is not None:       update_payload["address"] = event_data.address
+    if event_data.zipCode is not None:       update_payload["zipCode"] = event_data.zipCode
+    if event_data.latitude is not None:      update_payload["latitude"] = event_data.latitude
+    if event_data.longitude is not None:     update_payload["longitude"] = event_data.longitude
+    if event_data.startTime is not None:     update_payload["startTime"] = event_data.startTime
+    if event_data.endTime is not None:       update_payload["endTime"] = event_data.endTime
+    if event_data.volunteerLimit is not None:update_payload["volunteerLimit"] = event_data.volunteerLimit
+    if event_data.activityId is not None:    update_payload["activityId"] = event_data.activityId
+    if event_data.userIds is not None:       update_payload["userIds"] = event_data.userIds
+    if event_data.childIds is not None:      update_payload["childIds"] = event_data.childIds
+    update_payload["updatedAt"] = datetime.now(timezone.utc)
 
+    # update
+    updated_event = await db.events.update(where={"id": event_id}, data=update_payload)
 
-   # Find the event
-   event = await db.events.find_unique(where={"id": event_id})
+    # notify only if date/time actually changed
+    user_ids = event.userIds or []
+    date_changed  = ("date"      in update_payload) and (event.date      != updated_event.date)
+    start_changed = ("startTime" in update_payload) and (event.startTime != updated_event.startTime)
+    end_changed   = ("endTime"   in update_payload) and (event.endTime   != updated_event.endTime)
 
-   if not event:
-       raise HTTPException(
-           status_code=status.HTTP_404_NOT_FOUND,
-           detail="Event not found"
-       )
+    if user_ids and (date_changed or start_changed or end_changed):
+        # human-readable diff
+        changed_parts = []
+        desc_lines = []
+        if date_changed:
+            changed_parts.append("date")
+            desc_lines.append(f"Date: {event.date.date()} → {updated_event.date.date()}")
+        if start_changed:
+            changed_parts.append("start time")
+            desc_lines.append(f"Start: {event.startTime} → {updated_event.startTime}")
+        if end_changed:
+            changed_parts.append("end time")
+            desc_lines.append(f"End: {event.endTime} → {updated_event.endTime}")
 
+        title = f"Event updated: {updated_event.name}"
+        description = f"The {', '.join(changed_parts)} has changed.\n" + "\n".join(desc_lines)
 
-   # Validate user, child, and activity IDs
-   if event_data.userIds:
-       users = await db.users.find_many(where={"id": {"in": event_data.userIds}})
-       if len(users) != len(event_data.userIds):
-           raise HTTPException(
-               status_code=status.HTTP_400_BAD_REQUEST,
-               detail="One or more user ids are invalid"
-           )
+        now_utc = datetime.now(timezone.utc)
 
+        # notifications
+        try:
+            await db.notifications.create_many(
+                data=[
+                    {
+                        "title": title,
+                        "description": description,
+                        "isRead": False,
+                        "time": now_utc,     # текущее время уведомления
+                        "userId": uid,
+                    }
+                    for uid in user_ids
+                ]
+            )
+        except Exception:
+            # fallback — по одной, чтобы не завалить весь запрос
+            for uid in user_ids:
+                try:
+                    await db.notifications.create(
+                        data={
+                            "title": title,
+                            "description": description,
+                            "isRead": False,
+                            "time": now_utc,
+                            "userId": uid,
+                        }
+                    )
+                except Exception:
+                    pass
 
-   if event_data.childIds:
-       children = await db.children.find_many(where={"id": {"in": event_data.childIds}})
-       if len(children) != len(event_data.childIds):
-           raise HTTPException(
-               status_code=status.HTTP_400_BAD_REQUEST,
-               detail="One or more child ids is invalid"
-           )
+        # emails
+        users = await db.users.find_many(where={"id": {"in": user_ids}})
+        user_emails = [u.email for u in users]
 
+        if date_changed and not (start_changed or end_changed):
+            subject = f'Wonderhood: {updated_event.name} Update'
+            contents = (
+                f'Hello,\n\nThe event "{updated_event.name}" has been rescheduled to '
+                f'{convert_iso_date_to_string(updated_event.date)}.\n\nBest,\nWonderhood Team'
+            )
+        else:
+            subject = f'Wonderhood: {updated_event.name} Update'
+            contents = (
+                f'Hello,\n\nThe event "{updated_event.name}" has been updated:\n'
+                + "\n".join(desc_lines)
+                + "\n\nBest,\nWonderhood Team"
+            )
 
-   if event_data.activityId:
-       activity = await db.activities.find_unique(where={"id": event_data.activityId})
-       if not activity:
-           raise HTTPException(
-               status_code=status.HTTP_400_BAD_REQUEST,
-               detail="Activity Id is invalid"
-           )
+        background_tasks.add_task(send_email_multiple_users, user_emails, subject, contents)
 
-
-   # Prepare the update data and update the event
-   update_payload = {}
-
-
-   if event_data.name is not None:
-       update_payload["name"] = event_data.name
-
-   if event_data.description is not None:
-       update_payload["description"] = event_data.description
-
-   if event_data.notes is not None:
-        update_payload["notes"] = event_data.notes
-
-   if event_data.date is not None:
-       update_payload["date"] = event_data.date
-
-   if event_data.image is not None:
-       update_payload["image"] = event_data.image
-
-   if event_data.participants is not None:
-       update_payload["participants"] = event_data.participants
-
-   if event_data.limit is not None:
-       update_payload["limit"] = event_data.limit
-
-   if event_data.city is not None:
-       update_payload["city"] = event_data.city
-
-   if event_data.state is not None:
-       update_payload["state"] = event_data.state
-
-   if event_data.address is not None:
-       update_payload["address"] = event_data.address
-
-   if event_data.zipCode is not None:
-       update_payload["zipCode"] = event_data.zipCode
-
-   if event_data.latitude is not None:
-       update_payload["latitude"] = event_data.latitude
-
-   if event_data.longitude is not None:
-       update_payload["longitude"] = event_data.longitude
-
-   if event_data.startTime is not None:
-       update_payload["startTime"] = event_data.startTime
-
-   if event_data.endTime is not None:
-       update_payload["endTime"] = event_data.endTime
-
-   if event_data.volunteerLimit is not None:
-       update_payload["volunteerLimit"] = event_data.volunteerLimit
-
-   if event_data.activityId is not None:
-       update_payload["activityId"] = event_data.activityId
-
-   if event_data.userIds is not None:
-       update_payload["userIds"] = event_data.userIds
-
-   if event_data.childIds is not None:
-       update_payload["childIds"] = event_data.childIds
-
-   update_payload["updatedAt"] = datetime.utcnow()
-
-
-   updated_event = await db.events.update(
-       where={"id": event_id},
-       data=update_payload
-   )
-
-
-   # Send email notification for event date update
-   user_Ids =  event.userIds
-   users = await db.users.find_many(
-       where={"id": {"in": user_Ids}}
-   )
-
-
-   user_emails = [user.email for user in users]
-
-
-   # ? Add link to contents for having a user make changes to their event enrollment.
-   if update_payload.get("name") and update_payload.get("date"):
-       subject = f'Wonderhood: {update_payload["name"]} Update'
-       contents = f'Hello,\n\nThe {update_payload["name"]} has been rescheduled to {update_payload["date"]}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
-   elif update_payload.get("date") and not update_payload.get("name"):
-       subject = f'Wonderhood: {event.name} Update'
-       contents = f'Hello,\n\nThe {event.name} has been rescheduled to {update_payload["date"]}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
-   elif update_payload.get("name") and not update_payload.get("date"):
-       subject = f'Wonderhood: {update_payload["name"]} Update'
-       contents = f'Hello,\n\nThe {update_payload["name"]} has been rescheduled to {convert_iso_date_to_string(event.date)}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
-   else:
-       subject = f'Wonderhood: {event.name} Update'
-       contents = f'Hello,\n\nThe {event.name} has been rescheduled to {convert_iso_date_to_string(event.date)}. We hope to see you there!\n\n Best,\n\n Wonderhood Team'
-
-
-   background_tasks.add_task(
-       send_email_multiple_users,
-       user_emails,
-       subject,
-       contents
-   )
-
-
-   return {"event": updated_event, "message": "Event updated successfully"}
+    return {"event": updated_event, "message": "Event updated successfully"}
 
 
 
@@ -458,11 +646,11 @@ async def add_user_to_event(
 
 
    # Check if user is already enrolled
-   if current_user.id in event.userIds:
-       raise HTTPException(
-           status_code=400,
-           detail="User is already enrolled"
-       )
+   if current_user.id in (event.userIds or []):
+    raise HTTPException(
+        status_code=400,
+        detail="User is already enrolled"
+    )
 
 
    # Add the user to the event
@@ -546,7 +734,7 @@ async def add_children_to_event(
            detail="Event not found")
 
 
-   incoming_ids = set(payload.childIds)
+   incoming_ids = set(payload.childIds or [])
    existing_ids = set(event.childIds or [])
 
 
@@ -606,8 +794,9 @@ async def add_children_to_event(
            "description": f"Confirmation for event {event.name}",
            "userId": current_user.id,
            "isRead": False,
-           "eventDate": event.date,
-           "userId": str(current_user.id),
+           "time": event.date,
+        #    "eventDate": event.date,
+        #    "userId": str(current_user.id),
            # "icon": icon
        }
    )
@@ -680,11 +869,20 @@ async def remove_user_from_event(
 
 
    background_tasks.add_task(
-       send_email_one_user,
-       current_user.email,
-       subject,
-       content
-   )
+    send_email_one_user,
+    current_user.email,
+    subject,
+    content
+    )
+   await db.notifications.create(
+        data={
+            "title": subject,
+            "description": f"You have been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
+            "userId": current_user.id,
+            "isRead": False,
+            "time": event.date, 
+        }
+    )
 
 
    # Remove the user from the event
@@ -797,14 +995,24 @@ async def remove_child_from_event(
    # Notification to user for unenrolling child
    subject = f'Unenrollment Confirmation: {event.name}'
    content = f'Hello,\n\nThis email confirms that your child has been unenrolled from the {event.name} on {convert_iso_date_to_string(event.date)}. Please find more events on our website.\n\nBest,\n\nWonderhood Team'
-
-
+   
+   # Send notification e-mail
    background_tasks.add_task(
-       send_email_one_user,
-       current_user.email,
-       subject,
-       content
-   )
+        send_email_one_user,
+        current_user.email,
+        subject,
+        content
+    )
+   await db.notifications.create(
+        data={
+            "title": subject,
+            "description": f"Your child has been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
+            "userId": current_user.id,
+            "isRead": False,
+            "time": event.date, 
+        }
+    )
+
 
 
    # ! Add logic to delete notification?
