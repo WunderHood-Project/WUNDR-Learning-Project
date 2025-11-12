@@ -2,14 +2,12 @@ from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
-from models.interaction_models import TaxReturnCredentialsCreate, NotificationCreate
+from models.interaction_models import TaxReturnCredentialsCreate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
 from .notifications import send_email_one_user
 
 router = APIRouter()
-
-# * May want to add emaill notifications about filling out waiver
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_tax_return_credentials(
@@ -25,9 +23,9 @@ async def create_tax_return_credentials(
 
     # ? Does a user have to fill the waiver everytime they make a donation?
 
-    # Check if waiver already on file
+    # Check if request is already on file
     existing_tax_return = await db.taxreturncredentials.find_unique(
-        where={"email": tax_return_data.email}
+        where={"donationId": tax_return_data.donationId}
     )
 
     if existing_tax_return:
@@ -39,9 +37,10 @@ async def create_tax_return_credentials(
     try:
         data = tax_return_data.model_dump()
 
-        new_waiver = await db.taxreturncredentials.create(
+        new_tax_return = await db.taxreturncredentials.create(
             data={
-                **data
+                **data,
+                "donationId": tax_return_data.donationId
             }
         )
 
@@ -64,7 +63,7 @@ async def create_tax_return_credentials(
            }
        )
         
-        return {"status": f"Successfully created tax return instance: {new_waiver}"}
+        return {"status": f"Successfully created tax return instance: {new_tax_return}"}
     
     except Exception as e:
         raise HTTPException(

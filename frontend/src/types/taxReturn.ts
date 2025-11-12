@@ -1,5 +1,6 @@
 export type TaxReturn= {
     id: string
+    donationId: string
     acknowledgementRequested: boolean
     firstName: string
     lastName: string
