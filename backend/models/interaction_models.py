@@ -366,3 +366,19 @@ class TaxReturnCredentialsCreate(BaseModel):
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
     phoneNumber: Optional[str] = Field(default=None, pattern=r'^[1-9]\d{1,12}$')
     requestSent: bool = Field(default=False, description="Tax return sent to user")
+
+class TaxReturnCredentialsUpdate(BaseModel):
+    firstName: Optional[str] = Field(None, min_length=1, max_length=100, description="First Name")
+    lastName: Optional[str] = Field(None, min_length=1, max_length=100, description="Last Name")
+    acknowledgementRequested: Optional[bool] = Field(None, description="Tax Return Request")
+    email: Optional[EmailStr] = Field(None, description="Email")
+    address: Optional[str] = Field(None, min_length=3, max_length=200)
+    address2: Optional[str] = Field(None, max_length=200)
+    city: Optional[str] = Field(None, min_length=1)
+    state: Optional[str] = Field(None, min_length=1)
+    zipCode: Optional[str] = Field(None, pattern=r'^\d{5}(-\d{4})?$')
+    phoneNumber: Optional[str] = Field(None, pattern=r'^[1-9]\d{1,12}$')
+    requestSent: Optional[bool] = Field(None, description="Tax return sent to user")
+
+    class Config:
+        extra = "forbid"
