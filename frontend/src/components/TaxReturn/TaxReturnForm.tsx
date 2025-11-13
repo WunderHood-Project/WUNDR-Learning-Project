@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import { isEmail } from "../../../utils/emailValidation";
 import { formatUs } from "../../../utils/formatPhoneNumber";
 import { normalizePhone } from "../../../utils/formatPhoneNumber";
+import { useModal } from "@/context/modal"
+import TaxReturnSuccessModal from "./TaxReturnSuccessModal"
 
 type Props = {
     acknowledgementRequested: boolean
@@ -25,13 +27,15 @@ const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
     zipCode: "",
     email: "",
     requestSent: false,
-    donationId: ""
+    donationId: "",
+    general: ""
 })
 
 const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
     const [form, setForm] = useState<CreateTaxReturnPayload>(() => initialTaxReturnForm())
     const [errors, setErrors] = useState<TaxReturnErrors>({})
     const router = useRouter()
+    const { setModalContent } = useModal()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -67,34 +71,43 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
         }
 
         // Handle submit logic here
+        try {
+            // Fetch the last payment to complete tax return payload
+            const res = await fetch(`${WONDERHOOD_URL}/payments/latest`)
+            const latestDonation = await res.json()
 
-        // Fetch the last payment to complete tax return payload
-        const res = await fetch(`${WONDERHOOD_URL}/payments/latest`)
-        const latestDonation = await res.json()
+            const payload: CreateTaxReturnPayload = {
+                ...form,
+                phoneNumber: form.phoneNumber ? normalizePhone(form.phoneNumber) : null,
+                acknowledgementRequested: Boolean(acknowledgementRequested),
+                donationId: latestDonation.id
+            }
 
-        const payload: CreateTaxReturnPayload = {
-            ...form,
-            phoneNumber: normalizePhone(form.phoneNumber),
-            acknowledgementRequested: Boolean(acknowledgementRequested),
-            donationId: latestDonation.id
+            const response = await makeApiRequest(`${WONDERHOOD_URL}/tax-return`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: payload
+            }) as Response
+
+            if (!response) {
+                throw new Error(`Failed to record tax return credentials`)
+            }
+
+            router.push("/")
+            setModalContent(<TaxReturnSuccessModal />)
+
+        } catch (e) {
+            validationErrors.general = String(e)
+            setErrors(validationErrors)
+            throw new Error('Failed to record tax return credentials')
         }
-
-        const response = await makeApiRequest(`${WONDERHOOD_URL}/tax-return`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: payload
-        }) as Response
-
-        if (!response) {
-            throw new Error(`Failed to record tax return credentials`)
-        }
-
-        router.push("/")
-
     }
 
     return (
         <div className="mt-6 flex justify-center">
+            {errors.general && (
+                <p className="text-red-600 text-sm mt-1">{errors.general}</p>
+            )}
             {acknowledgementRequested ? (
                 <form
                     onSubmit={handleSubmit}
@@ -144,7 +157,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
                             <input
                                 type="tel"
                                 name="phoneNumber"
-                                value={form.phoneNumber}
+                                value={form.phoneNumber ? form.phoneNumber : ""}
                                 onChange={handlePhoneChange}
                                 className="w-full border border-amber-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                                 placeholder="Phone"
