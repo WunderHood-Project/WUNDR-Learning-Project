@@ -28,9 +28,6 @@ const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
     donationId: ""
 })
 
-const res = await fetch(`${WONDERHOOD_URL}/payments/latest`)
-const latestDonation = await res.json()
-
 const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
     const [form, setForm] = useState<CreateTaxReturnPayload>(() => initialTaxReturnForm())
     const [errors, setErrors] = useState<TaxReturnErrors>({})
@@ -70,6 +67,11 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
         }
 
         // Handle submit logic here
+
+        // Fetch the last payment to complete tax return payload
+        const res = await fetch(`${WONDERHOOD_URL}/payments/latest`)
+        const latestDonation = await res.json()
+
         const payload: CreateTaxReturnPayload = {
             ...form,
             phoneNumber: normalizePhone(form.phoneNumber),
