@@ -2,10 +2,11 @@ from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
-from models.interaction_models import TaxReturnCredentialsCreate
+from models.interaction_models import TaxReturnCredentialsCreate, TaxReturnCredentialsUpdate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
 from .notifications import send_email_one_user
+from datetime import datetime
 
 router = APIRouter()
 
@@ -126,4 +127,50 @@ async def get_all_users_tax_return_credentials(
         raise HTTPException(
             status_code=500,
             detail=f"Unable to find users' tax return credentials"
+        )
+    
+@router.patch("{tax_return_id}/update-sent")
+async def update_sent_status(
+    tax_return_id: str,
+    tax_return_data: TaxReturnCredentialsUpdate,
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    """
+        Only allow admins (authenticate and authorize)\n
+        Primarily used to update the tax_return sent status from 'false' to 'true'\n
+        May be used to edit tax return request credentials\n
+        return {"success": updated_instance}
+    """
+
+    # Authenticate and authorize
+    enforce_authentication(current_user)
+    enforce_admin(current_user)
+
+    # Check if the tax return instance exists
+    existing_request = await db.taxreturncredentials.find_unique(
+        where={"id": tax_return_id}
+    )
+
+    if not existing_request:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unable to find user's tax request"
+        )
+    
+    # Handle update below:
+    payload = tax_return_data.model_dump(exclude_unset=True)
+    payload["updatedAt"] = datetime.utcnow()
+
+    try:
+        updated_request = await db.taxreturncredentials.update(
+            where={"id": tax_return_id},
+            data = payload
+        )
+
+        return {"success": updated_request}
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unable to update request: {e}"
         )

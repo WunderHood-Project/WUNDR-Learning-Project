@@ -97,9 +97,8 @@ export default function TaxReturnWaiver() {
                         {acknowledgementRequested === false ?
                             <div className="mt-5">
                                 <Link
-                                    href="/donate"
-                                    className="border solid rounded py-1 px-2 bg-wonderleaf text-white"
-                                >
+                                    href={{ pathname: "/", query: { modal: "taxReturnSuccess" } }}
+                                    className="border solid rounded py-1 px-2 bg-wonderleaf text-white"                                >
                                     Next
                                 </Link>
                             </div>
