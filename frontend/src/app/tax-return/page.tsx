@@ -1,4 +1,4 @@
-import TaxReturnWaiver from "@/components/TaxReturn/TaxReturnPolicy";
+import TaxReturnWaiver from "@/components/taxReturn/TaxReturnPolicy";
 
 export default function TaxReturnAcknolwedgement() {
 

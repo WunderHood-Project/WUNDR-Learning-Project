@@ -4,7 +4,7 @@ import HeroSection from "@/components/landing/HeroSection";
 import Story_Mission from "@/components/landing/Story_Mission";
 import ImpactStats from "@/components/landing/ImpactNumbers";
 import OurPrograms from "@/components/landing/OurPrograms"
-import TaxReturnSuccessModal from "@/components/TaxReturn/TaxReturnSuccessModal";
+import TaxReturnSuccessModal from "@/components/taxReturn/TaxReturnSuccessModal";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useModal } from "@/context/modal";
@@ -12,7 +12,6 @@ import { useModal } from "@/context/modal";
 export default function LandingPage() {
   const searchParams = useSearchParams()
   const modal = searchParams.get("modal")
-  console.log("LALALA", modal)
   const { setModalContent } = useModal()
 
   useEffect(() => {

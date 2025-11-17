@@ -1,6 +1,6 @@
 "use client"
 
-import TaxReturnForm from "./TaxReturnForm";
+import TaxReturnForm from "../taxReturn/TaxReturnForm";
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { BeatLoader } from "react-spinners"
