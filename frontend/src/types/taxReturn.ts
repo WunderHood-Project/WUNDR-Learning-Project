@@ -4,7 +4,7 @@ export type TaxReturn= {
     acknowledgementRequested: boolean
     firstName: string
     lastName: string
-    phoneNumber?: string
+    phoneNumber: string | null | undefined
     address: string
     address2?: string
     city: string
@@ -12,6 +12,7 @@ export type TaxReturn= {
     zipCode: string
     email: string
     requestSent: boolean
+    general?: string
 }
 
 type serverManaged = "id"
