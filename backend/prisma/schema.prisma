@@ -260,11 +260,12 @@ model Notifications {
   title                 String
   description           String
   isRead                Boolean @default(false)
-  time                  DateTime @default(now())
-  createdAt             DateTime @default(now())
+  time                  DateTime
+  // eventDate             DateTime?  
+  createdAt             DateTime  @default(now())
 
-  user   Users?   @relation(fields: [userId], references: [id])
-  userId String? @db.ObjectId
+  user   Users   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
 }
 
 // ! jobs           =============================================================================
@@ -297,6 +298,34 @@ model Jobs{
 
    event             Events? @relation(fields:[eventId], references: [id], onDelete: Cascade)
    eventId           String @db.ObjectId
+}
+
+// ! Donations          =============================================================================
+
+enum DonationType {
+  Sponsorship
+  Donation
+}
+
+model Donations {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  donationType       DonationType
+  amount             Int
+  email              String?
+  sessionId          String?       @unique
+
+  // One-to-Many Relationship
+  user   Users?   @relation(fields: [userId], references: [id])
+  userId String? @db.ObjectId
+}
+
+
+// ! StripeEvents  =============================================================================
+
+model StripeEvents {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId             String   @unique
+  createdAt           DateTime @default(now())
 }
 
 // ! Partnership  =============================================================================
@@ -343,58 +372,14 @@ model PartnerApplications {
   @@index([status])
 }
 
-// ! StripeEvents  =============================================================================
 
-model StripeEvents {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  eventId             String   @unique
-  createdAt           DateTime @default(now())
-}
+// ! 1024-Waiver Credentials =============================================================================
 
-// ! Donations          =============================================================================
-
-enum DonationType {
-  Sponsorship
-  Donation
-}
-
-model Donations {
-  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
-  donationType       DonationType
-  amount             Int
-  email              String?
-  sessionId          String?       @unique
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime?     @default(now())
-
-  // One-to-One Relationship
-  taxReturn          TaxReturnCredentials?
-
-  // One-to-Many Relationship
-  user   Users?   @relation(fields: [userId], references: [id])
-  userId String? @db.ObjectId
-}
-
-
-// ! Tax Return Credentials =============================================================================
-
-model TaxReturnCredentials {
-  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
-  acknowledgementRequested Boolean
-  firstName                String
-	lastName                 String
-	address                  String
-  address2                 String?
-  city                     String
-  state                    String
-  zipCode                  String
-	phoneNumber              String?  @unique
-  email                    String   @unique
-  requestSent              Boolean
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime? @default(now())
-
-  // One-to-One
-  donation                 Donations  @relation(fields: [donationId], references: [id])
-  donationId               String   @unique @db.ObjectId
+model WaiverCredentials {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName   String
+	lastName    String
+	address     String
+	phoneNumber String   @unique
+  email       String  @unique
 }
