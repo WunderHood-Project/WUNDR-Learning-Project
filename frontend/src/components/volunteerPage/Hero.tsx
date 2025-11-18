@@ -24,7 +24,7 @@ export default function HeroVolunteer(){
                     Become a WonderHood Volunteer
                 </h1>
                 <p className="text-xl md:text-2xl font-medium max-w-2xl mx-auto mb-0">
-                    Help kids explore nature and creativity. Choose a one-time shift or join us regularly — every hand matters.
+                    Help kids explore nature and creativity. Choose a one-time shift or join us regularly - any support matters.
                 </p>
                 </div>
             </section>

@@ -4,10 +4,11 @@ import HeroSection from "@/components/landing/HeroSection";
 import Story_Mission from "@/components/landing/Story_Mission";
 import ImpactStats from "@/components/landing/ImpactNumbers";
 import OurPrograms from "@/components/landing/OurPrograms"
-import TaxReturnSuccessModal from "@/components/taxReturn/TaxReturnSuccessModal";
+// import TaxReturnSuccessModal from "@/components/taxReturn/TaxReturnSuccessModal";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useModal } from "@/context/modal";
+import TaxReturnSuccessModal from "@/components/TaxReturn/TaxReturnSuccessModal";
 
 export default function LandingPage() {
   const searchParams = useSearchParams()
@@ -94,7 +95,7 @@ export default function LandingPage() {
             <div className="space-y-3">
               <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed ml-4">
                 WonderHood offers volunteer opportunities for high school and college students to earn
-                service hours, develop leadership skills, and make a difference in the community.
+                service hours, develop leadership skills, and make a difference in our community.
               </p>
               <p className="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed ml-4">
                 Interested in volunteering or starting a new club?{" "}

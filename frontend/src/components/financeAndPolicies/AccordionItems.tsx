@@ -8,15 +8,13 @@ const AccordionItems: React.FC<Props> = ({ item }) => {
     const [isOpen, setIsOpen] = useState(false)
     const contentRef = useRef<HTMLDivElement | null>(null)
 
-    const toggleAccordion = () => {
-        setIsOpen(!isOpen)
-    }
+    const toggleAccordion = () => setIsOpen(!isOpen)
 
     return (
         <div className="border border-gray-200 rounded-xl mb-4 shadow-sm bg-white">
             {/* Header */}
             <div
-                className="flex justify-between items-center cursor-pointer px-4 py-3 
+                className="flex justify-between items-center cursor-pointer px-4 py-3
                        hover:bg-gray-50 transition-colors rounded-xl"
                 onClick={toggleAccordion}
             >
@@ -41,24 +39,23 @@ const AccordionItems: React.FC<Props> = ({ item }) => {
                 <div className="px-4 pb-4 pt-1 text-gray-700 leading-relaxed">
                     <p>
                         {
-                            typeof item.content === "string" ?
-                                item.content :
-                                (
-                                    <>
-                                        {item.content.text}
-                                        {item.content.link && (
-                                            <a
-                                                href={item.content.link}
-                                                target=""
-                                                rel="noopener noreferrer"
-                                                className="text-wonderleaf font-semibold underline hover:text-wonderleaf/80 transition"
-                                            >
-                                                {item.content.label}
-                                            </a>
-                                        )
-                                        }
-                                    </>
-                                )
+                            typeof item.content === "string"
+                                ? item.content
+                                :   (
+                                        <>
+                                            {item.content.text}
+                                            {item.content.link && (
+                                                <a
+                                                    href={item.content.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-wonderleaf font-semibold underline hover:text-wonderleaf/80 transition"
+                                                >
+                                                    {item.content.label}
+                                                </a>
+                                            )}
+                                        </>
+                                    )
                         }
                     </p>
                 </div>

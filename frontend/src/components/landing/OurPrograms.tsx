@@ -10,31 +10,31 @@ const clubs: Club[] = [
     Icon: Mountain,
     title: "Adventure & Outdoor Club",
     desc:
-      "Hiking, climbing, camping, and seasonal sports (skiing/snowshoeing). Builds confidence, teamwork, and a healthy love for the outdoors.",
+      "Builds confidence, teamwork, and a healthy love for nature. Our favorites are hiking, climbing, camping, and seasonal sports.",
   },
   {
     Icon: Paintbrush,
     title: "Arts & Expression Club",
     desc:
-      "Book & Art, creative writing, design, hands-on workshops. Encourages imagination, self-expression, and collaboration.",
+      "Encourages imagination, self-expression, and collaboration. We love creative writing, design, and hands-on workshops.",
   },
   {
     Icon: Atom,
     title: "STEM & Innovation Club",
     desc:
-      "Hands-on science, tech, and engineering projects. From coding to building experiments — where curiosity meets creativity.",
+      "Where curiosity meets creativity - from coding to hands-on science experiments.",
   },
   {
     Icon: HeartPulse,
     title: "Life Skills & Wellness Club",
     desc:
-      "Practical learning through cooking, nutrition, first aid, and mindfulness. Promotes independence, resilience, and lifelong healthy habits.",
+      "Promotes independence, resilience, and lifelong healthy habits. Practical skill development in nutrition, mindfulness, and healthy living.",
   },
   {
     Icon: UsersRound,
-    title: "Leadership & Community Club",
+    title: "Leadership & Community Building Club",
     desc:
-      "Developing communication, leadership, and service. Teens learn how to lead, mentor, and contribute through teamwork and community projects.",
+      "Teens learn how to mentor and contribute through community service projects.",
   },
 ];
 

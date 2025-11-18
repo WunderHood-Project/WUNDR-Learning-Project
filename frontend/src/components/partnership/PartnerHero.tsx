@@ -12,7 +12,7 @@ export default function PartnerHero() {
             <span className="block mx-auto max-w-[30ch] sm:max-w-[42ch] md:max-w-4xl
                             text-[15px] sm:text-base md:text-xl
                             leading-[1.35] md:leading-snug">
-            Help youth ages 10-18 — homeschool and online learners — learn, explore,
+            Help distance learners learn, explore,
             and thrive through shared spaces, instructors, and sponsorships.
             </span>
         }

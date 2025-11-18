@@ -1,11 +1,12 @@
-import PaymentPage from "@/components/stripe/PaymentPage";
+// 'use client'
+// import PaymentPage from "@/components/stripe/PaymentPage";
+
+import PaymentPage from "@/components/Stripe/PaymentPage";
 
 
 export default function Donate() {
 
     return (
-        <>
-            <PaymentPage></PaymentPage>
-        </>
+        <PaymentPage />
     )
 }

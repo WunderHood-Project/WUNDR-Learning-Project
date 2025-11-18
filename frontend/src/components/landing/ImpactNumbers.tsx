@@ -25,15 +25,15 @@ export default function ImpactStats() {
           <p className="text-base md:text-base lg:text-base xl:text-xl text-gray-600 max-w-5xl mx-auto text-center leading-relaxed">
             We believe that learning flourishes when children and families come together.
             <br className="hidden sm:block"/>
-            WonderHood connects homeschool and online learners through real experiences, new friendships, and joyful discovery — helping them feel part of a vibrant community.
+            WonderHood connects homeschool and online learners through real-life experiences, new friendships, and joyful discovery - helping them feel part of a vibrant community.
           </p>
         </div>
 
         {/* Grid */}
         <div className="
-          grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 
+          grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5
           gap-6 sm:gap-8 md:gap-10
-          max-w-7xl mx-auto mt-8 
+          max-w-7xl mx-auto mt-8
           md:divide-x md:divide-green-300
         ">
           {stats.map((stat, idx) => (
@@ -51,4 +51,3 @@ export default function ImpactStats() {
     </section>
   );
 }
-

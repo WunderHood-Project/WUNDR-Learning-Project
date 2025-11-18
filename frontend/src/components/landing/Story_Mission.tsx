@@ -29,13 +29,15 @@ export default function Story_Mission() {
           {/* Текст: центр до xl */}
           <div className="text-center xl:text-left">
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl mb-4">
-              WonderHood was created for youth ages 10-18 who learn from home — whether
+              {/* WonderHood was created for youth ages 10-18 who learn from home — whether
               through homeschooling or online school. We believe that learning outside
-              traditional classrooms can be powerful, but it can also feel isolating.
+              traditional classrooms can be powerful, but it can also feel isolating. */}
+              WonderHood was created for students (10-18) who learn from home. We believe that learning outside
+              traditional classrooms, such as remote learning or homeschooling, can be powerful, but it can also feel isolating.
             </p>
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl">
-              That&apos;s why we build programs where teens can make friends, explore their
-              interests, and grow through outdoor adventures, creative arts, and community projects.
+              That&apos;s why we build programs where teens can make friends and explore their
+              interests. They have the freedom to grow through outdoor adventures, creative arts, and community projects.
             </p>
           </div>
         </div>
@@ -58,7 +60,7 @@ export default function Story_Mission() {
               className="
                 relative w-full
                 aspect-[5/3] sm:aspect-[16/9] xl:h-[300px] xl:aspect-auto
-                rounded-2xl overflow-hidden 
+                rounded-2xl overflow-hidden
                 shadow-[0_10px_25px_rgba(0,0,0,0.15),0_20px_40px_rgba(0,0,0,0.1)]
                 mt-4 transform rotate-1 hover:rotate-0
                 transition-all duration-300 ease-out
@@ -120,4 +122,3 @@ export default function Story_Mission() {
     </section>
   );
 }
-
