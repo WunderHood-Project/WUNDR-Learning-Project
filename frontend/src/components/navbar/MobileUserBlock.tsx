@@ -29,7 +29,7 @@ export default function MobileUserBlock({ fullName, role, onLogout, onNavigate }
       </Link>
 
       {/* Notifications row with badge */}
-      <Link
+      {/* <Link
         href="/profile?tab=notifications"
         onClick={onNavigate}
         className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 hover:bg-emerald-50"
@@ -40,7 +40,7 @@ export default function MobileUserBlock({ fullName, role, onLogout, onNavigate }
             {unread > 99 ? '99+' : unread}
           </span>
         )}
-      </Link>
+      </Link> */}
 
 
       {/* Only for Admin! */}
