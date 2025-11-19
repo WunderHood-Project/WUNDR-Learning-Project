@@ -1,13 +1,11 @@
 "use client"
 
 import { loadStripe } from "@stripe/stripe-js";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { EmbeddedCheckout } from "@stripe/react-stripe-js";
-import { useMemo } from "react";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { determineEnv } from "../../../utils/api";
 import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
-// import { useAuth } from "@/context/auth";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const WONDERHOOD_URL = determineEnv()
@@ -23,7 +21,6 @@ export default function PaymentPage() {
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [form, setForm] = useState<CreatePaymentPayload>(() => initialPaymentForm())
     const [errors, setErrors] = useState<PaymentFormErrors>({})
-
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -92,7 +89,7 @@ export default function PaymentPage() {
                         type="number"
                         name="amount"
                         id="amount"
-                        value={form.amount}
+                        defaultValue={form.amount}
                         onChange={handleChange}
                         className="w-40 border border-amber-300 rounded-md p-2 text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                         placeholder="0"
