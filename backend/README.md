@@ -61,7 +61,7 @@
 
 2. Generate a 'whsec' key using the below command, and add it to backend.env:
 
-    stripe listen --forward-to localhost:4242/payments/webhook
+    stripe listen --forward-to localhost:8000/payments/webhook
 
 3. Obtain the test publishable key and add it to the frontend/.env.local:
 

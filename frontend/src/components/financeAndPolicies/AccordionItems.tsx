@@ -49,7 +49,7 @@ const AccordionItems: React.FC<Props> = ({ item }) => {
                                         {item.content.link && (
                                             <a
                                                 href={item.content.link}
-                                                target=""
+                                                target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-wonderleaf font-semibold underline hover:text-wonderleaf/80 transition"
                                             >
