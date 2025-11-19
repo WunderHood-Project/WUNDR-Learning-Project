@@ -1,7 +1,7 @@
 export type Payment = {
     id: string
     donationType: "Donation" | "Sponsorship"
-    amount: number
+    amount: number | ""
     sessionId: string
     userId: string
 }
