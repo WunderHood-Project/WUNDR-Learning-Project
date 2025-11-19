@@ -11,7 +11,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 const WONDERHOOD_URL = determineEnv()
 
 const initialPaymentForm = (): CreatePaymentPayload => ({
-    amount: 0,
+    amount: "",
     donationType: "Donation"
 })
 
@@ -35,7 +35,7 @@ export default function PaymentPage() {
         const newErrors: PaymentFormErrors = {}
 
         // Add validations
-        if (form?.amount < 0) {
+        if (Number(form?.amount) < 0) {
             newErrors.amount = "The donation amount must be greater than 0"
         }
 
