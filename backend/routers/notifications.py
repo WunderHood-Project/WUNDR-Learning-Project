@@ -25,6 +25,7 @@ def send_email_one_user(
         subject: str,
         contents: str
 ):
+
     
     """
     Callback function for sending an email upon enrollment
@@ -194,18 +195,21 @@ async def blast_notification(
 
     # Add notification here
 
+    now = datetime.now(timezone.utc)
+    event_time = ensure_utc(parse_event_date(notification.time)) if getattr(notification, "time", None) else now
+
     notification_data = [
-    {
-        "title": notification.title,
-        "description": notification.description,
-        "userId": user.id,
-        "isRead": False,
-        # "time": notification.time,
-        "eventDate": notification.time,
-        # "icon": icon
-    }
-    for user in users
-]
+        {
+            "title": notification.title,
+            "description": notification.description,
+            # "userId": user.id,
+            "userId": current_user.id,
+            "isRead": False,
+            "time": datetime.now(timezone.utc),
+        }
+        for user in users
+    ]
+
     new_notification = await db.notifications.create_many(
         data=notification_data
     )
