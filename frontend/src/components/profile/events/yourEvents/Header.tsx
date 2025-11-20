@@ -1,16 +1,25 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { FaUser, FaChild, FaCalendarCheck, FaBell } from 'react-icons/fa';
+import type { IconType } from 'react-icons';
+
 type Props = {
-  hasEvents: boolean;
-  viewMode: "cards" | "calendar";
-  onChangeView: (m: "cards" | "calendar") => void;
+    hasEvents: boolean;
+    viewMode: "cards" | "calendar";
+    onChangeView: (m: "cards" | "calendar") => void;
 };
 
 export default function Header({ hasEvents, viewMode, onChangeView }: Props) {
+    const router = useRouter();
+
     const title =
-    viewMode === "calendar"
-    ? "Your Calendar"
-    : hasEvents
-    ? "Enrolled Events"
-    : "No Enrollments Yet";
+        viewMode === "calendar"
+        ? "Your Calendar"
+        : hasEvents
+            ? "Enrolled Events"
+            : "No Enrollments Yet";
 
     return (
         <div className="mb-4">
@@ -25,54 +34,64 @@ export default function Header({ hasEvents, viewMode, onChangeView }: Props) {
                     text-wondergreen/95  
                 "
                 >
-                {title}
+                    {title}
                 </h1>
 
                 {/* Segmented control next to the title */}
-                <div
-                className="
-                    inline-flex shrink-0 items-center
-                    rounded-2xl bg-white/80 p-1
-                    shadow-sm ring-1 ring-wondergreen/15
-                    lg:mr-20 md:mr-16 sm:mr-2
-                "
-                >
-                <button
-                    type="button"
-                    onClick={() => onChangeView("cards")}
-                    aria-pressed={viewMode === "cards"}
-                    className={`
-                    px-2 sm:px-2 md:px-4 py-1 sm:py-2
-                    rounded-xl
-                    text-[12px] sm:text-[12px] md:text-sm font-medium
-                    transition
-                    ${viewMode === "cards"
-                        ? "bg-wondergreen text-white shadow"
-                        : "text-wondergreen hover:bg-wonderleaf/10"}
-                    `}
-                >
-                    Enrolled
-                </button>
-                <button
-                    type="button"
-                    onClick={() => onChangeView("calendar")}
-                    aria-pressed={viewMode === "calendar"}
-                    className={`
-                    px-2 sm:px-2 md:px-4 py-1 sm:py-2
-                    rounded-xl
-                    text-[12px] sm:text-[12px] md:text-sm font-medium
-                    transition
-                    ${viewMode === "calendar"
-                        ? "bg-wondergreen text-white shadow"
-                        : "text-wondergreen hover:bg-wonderleaf/10"}
-                    `}
-                >
-                    Calendar
-                </button>
+                <div className="inline-flex shrink-0 items-center rounded-2xl bg-white/80 p-1 shadow-sm ring-1 ring-wondergreen/15 lg:mr-20 md:mr-16 sm:mr-2">
+                    <button
+                        type="button"
+                        onClick={() => onChangeView("cards")}
+                        aria-pressed={viewMode === "cards"}
+                        className={`
+                        px-2 sm:px-2 md:px-4 py-1 sm:py-2
+                        rounded-xl
+                        text-[12px] sm:text-[12px] md:text-sm font-medium
+                        transition
+                        ${viewMode === "cards"
+                            ? "bg-wondergreen text-white shadow"
+                            : "text-wondergreen hover:bg-wonderleaf/10"}
+                        `}
+                    >
+                        Enrolled
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onChangeView("calendar")}
+                        aria-pressed={viewMode === "calendar"}
+                        className={`
+                        px-2 sm:px-2 md:px-4 py-1 sm:py-2
+                        rounded-xl
+                        text-[12px] sm:text-[12px] md:text-sm font-medium
+                        transition
+                        ${viewMode === "calendar"
+                            ? "bg-wondergreen text-white shadow"
+                            : "text-wondergreen hover:bg-wonderleaf/10"}
+                        `}
+                    >
+                        Calendar
+                    </button>
+                </div>
             </div>
-        </div>
-        {/* Thin accent line under the title */}
-        <div className="h-1 mt-3 rounded-full bg-gradient-to-r from-wondersun to-wonderorange w-24 sm:w-28 md:w-36 ml-2 md:ml-14" />
+
+            {/*Thin line under the title*/}
+            <div className="h-1 mt-3 rounded-full bg-gradient-to-r from-wondersun to-wonderorange w-24 sm:w-28 md:w-36 ml-2 md:ml-14" />
+
+            {/* Empty state: нет enrollments — btn for the Events */}
+            {!hasEvents && viewMode === "cards" && (
+                <div className="mt-4 ml-2 md:ml-14">
+                    <p className="text-sm text-wondergreen/80 mb-2">
+                        You don&apos;t have any event enrollments yet.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() => router.push("/events")}
+                        className="inline-flex items-center px-4 py-2 rounded-lg bg-wondergreen text-white text-sm font-medium shadow-sm hover:bg-wondergreen/90"
+                    >
+                        Browse Events
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
