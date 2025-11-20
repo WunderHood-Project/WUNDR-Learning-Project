@@ -176,12 +176,12 @@ export function ProfileTopTabs({
                     pointer-events-none
                     absolute inset-x-0 top-full z-0
                     -translate-y-2 md:-translate-y-3
-                    h-[3px] md:h-[4px]
-                    bg-gradient-to-r from-wondersun/80 via-wonderorange/85 to-wonderorange
+                    h-[2px] md:h-[2px]
+                    bg-gradient-to-r from-wondersun/80 via-wonderorange/85 to-wonderorange -mt-2
                 "/>
 
                 {/* Spacer (reserves space for the underline so content below doesn't jump) */}
-                <div className="h-1.5 md:h-3 lg:h-4 mb-4" />
+                <div className="h-1 md:h-2 lg:h-2 mb-4" />
             </div>
         </div>
     );
