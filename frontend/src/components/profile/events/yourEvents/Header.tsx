@@ -39,38 +39,38 @@ export default function Header({ hasEvents, viewMode, onChangeView }: Props) {
 
                 {/* Segmented control next to the title */}
                 <div className="inline-flex shrink-0 items-center rounded-2xl bg-white/80 p-1 shadow-sm ring-1 ring-wondergreen/15 lg:mr-20 md:mr-16 sm:mr-2">
-                    <button
-                        type="button"
-                        onClick={() => onChangeView("cards")}
-                        aria-pressed={viewMode === "cards"}
-                        className={`
-                        px-2 sm:px-2 md:px-4 py-1 sm:py-2
-                        rounded-xl
-                        text-[12px] sm:text-[12px] md:text-sm font-medium
-                        transition
-                        ${viewMode === "cards"
-                            ? "bg-wondergreen text-white shadow"
-                            : "text-wondergreen hover:bg-wonderleaf/10"}
-                        `}
-                    >
-                        Enrolled
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => onChangeView("calendar")}
-                        aria-pressed={viewMode === "calendar"}
-                        className={`
-                        px-2 sm:px-2 md:px-4 py-1 sm:py-2
-                        rounded-xl
-                        text-[12px] sm:text-[12px] md:text-sm font-medium
-                        transition
-                        ${viewMode === "calendar"
-                            ? "bg-wondergreen text-white shadow"
-                            : "text-wondergreen hover:bg-wonderleaf/10"}
-                        `}
-                    >
-                        Calendar
-                    </button>
+                <button
+                    type="button"
+                    onClick={() => onChangeView("cards")}
+                    aria-pressed={viewMode === "cards"}
+                    className={`
+                    px-2 sm:px-2 md:px-4 py-1 sm:py-2
+                    rounded-xl
+                    text-[12px] sm:text-[12px] md:text-sm font-medium
+                    transition
+                    ${viewMode === "cards"
+                        ? "bg-wondergreen text-white shadow"
+                        : "text-wondergreen hover:bg-wonderleaf/10"}
+                    `}
+                >
+                    Enrolled
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onChangeView("calendar")}
+                    aria-pressed={viewMode === "calendar"}
+                    className={`
+                    px-2 sm:px-2 md:px-4 py-1 sm:py-2
+                    rounded-xl
+                    text-[12px] sm:text-[12px] md:text-sm font-medium
+                    transition
+                    ${viewMode === "calendar"
+                        ? "bg-wondergreen text-white shadow"
+                        : "text-wondergreen hover:bg-wonderleaf/10"}
+                    `}
+                >
+                    Calendar
+                </button>
                 </div>
             </div>
 
