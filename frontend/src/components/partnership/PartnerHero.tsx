@@ -5,7 +5,7 @@ import GradientBanner from "@/components/ui/GradientBanner";
 export default function PartnerHero() {
     return (
         <GradientBanner
-        size="lg"
+        size="md"
         className="pt-7 md:pt-12 pb-3 md:pb-6"
         title={<>Partner with WonderHood</>}
         subtitle={

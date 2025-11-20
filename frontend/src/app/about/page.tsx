@@ -8,7 +8,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-wonderbg via-white to-wondersun/20">
       <GradientBanner
-        size="lg"
+        size="md"
         title="Who We Are"
         subtitle="WonderHood connects Colorado homeschool and online learners (ages 10-18) with real friends, real adventures, and a supportive community."
       />
