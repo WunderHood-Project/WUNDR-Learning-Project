@@ -165,9 +165,9 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		<form className="border border-gray-200 p-4 rounded-lg bg-gray-50" onSubmit={handleSubmit} noValidate>
 			{currentStep === 1 && (
 				<>
-					<h2 className="flex flex-col text-xl mt-4 mb-6 text-center">
+					<h2 className="flex flex-col text-base md:text-xl mt-4 mb-6 text-center">
 						Add your child&apos;s information.
-						<span className="mt-1">Child must be between 10–18 years old.</span>
+						<span className="mt-1">Child must be between 10-18 years old.</span>
 					</h2>
 					{serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
