@@ -1,4 +1,9 @@
-const homeLink = "https://whproject.org/"
+const url = () => {
+    if (process.env.NODE_ENV === "development")
+        return "http://localhost:3000";
+    return process.env.LIVE_URL;
+};
+const homeLink = url()
 
 export const financeAndPoliciesData = [
     {
