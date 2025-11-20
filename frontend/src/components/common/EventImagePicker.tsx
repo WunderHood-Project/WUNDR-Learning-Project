@@ -50,7 +50,7 @@ export default function EventImagePicker({ value, onChange }: Props) {
         id="event-image-file"
         />
         <label htmlFor="event-image-file" className="inline-block font-medium">
-          Drag & drop или <span className="underline">choose file</span>
+          Drag & drop or <span className="underline">choose file</span>
         </label>
         <p className="text-xs text-gray-500 mt-1">PNG/JPG, max ~5-10MB ок</p>
       </div>

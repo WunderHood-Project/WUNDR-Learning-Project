@@ -193,28 +193,34 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					{serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
 					<EmergencyContactsList
-						ecs={ecs}
-						ecErrors={ecErrors}
-						ecErrorMap={ecErrorMap}
-						rowKeys={rowKeys}
-						addEC={addEC}
-						removeEC={removeEC}
-						changeEC={changeEC}
-						changePhone={changePhone}
+					ecs={ecs}
+					ecErrors={ecErrors}
+					ecErrorMap={ecErrorMap}
+					rowKeys={rowKeys}
+					addEC={addEC}
+					removeEC={removeEC}
+					changeEC={changeEC}
+					changePhone={changePhone}
 					/>
 
-					<div className="flex items-center justify-between mt-4">
+					{/* Back • dots • Continue */}
+					<div className="mt-6 grid grid-cols-[auto,1fr,auto] items-center">
 						<button
 							type="button"
 							onClick={prevStep}
-							className="bg-gray-200 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-300 font-medium"
+							className="justify-self-start px-3 md:px-8 py-1.5 md:py-2.5 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 font-medium"
 						>
 							Back
 						</button>
+
+						<div className="flex justify-center">
+							<Stepper current={currentStep} />
+						</div>
+
 						<button
 							type="button"
 							onClick={nextStep}
-							className="px-4 py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 font-medium"
+							className="justify-self-end px-2 md:px-5 py-1.5 md:py-2.5 rounded-lg bg-green-600 text-white hover:bg-green-700 font-medium"
 						>
 							Continue
 						</button>
@@ -231,8 +237,6 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					prevStep={prevStep}
 				/>
 			)}
-
-		<Stepper current={currentStep} />
 		</form>
 	)
 }

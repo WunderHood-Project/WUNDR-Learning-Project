@@ -5,10 +5,12 @@ import { Suspense } from "react"
 
 export default function ProfilePage() {
     return (
-        <div className="px-2 md:px-6 lg:px-6 py-20 max-w-5xl md:max-w-7xl mx-auto bg-wonderbg min-h-screen">
-            <Suspense fallback={<>...</>}>
-                <Profile />
-            </Suspense>
+         <div className="bg-wonderbg min-h-screen">
+            <div className="mx-auto w-full max-w-5xl md:max-w-6xl lg:max-w-7xl px-3 sm:px-6 lg:px-8 py-20">
+                <Suspense fallback={<>...</>}>
+                    <Profile />
+                </Suspense>
+            </div>
         </div>
     );
 }
