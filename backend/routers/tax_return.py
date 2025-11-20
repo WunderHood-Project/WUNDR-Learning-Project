@@ -6,7 +6,7 @@ from models.interaction_models import TaxReturnCredentialsCreate, TaxReturnCrede
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
 from .notifications import send_email_one_user
-from datetime import datetime
+from datetime import datetime, timezone
 
 router = APIRouter()
 
@@ -60,7 +60,8 @@ async def create_tax_return_credentials(
            data={
                "title": subject,
                "description": "Tax return confirmation",
-               "isRead": False
+               "isRead": False,
+               "time": datetime.now(timezone.utc)
            }
        )
         

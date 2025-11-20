@@ -4,7 +4,7 @@ export type TaxReturn= {
     acknowledgementRequested: boolean
     firstName: string
     lastName: string
-    phoneNumber: string | null | undefined
+    phoneNumber: string | undefined
     address: string
     address2?: string
     city: string

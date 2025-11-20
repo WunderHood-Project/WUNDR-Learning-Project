@@ -342,7 +342,7 @@ async def update_event(
     title = f"Event updated: {updated_event.name}"
     description = f"The {', '.join(changed_parts)} has changed.\n" + "\n".join(desc_lines)
 
-    # --- create notifications в БД ---
+    # --- create notifications in DB---
     now_utc = datetime.now(timezone.utc)
     try:
         await db.notifications.create_many(

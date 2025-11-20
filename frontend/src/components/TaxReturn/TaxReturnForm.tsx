@@ -37,6 +37,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
     const router = useRouter()
     const { setModalContent } = useModal()
 
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setForm(prev => ({ ...prev, [name]: value }))
@@ -78,7 +79,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
 
             const payload: CreateTaxReturnPayload = {
                 ...form,
-                phoneNumber: form.phoneNumber ? normalizePhone(form.phoneNumber) : null,
+                phoneNumber: form.phoneNumber ? normalizePhone(form.phoneNumber) : undefined,
                 acknowledgementRequested: Boolean(acknowledgementRequested),
                 donationId: latestDonation.id
             }
