@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useUnreadNotifications } from '../../../hooks/useUnreadNotifications';
+// import { useUnreadNotifications } from '../../../hooks/useUnreadNotifications';
 
 type Props = {
   fullName: string;                           // `${user.firstName} ${user.lastName}`
@@ -12,7 +12,7 @@ type Props = {
 export default function MobileUserBlock({ fullName, role, onLogout, onNavigate }: Props) {
   const first = (fullName.split(' ')[0] || '').trim() || 'Profile';
   const isAdmin = role === 'admin';
-  const { unread } = useUnreadNotifications();
+  // const { unread } = useUnreadNotifications();
 
   return (
     <div className="mt-3 space-y-2">
