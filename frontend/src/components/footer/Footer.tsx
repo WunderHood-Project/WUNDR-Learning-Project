@@ -9,7 +9,7 @@ export default function Footer() {
         <Link href="/finances-and-policies" className="hover:underline">Finances and Policies</Link>
         <Link href="/volunteer" className="hover:underline">Volunteer</Link>
         <Link href="/get-involved/partnership" className="hover:underline">Partner With Us</Link>
-        <Link href="/contact" className="hover:underline">Contact Us</Link>
+        <Link href="/contact-us" className="hover:underline">Contact Us</Link>
         <div className="flex justify-center gap-4 mb-2">
           {/* <a href="https://linkedin.com/-link" target="_blank" rel="noopener noreferrer">
               <FaLinkedin  className="w-6 h-6 hover:opacity-80" />

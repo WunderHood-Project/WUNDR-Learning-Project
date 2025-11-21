@@ -220,7 +220,7 @@ export default function Navbar() {
           aria-label="Mobile navigation"
           >
             {/* Menu items list */}
-            <div className="px-3 pt-2 pb-3 sm:px-4 sm:pt-3 sm:pb-4 space-y-1.5">
+            <div className="space-y-0.5">
               <MobileNavItems
               links={NAV_LINKS}
               pathname={pathname}
