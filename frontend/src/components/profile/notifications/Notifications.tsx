@@ -14,7 +14,7 @@ type TabKey = 'all' | 'unread' | 'read';
 const displayTime = (n: Notification) =>
   n.createdAt ?? n.eventDate ?? new Date().toISOString();
 
-export default function Notifications() {
+export default function Notifications({onUnreadChange}: { onUnreadChange?: (count: number) => void }) {
   const { token, authReady } = useAuth();
 
   const t = token || undefined;
@@ -75,6 +75,12 @@ export default function Notifications() {
     () => items.filter(i => !i.isRead).length,
     [items]
   );
+
+  useEffect(() => {
+    if (onUnreadChange) onUnreadChange(unreadCount);
+  }, [unreadCount, onUnreadChange]);
+
+  
   const readCount = useMemo(
     () => items.filter(i => i.isRead).length,
     [items]

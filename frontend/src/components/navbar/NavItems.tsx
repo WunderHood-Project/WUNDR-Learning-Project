@@ -89,7 +89,7 @@ type MobileProps = CommonProps & { onClose: () => void };
 
 export function MobileNavItems({ links, pathname, onClose }: MobileProps) {
   return (
-    <div className="px-4 pt-4 pb-6 space-y-4">
+    <div className="px-4 pt-4">
       {links.map(({ href, label, disabled, badge }) => {
         const isActive = pathname === href;
 

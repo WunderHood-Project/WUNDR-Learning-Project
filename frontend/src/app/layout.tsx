@@ -35,22 +35,24 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({ children }: Readonly<{children: React.ReactNode}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <AuthProvider>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
+        <AuthProvider>
           <ModalProvider>
             <AuthGuard />
             <Navbar />
+            <main className="flex-grow flex flex-col">
               {children}
               <ResetPasswordWrapper />
+            </main>
             <Footer />
             <Modal />
           </ModalProvider>
-          </AuthProvider>
+        </AuthProvider>
       </body>
     </html>
   );

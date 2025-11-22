@@ -1,8 +1,6 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Request
-from typing import Annotated, Optional
-from .auth.login import get_current_user
-from models.user_models import User
 from models.interaction_models import DonationCreate
+
 from db.prisma_client import db
 import stripe
 import os
@@ -14,7 +12,6 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 @router.post("", status_code=status.HTTP_202_ACCEPTED)
 async def create_payment(
     donation_data: DonationCreate,
-    # current_user: Annotated[Optional[User], Depends(get_current_user)] = None,
 ):
     """
         Create Donation
@@ -24,11 +21,6 @@ async def create_payment(
     """
 
     metadata = {"donationType": donation_data.donationType}
-
-    # Custom data to add to Stripe Event
-    # if current_user:
-    #     metadata["userId"] = str(current_user.id)
-        # metadata['email'] = donation_data.email
 
     try:
         session = stripe.checkout.Session.create(
@@ -47,7 +39,7 @@ async def create_payment(
                 }
             ],
             ui_mode="embedded",
-            return_url="https://whproject.org",
+            return_url="http://localhost:3000/tax-return", # CHANGE THIS BACK TO "whproject.org/tax-return" 
             metadata=metadata
         )
         return {
@@ -57,6 +49,17 @@ async def create_payment(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unable to make donation: {e}")
     
+@router.get("/latest")
+async def get_latest_donation():
+    """
+        Return the latest donation made
+    """
+    latest_donation = await db.stripeevents.find_first(
+        order={"createdAt": "desc"}
+    )
+    if not latest_donation:
+        raise HTTPException(status_code=404, detail="No donations found")
+    return latest_donation
 
 @router.post("/webhook")
 async def stripe_webhook(request: Request):

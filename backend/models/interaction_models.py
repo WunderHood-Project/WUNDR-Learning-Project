@@ -145,7 +145,7 @@ class Notification(BaseModel):
     )
     isRead: bool = Field(default=False)
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    eventDate: Optional[datetime] = None
+    time: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     userId: str
 
     class Config:
@@ -162,7 +162,7 @@ class NotificationCreate(BaseModel):
         max_length=80,
     )
     isRead: bool = Field(default=False)
-    eventDate: Optional[datetime] = None
+    time: Optional[datetime] = None
     userId: Optional[str] = None
 
     class Config:
@@ -172,7 +172,7 @@ class NotificationUpdate(BaseModel):
     description: Optional[str] = Field(default=None)
     title: Optional[str] = Field(default=None)
     isRead: Optional[bool] = Field(default=None)
-    eventDate: Optional[datetime] = None
+    time: Optional[datetime] = None
     userId: Optional[str] = None
     
 #! Jobs
@@ -194,7 +194,7 @@ class EmergencyContactCreate(BaseModel):
     firstName: str = Field(min_length=1, max_length=100)
     lastName: str = Field(min_length=1, max_length=100)
     relationship: str = Field(min_length=1, max_length=200)
-    phoneNumber: str = Field(pattern=r'^\+[1-9]\d{1,14}$')
+    phoneNumber: str = Field(pattern=r'^\+[0-9]\d{1,14}$')
     # priority: int = Field(ge=1, le=3)
 
 class EmergencyContactUpdate(BaseModel):
@@ -272,15 +272,6 @@ class VolunteerOpportunityUpdate(BaseModel):
             return None
         return [item.strip() for item in v if item and item.strip()]
 
-# ! Donations
-
-class DonationCreate(BaseModel):
-    donationType: str
-    amount: int
-    email: Optional[str] = None
-    userId: Optional[str] = None
-
-
 #! Partnership
 class PartnerType(str, Enum):
     venue     = "venue"
@@ -351,12 +342,43 @@ class PartnerApplicationResponse(BaseModel):
         from_attributes = True 
     userId: Optional[str] = None
 
-# ! WaiverCredentials
+# ! Donations
 
-class WaiverCredentialsCreate(BaseModel):
+class DonationCreate(BaseModel):
+    donationType: str
+    amount: int
+    email: Optional[str] = None
+    userId: Optional[str] = None
+
+
+# ! Tax Return Acknowledgment Credentials
+
+class TaxReturnCredentialsCreate(BaseModel):
+    donationId: Optional[str] = Field(default=None)
     firstName: str = Field(..., min_length=1, max_length=100, description="First Name")
     lastName: str = Field(..., min_length=1, max_length=100, description="Last Name")
+    acknowledgementRequested: bool = Field(default=False, description="Tax Return Request")
     email: EmailStr = Field(None, description="Email")
     address: str = Field(min_length=3, max_length=200)
-    phoneNumber: str = Field(pattern=r'^\+[1-9]\d{1,14}$')
+    address2: Optional[str] = Field(default=None, max_length=200)
+    city: str = Field(min_length=1)
+    state: str = Field(min_length=1)
+    zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
+    phoneNumber: Optional[str] = Field(default=None, pattern=r'^[0-9]\d{1,12}$')
+    requestSent: bool = Field(default=False, description="Tax return sent to user")
 
+class TaxReturnCredentialsUpdate(BaseModel):
+    firstName: Optional[str] = Field(None, min_length=1, max_length=100, description="First Name")
+    lastName: Optional[str] = Field(None, min_length=1, max_length=100, description="Last Name")
+    acknowledgementRequested: Optional[bool] = Field(None, description="Tax Return Request")
+    email: Optional[EmailStr] = Field(None, description="Email")
+    address: Optional[str] = Field(None, min_length=3, max_length=200)
+    address2: Optional[str] = Field(None, max_length=200)
+    city: Optional[str] = Field(None, min_length=1)
+    state: Optional[str] = Field(None, min_length=1)
+    zipCode: Optional[str] = Field(None, pattern=r'^\d{5}(-\d{4})?$')
+    phoneNumber: Optional[str] = Field(None, pattern=r'^[0-9]\d{1,12}$')
+    requestSent: Optional[bool] = Field(None, description="Tax return sent to user")
+
+    class Config:
+        extra = "forbid"

@@ -16,7 +16,7 @@ export default function ChildCardsRail({ items, onEdit, onDeleted }: Props) {
         <div className="md:hidden -mx-4 px-4">
             {/* show only for mob */}
             {showHint && (
-                <div className="mb-2 flex justify-center">
+                <div className="mb-2 flex justify-start ml-2">
                     <div className="inline-flex items-center gap-2 rounded-full bg-wonderleaf/20 px-3 py-1 text-[13px] text-wonderforest/80 shadow-sm ring-1 ring-black/5">
                         <span className="leading-none">Swipe to see other children</span>
                         <span aria-hidden className="leading-none">→</span>

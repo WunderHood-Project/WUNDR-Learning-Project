@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useUnreadNotifications } from '../../../hooks/useUnreadNotifications';
+// import { useUnreadNotifications } from '../../../hooks/useUnreadNotifications';
 
 type Props = {
   fullName: string;                           // `${user.firstName} ${user.lastName}`
@@ -12,7 +12,7 @@ type Props = {
 export default function MobileUserBlock({ fullName, role, onLogout, onNavigate }: Props) {
   const first = (fullName.split(' ')[0] || '').trim() || 'Profile';
   const isAdmin = role === 'admin';
-  const { unread } = useUnreadNotifications();
+  // const { unread } = useUnreadNotifications();
 
   return (
     <div className="mt-3 space-y-2">
@@ -29,7 +29,7 @@ export default function MobileUserBlock({ fullName, role, onLogout, onNavigate }
       </Link>
 
       {/* Notifications row with badge */}
-      <Link
+      {/* <Link
         href="/profile?tab=notifications"
         onClick={onNavigate}
         className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 hover:bg-emerald-50"
@@ -40,7 +40,7 @@ export default function MobileUserBlock({ fullName, role, onLogout, onNavigate }
             {unread > 99 ? '99+' : unread}
           </span>
         )}
-      </Link>
+      </Link> */}
 
 
       {/* Only for Admin! */}

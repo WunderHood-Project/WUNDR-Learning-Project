@@ -169,7 +169,7 @@ export default function ActivityBlock({
         ref={scrollerRef}
         className="
         flex flex-1 gap-4 overflow-x-auto pb-3
-        snap-x snap-mandatory scroll-smooth touch-pan-x
+        snap-x snap-mandatory scroll-smooth touch-auto
         scrollbar-thin no-scrollbar
         scrollbar-track-transparent
         scrollbar-thumb-wonderleaf/40 hover:scrollbar-thumb-wonderleaf/60

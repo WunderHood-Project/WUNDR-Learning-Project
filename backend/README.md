@@ -47,9 +47,9 @@
 
 3. Once logged in, listen to events with:
 
-    stripe listen --forward-to localhost:4242/payments/webhook
+    stripe listen --forward-to localhost:8000/payments/webhook
 
-4. You should now see a whsec value. This is the STRIPE_WEBHOOK_SECRET value that will live in the .env document. Copy and paste it there:
+4. You should now see a whsec value. This is the STRIPE_WEBHOOK_SECRET value that will live in the .env document. Copy and paste it there. Replace the value everytime the above stripe command is run.
 
     e.g. STRIPE_WEBHOOK_SECRET=whsec_12345abcde
 
@@ -61,7 +61,7 @@
 
 2. Generate a 'whsec' key using the below command, and add it to backend.env:
 
-    stripe listen --forward-to localhost:4242/payments/webhook
+    stripe listen --forward-to localhost:8000/payments/webhook
 
 3. Obtain the test publishable key and add it to the frontend/.env.local:
 
