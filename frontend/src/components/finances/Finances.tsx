@@ -2,7 +2,7 @@
 
 import Accordion from "./Accordion"
 
-export default function FinanceAndPolicy() {
+export default function Finances() {
 
     return (
         <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-2xl mx-auto mt-10 border border-gray-100">

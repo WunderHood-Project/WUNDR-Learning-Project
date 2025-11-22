@@ -12,11 +12,7 @@ export const financeAndPoliciesData = [
     },
     {
         title: "Is Wonderhood Project a 501(c)(3) tax-exempt organization?",
-        content: {
-            text: "Yes, Wonderhood Project is a 501(c)(3) tax-exempt organization\n Find a copy of the 501(c)(3) approval letter from IRS: ",
-            link: "/IRS_Tax_Exemption.pdf",
-            label: "here"
-        }
+        content: "Yes, Wonderhood Project is a 501(c)(3) tax-exempt organization"
     },
     {
         title: "If I make a donation, will I receive an acknowledgement about the donation I made?",
@@ -38,5 +34,13 @@ export const financeAndPoliciesData = [
             label: "here"
         }
     },
+    {
+        title: "Where can I contact someone at Wonderhood Project if I have a question?",
+        content: {
+            text: "Check out the Contact Us page to submit a question: ",
+            link: `${homeLink}/contact-us`,
+            label: "here"
+        }
+    }
 
 ]
