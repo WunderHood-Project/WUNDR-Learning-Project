@@ -7,7 +7,7 @@ import { isEmail } from "../../../utils/emailValidation";
 import { formatUs } from "../../../utils/formatPhoneNumber";
 import { normalizePhone } from "../../../utils/formatPhoneNumber";
 import { useModal } from "@/context/modal"
-import TaxReturnSuccessModal from "../taxReturn/TaxReturnSuccessModal"
+import TaxReturnSuccessModal from "./TaxReturnSuccessModal"
 
 type Props = {
     acknowledgementRequested: boolean
