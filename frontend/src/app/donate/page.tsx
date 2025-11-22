@@ -1,4 +1,4 @@
-import PaymentPage from "../../components/stripe/PaymentPage";
+import PaymentPage from "@/components/stripe/PaymentPage";
 
 
 export default function Donate() {
