@@ -5,11 +5,11 @@ import Story_Mission from "@/components/landing/Story_Mission";
 import ImpactStats from "@/components/landing/ImpactNumbers";
 import OurPrograms from "@/components/landing/OurPrograms"
 import TaxReturnSuccessModal from "@/components/taxReturn/TaxReturnSuccessModal";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useModal } from "@/context/modal";
 
-export default function LandingPage() {
+function FunctionLandingPage() {
   const searchParams = useSearchParams()
   const modal = searchParams.get("modal")
   const { setModalContent } = useModal()
@@ -110,5 +110,14 @@ export default function LandingPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function LandingPage(){
+  return(
+    <Suspense>
+      <FunctionLandingPage />
+    </Suspense>
+  
   )
 }
