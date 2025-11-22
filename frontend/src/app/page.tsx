@@ -7,7 +7,7 @@ import OurPrograms from "@/components/landing/OurPrograms"
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useModal } from "@/context/modal";
-import TaxReturnSuccessModal from "@/components/taxReturn/TaxReturnSuccessModal";
+import TaxReturnSuccessModal from "@/components/TaxReturn/TaxReturnSuccessModal";
 
 
 function FunctionLandingPage() {
