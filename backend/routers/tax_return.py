@@ -25,15 +25,15 @@ async def create_tax_return_credentials(
     # ? Does a user have to fill the waiver everytime they make a donation?
 
     # Check if request is already on file
-    existing_tax_return = await db.taxreturncredentials.find_unique(
-        where={"donationId": tax_return_data.donationId}
-    )
+    # existing_tax_return = await db.taxreturncredentials.find_unique(
+    #     where={"donationId": tax_return_data.donationId}
+    # )
 
-    if existing_tax_return:
-        raise HTTPException(
-            status_code=400,
-            detail="The tax return info is already on file for the user"
-        )
+    # if existing_tax_return:
+    #     raise HTTPException(
+    #         status_code=400,
+    #         detail="The tax return info is already on file for the user"
+    #     )
 
     try:
         data = tax_return_data.model_dump()
