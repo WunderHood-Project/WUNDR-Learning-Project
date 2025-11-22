@@ -5,7 +5,7 @@ const url = () => {
 };
 const homeLink = url()
 
-export const financeAndPoliciesData = [
+export const financeInfo = [
     {
         title: "How do we raise funds?",
         content: "We are currently raising funds through grants and donor contributions."
