@@ -4,10 +4,11 @@ import HeroSection from "@/components/landing/HeroSection";
 import Story_Mission from "@/components/landing/Story_Mission";
 import ImpactStats from "@/components/landing/ImpactNumbers";
 import OurPrograms from "@/components/landing/OurPrograms"
-import TaxReturnSuccessModal from "@/components/taxReturn/TaxReturnSuccessModal";
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useModal } from "@/context/modal";
+import TaxReturnSuccessModal from "@/components/taxReturn/TaxReturnSuccessModal";
+
 
 function FunctionLandingPage() {
   const searchParams = useSearchParams()
@@ -115,7 +116,7 @@ function FunctionLandingPage() {
 
 export default function LandingPage(){
   return(
-    <Suspense>
+    <Suspense fallback={null}>
       <FunctionLandingPage />
     </Suspense>
   
