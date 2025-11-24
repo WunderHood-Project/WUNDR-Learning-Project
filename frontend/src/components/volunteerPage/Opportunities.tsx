@@ -81,11 +81,11 @@ export default function Opportunities({
   return (
     <section className="max-w-6xl mx-auto px-4 py-2">
       <header className="text-center mb-8">
-        <p className="mt-3 text-lg text-gray-700">
+        <p className="mt-3 text-sm md:text-lg text-gray-700">
           We&apos;re building a small team of caring helpers. Pick a role or tell us your skills —
           we&apos;ll find a good fit (one-time or ongoing).
         </p>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-xs md:text-sm text-gray-600">
           In the application, please include your cities and availability (weekdays/weekends, morning/afternoon/evening).
         </p>
       </header>
@@ -94,8 +94,8 @@ export default function Opportunities({
         {loaded && items.length === 0 ? (
           <div className="col-span-full flex justify-center">
             <article className="w-full max-w-xl rounded-2xl bg-white border border-wonderleaf/20 p-6 text-center shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900">No open opportunities right now</h3>
-              <p className="mt-2 text-gray-700">
+              <h3 className="text-base md:text-xl font-semibold text-gray-900">No open opportunities right now</h3>
+              <p className="mt-2 text-gray-700 text-sm md:text-lg">
                 You can still apply as a volunteer — we&apos;ll contact you when there&apos;s a good fit.
                 Thank you for your willingness to help!
               </p>

@@ -20,10 +20,10 @@ export default function HeroVolunteer(){
                 {/* Header Content */}
                 <div className="relative z-10 font-segoe">
                 {/* <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg"> */}
-                <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg">
+                <h1 className="text-4xl text-xl md:text-4xl font-extrabold mb-4 drop-shadow-lg">
                     Become a WonderHood Volunteer
                 </h1>
-                <p className="text-xl md:text-2xl font-medium max-w-2xl mx-auto mb-0">
+                <p className="text-base md:text-xl font-medium max-w-2xl mx-auto mb-0">
                     Help kids explore nature and creativity. Choose a one-time shift or join us regularly — every hand matters.
                 </p>
                 </div>
