@@ -5,6 +5,9 @@ import { formatUs, toE164US } from "../../../utils/formatPhoneNumber";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth";
 import { User } from "@/types/user";
+import { determineEnv, makeApiRequest } from "../../../utils/api";
+
+const API = determineEnv();
 
 type UserInfo = SignupPayload
 type ParentNext = "now" | "later"
@@ -31,6 +34,7 @@ const SignupModal = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [creating, setCreating] = useState(false)
+    const [checkingEmail, setCheckingEmail] = useState(false)
 
     // Form fields for each step
     const [form1, setForm1] = useState({
@@ -137,7 +141,7 @@ const SignupModal = () => {
         }
     };
 
-    const nextStep = () => {
+    const nextStep = async () => {
         if (currentStep === 1) {
             if (!form1.firstName || !form1.lastName || !form1.email || !form1.password || !form1.confirmPassword) {
                 setServerError("Please fill in all required fields.");
@@ -151,6 +155,33 @@ const SignupModal = () => {
                 setServerError(passwordError);
                 return;
             }
+            try {
+                setCheckingEmail(true);
+                setServerError(null);
+
+                const email = form1.email.trim().toLocaleLowerCase();
+
+                const res = await fetch(`${API}/auth/check-email?email=${encodeURIComponent(email)}`,
+                    {method: "GET" }
+                );
+                if(!res.ok){
+                    setServerError("We could't verify your email. Please try again.");
+                    return;
+                }
+
+                const data = await res.json() as {available: boolean};
+
+                if(!data.available) {
+                    setServerError("An account with this email already exists. Please log in instead.");
+                    return;
+                }
+            } catch (err) {
+                console.error("check-email failed", err);
+                setServerError("We couldn't verify your email. Please try again.");
+                return;
+            } finally {
+                setCheckingEmail(false);
+            }
         }
         setCurrentStep(prev => prev + 1);
         setServerError(null);
@@ -161,7 +192,7 @@ const SignupModal = () => {
         setServerError(null);
     }
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         if (currentStep === 3 && selectedRole === 'volunteer') {
@@ -174,7 +205,7 @@ const SignupModal = () => {
             return
         }
 
-        nextStep()
+        await nextStep()
     }
 
     // Eye icon SVGs
@@ -323,10 +354,11 @@ const SignupModal = () => {
 
                             <button
                                 type="button"
-                                onClick={nextStep}
+                                onClick={() => nextStep()}
+                                disabled={checkingEmail}
                                 className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
                             >
-                                Continue
+                                {checkingEmail ? "Checking email..." : "Continue"}
                             </button>
                         </div>
                     )}

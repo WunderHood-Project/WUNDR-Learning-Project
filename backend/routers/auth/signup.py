@@ -36,6 +36,15 @@ class UserSignup(BaseModel):
     # Children
     children: List[ChildCreate] = Field(default_factory=list)
 
+#Check email
+@router.get("/check-email")
+async def check_email(email: str):
+    normalized_email = email.strip().lower()
+    existing_user = await db.users.find_unique(
+        where={"email": normalized_email}
+    )
+    return {"available": existing_user is None}   
+
 # Signup Route
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def signup(user: UserSignup):
