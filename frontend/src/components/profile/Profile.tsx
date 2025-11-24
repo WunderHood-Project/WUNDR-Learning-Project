@@ -33,14 +33,18 @@ export default function Profile() {
 
     const activeKey = idxToKey(tabIdx);
 
+    const [notifUnread, setNotifUnread] = useState(0);
+
+
     return (
-        <div className="bg-wonderbg min-h-screen">
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-3">
+        // <div className="bg-wonderbg min-h-screen">
+            <div className="w-full pb-0 md:pb-2">
                 <ProfileTopTabs
-                    className="-mt-16 md:-mt-8"
+                    className="-mt-12 md:-mt-8"
                     tabs={DEFAULT_TABS}
                     activeKey={activeKey}
                     onChange={(key) => openTab(keyToIdx[key as TabKey])}
+                    notificationsUnread={notifUnread} 
                     renderDelete={(closeMenu) => (
                         <OpenModalButton
                             buttonText={
@@ -55,14 +59,18 @@ export default function Profile() {
                         />
                     )}
                 />
-            </div>
+            {/* </div> */}
 
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 pb-12 pt-4">
-                {tabIdx === 0 && <UserInfo />}
-                {tabIdx === 1 && <ChildInfo />}
-                {tabIdx === 2 && <YourEvents />}
-                {tabIdx === 3 && <Notifications />}
-            </div>
+                <div className="w-full pb-12">
+                    {tabIdx === 0 && <UserInfo />}
+                    {tabIdx === 1 && <ChildInfo />}
+                    {tabIdx === 2 && <YourEvents />}
+                    {tabIdx === 3 && (
+                    <Notifications
+                        onUnreadChange={setNotifUnread} 
+                    />
+                    )}
+                </div>
         </div>
     );
 }

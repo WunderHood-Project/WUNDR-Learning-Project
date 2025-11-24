@@ -194,7 +194,7 @@ class EmergencyContactCreate(BaseModel):
     firstName: str = Field(min_length=1, max_length=100)
     lastName: str = Field(min_length=1, max_length=100)
     relationship: str = Field(min_length=1, max_length=200)
-    phoneNumber: str = Field(pattern=r'^\+[1-9]\d{1,14}$')
+    phoneNumber: str = Field(pattern=r'^\+[0-9]\d{1,14}$')
     # priority: int = Field(ge=1, le=3)
 
 class EmergencyContactUpdate(BaseModel):
@@ -364,7 +364,7 @@ class TaxReturnCredentialsCreate(BaseModel):
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
-    phoneNumber: Optional[str] = Field(default=None, pattern=r'^[1-9]\d{1,12}$')
+    phoneNumber: Optional[str] = Field(default=None, pattern=r'^[0-9]\d{1,12}$')
     requestSent: bool = Field(default=False, description="Tax return sent to user")
 
 class TaxReturnCredentialsUpdate(BaseModel):
@@ -377,7 +377,7 @@ class TaxReturnCredentialsUpdate(BaseModel):
     city: Optional[str] = Field(None, min_length=1)
     state: Optional[str] = Field(None, min_length=1)
     zipCode: Optional[str] = Field(None, pattern=r'^\d{5}(-\d{4})?$')
-    phoneNumber: Optional[str] = Field(None, pattern=r'^[1-9]\d{1,12}$')
+    phoneNumber: Optional[str] = Field(None, pattern=r'^[0-9]\d{1,12}$')
     requestSent: Optional[bool] = Field(None, description="Tax return sent to user")
 
     class Config:

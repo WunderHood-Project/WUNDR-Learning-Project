@@ -1,17 +1,19 @@
-const homeLink = "https://whproject.org/"
+const url = () => {
+    if (process.env.NODE_ENV === "development")
+        return "http://localhost:3000";
+    return process.env.LIVE_URL;
+};
+const homeLink = url()
 
-export const financeAndPoliciesData = [
+export const financeInfo = [
     {
         title: "How do we raise funds?",
         content: "We are currently raising funds through grants and donor contributions."
     },
     {
         title: "Is Wonderhood Project a 501(c)(3) tax-exempt organization?",
-        content: {
-            text: "Yes, Wonderhood Project is a 501(c)(3) tax-exempt organization. That means your contribution is tax-deductable. Find a copy of the 501(c)(3) approval letter from IRS: ",
-            link: "/IRS_Tax_Exemption.pdf",
-            label: "Here"
-        }
+        content: "Yes, Wonderhood Project is a 501(c)(3) tax-exempt organization. That means your contribution is tax-deductable."
+
     },
     {
         title: "If I make a donation, will I receive an acknowledgement about the donation I made?",
@@ -33,5 +35,13 @@ export const financeAndPoliciesData = [
             label: "Here"
         }
     },
+    {
+        title: "Where can I contact someone at Wonderhood Project if I have a question?",
+        content: {
+            text: "Check out the Contact Us page to submit a question: ",
+            link: `${homeLink}/contact-us`,
+            label: "here"
+        }
+    }
 
 ]

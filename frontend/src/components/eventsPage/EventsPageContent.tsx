@@ -58,10 +58,9 @@ export default function EventsPageContent() {
   if (loading) return <div className="text-center py-20 text-green-700">Loading events...</div>
 
   return (
-    // <main className="px-6 py-8 max-w-5xl md:max-w-7xl mx-auto bg-wonderbg min-h-screen">
     <main className="min-h-screen bg-gradient-to-br from-wonderbg via-white to-wondersun/20">
       <GradientBanner
-        size="lg"
+        size="md"
         title="Upcoming Events"
         subtitle="Connect with other homeschooling families through hands-on
           experiences, outdoor adventures, and educational opportunities."

@@ -7,7 +7,7 @@ import { isEmail } from "../../../utils/emailValidation";
 import { formatUs } from "../../../utils/formatPhoneNumber";
 import { normalizePhone } from "../../../utils/formatPhoneNumber";
 import { useModal } from "@/context/modal"
-import TaxReturnSuccessModal from "../taxReturn/TaxReturnSuccessModal"
+import TaxReturnSuccessModal from "./TaxReturnSuccessModal"
 
 type Props = {
     acknowledgementRequested: boolean
@@ -36,6 +36,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
     const [errors, setErrors] = useState<TaxReturnErrors>({})
     const router = useRouter()
     const { setModalContent } = useModal()
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -78,7 +79,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
 
             const payload: CreateTaxReturnPayload = {
                 ...form,
-                phoneNumber: form.phoneNumber ? normalizePhone(form.phoneNumber) : null,
+                phoneNumber: form.phoneNumber ? normalizePhone(form.phoneNumber) : undefined,
                 acknowledgementRequested: Boolean(acknowledgementRequested),
                 donationId: latestDonation.id
             }

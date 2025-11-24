@@ -19,12 +19,14 @@ export function ProfileTopTabs({
     onChange,
     renderDelete,
     className = '',
+    notificationsUnread = 0,
 }: {
     tabs?: Tab[];
     activeKey: string;
     onChange: (key: string) => void;
     renderDelete?: (closeMenu: () => void) => React.ReactNode;
     className?: string;
+    notificationsUnread?: number;
 }) {
     
     const [moreOpen, setMoreOpen] = useState(false);
@@ -63,6 +65,7 @@ export function ProfileTopTabs({
                         ">
                             {tabs.map(({ key, label, icon: Icon }) => {
                                 const active = key === activeKey;
+                                const isNotifications = key === 'notifications';
                                 return (
                                     <button
                                     key={key}
@@ -82,7 +85,23 @@ export function ProfileTopTabs({
                                         active ? activeCls : idleCls,
                                         ].join(' ')}
                                     >
-                                    <Icon className="h-4 w-4 md:h-4 md:w-5 lg:h-5 lg:w-6 flex-shrink-0" />
+                                    <span className="relative inline-flex">
+                                        <Icon className="h-4 w-4 md:h-4 md:w-5 lg:h-5 lg:w-6 flex-shrink-0" />
+                                        {isNotifications && notificationsUnread > 0 && (
+                                        <span
+                                            className="
+                                            md:hidden
+                                            absolute -top-2.5 -right-2.5
+                                            min-w-[16px] h-[16px] px-1
+                                            rounded-full bg-red-500 text-white
+                                            text-[10px] font-bold
+                                            flex items-center justify-center
+                                            "
+                                        >
+                                            {notificationsUnread > 9 ? '9+' : notificationsUnread}
+                                        </span>
+                                        )}
+                                    </span>
                                     <span className="hidden md:inline ml-2 whitespace-nowrap text-sm md:text-sm lg:text-base font-medium">
                                         {label}
                                     </span>
@@ -157,12 +176,12 @@ export function ProfileTopTabs({
                     pointer-events-none
                     absolute inset-x-0 top-full z-0
                     -translate-y-2 md:-translate-y-3
-                    h-[3px] md:h-[4px]
-                    bg-gradient-to-r from-wondersun/80 via-wonderorange/85 to-wonderorange
+                    h-[2px] md:h-[2px]
+                    bg-gradient-to-r from-wondersun/80 via-wonderorange/85 to-wonderorange -mt-2
                 "/>
 
                 {/* Spacer (reserves space for the underline so content below doesn't jump) */}
-                <div className="h-1.5 md:h-3 lg:h-4 mb-4" />
+                <div className="h-1 md:h-2 lg:h-2 mb-4" />
             </div>
         </div>
     );

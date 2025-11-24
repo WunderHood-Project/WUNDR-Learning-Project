@@ -125,8 +125,8 @@ export default function ChildrenInfoPage() {
                         rounded-lg bg-wondersun text-wonderforest
                         shadow ring-1 ring-black/5 hover:shadow-md transition
                         w-fit self-start                
-                        mt-4 md:mt-0
-                        px-3 py-1.5 text-sm
+                        mt-2 md:mt-0
+                        px-2 py-1.5 text-sm
                         md:px-4 md:py-2 md:text-sm
                         lg:px-5 lg:py-2.5 lg:text-base sm:mr-8 md:mr-16
                     "

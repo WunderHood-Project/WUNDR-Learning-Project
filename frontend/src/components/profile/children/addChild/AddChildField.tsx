@@ -1,8 +1,6 @@
 import { ChildErrorsForm, CreateChildForm } from "@/types/child"
 import { gradeOptions } from "../../../../../utils/displayGrade"
 import React from "react"
-// import OpenModalButton from "@/context/openModalButton";
-// import PhotoConsentText from "./PhotoConsentText";
 import PhotoConsentDisclosure from "./PhotoConsentDisclosure";
 import { PHOTO_CONSENT_VERSION } from "@/constants/policies";
 
@@ -15,18 +13,18 @@ type Props = {
 export default function ChildFields({ child, onChange, errors = {} }: Props) {
 	return (
 		<>
-			<div className="flex gap-3">
-				<div className="flex flex-col">
-					<input
-						name="firstName"
-						placeholder="Legal First Name"
-						value={child.firstName}
-						onChange={onChange}
-						className="w-full p-3 border rounded-lg"
-						maxLength={50}
-						required
-					/>
-					{errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
+			<div className="flex flex-col gap-3 md:flex-row">
+				<div className="flex flex-col w-full md:w-1/2">
+				<input
+					name="firstName"
+					placeholder="Legal First Name"
+					value={child.firstName}
+					onChange={onChange}
+					className="w-full p-3 border rounded-lg"
+					maxLength={50}
+					required
+				/>
+				{errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
 				</div>
 
 				<div className="flex flex-col">

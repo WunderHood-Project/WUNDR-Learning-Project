@@ -6,10 +6,10 @@ export default function Footer() {
     <footer className="w-full bg-wondergreen text-white border-t py-10 mt-10">
       <div className="flex flex-wrap justify-center text-lg gap-6 mb-4">
         <Link href="/donate" className="hover:underline">Support Us</Link>
-        <Link href="/finances-and-policies" className="hover:underline">Finances and Policies</Link>
+        <Link href="/finances" className="hover:underline">Finances</Link>
         <Link href="/volunteer" className="hover:underline">Volunteer</Link>
         <Link href="/get-involved/partnership" className="hover:underline">Partner With Us</Link>
-        <Link href="/contact" className="hover:underline">Contact Us</Link>
+        <Link href="/contact-us" className="hover:underline">Contact Us</Link>
         <div className="flex justify-center gap-4 mb-2">
           {/* <a href="https://linkedin.com/-link" target="_blank" rel="noopener noreferrer">
               <FaLinkedin  className="w-6 h-6 hover:opacity-80" />

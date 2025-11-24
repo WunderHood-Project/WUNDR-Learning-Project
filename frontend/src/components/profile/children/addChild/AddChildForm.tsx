@@ -165,9 +165,9 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		<form className="border border-gray-200 p-4 rounded-lg bg-gray-50" onSubmit={handleSubmit} noValidate>
 			{currentStep === 1 && (
 				<>
-					<h2 className="flex flex-col text-xl mt-4 mb-6 text-center">
+					<h2 className="flex flex-col text-base md:text-xl mt-4 mb-6 text-center">
 						Add your child&apos;s information.
-						<span className="mt-1">Child must be between 10–18 years old.</span>
+						<span className="mt-1">Child must be between 10-18 years old.</span>
 					</h2>
 					{serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
@@ -193,28 +193,34 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					{serverError && <div className="mb-4 rounded bg-red-50 text-red-700 p-3">{serverError}</div>}
 
 					<EmergencyContactsList
-						ecs={ecs}
-						ecErrors={ecErrors}
-						ecErrorMap={ecErrorMap}
-						rowKeys={rowKeys}
-						addEC={addEC}
-						removeEC={removeEC}
-						changeEC={changeEC}
-						changePhone={changePhone}
+					ecs={ecs}
+					ecErrors={ecErrors}
+					ecErrorMap={ecErrorMap}
+					rowKeys={rowKeys}
+					addEC={addEC}
+					removeEC={removeEC}
+					changeEC={changeEC}
+					changePhone={changePhone}
 					/>
 
-					<div className="flex items-center justify-between mt-4">
+					{/* Back • dots • Continue */}
+					<div className="mt-6 grid grid-cols-[auto,1fr,auto] items-center">
 						<button
 							type="button"
 							onClick={prevStep}
-							className="bg-gray-200 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-300 font-medium"
+							className="justify-self-start px-3 md:px-8 py-1.5 md:py-2.5 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 font-medium"
 						>
 							Back
 						</button>
+
+						<div className="flex justify-center">
+							<Stepper current={currentStep} />
+						</div>
+
 						<button
 							type="button"
 							onClick={nextStep}
-							className="px-4 py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 font-medium"
+							className="justify-self-end px-2 md:px-5 py-1.5 md:py-2.5 rounded-lg bg-green-600 text-white hover:bg-green-700 font-medium"
 						>
 							Continue
 						</button>
@@ -231,8 +237,6 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					prevStep={prevStep}
 				/>
 			)}
-
-		<Stepper current={currentStep} />
 		</form>
 	)
 }
