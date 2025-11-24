@@ -388,13 +388,13 @@ model TaxReturnCredentials {
   city                     String
   state                    String
   zipCode                  String
-	phoneNumber              String?  @unique
-  email                    String   @unique
+	phoneNumber              String?  
+  email                    String
   requestSent              Boolean
-  createdAt                DateTime @default(now())
+  createdAt                DateTime  @default(now())
   updatedAt                DateTime? @default(now())
 
   // One-to-One
   donation                 Donations  @relation(fields: [donationId], references: [id])
-  donationId               String   @unique @db.ObjectId
+  donationId               String     @unique @db.ObjectId
 }

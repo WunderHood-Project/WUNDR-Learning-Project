@@ -15,63 +15,66 @@ async def create_tax_return_credentials(
     tax_return_data: TaxReturnCredentialsCreate,
     background_tasks: BackgroundTasks
 ):
-    
     """
-        Collect information from any user that wants to obtain a tax return acknolwedgment \n
-        Send an email to user upon succesful request creation\n
-        Return {status: successful}
+        Collect information from any user that wants to obtain a tax return acknowledgment.
+        If a record for this donation already exists – update it instead of failing.
     """
 
-    # ? Does a user have to fill the waiver everytime they make a donation?
-
-    # Check if request is already on file
+    # 1. Look up an existing record by donationId
     existing_tax_return = await db.taxreturncredentials.find_unique(
         where={"donationId": tax_return_data.donationId}
     )
-
-    if existing_tax_return:
-        raise HTTPException(
-            status_code=400,
-            detail="The tax return info is already on file for the user"
-        )
+    data = tax_return_data.model_dump()
 
     try:
-        data = tax_return_data.model_dump()
+        # 2. If a record already exists – update it
+        if existing_tax_return:
+            updated_tax_return = await db.taxreturncredentials.update(
+                where={"donationId": tax_return_data.donationId},
+                data=data,
+            )
 
+            # (Optional: you may choose not to send a second email/notification here)
+            return {"status": f"Updated existing tax return instance: {updated_tax_return}"}
+
+        # 3. If no record exists – create a new one
         new_tax_return = await db.taxreturncredentials.create(
             data={
                 **data,
-                "donationId": tax_return_data.donationId
+                "donationId": tax_return_data.donationId,
             }
         )
 
-        # Create notification and send email
-        subject = f'We Got Your Tax Return Request 📒'
-        contents = f'Hello,\n\nWe appreciate your generosity and our team will process your request as soon as possible. In the meantime, please check out all that we do on our About page. \n\nBest,\n\nWonderhood Team'
+        subject = "We Got Your Tax Return Request 📒"
+        contents = (
+            "Hello,\n\nWe appreciate your generosity and our team will process your request as soon as possible. "
+            "In the meantime, please check out all that we do on our About page.\n\nBest,\n\nWonderhood Team"
+        )
 
         background_tasks.add_task(
-           send_email_one_user,
-           tax_return_data.email,
-           subject,
-           contents
-       )
+            send_email_one_user,
+            tax_return_data.email,
+            subject,
+            contents
+        )
 
         await db.notifications.create(
-           data={
-               "title": subject,
-               "description": "Tax return confirmation",
-               "isRead": False,
-               "time": datetime.now(timezone.utc)
-           }
-       )
-        
+            data={
+                "title": subject,
+                "description": "Tax return confirmation",
+                "isRead": False,
+                "time": datetime.now(timezone.utc),
+            }
+        )
+
         return {"status": f"Successfully created tax return instance: {new_tax_return}"}
-    
+
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail= f"Failed to create tax return instance: {str(e)}"
+            detail=f"Failed to create or update tax return instance: {str(e)}",
         )
+
 
 @router.get("/user-tax-return", status_code=200)
 async def get_unique_user_waiver_credentials(
