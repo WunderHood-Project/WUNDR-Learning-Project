@@ -13,7 +13,6 @@ export const financeInfo = [
     {
         title: "Is Wonderhood Project a 501(c)(3) tax-exempt organization?",
         content: "Yes, Wonderhood Project is a 501(c)(3) tax-exempt organization. That means your contribution is tax-deductable."
-
     },
     {
         title: "If I make a donation, will I receive an acknowledgement about the donation I made?",
