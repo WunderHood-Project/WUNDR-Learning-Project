@@ -7,6 +7,7 @@ import { useState } from "react";
 export default function DonateFloating() {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
+    
 
     // Don't show the button on the donation page itself or in the admin panel.
     if (pathname === "/donate" || pathname?.startsWith("/admin")) {
@@ -43,10 +44,10 @@ export default function DonateFloating() {
             className="
             flex items-center gap-2
             rounded-full shadow-lg
-            px-3 py-2
+            px-3 py-2 md:px-5 md:py-3
             bg-wondergreen text-white
             hover:bg-wonderleaf
-            transition-colors
+            transition-colors mr-0 md:mr-4
             "
             >
                 {/* Heart icon */}
@@ -55,6 +56,7 @@ export default function DonateFloating() {
                 inline-flex items-center justify-center
                 w-7 h-7 md:w-10 md:h-10 rounded-full
                 bg-white/15
+                animate-heart-beat
                 "
                 >
                     {/* SVG-icon */}

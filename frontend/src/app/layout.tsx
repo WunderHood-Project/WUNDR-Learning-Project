@@ -8,8 +8,7 @@ import { Modal, ModalProvider } from "../context/modal";
 import { AuthProvider } from "@/context/auth";
 import ResetPasswordWrapper from "@/components/login/ResetPasswordWrapper";
 import AuthGuard from "@/components/auth/AuthGuard";
-
-
+import DonateFloating from "@/components/donate/DonateFloating";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,6 +44,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <ModalProvider>
             <AuthGuard />
             <Navbar />
+            <DonateFloating />
             <main className="flex-grow flex flex-col">
               {children}
               <ResetPasswordWrapper />
