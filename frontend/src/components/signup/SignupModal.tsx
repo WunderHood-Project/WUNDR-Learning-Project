@@ -5,7 +5,7 @@ import { formatUs, toE164US } from "../../../utils/formatPhoneNumber";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth";
 import { User } from "@/types/user";
-import { determineEnv, makeApiRequest } from "../../../utils/api";
+import { determineEnv } from "../../../utils/api";
 
 const API = determineEnv();
 
