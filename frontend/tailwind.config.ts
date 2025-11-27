@@ -32,12 +32,19 @@ const config: Config = {
         'bounce-slow': 'bounce 3s infinite',
         'float': 'float 4s ease-in-out infinite',
         'float-slow': 'float 8s ease-in-out infinite',
-        'pulse-slow': 'pulse 3s infinite'
+        'pulse-slow': 'pulse 3s infinite',
+        'heart-beat': 'heart-beat 0.9s ease-in-out infinite',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-20px)' },
+        },
+        'heart-beat': {
+          '0%, 100%': { transform: 'scale(1)', color: 'inherit' },
+          '25%': { transform: 'scale(1.15)', color: '#ef4444' }, 
+          '50%': { transform: 'scale(1.05)', color: '#f97316' }, 
+          '75%': { transform: 'scale(1.15)', color: '#ef4444' },
         },
       },
     },

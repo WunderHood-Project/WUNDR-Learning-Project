@@ -65,8 +65,8 @@ export default function Volunteer() {
     <div className="min-h-screen">
       <HeroVolunteer />
 
-      <div className="max-w-6xl mx-auto px-4 pt-8">
-        <div role="tablist" className="flex gap-8 border-b pt-6 text-xl border-wonderleaf/30">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 pt-4 sm:pt-8">
+        <div role="tablist" className="flex gap-4 sm:gap-8 border-b pt-3 sm:pt-6 text-base sm:text-xl border-wonderleaf/30">
           <button
             role="tab"
             aria-selected={tab === 'opps'}
@@ -86,7 +86,7 @@ export default function Volunteer() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {tab === 'opps' ? (
           <Opportunities onApply={handleApply} />
         ) : selected.id ? (
