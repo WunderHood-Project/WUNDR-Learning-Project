@@ -9,6 +9,7 @@ import Link from "next/link";
 // import { determineEnv } from "../../../utils/api";
 import { useUser } from "../../../hooks/useUser";
 import GradientBanner from '@/components/ui/GradientBanner';
+import { BeatLoader } from "react-spinners"
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -55,7 +56,7 @@ export default function EventsPageContent() {
     )
   }
 
-  if (loading) return <div className="text-center py-20 text-green-700">Loading events...</div>
+  if (loading) return <div className="text-center py-20 text-green-700"><BeatLoader color="#90b35c" size={15} /></div>
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-wonderbg via-white to-wondersun/20">

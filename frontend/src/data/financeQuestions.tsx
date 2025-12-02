@@ -1,8 +1,9 @@
 const url = () => {
     if (process.env.NODE_ENV === "development")
-        return "http://localhost:3000";
-    return process.env.LIVE_URL;
+        return "http://localhost:3000/";
+    return "";
 };
+
 const homeLink = url()
 
 export const financeInfo = [
@@ -17,8 +18,8 @@ export const financeInfo = [
     {
         title: "If I make a donation, will I receive an acknowledgement about the donation I made?",
         content: {
-            text: "When making a donation via our online portal, you will be prompted to opt-in to recieve a tax return acknowledgement. You can make a donation: ",
-            link: `${homeLink}/donate`,
+            text: "When making a donation via our online portal, you will be prompted to opt-in to receieve a tax return acknowledgement. You can make a donation: ",
+            link: `${homeLink}donate`,
             label: "Here"
         }
     },
@@ -30,7 +31,7 @@ export const financeInfo = [
         title: "What is Wonderhood Project's privacy policy?",
         content: {
             text: "Find our privacy policy: ",
-            link: `${homeLink}/privacy-policy`,
+            link: `${homeLink}privacy-policy`,
             label: "Here"
         }
     },
@@ -38,7 +39,7 @@ export const financeInfo = [
         title: "Where can I contact someone at Wonderhood Project if I have a question?",
         content: {
             text: "Check out the Contact Us page to submit a question: ",
-            link: `${homeLink}/contact-us`,
+            link: `${homeLink}contact-us`,
             label: "here"
         }
     }
