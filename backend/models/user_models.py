@@ -31,6 +31,8 @@ class User(BaseModel):
     state: str = Field(min_length=2, max_length=50)
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
 
+    emailNotificationsEnabled: bool = True
+
     children: List["Child"] = Field(default_factory=list)  # Default to empty list
     events: List["Event"] = Field(default_factory=list)
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -63,6 +65,8 @@ class UserUpdateRequest(BaseModel):
     state: Optional[str] = Field(None, min_length=2, max_length=50)
     zipCode: Optional[str] = Field(pattern=r'^\d{5}(-\d{4})?$')
 
+    emailNotificationsEnabled: Optional[bool] = None
+
 
 class UserResponse(BaseModel):
     id: str
@@ -76,6 +80,7 @@ class UserResponse(BaseModel):
     city: str = Field(None, min_length=2, max_length=50)
     state: str = Field(None, min_length=2, max_length=50)
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
+    emailNotificationsEnabled: bool
     children: List["Child"] = Field(default_factory=list)
     enrolledEvents: List["Event"] = Field(default_factory=list)
     reviews:List["Review"] = Field(default_factory=list)

@@ -35,6 +35,7 @@ const SignupModal = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [creating, setCreating] = useState(false)
     const [checkingEmail, setCheckingEmail] = useState(false)
+    const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(true);
 
     // Form fields for each step
     const [form1, setForm1] = useState({
@@ -112,7 +113,8 @@ const SignupModal = () => {
             address: form2.address,
             city: form2.city,
             state: form2.state.trim().toUpperCase(),
-            zipCode: zip
+            zipCode: zip,
+            emailNotificationsEnabled,
         };
 
         try {
@@ -485,6 +487,22 @@ const SignupModal = () => {
                                     </div>
                                 </button>
                             </div>
+
+                            {/* Email notifications opt-in */}
+                            <label className="flex items-start gap-2 text-sm text-gray-700">
+                                <input
+                                    type="checkbox"
+                                    checked={emailNotificationsEnabled}
+                                    onChange={(e) => setEmailNotificationsEnabled(e.target.checked)}
+                                    className="mt-1 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                />
+                                <span>
+                                    Email me updates about WonderHood events, activities, and important reminders.
+                                    <span className="block text-xs text-gray-500">
+                                        You can change this anytime in your profile.
+                                    </span>
+                                </span>
+                            </label>
 
                             <div className="flex space-x-3 pt-4">
                                 <button
