@@ -120,8 +120,10 @@ async def create_event(
        )
 
 
-       # Send the email notification to all users upon event creation
-       users = await db.users.find_many()
+       # Send the email notification to all users where emailNotificationsEnabled = True upon event creation
+       users = await db.users.find_many(
+           where={"emailNotificationsEnabled": True}
+       )
        user_emails = [user.email for user in users]
 
        notif_batch = [
@@ -311,8 +313,8 @@ async def update_event(
     end_changed   = ("endTime"   in update_payload) and (event.endTime   != updated_event.endTime)
 
     # If there are no required changes or no recipients, we simply return the result.
-    if not user_ids or not (date_changed or start_changed or end_changed):
-        return {"event": updated_event, "message": "Event updated successfully"}
+    # if not user_ids or not (date_changed or start_changed or end_changed):
+    #     return {"event": updated_event, "message": "Event updated successfully"}
 
     # --- text for UI notificationя ---
     changed_parts: list[str] = []
@@ -374,7 +376,11 @@ async def update_event(
                 pass
 
     # --- mailing to the same users ---
-    users_for_email = await db.users.find_many(where={"id": {"in": user_ids}})
+    users_for_email = await db.users.find_many(where={
+        "id": {"in": user_ids},
+        "emailNotificationsEnabled": True
+        })
+
     user_emails = [u.email for u in users_for_email]
 
     if date_changed and not (start_changed or end_changed):
@@ -385,10 +391,10 @@ async def update_event(
         )
     else:
         subject = f'Wonderhood: {updated_event.name} Update'
+        # ADD A LINK TO THE CONTENTS
         contents = (
             "Hello,\n\n"
-            f'The event "{updated_event.name}" has been updated:\n'
-            + "\n".join(desc_lines)
+            f'The event "{updated_event.name}" has been updated. Please review event information.\n'
             + "\n\nBest,\nWonderhood Team"
         )
 
@@ -446,7 +452,7 @@ async def delete_event_by_id(
 
    # Get all the emails associated with an event as list
    users =  event.users
-   user_emails = [user.email for user in users]
+   user_emails = [user.email for user in users if user.emailNotificationsEnabled == True]
 
 
    # Send the email notification to users
@@ -527,33 +533,30 @@ async def add_user_to_event(
    # ? ADD link to make changes still
    contents = f'This email confirms that you are enrolled for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to join the event, please make changes here: .\n\nBest,\n\nWondherhood Team'
 
-
-   background_tasks.add_task(
-       send_email_one_user,
-       current_user.email,
-       subject,
-       contents
-   )
-
-
    await db.notifications.create(
-       data={
-           "title": subject,
-           "description": f"Confirmation for event {event.name}",
-           "userId": current_user.id,
-           "isRead": False,
-           "time": event.date,
-       }
-   )
+            data={
+                "title": subject,
+                "description": f"Confirmation for event {event.name}",
+                "userId": current_user.id,
+                "isRead": False,
+                "time": event.date,
+            }
+        )
+   if current_user.emailNotificationsEnabled == True:
+            background_tasks.add_task(
+                send_email_one_user,
+                current_user.email,
+                subject,
+                contents
+            )
 
-
-   # Schedule the one-day reminder
-   background_tasks.add_task(
-       schedule_reminder,
-       current_user.id,
-       event_id,
-       event.date
-   )
+            # Schedule the one-day reminder
+            background_tasks.add_task(
+                schedule_reminder,
+                current_user.id,
+                event_id,
+                event.date
+            )
 
 
    return {"event": updated_event, "message": "User added to event and notified"}
@@ -639,35 +642,34 @@ async def add_children_to_event(
    content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
 
 
-   background_tasks.add_task(
-       send_email_one_user,
-       current_user.email,
-       subject,
-       content
-   )
-
-
    await db.notifications.create(
-       data= {
-           "title": subject,
-           "description": f"Confirmation for event {event.name}",
-           "userId": current_user.id,
-           "isRead": False,
-           "time": event.date,
-        #    "eventDate": event.date,
-        #    "userId": str(current_user.id),
-           # "icon": icon
-       }
-   )
+            data= {
+                "title": subject,
+                "description": f"Confirmation for event {event.name}",
+                "userId": current_user.id,
+                "isRead": False,
+                "time": event.date,
+                #    "eventDate": event.date,
+                #    "userId": str(current_user.id),
+                # "icon": icon
+            }
+        )
 
 
-   # Schedule the one-day reminder
-   background_tasks.add_task(
-       schedule_reminder,
-       current_user.id,
-       event_id,
-       event.date
-   )
+   if current_user.emailNotificationsEnabled == True:
+        background_tasks.add_task(
+            send_email_one_user,
+            current_user.email,
+            subject,
+            content
+        )
+        # Schedule the one-day reminder
+        background_tasks.add_task(
+            schedule_reminder,
+            current_user.id,
+            event_id,
+            event.date
+        )
 
 
    return {"event": updated_event, "message": "Children added to event and user notified"}
@@ -723,25 +725,26 @@ async def remove_user_from_event(
 
 
    # Send notification to User that they have been removed from event
-   subject = f'Unenrollment Confirmation: {event.name}'
-   content = f'Hello,\n\nThis email confirms that you have been unenrolled from the {event.name} event at Wonderhood on {convert_iso_date_to_string(event.date)}. Please find more events at our website.\n\nBest,\n\nWonderhood Team'
+   if current_user.emailNotificationsEnabled == True:
+        subject = f'Unenrollment Confirmation: {event.name}'
+        content = f'Hello,\n\nThis email confirms that you have been unenrolled from the {event.name} event at Wonderhood on {convert_iso_date_to_string(event.date)}. Please find more events at our website.\n\nBest,\n\nWonderhood Team'
 
 
-   background_tasks.add_task(
-    send_email_one_user,
-    current_user.email,
-    subject,
-    content
-    )
-   await db.notifications.create(
-        data={
-            "title": subject,
-            "description": f"You have been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
-            "userId": current_user.id,
-            "isRead": False,
-            "time": event.date, 
-        }
-    )
+        background_tasks.add_task(
+            send_email_one_user,
+            current_user.email,
+            subject,
+            content
+            )
+        await db.notifications.create(
+                data={
+                    "title": subject,
+                    "description": f"You have been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
+                    "userId": current_user.id,
+                    "isRead": False,
+                    "time": event.date, 
+                }
+            )
 
 
    # Remove the user from the event
@@ -758,9 +761,6 @@ async def remove_user_from_event(
 
 
    return {"event": updated_event, "message": "User removed from event"}
-
-
-
 
 
 
@@ -854,14 +854,7 @@ async def remove_child_from_event(
    # Notification to user for unenrolling child
    subject = f'Unenrollment Confirmation: {event.name}'
    content = f'Hello,\n\nThis email confirms that your child has been unenrolled from the {event.name} on {convert_iso_date_to_string(event.date)}. Please find more events on our website.\n\nBest,\n\nWonderhood Team'
-   
-   # Send notification e-mail
-   background_tasks.add_task(
-        send_email_one_user,
-        current_user.email,
-        subject,
-        content
-    )
+        
    await db.notifications.create(
         data={
             "title": subject,
@@ -869,15 +862,18 @@ async def remove_child_from_event(
             "userId": current_user.id,
             "isRead": False,
             "time": event.date, 
-        }
-    )
-
-
+            }
+        )
+        # Send notification e-mail
+   if current_user.emailNotificationsEnabled == True:
+        background_tasks.add_task(
+                send_email_one_user,
+                current_user.email,
+                subject,
+                content
+            )
 
    # ! Add logic to delete notification?
-
-
-
 
    return {"event": updated_event, "message": f"Removed {len(to_remove)} child(ren) from event"}
 
@@ -1036,7 +1032,7 @@ async def create_review(
 
 
 ########### * Notification endpoint(s) ###############
-# Have admin send a message to the users of children of an event
+# Have admin send a message to the users of enrolled children
 @router.post("/{event_id}/notification/enrolled_users_child", status_code=status.HTTP_200_OK)
 async def send_message_to_users_of_enrolled_child(
    current_user: Annotated[User, Depends(get_current_user)],
@@ -1090,13 +1086,16 @@ async def send_message_to_users_of_enrolled_child(
    parent_emails = list()
    for id in parent_ids:
        users = await db.users.find_unique(
-           where={"id": id}
+           where={
+               "id": id,
+               "emailNotificationsEnabled": True
+               }
        )
-       parent_emails.append(users.email)
-
+       if users:
+        parent_emails.append(users.email)
 
    if not parent_emails:
-       raise HTTPException(status_code=404, detail="Unable to obtain parent emails")
+       raise HTTPException(status_code=404, detail="Unable to obtain parent emails. Ensure that parents have email notifications enabled")
 
 
    # Creat the notifications for the UI
@@ -1154,11 +1153,10 @@ async def send_enrolled_user_notification(
    enforce_admin(current_user, "create notification")
 
 
-   # Find users enrolled in an event
+   # Find event
    event = await db.events.find_unique(
        where={"id": eventId}
    )
-
 
    if not event:
        raise HTTPException(status_code=404, detail="Unable to locate event")
@@ -1187,9 +1185,13 @@ async def send_enrolled_user_notification(
    users_emails = list()
    for id in event.userIds:
        users = await db.users.find_unique(
-           where={"id":id}
+           where={
+               "id":id,
+               "emailNotificationsEnabled": True
+               }
        )
-       users_emails.append(users.email)
+       if users:
+        users_emails.append(users.email)
 
 
    background_tasks.add_task(
@@ -1257,9 +1259,6 @@ async def volunteer_signup_for_event(
        # ? ADD link to make changes still
        description = f'This email confirms that you are enrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to join the event, please make changes here: .\n\nBest,\n\nWondherhood Team'
 
-
-
-
        notification_data =  {
                "title": title,
                "description": description,
@@ -1272,13 +1271,13 @@ async def volunteer_signup_for_event(
                data=notification_data
            )
 
-
-       background_tasks.add_task(
-               send_email_one_user,
-               volunteer.email,
-               title,
-               description
-           )
+       if current_user.emailNotificationsEnabled == True:
+            background_tasks.add_task(
+                    send_email_one_user,
+                    volunteer.email,
+                    title,
+                    description
+                )
 
 
 
@@ -1346,9 +1345,6 @@ async def unenroll_volunteer_from_event(
        # ? ADD link to make changes still
        description = f'This email confirms that you are unenrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}.\n\nBest,\n\nWondherhood Team'
 
-
-
-
        notification_data =  {
                "title": title,
                "description": description,
@@ -1361,13 +1357,13 @@ async def unenroll_volunteer_from_event(
                data=notification_data
            )
 
-
-       background_tasks.add_task(
-               send_email_one_user,
-               volunteer.email,
-               title,
-               description
-           )
+       if current_user.emailNotificationsEnabled == True:
+            background_tasks.add_task(
+                    send_email_one_user,
+                    volunteer.email,
+                    title,
+                    description
+                )
 
        return {
            "Event": volunteer_unenroll_event,
