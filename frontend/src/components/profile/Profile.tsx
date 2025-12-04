@@ -9,6 +9,7 @@ import UserInfo from "./userInfo/UserInfo";
 import ChildInfo from "./children/childInfo/ChildInfo";
 import YourEvents from "./events/yourEvents/YourEvents";
 import Notifications from "./notifications/Notifications";
+import EmailNotificationsToggle from "./userInfo/EmailNotificationsToggle";
 
 
 type TabKey = 'user' | 'child' | 'events' | 'notifications';
@@ -37,40 +38,43 @@ export default function Profile() {
 
 
     return (
-        // <div className="bg-wonderbg min-h-screen">
-            <div className="w-full pb-0 md:pb-2">
-                <ProfileTopTabs
-                    className="-mt-12 md:-mt-8"
-                    tabs={DEFAULT_TABS}
-                    activeKey={activeKey}
-                    onChange={(key) => openTab(keyToIdx[key as TabKey])}
-                    notificationsUnread={notifUnread} 
-                    renderDelete={(closeMenu) => (
-                        <OpenModalButton
-                            buttonText={
-                                <span className="flex items-center gap-2">
-                                    <FaTrash className="h-4 w-4" />
-                                    Delete Account
-                                </span>
-                            }
-                            className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl"
-                            modalComponent={<DeleteUser currUser={user} />}
-                            onButtonClick={closeMenu}
-                        />
-                    )}
-                />
-            {/* </div> */}
-
-                <div className="w-full pb-12">
-                    {tabIdx === 0 && <UserInfo />}
-                    {tabIdx === 1 && <ChildInfo />}
-                    {tabIdx === 2 && <YourEvents />}
-                    {tabIdx === 3 && (
-                    <Notifications
-                        onUnreadChange={setNotifUnread} 
+        <div className="w-full pb-0 md:pb-2">
+            <ProfileTopTabs
+                className="-mt-12 md:-mt-8"
+                tabs={DEFAULT_TABS}
+                activeKey={activeKey}
+                onChange={(key) => openTab(keyToIdx[key as TabKey])}
+                notificationsUnread={notifUnread} 
+                renderDelete={(closeMenu) => (
+                    <>
+                    <div className="w-full px-3 py-2 text-sm text-gray-800 hover:bg-gray-50 rounded-xl">
+                        <EmailNotificationsToggle />
+                    </div>
+                    <OpenModalButton
+                    buttonText={
+                        <span className="flex items-center gap-2">
+                        <FaTrash className="h-4 w-4" />
+                            Delete Account
+                        </span>
+                    }
+                    className="w-full px-5 py-0 text-sm text-red-600 hover:bg-red-50 rounded-xl mb-4"
+                    modalComponent={<DeleteUser currUser={user} />}
+                    onButtonClick={closeMenu}
                     />
-                    )}
-                </div>
-        </div>
+                    </>
+                    
+                )}
+            />
+            <div className="w-full pb-12">
+                {tabIdx === 0 && <UserInfo />}
+                {tabIdx === 1 && <ChildInfo />}
+                {tabIdx === 2 && <YourEvents />}
+                {tabIdx === 3 && (
+                <Notifications
+                    onUnreadChange={setNotifUnread} 
+                />
+                )}
+            </div>
+    </div>
     );
 }

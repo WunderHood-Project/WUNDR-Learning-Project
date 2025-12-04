@@ -369,7 +369,7 @@ const SignupModal = () => {
                     {currentStep === 2 && (
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-700 mb-4">Where are you located?</h3>
-                            <p className="text-sm text-gray-600 mb-4">This program is currently available in the Westcliffe, Colorado area.</p>
+                            <p className="text-sm text-gray-600 mb-4">This program is currently available in the state of Colorado.</p>
 
                             <input
                                 type="text"
