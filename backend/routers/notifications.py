@@ -190,20 +190,21 @@ async def blast_notification(
 
     enforce_admin(current_user, "create blast message")
 
-    users = await db.users.find_many()
+    users = await db.users.find_many(
+        where={
+            "emailNotificationsEnabled": True
+        }
+    )
+    
     user_emails = [user.email for user in users]
 
     # Add notification here
-
-    now = datetime.now(timezone.utc)
-    event_time = ensure_utc(parse_event_date(notification.time)) if getattr(notification, "time", None) else now
-
     notification_data = [
         {
             "title": notification.title,
             "description": notification.description,
             # "userId": user.id,
-            "userId": current_user.id,
+            "userId": user.id,
             "isRead": False,
             "time": datetime.now(timezone.utc),
         }
