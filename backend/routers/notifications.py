@@ -199,30 +199,37 @@ async def blast_notification(
     user_emails = [user.email for user in users]
 
     # Add notification here
-    notification_data = [
-        {
-            "title": notification.title,
-            "description": notification.description,
-            # "userId": user.id,
-            "userId": user.id,
-            "isRead": False,
-            "time": datetime.now(timezone.utc),
-        }
-        for user in users
-    ]
+    if user_emails:
+        notification_data = [
+            {
+                "title": notification.title,
+                "description": notification.description,
+                # "userId": user.id,
+                "userId": user.id,
+                "isRead": False,
+                "time": datetime.now(timezone.utc),
+            }
+            for user in users
+        ]
 
-    new_notification = await db.notifications.create_many(
-        data=notification_data
-    )
+        new_notification = await db.notifications.create_many(
+            data=notification_data
+        )
 
-    background_tasks.add_task(
-        send_email_multiple_users,
-        user_emails,
-        notification.title,
-        notification.description
-    )
 
-    return {"notification": new_notification}
+        background_tasks.add_task(
+            send_email_multiple_users,
+            user_emails,
+            notification.title,
+            notification.description
+        )
+
+        return {"notification": new_notification}
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Unable to locate user emails with enabled notificaions"
+        ) 
 
 # =======================================================
 @router.get("/", status_code=status.HTTP_200_OK)
