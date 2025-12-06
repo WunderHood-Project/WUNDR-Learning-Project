@@ -199,11 +199,13 @@ async def blast_notification(
     user_emails = [user.email for user in users]
 
     # Add notification here
+    content = f'Hello,\n\n {notification.description}\n\nBest,\n\nWonderhood Team'
+
     if user_emails:
         notification_data = [
             {
                 "title": notification.title,
-                "description": notification.description,
+                "description": content,
                 # "userId": user.id,
                 "userId": user.id,
                 "isRead": False,
@@ -221,7 +223,7 @@ async def blast_notification(
             send_email_multiple_users,
             user_emails,
             notification.title,
-            notification.description
+            content
         )
 
         return {"notification": new_notification}
