@@ -1087,18 +1087,13 @@ async def send_message_to_users_of_enrolled_child(
    for id in parent_ids:
        users = await db.users.find_unique(
            where={
-               "id": id,
-               "emailNotificationsEnabled": True
+               "id": id
                }
        )
        if users:
         parent_emails.append(users.email)
 
-   if not parent_emails:
-       raise HTTPException(status_code=404, detail="Unable to obtain parent emails. Ensure that parents have email notifications enabled")
-
-
-   # Creat the notifications for the UI
+   # Create the notifications for the UI
    notification_data = [
        {
        "title": notification.title,
@@ -1106,7 +1101,6 @@ async def send_message_to_users_of_enrolled_child(
        "userId": id,
        "isRead": False,
        "time": event.date,
-       # "icon": icon
        }
        for id in parent_ids
    ]
@@ -1116,15 +1110,22 @@ async def send_message_to_users_of_enrolled_child(
        data=notification_data
    )
 
+   # Send the email -> not optimized because we are iterating/querying over parent_emails
+   for email in parent_emails:
+    user_enabled_notifications = await db.users.find_unique(
+        where={
+            "email": email,
+            "emailNotificationsEnabled": True
+        }
+    )
 
-   # Send the email
-   background_tasks.add_task(
-       send_email_multiple_users,
-       parent_emails,
-       notification.title,
-       notification.description
-   )
-
+    if user_enabled_notifications:
+        background_tasks.add_task(
+               send_email_one_user,
+               user_enabled_notifications.email,
+               notification.title,
+               notification.description
+        )
 
 
 
