@@ -313,31 +313,34 @@ async def update_event(
     end_changed   = ("endTime"   in update_payload) and (event.endTime   != updated_event.endTime)
 
 
-    # --- text for UI notificationя ---
-    changed_parts: list[str] = []
-    desc_lines: list[str] = []
+    # --- text for UI notifications ---
+    changed_parts = []
+    desc_lines = dict()
 
-    if date_changed:
+    if date_changed and (start_changed or end_changed):
         changed_parts.append("date")
-        try:
-            desc_lines.append(f"Date: {format_us_date(event.date)} → {format_us_date(updated_event.date)}")
-        except Exception:
-            desc_lines.append("Date changed.")
+        desc_lines["Date"] = format_us_date(updated_event.date)
         if start_changed:
             changed_parts.append("start time")
-            desc_lines.append(
-                f"Start: {format_us_time(event.startTime)} → {format_us_time(updated_event.startTime)}"
-            )
-
+            desc_lines["start_time"] = format_us_time(updated_event.startTime)
         if end_changed:
             changed_parts.append("end time")
-            desc_lines.append(
-                f"End: {format_us_time(event.endTime)} → {format_us_time(updated_event.endTime)}"
-            )
+            desc_lines["end_time"] = format_us_time(updated_event.endTime)
 
 
     title = f"Event updated: {updated_event.name}"
-    description = f"The {', '.join(changed_parts)} has changed.\n" + "\n".join(desc_lines)
+    if start_changed and not end_changed:
+        description = f'The time of the event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]}.  You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
+    if end_changed and not start_changed:
+        description = f'The time of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]}.  You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
+    if date_changed and start_changed:
+        description = f'The time and date of this event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
+    if date_changed and end_changed:
+        description = f'The time and date of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
+    if date_changed and start_changed and end_changed:
+        description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["start_time"]}. The end time has changed to {desc_lines["end_time"]}. The date has changed to {desc_lines["Date"]}. You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
+    if not date_changed or not start_changed or not end_changed:
+        f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to this email.'
 
     # --- create notifications in DB---
     now_utc = datetime.now(timezone.utc)
@@ -370,7 +373,7 @@ async def update_event(
             except Exception:
                 pass
 
-    # --- mailing to the same users ---
+    # # --- mailing to the same users ---
     users_for_email = await db.users.find_many(where={
         "id": {"in": user_ids},
         "emailNotificationsEnabled": True
@@ -378,33 +381,11 @@ async def update_event(
 
     user_emails = [u.email for u in users_for_email]
 
-    if date_changed and not (start_changed or end_changed):
-        subject = f'Wonderhood: {updated_event.name} Update'
-        contents = (
-            f'Hello,\n\nThe event "{updated_event.name}" has been rescheduled to '
-            f'{convert_iso_date_to_string(updated_event.date)}.\n\nBest,\nWonderhood Team'
-        )
-    else:
-        subject = f'Wonderhood: {updated_event.name} Update'
-        # ADD A LINK TO THE CONTENTS
-        if len(desc_lines) > 0:
-            contents = (
-                "Hello,\n\n"
-                f'The event "{updated_event.name}" has been updated:\n'
-                + "\n".join(desc_lines)
-                + "\n\nBest,\nWonderhood Team"
-            )
-        else:
-            contents = ("Hello,\n\n"
-            f'The event "{updated_event.name}" has been updated. Please review event information.\n'
-            + "\n\nBest,\nWonderhood Team")
-
-
     background_tasks.add_task(
         send_email_multiple_users,
         user_emails,
-        subject,
-        contents
+        title,
+        description
     )
 
     return {"event": updated_event, "message": "Event updated successfully"}
@@ -1088,18 +1069,13 @@ async def send_message_to_users_of_enrolled_child(
    for id in parent_ids:
        users = await db.users.find_unique(
            where={
-               "id": id,
-               "emailNotificationsEnabled": True
+               "id": id
                }
        )
        if users:
         parent_emails.append(users.email)
 
-   if not parent_emails:
-       raise HTTPException(status_code=404, detail="Unable to obtain parent emails. Ensure that parents have email notifications enabled")
-
-
-   # Creat the notifications for the UI
+   # Create the notifications for the UI
    notification_data = [
        {
        "title": notification.title,
@@ -1107,7 +1083,6 @@ async def send_message_to_users_of_enrolled_child(
        "userId": id,
        "isRead": False,
        "time": event.date,
-       # "icon": icon
        }
        for id in parent_ids
    ]
@@ -1117,15 +1092,22 @@ async def send_message_to_users_of_enrolled_child(
        data=notification_data
    )
 
+   # Send the email -> not optimized because we are iterating/querying over parent_emails
+   for email in parent_emails:
+    user_enabled_notifications = await db.users.find_unique(
+        where={
+            "email": email,
+            "emailNotificationsEnabled": True
+        }
+    )
 
-   # Send the email
-   background_tasks.add_task(
-       send_email_multiple_users,
-       parent_emails,
-       notification.title,
-       notification.description
-   )
-
+    if user_enabled_notifications:
+        background_tasks.add_task(
+               send_email_one_user,
+               user_enabled_notifications.email,
+               notification.title,
+               notification.description
+        )
 
 
 
