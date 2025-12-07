@@ -312,9 +312,6 @@ async def update_event(
     start_changed = ("startTime" in update_payload) and (event.startTime != updated_event.startTime)
     end_changed   = ("endTime"   in update_payload) and (event.endTime   != updated_event.endTime)
 
-    # If there are no required changes or no recipients, we simply return the result.
-    # if not user_ids or not (date_changed or start_changed or end_changed):
-    #     return {"event": updated_event, "message": "Event updated successfully"}
 
     # --- text for UI notificationя ---
     changed_parts: list[str] = []
@@ -323,8 +320,6 @@ async def update_event(
     if date_changed:
         changed_parts.append("date")
         try:
-            old_d = event.date.date()
-            new_d = updated_event.date.date()
             desc_lines.append(f"Date: {format_us_date(event.date)} → {format_us_date(updated_event.date)}")
         except Exception:
             desc_lines.append("Date changed.")
@@ -392,11 +387,17 @@ async def update_event(
     else:
         subject = f'Wonderhood: {updated_event.name} Update'
         # ADD A LINK TO THE CONTENTS
-        contents = (
-            "Hello,\n\n"
+        if len(desc_lines) > 0:
+            contents = (
+                "Hello,\n\n"
+                f'The event "{updated_event.name}" has been updated:\n'
+                + "\n".join(desc_lines)
+                + "\n\nBest,\nWonderhood Team"
+            )
+        else:
+            contents = ("Hello,\n\n"
             f'The event "{updated_event.name}" has been updated. Please review event information.\n'
-            + "\n\nBest,\nWonderhood Team"
-        )
+            + "\n\nBest,\nWonderhood Team")
 
 
     background_tasks.add_task(
