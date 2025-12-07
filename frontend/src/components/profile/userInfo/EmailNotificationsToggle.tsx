@@ -2,20 +2,24 @@
 
 import { determineEnv, makeApiRequest } from "../../../../utils/api";
 import { useEffect, useState } from "react";
+import { useUser } from "../../../../hooks/useUser";
 
 const API = determineEnv();
 
 export default function EmailNotificationsToggle() {
-    const [enabled, setEnabled] = useState<boolean>(true);
+    const { user, loading, refetch } = useUser();
+    const [enabled, setEnabled] = useState<boolean | null>(null);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-    
-    }, []);
+        if (!user) return;
+        setEnabled(Boolean(user.emailNotificationsEnabled));
+    }, [user]);
+
 
     const handleToggle = async () => {
-        if (saving) return;
+        if (saving || enabled === null) return;
 
         const next = !enabled;
         setSaving(true);
@@ -29,6 +33,7 @@ export default function EmailNotificationsToggle() {
         });
 
         setEnabled(next);
+        refetch();
         } catch (e) {
             console.error("toggle email notifications failed", e);
             setError(
@@ -41,6 +46,8 @@ export default function EmailNotificationsToggle() {
         }
     };
 
+    const isLoading = loading || enabled === null;
+
     return (
         <div className="w-full">
             <div className="flex items-center justify-between w-full px-2 py-2 rounded-xl hover:bg-gray-50">
@@ -51,7 +58,7 @@ export default function EmailNotificationsToggle() {
                 <button
                 type="button"
                 onClick={handleToggle}
-                disabled={saving}
+                disabled={saving || isLoading}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition ${
                     enabled ? "bg-wondergreen" : "bg-gray-300"
                 } ${saving ? "opacity-60 cursor-wait" : ""}`}
