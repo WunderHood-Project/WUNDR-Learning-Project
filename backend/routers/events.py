@@ -4,7 +4,7 @@ from typing import Annotated
 from models.user_models import User
 from models.interaction_models import EventCreate, EventUpdate, ReviewCreate, EnrollChildren, NotificationCreate
 from .auth.login import get_current_user
-from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string
+from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string, get_event_link, get_home_link
 from datetime import datetime, timezone, time
 from .notifications import send_email_one_user, schedule_reminder, send_email_multiple_users
 router = APIRouter()
@@ -327,20 +327,21 @@ async def update_event(
             changed_parts.append("end time")
             desc_lines["end_time"] = format_us_time(updated_event.endTime)
 
-
     title = f"Event updated: {updated_event.name}"
+    event_link = get_event_link(event.id)
+
     if start_changed and not end_changed:
-        description = f'The time of the event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]}.  You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
-    if end_changed and not start_changed:
-        description = f'The time of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]}.  You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
-    if date_changed and start_changed:
-        description = f'The time and date of this event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
-    if date_changed and end_changed:
-        description = f'The time and date of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
-    if date_changed and start_changed and end_changed:
-        description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["start_time"]}. The end time has changed to {desc_lines["end_time"]}. The date has changed to {desc_lines["Date"]}. You can see all updates here (link for event detail page link) If you have any questions, please reply to wonderhoodproject@gmail.com.'
-    if not date_changed or not start_changed or not end_changed:
-        f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to this email.'
+        description = f'The time of the event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+    elif end_changed and not start_changed:
+        description = f'The time of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+    elif date_changed and start_changed:
+        description = f'The time and date of this event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+    elif date_changed and end_changed:
+        description = f'The time and date of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+    elif date_changed and start_changed and end_changed:
+        description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["start_time"]}. The end time has changed to {desc_lines["end_time"]}. The date has changed to {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+    else:
+        description = f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to wonderhoodproject@gmail.com.'
 
     # --- create notifications in DB---
     now_utc = datetime.now(timezone.utc)
@@ -373,7 +374,7 @@ async def update_event(
             except Exception:
                 pass
 
-    # # --- mailing to the same users ---
+    # # # --- mailing to the same users ---
     users_for_email = await db.users.find_many(where={
         "id": {"in": user_ids},
         "emailNotificationsEnabled": True
@@ -389,8 +390,6 @@ async def update_event(
     )
 
     return {"event": updated_event, "message": "Event updated successfully"}
-
-
 
 
 @router.delete("/{event_id}", status_code=status.HTTP_200_OK)
@@ -511,9 +510,9 @@ async def add_user_to_event(
 
 
    # Create notification
+   home_link = get_home_link()
    subject = f"Enrollment Confirmation: {event.name}"
-   # ? ADD link to make changes still
-   contents = f'This email confirms that you are enrolled for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to join the event, please make changes here: .\n\nBest,\n\nWondherhood Team'
+   contents = f'This email confirms that you are enrolled for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nBest,\n\nWondherhood Team'
 
    await db.notifications.create(
             data={
@@ -620,9 +619,9 @@ async def add_children_to_event(
 
 
    # Create notification
+   home_link = get_home_link()
    subject = f'Enrollment Confirmation: {event.name}'
-   content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
-
+   content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. If your child is no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
 
    await db.notifications.create(
             data= {
@@ -630,10 +629,7 @@ async def add_children_to_event(
                 "description": f"Confirmation for event {event.name}",
                 "userId": current_user.id,
                 "isRead": False,
-                "time": event.date,
-                #    "eventDate": event.date,
-                #    "userId": str(current_user.id),
-                # "icon": icon
+                "time": event.date
             }
         )
 
@@ -709,7 +705,7 @@ async def remove_user_from_event(
    # Send notification to User that they have been removed from event
    if current_user.emailNotificationsEnabled == True:
         subject = f'Unenrollment Confirmation: {event.name}'
-        content = f'Hello,\n\nThis email confirms that you have been unenrolled from the {event.name} event at Wonderhood on {convert_iso_date_to_string(event.date)}. Please find more events at our website.\n\nBest,\n\nWonderhood Team'
+        content = f'Hello,\n\nThis email confirms that you have been unenrolled from the {event.name} event at Wonderhood on {convert_iso_date_to_string(event.date)}.\n\nBest,\n\nWonderhood Team'
 
 
         background_tasks.add_task(
@@ -1020,9 +1016,6 @@ async def send_message_to_users_of_enrolled_child(
    current_user: Annotated[User, Depends(get_current_user)],
    event_id:str,
    notification: NotificationCreate,
-   # title: str,
-   # description: str,
-   # icon: str,
    background_tasks: BackgroundTasks
 ):
    """
@@ -1240,7 +1233,7 @@ async def volunteer_signup_for_event(
 
        title = f"Volunteer Enrollment Confirmation: {event.name}"
        # ? ADD link to make changes still
-       description = f'This email confirms that you are enrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to join the event, please make changes here: .\n\nBest,\n\nWondherhood Team'
+       description = f'This email confirms that you are enrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to volunteer at the event, please contact us at wonderhood.project@gmail.com.\n\nBest,\n\nWondherhood Team'
 
        notification_data =  {
                "title": title,
