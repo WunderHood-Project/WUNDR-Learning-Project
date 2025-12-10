@@ -66,7 +66,7 @@ export default function Benefits() {
                         {/* Benefit text */}
                         <p
                         className="
-                            text-[15px] sm:text-base lg:text-[17px] xl:text-[18px]
+                            text-[15px] sm:text-base lg:text-[17px] xl:text-[18px] mt-1
                             leading-snug sm:leading-normal text-gray-700
                         "
                         >

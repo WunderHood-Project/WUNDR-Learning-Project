@@ -1,7 +1,35 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, JSX } from "react"
 
-type Props = {
-    item: { title: string; content: string; } | { title: string; content: { text: string; link: string; label: string; }; }
+type FAQContent = string | {text: string; link: string; label: string} | (() => JSX.Element)
+type FAQItem = {title: string; content: FAQContent}
+type Props = { item: FAQItem }
+
+
+const renderContent = (content: FAQContent) => {
+    if (typeof content === 'function') {
+        const Component = content
+        return <Component />
+    }
+
+    if (typeof content === 'string') {
+        return <p>{content}</p>
+    }
+
+    return (
+        <p>
+            {content.text}
+            {content.link && (
+                <a
+                    href={content.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-wonderleaf font-semibold underline hover:text-wonderleaf/80 transition"
+                >
+                    {content.label}
+                </a>
+            )}
+        </p>
+    )
 }
 
 const AccordionItems: React.FC<Props> = ({ item }) => {
@@ -37,7 +65,8 @@ const AccordionItems: React.FC<Props> = ({ item }) => {
                 }}
             >
                 <div className="px-4 pb-4 pt-1 text-gray-700 leading-relaxed">
-                    <p>
+                    {renderContent(item.content)}
+                    {/* <p>
                         {
                             typeof item.content === "string"
                                 ? item.content
@@ -57,7 +86,7 @@ const AccordionItems: React.FC<Props> = ({ item }) => {
                                         </>
                                     )
                         }
-                    </p>
+                    </p> */}
                 </div>
             </div>
         </div>

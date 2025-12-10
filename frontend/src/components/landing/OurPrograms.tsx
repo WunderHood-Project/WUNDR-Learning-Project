@@ -22,7 +22,7 @@ const clubs: Club[] = [
     Icon: Atom,
     title: "STEM & Innovation Club",
     desc:
-      "Where curiosity meets creativity - from coding to hands-on science experiments.",
+      "Where curiosity meets creativity, from coding to hands-on science experiments.",
   },
   {
     Icon: HeartPulse,
@@ -46,31 +46,34 @@ export default function OurPrograms() {
         <div className="flex flex-col items-center xl:items-start">
           <div className="w-full mb-3 flex flex-col items-center xl:flex-row xl:items-end gap-2 xl:gap-3">
             {/* Badge: top on <xl, right on xl+ */}
-            <span
-              className="order-1 xl:order-2
-                        -mt-8 xl:mt-0
-                        text-[11px] sm:text-xs md:text-sm
-                        px-3 py-2 rounded-full
-                        bg-gradient-to-br from-amber-300 via-amber-400 to-amber-300 text-amber-950
-                        font-semibold tracking-wide shadow-md ring-1 ring-amber-500/35 mb-4"
-            >
-              COMING SOON
-            </span>
-
             <h2
-              className="order-2 xl:order-1
+              className="order-1 xl:order-1
                         text-3xl sm:text-4xl md:text-[34px] lg:text-[36px] xl:text-[40px]
                         font-bold text-center xl:text-left"
             >
               WonderHood Signature Clubs
             </h2>
+
+            <span
+            // -mt-8 xl:mt-0
+              className="order-2 xl:order-2
+                        text-[11px] sm:text-xs md:text-sm
+                        px-3 py-2 mt-1 xl:mt-0 rounded-full
+                        bg-gradient-to-br from-amber-300 via-amber-400 to-amber-300 text-amber-950
+                        font-semibold tracking-wide shadow-md ring-1 ring-amber-500/35
+
+                        "
+            >
+              COMING SOON
+            </span>
           </div>
 
           {/* underline */}
           <div className="h-1 w-3/4 sm:w-2/3 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-4 mt-2" />
 
           <p className="text-base sm:text-lg lg:text-[20px] text-gray-600 max-w-5xl text-center sm:text-left mb-8 sm:mb-10 mt-1">
-            Year-round communities (in planning) where homeschool and online learners (ages 10-18) connect, learn, and grow together.
+            Get ready for something new! Our upcoming WonderClubs will be <span className="font-bold">ongoing, weekly programs</span> designed to give homeschool and online learners
+            a consistent space to learn, create, and connect. These year-round communities will offer deeper friendships, meaningful projects, and exciting opportunities to grow together.
           </p>
         </div>
 
@@ -121,7 +124,7 @@ export default function OurPrograms() {
         {/* Bottom of the section */}
         <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <p className="text-sm text-gray-500">
-            Programs may vary by season, location, and funding.
+            Programs may vary by season and location.
           </p>
           {/* <a href="/interest" className="text-sm font-semibold text-wondergreen underline underline-offset-4 hover:opacity-80">
             Join the interest list →

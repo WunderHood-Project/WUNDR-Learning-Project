@@ -29,15 +29,11 @@ export default function Story_Mission() {
           {/* Текст: центр до xl */}
           <div className="text-center xl:text-left">
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl mb-4">
-              {/* WonderHood was created for youth ages 10-18 who learn from home — whether
-              through homeschooling or online school. We believe that learning outside
-              traditional classrooms can be powerful, but it can also feel isolating. */}
-              WonderHood was created for students (10-18) who learn from home. We believe that learning outside
-              traditional classrooms, such as remote learning or homeschooling, can be powerful, but it can also feel isolating.
+              WonderHood was created for home-learning students ages 10-18 who need connection as much as education. Learning outside
+              traditional classrooms can be empowering, but it can also feel isolating.
             </p>
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl">
-              That&apos;s why we build programs where teens can make friends and explore their
-              interests. They have the freedom to grow through outdoor adventures, creative arts, and community projects.
+              Our events gives learners a place to belong. Each experience is individually offered and families can enroll in the opportunities that excite them most. Through outdoor adventures, creative arts, and community projects, students build friendships, explore interests, and grow in confidence.
             </p>
           </div>
         </div>

@@ -11,26 +11,30 @@ const ways: Way[] = [
     {
         icon: Building2,
         title: "Venue Partner",
-        desc: "Host clubs and events at your location (gyms, libraries, parks, museums).",
-        bullets: ["Space access/discounts", "Safety walkthrough", "Seasonal scheduling"],
+        // desc: "Host clubs and events at your location (gyms, libraries, parks, museums).",
+        desc: "Offer your space for clubs and events, such as gyms, libraries, parks, musuems, or studios.",
+        bullets: ["Access to space or discounted rentals", "Safety walkthrough", "Seasonal or flexible scheduling"],
     },
     {
         icon: Handshake,
         title: "Program Partner",
-        desc: "Provide instructors, workshops, and safety guidance.",
-        bullets: ["Outdoor/Arts/STEM sessions", "Certified staff", "Co-branded programs"],
+        // desc: "Provide instructors, workshops, and safety guidance.",
+        desc: "Share your expertise through workshops, classes, and hands-on learning",
+        bullets: ["Outdoor, arts, and STEM classes", "Certified instructors", "Co-branded programs"],
     },
     {
         icon: Gift,
         title: "Resource Sponsor",
-        desc: "Fund scholarships, gear, transportation, or meals.",
-        bullets: ["Scholarships", "Equipment & materials", "Bus/van support"],
+        // desc: "Fund scholarships, gear, transportation, or meals.",
+        desc: "Support learners through funding for scholarships, materials, transportation, or meals",
+        bullets: ["Scholarships", "Equipment & support", "Bus/van support"],
     },
     {
         icon: GraduationCap,
         title: "Education Partner",
-        desc: "Co-create learning pathways, credits, and service hours.",
-        bullets: ["Credit/CE options", "Guest lectures", "Capstone projects"],
+        // desc: "Co-create learning pathways, credits, and service hours.",
+        desc: "Co-create learning pathways that help students grow through credits, mentorship, and real-world projects.",
+        bullets: ["Credit/CE options", "Guest lectures", "Capstone or portfolio  projects"],
     },
 ];
 
@@ -41,7 +45,8 @@ export default function PartnerWays() {
                 {/* Header Benefits/FAQ */}
                 <div className="flex flex-col items-center xl:items-start">
                     <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-wondergreen text-center xl:text-left">
-                        How We Can Partner
+                        {/* How We Can Partner */}
+                        Ways We Can Work Together
                     </h2>
                     <div className="h-1 w-3/4 sm:w-[28%] bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-6 sm:mb-8 mt-2 self-center xl:self-start" />
                 </div>

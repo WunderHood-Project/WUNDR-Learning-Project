@@ -1,15 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import { FaUser } from "react-icons/fa";
 
-type PersonGroup = "Board of Directors" | "Leadership & Advisors";
+type PersonGroup = "Board of Directors"
+// | "Leadership & Advisors";
 
 type Person = {
     name: string;
     title: string;
     group: PersonGroup;
     bio?: string;
-    imageSrc?: string; 
+    imageSrc?: string;
 };
 
 const PEOPLE: Person[] = [
@@ -58,30 +60,30 @@ const PEOPLE: Person[] = [
 },
 
 // ----- Leadership & Advisors / Founding Tech Team -----
-{
-    name: "Andrew S. Lizon",
-    title: "Founding Technical Lead, Web Platform",
-    group: "Leadership & Advisors",
-    bio: "Part of the founding tech team behind WonderHood, supporting the website, registration tools, and technical infrastructure.",
-    // imageSrc: "/our_foto/Andrew.png",
-},
-{
-    name: "Erika Brandon",
-    title: "Founding Frontend Engineer & Creative Partner",
-    group: "Leadership & Advisors",
-    bio: "Helps lead front-end development, user experience, and website storytelling so WonderHood feels warm, clear, and inspiring for families.",
-    // imageSrc: "/our_foto/Erika.png",
-},
-{
-    name: "Joshua Maxey",
-    title: "Founding Backend Engineer & Systems Advisor",
-    group: "Leadership & Advisors",
-    bio: "Supports backend architecture, APIs, and deployment so the platform stays reliable and secure.",
-    // imageSrc: "/our_foto/Joshua.png",
-},
+// {
+//     name: "Andrew S. Lizon",
+//     title: "Founding Technical Lead, Web Platform",
+//     group: "Leadership & Advisors",
+//     bio: "Part of the founding tech team behind WonderHood, supporting the website, registration tools, and technical infrastructure.",
+//     // imageSrc: "/our_foto/Andrew.png",
+// },
+// {
+//     name: "Erika Brandon",
+//     title: "Founding Frontend Engineer & Creative Partner",
+//     group: "Leadership & Advisors",
+//     bio: "Helps lead front-end development, user experience, and website storytelling so WonderHood feels warm, clear, and inspiring for families.",
+//     // imageSrc: "/our_foto/Erika.png",
+// },
+// {
+//     name: "Joshua Maxey",
+//     title: "Founding Backend Engineer & Systems Advisor",
+//     group: "Leadership & Advisors",
+//     bio: "Supports backend architecture, APIs, and deployment so the platform stays reliable and secure.",
+//     // imageSrc: "/our_foto/Joshua.png",
+// },
 ];
 
-const GROUPS: PersonGroup[] = ["Board of Directors", "Leadership & Advisors"];
+const GROUPS: PersonGroup[] = ["Board of Directors"];
 
 export default function LeadershipSection() {
     return (
@@ -93,9 +95,9 @@ export default function LeadershipSection() {
                         Governance &amp; Leadership
                     </h2>
                     <p className="mt-2 text-sm sm:text-base md:text-lg text-gray-700 max-w-3xl mx-auto">
-                        WonderHood Project is guided by a volunteer Board of Directors and a
-                        small founding tech and leadership team. Together we keep programs
-                        youth-centered, safe, and aligned with our mission.
+                        WonderHood Project is led by a volunteer Board of Directors and a
+                        small founding team who are care deeply about youth and community. Together, we ensure every program is
+                        safe, supportive, and true to our mission.
                     </p>
                 </div>
 
@@ -129,12 +131,12 @@ export default function LeadershipSection() {
                                         className="rounded-full object-cover border-2 border-white shadow-md bg-wonderbg/50"
                                     />
                                     ) : (
-                                    <div
-                                        className="h-full w-full rounded-full flex items-center justify-center border-2 border-dashed border-wonderleaf/70 bg-wonderbg/60 text-wonderleaf text-2xl sm:text-3xl font-bold shadow-md"
-                                        aria-hidden="true"
-                                    >
-                                        ?
-                                    </div>
+                                        <div
+                                            className="h-full w-full rounded-full flex items-center justify-center border-2 border-dashed border-wonderleaf/70 bg-wonderbg/60 text-wonderleaf text-2xl sm:text-3xl font-bold shadow-md"
+                                            aria-hidden="true"
+                                        >
+                                            <FaUser className="h-1/2 w-1/2"/>
+                                        </div>
                                     )}
                                 </div>
 
@@ -158,7 +160,7 @@ export default function LeadershipSection() {
                 </div>
 
                 <p className="mt-6 text-[11px] sm:text-xs text-gray-500 text-center">
-                    Board members and volunteers serve without compensation. Their time
+                    Board members serve without compensation. Their time
                     and expertise help keep WonderHood accessible and focused on youth
                     wellbeing.
                 </p>
