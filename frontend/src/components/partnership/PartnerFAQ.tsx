@@ -2,19 +2,19 @@
 //   const faqs = [
 //     {
 //       q: "Are you a 501(c)(3)?",
-//       a: "Yes. Donations may be tax-deductible. We provide thank-you letters and impact notes.",
+//       a: "Yes. Donations may be tax-deductible and we provide thank-you letters and impact summaries for your records.",
 //     },
 //     {
 //       q: "Insurance & waivers?",
-//       a: "We use parental waivers and follow venue safety requirements. Background checks for all adult instructors.",
+//       a: "We use parental consent waivers, follow venue safety requirements, and complete background checks for adult instructors and volunteers where required.",
 //     },
 //     {
 //       q: "Can we sponsor a specific program?",
-//       a: "Absolutely — scholarships, gear, venue fees, transportation, or pilot programs.",
+//       a: "Absolutely — you can support scholarships, gear, venue fees, transportation, or pilot programs.",
 //     },
 //     {
 //       q: "How soon can we start?",
-//       a: "We can pilot in 2–4 weeks after alignment and safety review.",
+//       a: "We can usually pilot a partnership within 2-4 weeks after alignment, planning, and safety review.",
 //     },
 //   ];
 
@@ -89,4 +89,4 @@
 //       </div>
 //     </section>
 //   );
-// }
+//  }
