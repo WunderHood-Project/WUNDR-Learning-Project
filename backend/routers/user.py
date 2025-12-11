@@ -180,11 +180,23 @@ async def delete_user(
     enforce_authentication(current_user, "delete your profile")
 
     try:
-        deleted_user = await db.users.delete(
-                where={"id": current_user.id}
+        deleted_children = await db.children.delete_many(
+            where={
+               "parentIds": {
+                   "has": current_user.id
+               }
+            }
             )
+        if not deleted_children:
+            print("User's associated children may have not been removed from the Wonerhood Project database.")
+            pass
+        
+        deleted_user = await db.users.delete(
+                where={"id": current_user.id},
+            )
+
         if deleted_user:
-            return "User profile deleted successfully"
+            return "User profile and associated children deleted successfully"
 
         else:
             raise HTTPException(
