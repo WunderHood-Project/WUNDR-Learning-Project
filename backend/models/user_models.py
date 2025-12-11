@@ -31,6 +31,8 @@ class User(BaseModel):
     state: str = Field(min_length=2, max_length=50)
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
 
+    emailNotificationsEnabled: bool = True
+
     children: List["Child"] = Field(default_factory=list)  # Default to empty list
     events: List["Event"] = Field(default_factory=list)
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -53,15 +55,17 @@ class UserUpdateRequest(BaseModel):
     firstName: Optional[str] = Field(None, min_length=1, max_length=50)
     lastName: Optional[str] = Field(None, min_length=1, max_length=50)
     email: Optional[str] = Field(None, pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-    phoneNumber: Optional[str] = Field(pattern=r'^\+[1-9]\d{1,14}$', description="Phone number in E.164 format (+12025550123)")
+    phoneNumber: Optional[str] = Field(None, pattern=r'^\+[1-9]\d{1,14}$', description="Phone number in E.164 format (+12025550123)")
     # role: Optional[Role] = None
     avatar: Optional[str] = Field(None, description="Avatar URL as string")
     password: Optional[str] = None
 
-    address: Optional[str] = Field(min_length=3, max_length=200)
+    address: Optional[str] = Field(None, min_length=3, max_length=200)
     city: Optional[str] = Field(None, min_length=2, max_length=50)
     state: Optional[str] = Field(None, min_length=2, max_length=50)
-    zipCode: Optional[str] = Field(pattern=r'^\d{5}(-\d{4})?$')
+    zipCode: Optional[str] = Field(None, pattern=r'^\d{5}(-\d{4})?$')
+
+    emailNotificationsEnabled: Optional[bool] = None
 
 
 class UserResponse(BaseModel):
@@ -76,6 +80,7 @@ class UserResponse(BaseModel):
     city: str = Field(None, min_length=2, max_length=50)
     state: str = Field(None, min_length=2, max_length=50)
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
+    emailNotificationsEnabled: bool
     children: List["Child"] = Field(default_factory=list)
     enrolledEvents: List["Event"] = Field(default_factory=list)
     reviews:List["Review"] = Field(default_factory=list)

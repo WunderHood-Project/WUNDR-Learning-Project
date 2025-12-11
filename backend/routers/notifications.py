@@ -190,38 +190,48 @@ async def blast_notification(
 
     enforce_admin(current_user, "create blast message")
 
-    users = await db.users.find_many()
+    users = await db.users.find_many(
+        where={
+            "emailNotificationsEnabled": True
+        }
+    )
+    
     user_emails = [user.email for user in users]
 
     # Add notification here
+    content = f'Hello,\n\n {notification.description}\n\nBest,\n\nWonderhood Team'
 
-    now = datetime.now(timezone.utc)
-    event_time = ensure_utc(parse_event_date(notification.time)) if getattr(notification, "time", None) else now
+    if user_emails:
+        notification_data = [
+            {
+                "title": notification.title,
+                "description": content,
+                # "userId": user.id,
+                "userId": user.id,
+                "isRead": False,
+                "time": datetime.now(timezone.utc),
+            }
+            for user in users
+        ]
 
-    notification_data = [
-        {
-            "title": notification.title,
-            "description": notification.description,
-            # "userId": user.id,
-            "userId": current_user.id,
-            "isRead": False,
-            "time": datetime.now(timezone.utc),
-        }
-        for user in users
-    ]
+        new_notification = await db.notifications.create_many(
+            data=notification_data
+        )
 
-    new_notification = await db.notifications.create_many(
-        data=notification_data
-    )
 
-    background_tasks.add_task(
-        send_email_multiple_users,
-        user_emails,
-        notification.title,
-        notification.description
-    )
+        background_tasks.add_task(
+            send_email_multiple_users,
+            user_emails,
+            notification.title,
+            content
+        )
 
-    return {"notification": new_notification}
+        return {"notification": new_notification}
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Unable to locate user emails with enabled notificaions"
+        ) 
 
 # =======================================================
 @router.get("/", status_code=status.HTTP_200_OK)

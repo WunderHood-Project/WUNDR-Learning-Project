@@ -26,6 +26,8 @@ model Users {
   state             String
   zipCode           String
 
+  emailNotificationsEnabled Boolean @default(true)
+
   // m-to-n
   childIds String[]   @db.ObjectId
   children  Children[]   @relation(fields: [childIds], references: [id])

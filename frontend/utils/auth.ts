@@ -18,6 +18,7 @@ export interface SignupPayload {
     zipCode: string;
     // children?: ChildPayload[];
     role: Role;
+    emailNotificationsEnabled: boolean;
 }
 
 export async function handleSignup(payload: SignupPayload) {
