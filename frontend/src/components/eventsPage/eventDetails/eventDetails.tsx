@@ -10,20 +10,25 @@ import { makeApiRequest, determineEnv } from '../../../../utils/api';
 import EventAsideCard from './EventAsideCard';
 import EventAboutSection from './EventAboutSection';
 import { normalizeNextImageSrc } from "../../../../utils/image/normalizeNextImageSrc";
+import OpenModalButton from '@/context/openModalButton';
+import LoginModal from '@/components/login/LoginModal';
+import SignupModal from '@/components/signup/SignupModal';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
-const WONDERHOOD_URL = determineEnv();
+const WONDERHOOD_URL = determineEnv()
 
 export default function EventDetails() {
-    const { eventId } = useParams();
-    const { event, loading, error, refetch } = useEvent(eventId);
-    const { user } = useUser();
+    const { eventId } = useParams()
+    const { event, loading, error, refetch } = useEvent(eventId)
+    const { user } = useUser()
 
     const [serverError, setServerError] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [successEnroll, setSuccessEnroll] = useState(false);
     const [unenrollId, setUnenrollId] = useState<string | null>(null);
-    const [unenrollError, setUnenrollError] = useState<string | null>(null);    
+    const [unenrollError, setUnenrollError] = useState<string | null>(null);
 
     const toggleChild = (id: string) => {
         setSelected(prev => {
@@ -36,7 +41,6 @@ export default function EventDetails() {
             return next;
         });
     };
-
 
     const eventParticipantSet = useMemo(
         () => new Set(event?.childIds ?? []),
@@ -52,20 +56,20 @@ export default function EventDetails() {
 
 
     const handleEnroll = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const childIds = Array.from(selected);
-        if (childIds.length === 0) return;
+        e.preventDefault()
+        const childIds = Array.from(selected)
+        if (childIds.length === 0) return
 
         try {
-        await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}/enroll`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: { childIds },
-        });
-        setShowForm(false);
-        setSuccessEnroll(true);
-        setSelected(new Set());
-        refetch();
+            await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}/enroll`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: { childIds },
+            })
+            setShowForm(false)
+            setSuccessEnroll(true)
+            setSelected(new Set())
+            refetch()
         } catch (err) {
             setServerError(err instanceof Error ? err.message : 'A network error occurred. Please try again later.');
         }
@@ -95,22 +99,19 @@ export default function EventDetails() {
 
     const hasCapacity = typeof event?.participants === 'number' && (event?.participants ?? 0) < (event?.limit ?? 0);
 
-    if (loading) {
-        return <div className="min-h-[60vh] grid place-items-center text-gray-600">Loading event details…</div>;
-    }
+    if (loading) return <div className="min-h-[60vh] grid place-items-center text-gray-600">Loading event details…</div>
     if (error) {
         return (
             <div className="min-h-[60vh] grid place-items-center">
                 <div className="text-red-600">
                     Error: {error}{' '}
-                <button onClick={refetch} className="ml-3 underline text-wondergreen">Try again</button>
+                    <button onClick={refetch} className="ml-3 underline text-wondergreen">Try again</button>
                 </div>
             </div>
-        );
+        )
     }
-    if (!event) {
-        return <div className="min-h-[60vh] grid place-items-center">Event not found</div>;
-    }
+    if (!event) return <div className="min-h-[60vh] grid place-items-center">Event not found</div>;
+
 
     return (
         <div className="pb-12 bg-wonderbg min-h-screen">
@@ -153,10 +154,18 @@ export default function EventDetails() {
             </header>
 
             {/* TITLE */}
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center md:text-left mt-6 sm:mt-8 mb-10 sm:mb-12">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center md:text-left mt-6 sm:mt-8 mb-6 sm:mb-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-wondergreen leading-tight">
                     {event.name} <span className="text-gray-700">in {event.city}</span>
                 </h1>
+
+                <Link
+                    href="/events"
+                    className="flex items-center mt-3 gap-2 text-wondergreen/80 hover:text-wondergreen/60 transition"
+                >
+                    <ArrowLeft className='w-4 h-4' />
+                    Back to Events
+                </Link>
             </div>
 
             {/* MAIN */}
@@ -179,13 +188,13 @@ export default function EventDetails() {
                 {/* ENROLL / UNENROLL FORM */}
                 {showForm && (
                     <>
-                        {user ? (
-                            user.children?.length ? (
-                                <form
+                            {user ? (
+                                user.children?.length ? (
+                                    <form
                                     onSubmit={handleEnroll}
                                     className="mt-8 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 p-6 sm:p-8 shadow-md"
                                 >
-                                    <h3 className="text-lg font-bold text-wondergreen mb-1">
+                                        <h3 className="text-lg font-bold text-wondergreen mb-1">
                                         Select your child(ren) to enroll
                                     </h3>
                                     <p className="mb-5 text-sm text-gray-600">
@@ -277,12 +286,12 @@ export default function EventDetails() {
                                         >
                                             Enroll
                                         </button>
+
                                         <button
                                             type="button"
                                             onClick={() => {
                                                 setShowForm(false);
                                                 setServerError(null);
-                                                setUnenrollError(null);
                                             }}
                                             className="text-gray-600 font-medium hover:text-gray-900 underline"
                                         >
@@ -296,8 +305,21 @@ export default function EventDetails() {
                                 </div>
                             )
                         ) : (
-                            <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
-                                Please create an account or log in to enroll in events.
+                            <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+                                <p className="font-medium">Please log in or create an account to enroll in events.</p>
+                                <div className="mt-2 flex gap-3">
+                                    <OpenModalButton
+                                        className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
+                                        buttonText="Log in"
+                                        modalComponent={<LoginModal/>}
+                                    />
+
+                                    <OpenModalButton
+                                        className="rounded-lg border border-emerald-600 px-4 py-2 text-emerald-700 hover:bg-emerald-50"
+                                        buttonText="Sign up"
+                                        modalComponent={<SignupModal/>}
+                                    />
+                                </div>
                             </div>
                         )}
                     </>

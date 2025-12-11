@@ -1,8 +1,8 @@
-import { financeInfo } from "../../data/financeQuestions"
+import { FAQ } from "../../data/faq"
 import AccordionItems from "./AccordionItems"
 
 export default function Accordion() {
-    const data = financeInfo
+    const data = FAQ
 
     return (
         <div>

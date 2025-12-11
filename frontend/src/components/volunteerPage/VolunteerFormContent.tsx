@@ -14,14 +14,14 @@ type Props = {
   ok: boolean;
   okMsg: string | null;
   error: string | null;
-  //Patch-like state update from parent 
+  //Patch-like state update from parent
   onChange: (patch: Partial<VolunteerCreate>) => void;
   //Parent will finalize/normalize (e.g., phone to E.164) and POST */
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
 };
 
 export default function VolunteerFormContent({form, disabled, opportunityId, ok, okMsg, error, onChange, onSubmit }: Props) {
-    
+
     // Keep focus on the first input when the form becomes enabled
     const firstNameRef = useRef<HTMLInputElement | null>(null);
 
@@ -85,7 +85,7 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
     const commitSkills = (raw: string) => {
     const next = toSkillsArray(raw);
     onChange({ skills: next });
-    setSkillsInput(next.join(', ')); 
+    setSkillsInput(next.join(', '));
     };
 
 
@@ -127,7 +127,7 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
                     <input
                     type="email"
                     className="w-full rounded-lg border px-3 py-2"
-                    value={form.email ?? ''} 
+                    value={form.email ?? ''}
                     onChange={(e) => onChange({ email: e.target.value })}
                     placeholder="name@example.com"
                     required
@@ -141,7 +141,7 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
                     <input
                     inputMode="tel"
                     className="w-full rounded-lg border px-3 py-2"
-                    value={form.phoneNumber ?? ''} 
+                    value={form.phoneNumber ?? ''}
                     onChange={(e) => onChange({ phoneNumber: e.target.value })}
                     placeholder="123-456-7890"
                     required
@@ -193,7 +193,7 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
 
                 {/* Availability (days) */}
                 <div className="space-y-2 mt-4">
-                <label className="block text-sm font-medium">Availability (days)</label>
+                <label className="block text-sm font-medium">Availability (Days)</label>
                 <div className="flex gap-6 text-sm">
                     {(['Weekdays', 'Weekends'] as AvailabilityDay[]).map((d) => (
                     <label key={d} className="inline-flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
                     Skills <span className="text-rose-600">*</span>
                 </label>
                 <input
-                placeholder="first aid, project management, youth mentoring"
+                placeholder="First Aid, Project management, Youth mentoring"
                 className="w-full rounded-lg border px-3 py-2.5"
                 value={skillsInput}                          // local text
                 onChange={(e) => setSkillsInput(e.target.value)} //don't parse every character
@@ -228,14 +228,14 @@ export default function VolunteerFormContent({form, disabled, opportunityId, ok,
                 required
                 />
                 <p className="mt-1 text-xs text-slate-500">
-                    Separate skills with commas or press Enter. Spaces inside a skill are allowed (e.g., “first aid”).
+                    Separate skills with commas or press Enter. Spaces inside a skill are allowed (e.g., “First Aid”).
                 </p>
                 </div>
 
 
                 {/* Short bio */}
                 <div className="space-y-2 mt-4">
-                <label className="block text-sm font-medium">Short bio (optional)</label>
+                <label className="block text-sm font-medium">Short Biography (optional)</label>
                 <textarea
                     rows={4}
                     className="w-full rounded-lg border px-3 py-2"

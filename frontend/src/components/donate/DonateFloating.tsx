@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { FaHeart } from "react-icons/fa";
 
 export default function DonateFloating() {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
-    
+
 
     // Don't show the button on the donation page itself or in the admin panel.
     if (pathname === "/donate" || pathname?.startsWith("/admin")) {
@@ -59,18 +60,7 @@ export default function DonateFloating() {
                 animate-heart-beat
                 "
                 >
-                    {/* SVG-icon */}
-                    <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden="true"
-                    >
-                        <path
-                        d="M12 21s-4.5-2.7-7.2-5.4C3 13.8 2 12.3 2 10.5 2 8 3.8 6 6.2 6 7.8 6 9.3 6.9 10 8.2 10.7 6.9 12.2 6 13.8 6 16.2 6 18 8 18 10.5c0 1.8-1 3.3-2.8 5.1C16.5 18.3 12 21 12 21z"
-                        fill="currentColor"
-                        />
-                    </svg>
+                    <FaHeart className="text-red-500 w-4 h-4" />
                 </span>
 
                 <span className="text-sm font-semibold hidden sm:inline">

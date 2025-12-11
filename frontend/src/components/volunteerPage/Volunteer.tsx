@@ -73,7 +73,7 @@ export default function Volunteer() {
             onClick={goOpps}
             className={`pb-3 -mb-px font-semibold ${tab === 'opps' ? 'text-wondergreen border-b-2 border-wondergreen' : 'text-gray-600 hover:text-wondergreen'}`}
           >
-            Opportunities
+            Volunteer Opportunities
           </button>
           <button
             role="tab"

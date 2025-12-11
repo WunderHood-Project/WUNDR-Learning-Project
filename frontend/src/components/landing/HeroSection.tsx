@@ -43,12 +43,12 @@ export default function HeroSection() {
                                 More than Just Homeschooling
                             </h1>
 
-                            <p className="text-white mt-3 md:mt-4
+                            {/* <p className="text-white mt-3 md:mt-4
                                             text-base sm:text-lg md:text-xl lg:text-2xl
                                             max-w-3xl mx-auto
                                             drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
                                 Connection, adventure, and friendship for youth ages 10-18.
-                            </p>
+                            </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
@@ -99,12 +99,12 @@ export default function HeroSection() {
                                 A Place to Belong, Explore, and Create
                             </h1>
 
-                            <p className="text-white mt-3 md:mt-4
-                                        text-base sm:text-lg md:text-xl lg:text-2xl
-                                        max-w-3xl mx-auto
-                                        drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
-                                For homeschoolers seeking fun, friendships, and meaningful adventures.
-                            </p>
+                        {/* <p className="text-white mt-3 md:mt-4
+                                    text-base sm:text-lg md:text-xl lg:text-2xl
+                                    max-w-3xl mx-auto
+                                    drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
+                        For homeschoolers seeking fun, friendships, and meaningful adventures.
+                        </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
@@ -145,22 +145,22 @@ export default function HeroSection() {
                     {/* overlay */}
                     <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
 
-                    {/* centered container */}
-                    <div className="absolute inset-0 z-10 flex items-center justify-center mt-17 md:mt-16">
-                        <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center">
-                            <h1 className="text-white font-bold leading-tight
-                                        text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-6xl
-                                        lg:whitespace-nowrap
-                                        drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
-                                Where Homeschool Teens Connect &amp; Grow
-                            </h1>
+                {/* centered container */}
+                <div className="absolute inset-0 z-10 flex items-center justify-center mt-17 md:mt-16">
+                    <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center">
+                        <h1 className="text-white font-bold leading-tight
+                                    text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-6xl
+                                    lg:whitespace-nowrap
+                                    drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
+                        Where Teens Connect &amp; Grow
+                        </h1>
 
-                            <p className="text-white mt-3 md:mt-4
-                                        text-base sm:text-lg md:text-xl lg:text-2xl
-                                        max-w-3xl mx-auto
-                                        drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
-                                Creative activities, new friendships, real-life experiences.
-                            </p>
+                        {/* <p className="text-white mt-3 md:mt-4
+                                    text-base sm:text-lg md:text-xl lg:text-2xl
+                                    max-w-3xl mx-auto
+                                    drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
+                        Creative activities, new friendships, real-life experiences.
+                        </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white

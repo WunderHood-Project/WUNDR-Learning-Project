@@ -82,13 +82,39 @@ export default function Opportunities({
     <section className="max-w-6xl mx-auto px-4 py-2">
       <header className="text-center mb-8">
         <p className="mt-3 text-sm md:text-lg text-gray-700">
-          We&apos;re building a small team of caring helpers. Pick a role or tell us your skills —
-          we&apos;ll find a good fit (one-time or ongoing).
+          Want to get involved? Tell us your skills - we&apos;ll find a good fit.
         </p>
         <p className="mt-2 text-xs md:text-sm text-gray-600">
-          In the application, please include your cities and availability (weekdays/weekends, morning/afternoon/evening).
+          In the application, please include availability and desired location.
         </p>
       </header>
+
+      {/* Volunteer Hours */}
+      <section className="mb-8 sm:mb-10">
+        <div className="group rounded-xl border-2 border-wondergreen/20 bg-white p-4 sm:p-6 shadow-lg">
+          <div className="mb-2 flex items-center gap-3 sm:gap-4">
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-gradient-to-br from-wondergreen to-wonderleaf transition-transform duration-300 group-hover:scale-110">
+              <span className="text-lg sm:text-xl font-bold text-white">🌟</span>
+            </div>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wondergreen">
+              Become a WonderTeen Volunteer (Ages 12-17)
+            </h3>
+          </div>
+          <p className="text-sm sm:text-base md:max-w-4xl text-gray-700">
+              Earn service hours, develop leadership skills, and make a difference. All under staff supervision, WonderTeen volunteers help at events, assist instructors, and support younger learners.
+              <span className="block mt-2">Want to join? Email us at {" "}
+                <a
+                  href="mailto:wonderhood.project@gmail.com"
+                  rel="noopener noreferrer"
+                  className="underline transition-colors duration-200 text-wonderleaf hover:text-wondergreen"
+                >
+                  wonderhood.project@gmail.com
+                </a>
+                .
+              </span>
+          </p>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch">
         {loaded && items.length === 0 ? (
