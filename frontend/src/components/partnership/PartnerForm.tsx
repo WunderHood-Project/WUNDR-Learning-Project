@@ -89,7 +89,7 @@ export default function PartnerForm() {
 
                 <form
                 onSubmit={handleSubmit}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-5 rounded-2xl bg-white p-5 sm:p-6 ring-1 ring-wonderleaf/20 shadow-sm"
+                className="grid grid-cols-1 gap-5 rounded-2xl bg-white p-5 sm:p-6 ring-1 ring-wonderleaf/20 shadow-sm"
                 >
                     {/* left */}
                     <div className="grid gap-4">
@@ -139,6 +139,7 @@ export default function PartnerForm() {
                                     pattern="^[0-9]{3}-[0-9]{3}-[0-9]{4}$" 
                                     autoComplete="tel"
                                     maxLength={12} 
+                                    placeholder="555-123-4567"
                                     className={inputCls}
                                 />
                             </Field>
@@ -158,15 +159,19 @@ export default function PartnerForm() {
                             </Field>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid  gap-4">
                             <Field label="Website">
                                 <input
+                                type="url"
+                                inputMode="url"
+                                autoComplete="url"
+                                placeholder="https://example.org"
                                 value={data.website ?? ""}
                                 onChange={(e) => update("website", e.target.value)}
                                 className={inputCls}
                                 />
                             </Field>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Field label="City">
                             <input
                                 value={data.city ?? ""}
@@ -223,7 +228,7 @@ export default function PartnerForm() {
                         </Field>
 
                         {/* btn submit */}
-                        <div className="flex items-center justify-center gap-3 text-center mt-1">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-center mt-1">
                             <button
                                 type="submit"
                                 disabled={loading}
