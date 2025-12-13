@@ -341,7 +341,7 @@ async def update_event(
     elif date_changed and start_changed and end_changed:
         description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["start_time"]}. The end time has changed to {desc_lines["end_time"]}. The date has changed to {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
     else:
-        description = f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to wonderhoodproject@gmail.com.'
+        description = f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to wonderhood.project@gmail.com.'
 
     # --- create notifications in DB---
     now_utc = datetime.now(timezone.utc)
