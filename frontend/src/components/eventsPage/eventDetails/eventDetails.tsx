@@ -76,17 +76,17 @@ export default function EventDetails() {
     };
 
     const handleUnenrollOne = async (childId: string) => {
-        if(!eventId) return;
+        if (!eventId) return;
 
         setUnenrollId(childId);
         setUnenrollError(null);
 
         try {
             await makeApiRequest(`${WONDERHOOD_URL}/event/${eventId}/unenroll`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: { childIds: [childId] },
-        });
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: { childIds: [childId] },
+            });
             refetch();
         } catch (err) {
             setServerError(
@@ -188,13 +188,13 @@ export default function EventDetails() {
                 {/* ENROLL / UNENROLL FORM */}
                 {showForm && (
                     <>
-                            {user ? (
-                                user.children?.length ? (
-                                    <form
+                        {user ? (
+                            user.children?.length ? (
+                                <form
                                     onSubmit={handleEnroll}
                                     className="mt-8 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 p-6 sm:p-8 shadow-md"
                                 >
-                                        <h3 className="text-lg font-bold text-wondergreen mb-1">
+                                    <h3 className="text-lg font-bold text-wondergreen mb-1">
                                         Select your child(ren) to enroll
                                     </h3>
                                     <p className="mb-5 text-sm text-gray-600">
@@ -247,11 +247,10 @@ export default function EventDetails() {
                                                 <label
                                                     key={child.id}
                                                     htmlFor={childId}
-                                                    className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                                                        isChecked
+                                                    className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isChecked
                                                             ? "border-wondergreen bg-wondergreen/5"
                                                             : "border-gray-200 bg-gray-50"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <input
                                                         id={childId}
@@ -281,8 +280,8 @@ export default function EventDetails() {
                                         <button
                                             type="submit"
                                             className="rounded-lg bg-wondergreen px-6 py-3 text-white font-bold uppercase tracking-wide text-sm hover:bg-wonderleaf transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            disabled={selected.size === 0}
-                                            aria-disabled={selected.size === 0}
+                                            disabled={selected.size === 0 || Number(event.participants) + selected.size > event.limit}
+                                            aria-disabled={selected.size === 0 || Number(event.participants) + selected.size > event.limit}
                                         >
                                             Enroll
                                         </button>
@@ -302,13 +301,13 @@ export default function EventDetails() {
                             ) : (
                                 <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
                                     You don&apos;t have any children in your account. Please{" "}
-                                <Link
-                                    href="/profile?tab=child&mode=add"
-                                    className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
-                                >
-                                    add a child
-                                </Link>{" "}
-                                to enroll in events.
+                                    <Link
+                                        href="/profile?tab=child&mode=add"
+                                        className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
+                                    >
+                                        add a child
+                                    </Link>{" "}
+                                    to enroll in events.
                                 </div>
 
                             )
@@ -319,13 +318,13 @@ export default function EventDetails() {
                                     <OpenModalButton
                                         className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
                                         buttonText="Log in"
-                                        modalComponent={<LoginModal/>}
+                                        modalComponent={<LoginModal />}
                                     />
 
                                     <OpenModalButton
                                         className="rounded-lg border border-emerald-600 px-4 py-2 text-emerald-700 hover:bg-emerald-50"
                                         buttonText="Sign up"
-                                        modalComponent={<SignupModal/>}
+                                        modalComponent={<SignupModal />}
                                     />
                                 </div>
                             </div>
