@@ -11,20 +11,20 @@ export default function HowToJoin() {
         {/* Header */}
         <div className="mb-10 sm:mb-12 flex flex-col items-center xl:items-start">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-wonderorange shadow-md">
+            {/* <div className="flex h-11 w-11 items-center justify-center rounded-full bg-wonderorange shadow-md">
               <span className="text-xl font-bold text-white">!</span>
-            </div>
+            </div> */}
             <h2 className="text-3xl sm:text-4xl md:text-[34px] lg:text-[36px] xl:text-[40px] font-bold text-wondergreen text-center xl:text-left">
               How to Join
             </h2>
           </div>
 
-          <div className="h-1 w-3/4 sm:w-64 md:w-68 lg:w-72 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md self-center xl:self-start" />
+          <div className="h-1 w-3/4 sm:w-52 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md self-center xl:self-start" />
         </div>
 
         {/* Content */}
         <div className="max-auto w-full xl:mx-0">
-          <p className="text-base md:text-[17px] lg:text-[20px] text-gray-700 mb-9 text-center xl:text-left xl:ml-12 -mt-6">
+          <p className="text-base md:text-[17px] lg:text-[20px] text-gray-700 mb-9 text-center xl:text-left xl:ml-2 -mt-6">
             Getting started is simple!
           </p>
 

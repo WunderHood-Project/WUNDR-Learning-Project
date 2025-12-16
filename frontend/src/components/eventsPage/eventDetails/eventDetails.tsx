@@ -301,8 +301,16 @@ export default function EventDetails() {
                                 </form>
                             ) : (
                                 <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
-                                    You don&apos;t have any children in your account. Please add a child to enroll in events.
+                                    You don&apos;t have any children in your account. Please{" "}
+                                <Link
+                                    href="/profile?tab=child&mode=add"
+                                    className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
+                                >
+                                    add a child
+                                </Link>{" "}
+                                to enroll in events.
                                 </div>
+
                             )
                         ) : (
                             <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
