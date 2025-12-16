@@ -57,7 +57,7 @@ export default function ContactSection() {
   return (
     <section>
         {/* Layout: cards + form */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 mx-auto gap-8">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-3 mx-auto gap-8"> */}
             {/* Left: quick contacts
             <div className="space-y-6 lg:col-span-1">
                 <div className="rounded-2xl bg-white/80 shadow-sm border border-wonderleaf/30 p-5">
@@ -106,12 +106,13 @@ export default function ContactSection() {
             </div> */}
 
             {/* Right: form */}
-            <div className="lg:col-span-2">
-                <form
+           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-2xl">
+                    <form
                     className="rounded-2xl bg-white/90 shadow-md border border-wonderleaf/30 p-6 sm:p-8 space-y-4"
                     onSubmit={handleSubmit}
                     noValidate
-                >
+                    >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">

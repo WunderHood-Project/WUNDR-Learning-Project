@@ -71,14 +71,14 @@ export default function OurPrograms() {
           {/* underline */}
           <div className="h-1 w-3/4 sm:w-2/3 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-4 mt-2" />
 
-          <p className="text-base sm:text-lg lg:text-[20px] text-gray-600 max-w-5xl text-center sm:text-left mb-8 sm:mb-10 mt-1">
+          <p className="text-base sm:text-lg lg:text-[20px] text-gray-600 max-w-5xl text-center sm:text-left mb-8 sm:mb-10 mt-2">
             Get ready for something new! Our upcoming WonderClubs will be <span className="font-bold">ongoing, weekly programs</span> designed to give homeschool and online learners
             a consistent space to learn, create, and connect. These year-round communities will offer deeper friendships, meaningful projects, and exciting opportunities to grow together.
           </p>
         </div>
 
         {/* Grid */}
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {clubs.map(({ Icon, title, desc }) => {
             const id = title.toLowerCase().replace(/\s+/g, "-");
             return (

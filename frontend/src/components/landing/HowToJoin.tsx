@@ -1,44 +1,103 @@
+"use client";
 
-export default function HowToJoin () {
-    return (
-        <section className="relative mb-10 sm:mb-12 rounded-2xl border-2 border-wonderorange/30 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white p-6 sm:p-8 md:p-12 shadow-lg">
-          <div className="pointer-events-none absolute right-4 top-4 hidden h-28 w-28 rounded-full bg-wonderorange/40 blur-2xl sm:block" />
-          <div className="pointer-events-none absolute left-4 bottom-4 hidden h-24 w-24 rounded-full bg-wonderleaf/40 blur-xl sm:block" />
+import Link from "next/link";
+import OpenModalButton from "@/context/openModalButton";
+import SignupModal from "@/components/signup/SignupModal";
 
-          <div className="relative z-10">
-            <div className="mb-5 sm:mb-6 flex items-center gap-3 sm:gap-4">
-              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-gradient-to-br from-wonderorange to-wondersun">
-                <span className="text-lg sm:text-xl font-bold text-white">!</span>
+export default function HowToJoin() {
+  return (
+    <section className="w-full py-4 md:py-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-10 sm:mb-12 flex flex-col items-center xl:items-start">
+          <div className="flex items-center gap-3 mb-3">
+            {/* <div className="flex h-11 w-11 items-center justify-center rounded-full bg-wonderorange shadow-md">
+              <span className="text-xl font-bold text-white">!</span>
+            </div> */}
+            <h2 className="text-3xl sm:text-4xl md:text-[34px] lg:text-[36px] xl:text-[40px] font-bold text-wondergreen text-center xl:text-left">
+              How to Join
+            </h2>
+          </div>
+
+          <div className="h-1 w-3/4 sm:w-52 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md self-center xl:self-start" />
+        </div>
+
+        {/* Content */}
+        <div className="max-auto w-full xl:mx-0">
+          <p className="text-base md:text-[17px] lg:text-[20px] text-gray-700 mb-9 text-center xl:text-left xl:ml-2 -mt-6">
+            Getting started is simple!
+          </p>
+
+          {/* Steps */}
+          <div className="mb-12">
+            <div className="space-y-5 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-10 lg:items-start">
+
+              {/* 1 */}
+              <div className="relative flex flex-col items-center text-center gap-3 lg:items-start lg:text-left">
+                <div className="flex flex-col items-center gap-3 lg:flex-row lg:items-center lg:gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 lg:w-13 lg:h-13 xl:w-16 xl:h-16 rounded-full bg-wondergreen flex items-center justify-center text-white font-bold">
+                    1
+                  </div>
+
+                  <p className="text-base md:text-[17px] lg:text-[17px] xl:text-[20px] text-gray-700 lg:pt-0.5">
+                    Create your{" "}
+                    <OpenModalButton
+                      buttonText="WonderHood account"
+                      modalComponent={<SignupModal />}
+                      className="p-0 bg-transparent border-none font-bold text-wondergreen underline decoration-wondergreen/50 underline-offset-2 hover:decoration-wondergreen cursor-pointer"
+                    />
+                    .
+                  </p>
+                </div>
               </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-wondergreen">How to Join</h2>
-            </div>
 
-            <div className="mb-3 sm:mb-4 rounded-xl bg-white/60 p-5 sm:p-6 backdrop-blur-sm">
-                <p className="text-base sm:text-lg leading-relaxed text-gray-700">
-                    Getting started is simple!
-                </p>
-                <ol className="list-decimal ml-6 mt-2 space-y-1 text-base sm:text-lg text-gray-700 leading-relaxed marker:text-wondergreen marker:font-bold">
-                    <li><span className="font-bold text-wondergreen">Create your WonderHood account.</span></li>
-                    <li><span className="font-bold text-wondergreen">Add your child(ren)</span> to complete their registration.</li>
-                    <li><span className="font-bold text-wondergreen">Choose an event and enroll.</span></li>
-                </ol>
-              <p className="mt-2 text-base sm:text-lg leading-relaxed text-gray-700">
-                Every WonderHood event is <span className="font-bold text-wondergreen">free to join.</span>
-              </p>
-            </div>
+              {/* 2 */}
+              <div className="relative flex flex-col items-center text-center gap-3 lg:items-start lg:text-left">
+                <div className="flex flex-col items-center gap-3 lg:flex-row lg:items-center lg:gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 lg:w-13 lg:h-13 xl:w-16 xl:h-16 rounded-full bg-wonderleaf flex items-center justify-center text-white font-bold">
+                    2
+                  </div>
 
-            <div className="text-center">
-                <p>If you have any questions, feel free to reach out!</p>
-              <a
-                href="mailto:wonderhood.project@gmail.com"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-wonderleaf to-wondergreen px-4 sm:px-8 py-3 sm:py-4 font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
-              >
-                <span>✉</span>
-                wonderhood.project@gmail.com
-              </a>
+                  <p className="text-base md:text-[17px] lg:text-[17px] xl:text-[20px] text-gray-700 lg:pt-0.5">
+                    <span className="font-bold text-wondergreen">Add your child(ren)</span>{" "}
+                    to complete their registration.
+                  </p>
+                </div>
+              </div>
+
+              {/* 3 */}
+              <div className="flex flex-col items-center text-center gap-3 lg:items-start lg:text-left">
+                <div className="flex flex-col items-center gap-3 lg:flex-row lg:items-center lg:gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 lg:w-13 lg:h-13 xl:w-16 xl:h-16  rounded-full bg-wonderorange flex items-center justify-center text-white font-bold">
+                    3
+                  </div>
+
+                  <p className="text-base md:text-[17px] lg:text-[17px] xl:text-[20px] text-gray-700 lg:pt-0.5">
+                    Choose an{" "}
+                    <Link
+                      href="/events"
+                      className="font-bold text-wondergreen underline decoration-wondergreen/50 underline-offset-2 hover:decoration-wondergreen"
+                    >
+                      event
+                    </Link>{" "}
+                    and enroll.
+                  </p>
+                </div>
+              </div>
+
             </div>
           </div>
-        </section>
-    )
+
+
+          {/* Free banner */}
+          <div className="bg-wondersun/40 border-2 border-wonderorange/30 rounded-2xl p-4  lg:p-4">
+            <p className="text-base md:text-[17px] lg:text-[20px] text-gray-800 text-center">
+              Every WonderHood event is{" "}
+              <span className="font-bold text-wondergreen">free to join.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

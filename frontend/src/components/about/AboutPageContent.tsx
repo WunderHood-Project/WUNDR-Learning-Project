@@ -24,13 +24,14 @@ export default function AboutPageContent() {
             <div className="rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
               <div className="space-y-3 sm:space-y-4 text-base sm:text-lg leading-relaxed text-gray-700">
                 <p>
-                    WonderHood was created by parents and educators who saw a real gap: learning at home can be rich and
-                    flexible, but many students still long for daily friendship and a sense of belonging. Screens fill the time, confidence fades, and
-                    face-to-face communication becomes harder.
+                  WonderHood began in Westcliffe, Colorado, and is growing to serve families across the state.
+                  It was created by parents and educators who saw a real gap: learning at home can be rich and
+                  flexible, but many students still long for daily friendship and a sense of belonging. Screens fill the time, confidence fades, and
+                  face-to-face communication becomes harder.
                 </p>
                 <p>
-                    We built welcoming spaces where students feel welcomed, supported and truly seen. Through outdoor adventures, creative arts, STEM
-                    exploration, life-skills, and service projects, kids make friends, discover new interests and grow together.
+                  We built welcoming spaces where students feel supported and truly seen. Through outdoor adventures, creative arts, STEM
+                  exploration, life-skills, and service projects, kids make friends, discover new interests and grow together.
                 </p>
               </div>
             </div>
@@ -87,7 +88,7 @@ export default function AboutPageContent() {
                 Healthy Choices
               </h3>
               <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                Outdoor activity, movement, wellness, mentoring and positive peer groups helping youth build strong habits and stay grounded as they grow.
+                Outdoor activity, movement, wellness, mentoring, and positive peer groups help youth build strong habits and stay grounded as they grow.
               </p>
               <div className="mt-auto" />
             </article>
