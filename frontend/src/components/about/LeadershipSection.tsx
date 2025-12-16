@@ -96,7 +96,7 @@ export default function LeadershipSection() {
                     </h2>
                     <p className="mt-2 text-sm sm:text-base md:text-lg text-gray-700 max-w-3xl mx-auto">
                         WonderHood Project is led by a volunteer Board of Directors and a
-                        small founding team who are care deeply about youth and community. Together, we ensure every program is
+                        small founding team who care deeply about youth and community. Together, we ensure every program is
                         safe, supportive, and true to our mission.
                     </p>
                 </div>

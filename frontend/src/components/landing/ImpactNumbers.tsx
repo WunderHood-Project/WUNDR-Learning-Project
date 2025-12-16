@@ -25,7 +25,7 @@ export default function ImpactStats() {
           <p className="text-base md:text-base lg:text-base xl:text-xl text-gray-600 max-w-5xl mx-auto text-center leading-relaxed">
             We believe learning flourishes when families and children come together.
             <br className="hidden sm:block"/>
-            WonderHood offers <span className='font-bold'>free, real-world</span> experiences for homeschool and online learners, sparking new friendships, joyful discovery and a sense of belonging in vibrant community.
+            WonderHood offers <span className='font-bold'>free, real-world</span> experiences for homeschool and online learners, sparking new friendships, joyful discovery, and a sense of belonging in a vibrant community.
           </p>
         </div>
 
