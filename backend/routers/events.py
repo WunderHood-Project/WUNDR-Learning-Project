@@ -593,6 +593,7 @@ async def add_children_to_event(
    children = await db.children.find_many(
        where={"id": {"in": to_add}}
    )
+
    found_ids = {c.id for c in children}
    missing = set(to_add) - found_ids
    if missing:
@@ -606,7 +607,13 @@ async def add_children_to_event(
                status_code=403,
                detail="You are not the parent of this child."
            )
-
+       
+   # validate that the limit is not exceeded
+   if (len(existing_ids) + len(incoming_ids)) > event.limit:
+        raise HTTPException(
+            status_code=400,
+            detail="Number of participants exceeds limitation"
+        )
 
    # Add children to event
    updated_event = await db.events.update(
@@ -620,34 +627,34 @@ async def add_children_to_event(
 
    # Create notification
    home_link = get_home_link()
-   subject = f'Enrollment Confirmation: {event.name}'
-   content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. If your child is no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
+#    subject = f'Enrollment Confirmation: {event.name}'
+#    content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. If your child is no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
 
-   await db.notifications.create(
-            data= {
-                "title": subject,
-                "description": f"Confirmation for event {event.name}",
-                "userId": current_user.id,
-                "isRead": False,
-                "time": event.date
-            }
-        )
+#    await db.notifications.create(
+#             data= {
+#                 "title": subject,
+#                 "description": f"Confirmation for event {event.name}",
+#                 "userId": current_user.id,
+#                 "isRead": False,
+#                 "time": event.date
+#             }
+#         )
 
 
-   if current_user.emailNotificationsEnabled == True:
-        background_tasks.add_task(
-            send_email_one_user,
-            current_user.email,
-            subject,
-            content
-        )
-        # Schedule the one-day reminder
-        background_tasks.add_task(
-            schedule_reminder,
-            current_user.id,
-            event_id,
-            event.date
-        )
+#    if current_user.emailNotificationsEnabled == True:
+#         background_tasks.add_task(
+#             send_email_one_user,
+#             current_user.email,
+#             subject,
+#             content
+#         )
+#         # Schedule the one-day reminder
+#         background_tasks.add_task(
+#             schedule_reminder,
+#             current_user.id,
+#             event_id,
+#             event.date
+#         )
 
 
    return {"event": updated_event, "message": "Children added to event and user notified"}
