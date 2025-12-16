@@ -48,6 +48,8 @@ export default function HeroSection() {
                                             max-w-3xl mx-auto
                                             drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
                                 Connection, adventure, and friendship for youth ages 10-18.
+                                <br />
+                                Serving homeschool & online learners across Colorado.
                             </p>
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">

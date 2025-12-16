@@ -18,8 +18,8 @@ export default function Footer() {
           <a href="/terms" className="hover:underline">Terms of Service</a>
         </div>
 
-        <div className="flex flex-row justify-center gap-4 mt-4">
-          {/* FACEBOOK */}
+        {/* <div className="flex flex-row justify-center gap-4 mt-4">
+         
           <Link
             href=''
             target="_blank"
@@ -32,7 +32,7 @@ export default function Footer() {
             />
           </Link>
 
-          {/* INSTAGRAM */}
+      
           <Link
             href=''
             target="_blank"
@@ -45,7 +45,7 @@ export default function Footer() {
             />
           </Link>
 
-          {/* LINKEDIN */}
+       
           <Link
             href=''
             target="_blank"
@@ -57,7 +57,7 @@ export default function Footer() {
               className="w-6 h-6 hover:opacity-80 transition"
             />
           </Link>
-        </div>
+        </div> */}
       </div>
     </footer>
   );
