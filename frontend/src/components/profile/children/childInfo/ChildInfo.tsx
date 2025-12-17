@@ -8,7 +8,7 @@ import UpdateChildForm from "../updateChild/UpdateChild";
 import ChildInfoCard from "./ChildInfoCard";
 import type { Child } from "@/types/child";
 import ChildCardsRail from "./ChildCardsRail";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 
 const NO_CHILDREN: readonly Child[] = Object.freeze([] as const);
@@ -18,7 +18,7 @@ export default function ChildrenInfoPage() {
     const { refetchUser } = useAuth();
     const { children, loading, refetch } = useChild(undefined);
     const params = useSearchParams();
-    const router = useRouter();
+    // const router = useRouter();
 
     const [mode, setMode] = useState<Mode>("list");
     const [selectedId, setSelectedId] = useState<string | null>(null);
