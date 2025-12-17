@@ -19,7 +19,9 @@ import { ArrowLeft } from 'lucide-react';
 const WONDERHOOD_URL = determineEnv()
 
 export default function EventDetails() {
-    const { eventId } = useParams()
+    // const { eventId } = useParams()
+    const { eventId } = useParams() as { eventId: string };
+
     const { event, loading, error, refetch } = useEvent(eventId)
     const { user } = useUser()
 
@@ -98,6 +100,10 @@ export default function EventDetails() {
     }
 
     const hasCapacity = typeof event?.participants === 'number' && (event?.participants ?? 0) < (event?.limit ?? 0);
+
+    const next = eventId ? `/events/${eventId}` : "/events";
+    const addChildHref = `/profile?tab=child&mode=add&next=${encodeURIComponent(next)}&openEnroll=1`;
+
 
     if (loading) return <div className="min-h-[60vh] grid place-items-center text-gray-600">Loading event details…</div>
     if (error) {
@@ -302,12 +308,13 @@ export default function EventDetails() {
                                 <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
                                     You don&apos;t have any children in your account. Please{" "}
                                     <Link
-                                        href="/profile?tab=child&mode=add"
-                                        className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
+                                    href={addChildHref}
+                                    className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
                                     >
                                         add a child
                                     </Link>{" "}
-                                    to enroll in events.
+                                        to enroll in events.
+
                                 </div>
 
                             )

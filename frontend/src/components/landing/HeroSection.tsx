@@ -47,9 +47,12 @@ export default function HeroSection() {
                                             text-base sm:text-lg md:text-xl lg:text-2xl
                                             max-w-3xl mx-auto
                                             drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
-                                Connection, adventure, and friendship for youth ages 10-18.
+                                <span className="hidden md:inline">
+                                    Connection, adventure, and friendship for youth ages 10-18.
                                 <br />
                                 Serving homeschool & online learners across Colorado.
+                                    
+                                </span>
                             </p>
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
@@ -105,7 +108,9 @@ export default function HeroSection() {
                                     text-base sm:text-lg md:text-xl lg:text-2xl
                                     max-w-3xl mx-auto
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
-                        For homeschoolers seeking fun, friendships, and meaningful adventures.
+                            <span className="hidden md:inline">
+                                For homeschoolers seeking fun, friendships, and meaningful adventures.
+                            </span>                
                         </p>
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
@@ -161,7 +166,10 @@ export default function HeroSection() {
                                     text-base sm:text-lg md:text-xl lg:text-2xl
                                     max-w-3xl mx-auto
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
-                        Creative activities, new friendships, real-life experiences.
+                            <span className="hidden md:inline">
+                                Creative activities, new friendships, real-life experiences.
+                            </span>            
+
                         </p>
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
