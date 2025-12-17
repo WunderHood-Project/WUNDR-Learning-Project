@@ -8,6 +8,7 @@ import UpdateChildForm from "../updateChild/UpdateChild";
 import ChildInfoCard from "./ChildInfoCard";
 import type { Child } from "@/types/child";
 import ChildCardsRail from "./ChildCardsRail";
+import { useSearchParams, useRouter } from "next/navigation";
 
 
 const NO_CHILDREN: readonly Child[] = Object.freeze([] as const);
@@ -16,6 +17,8 @@ type Mode = "list" | "add";
 export default function ChildrenInfoPage() {
     const { refetchUser } = useAuth();
     const { children, loading, refetch } = useChild(undefined);
+    const params = useSearchParams();
+    const router = useRouter();
 
     const [mode, setMode] = useState<Mode>("list");
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -44,6 +47,16 @@ export default function ChildrenInfoPage() {
             });
         }
     }, [mode]);
+
+    useEffect(() => {
+        const tab = params.get("tab");
+        const modeParam = params.get("mode");
+
+        if (tab === "child" && modeParam === "add") {
+            setMode("add");
+        }
+    }, [params]);
+
 
     const selectedIndex = useMemo(() => {
         if (!selectedId) return 0;
