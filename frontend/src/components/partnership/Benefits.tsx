@@ -21,7 +21,7 @@ export default function Benefits() {
                 {/* Grid of cards */}
                 <ul
                 className="
-                    grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+                    grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3
                     gap-3 sm:gap-4 lg:gap-5
                 "
                 >
@@ -66,7 +66,7 @@ export default function Benefits() {
                         {/* Benefit text */}
                         <p
                         className="
-                            text-[15px] sm:text-base lg:text-[17px] xl:text-[18px]
+                            text-[15px] sm:text-base lg:text-[17px] xl:text-[18px] mt-1
                             leading-snug sm:leading-normal text-gray-700
                         "
                         >

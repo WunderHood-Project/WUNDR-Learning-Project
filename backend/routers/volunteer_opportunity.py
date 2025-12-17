@@ -91,12 +91,12 @@ async def enroll_volunteer(opportunity_id: str, volunteer_id: str, current_user:
 
     updated = await db.volunteeropportunities.update(
         where={"id": opportunity_id},
-        data={"volunteerIds": {"push": volunteer_id}}  # атомарно для Mongo
+        data={"volunteerIds": {"push": volunteer_id}}  
     )
     return {"opportunity": updated}
 
 # -------- REMOVE volunteer from opportunity (admin) ----------
-@router.delete("/{opportunity_id}/volunteers/{volunteer_id}", status_code=200)
+@router.patch("/{opportunity_id}/volunteers/{volunteer_id}", status_code=200)
 async def remove_volunteer_from_opportunity(opportunity_id: str, volunteer_id: str, current_user: Annotated[User, Depends(get_current_user)]):
     enforce_authentication(current_user); enforce_admin(current_user)
 
@@ -107,6 +107,6 @@ async def remove_volunteer_from_opportunity(opportunity_id: str, volunteer_id: s
     new_ids = [vid for vid in (opp.volunteerIds or []) if vid != volunteer_id]
     updated = await db.volunteeropportunities.update(
         where={"id": opportunity_id},
-        data={"volunteerIds": {"set": new_ids}}  # атомарно
+        data={"volunteerIds": {"set": new_ids}} 
     )
     return {"opportunity": updated}

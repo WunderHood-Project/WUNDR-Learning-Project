@@ -2,6 +2,10 @@ from passlib.context import CryptContext
 from models.user_models import User
 from fastapi import HTTPException, status
 from datetime import datetime
+import os
+
+ENV = os.getenv("ENV", "development")
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -35,3 +39,13 @@ def convert_iso_date_to_string(date):
 
     formatted = dt.strftime("%m/%d/%Y")
     return formatted
+
+def get_event_link(event_id):
+    if ENV == "development":
+        return ""
+    return f"http://whproject.org/events/{event_id}"
+
+def get_home_link():
+    if ENV == "development":
+        return ""
+    return f"http://whproject.org"

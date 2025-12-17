@@ -33,6 +33,9 @@ class UserSignup(BaseModel):
     state: str = Field(min_length=2, max_length=50)
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
 
+    # Notif email 
+    emailNotificationsEnabled: bool = True
+
     # Children
     children: List[ChildCreate] = Field(default_factory=list)
 
@@ -79,6 +82,7 @@ async def signup(user: UserSignup):
             "zipCode": user.zipCode,
             "createdAt": datetime.utcnow(),
             "updatedAt": datetime.utcnow(),
+            "emailNotificationsEnabled": user.emailNotificationsEnabled,
             "children": {
                 "create": [child.model_dump(mode="json") for child in user.children]
             }

@@ -8,7 +8,8 @@ export default function AboutPage() {
         size="md"
         align="center"
         title="Who We Are"
-        subtitle="WonderHood helps Colorado homeschool and online learners (ages 10-18) find real friends, meaningful adventures, and a supportive community."
+        // subtitle="WonderHood helps Colorado homeschool and online learners ages 10-18 find friends, adventures, and community."
+        subtitle="Helping Colorado homeschool and online learners (ages 10–18) find friends, adventure, and community."
       />
 
       <AboutPageContent />

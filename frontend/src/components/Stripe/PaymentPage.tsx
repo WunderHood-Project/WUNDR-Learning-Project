@@ -35,9 +35,8 @@ export default function PaymentPage() {
         const newErrors: PaymentFormErrors = {}
 
         // Add validations
-        if (Number(form?.amount) < 0) {
-            newErrors.amount = "The donation amount must be greater than 0"
-        }
+        if (Number(form?.amount) < 0) newErrors.amount = "The donation amount must be greater than 0"
+
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
@@ -65,7 +64,7 @@ export default function PaymentPage() {
     const options = useMemo(() => ({ clientSecret }), [clientSecret]);
 
     return (
-        <>
+        // <>
             <form
                 onSubmit={createSession}
                 className="bg-amber-50 border border-amber-200 rounded-2xl shadow-sm p-6 w-full max-w-md mx-auto mt-8"
@@ -119,6 +118,6 @@ export default function PaymentPage() {
                     )}
                 </div>
             </form>
-        </>
+        // </>
     );
 }

@@ -9,11 +9,12 @@ export default function PartnerHero() {
         className="pt-7 md:pt-12 pb-3 md:pb-6"
         title={<>Partner with WonderHood</>}
         subtitle={
-            <span className="block mx-auto max-w-[30ch] sm:max-w-[42ch] md:max-w-4xl
+            <span className="block mx-auto max-w-[35ch] sm:max-w-[42ch] md:max-w-4xl
                             text-[15px] sm:text-base md:text-xl
-                            leading-[1.35] md:leading-snug">
-            Help youth ages 10-18 — homeschool and online learners — learn, explore,
-            and thrive through shared spaces, instructors, and sponsorships.
+                            leading-[1.35] md:leading-snug"
+            >
+                <span className="block">Help Colorado&apos;s outreach thrive with hands-on experiences.</span>
+                <span className="block">Partner with us to offer space, instruction, and opportunities that help students grow.</span>
             </span>
         }
         cta={

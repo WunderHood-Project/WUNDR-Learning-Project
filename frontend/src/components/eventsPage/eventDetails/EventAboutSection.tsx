@@ -27,27 +27,27 @@ export default function EventAboutSection({ event }: { event: Event }) {
                 {hasNotes ? (
                     <div>
                         <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 bg-wonderorange/10 rounded-lg border border-wonderorange/30">
-                        <span className="text-lg font-bold text-wonderorange">!</span>
-                        <h4 className="text-sm sm:text-base font-bold text-wonderorange uppercase tracking-wide">
-                            Important
-                        </h4>
+                            <span className="text-lg font-bold text-wonderorange">!</span>
+                            <h4 className="text-sm sm:text-base font-bold text-wonderorange uppercase tracking-wide">
+                                Important
+                            </h4>
                         </div>
 
                         <ul className="list-disc pl-5 sm:pl-6 space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-700">
-                        {notesText
-                            .split('\n')
-                            .filter(Boolean)
-                            .map((line, i) => (
-                            <li key={`note-${i}`} className="leading-relaxed">
-                                {line}
-                            </li>
+                            {notesText
+                                .split('\n')
+                                .filter(Boolean)
+                                .map((line, i) => (
+                                    <li key={`note-${i}`} className="leading-relaxed">
+                                        {line}
+                                    </li>
                             ))}
                         </ul>
                     </div>
                 ) : (
                     <div className="bg-white/60 rounded-lg border border-gray-200 p-4 sm:p-6">
                         <p className="text-sm text-gray-600 leading-relaxed">
-                        Organizers can add extra details here (e.g., clothing, supplies to bring, parking, check-in instructions).
+                            Organizers can add extra details here (e.g., clothing, supplies to bring, parking, check-in instructions).
                         </p>
                     </div>
                 )}

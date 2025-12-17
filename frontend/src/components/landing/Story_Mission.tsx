@@ -22,20 +22,19 @@ export default function Story_Mission() {
               Our Story &amp; Mission
             </h2>
 
-            {/* Линия: по центру до xl */}
+            {/* Color line */}
             <div className="h-1 w-48 sm:w-64 md:w-72 lg:w-80 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-6 self-center xl:self-start" />
           </div>
 
-          {/* Текст: центр до xl */}
+          {/* Text center */}
           <div className="text-center xl:text-left">
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl mb-4">
-              WonderHood was created for youth ages 10-18 who learn from home — whether
-              through homeschooling or online school. We believe that learning outside
-              traditional classrooms can be powerful, but it can also feel isolating.
+              WonderHood was created for Colorado home-learning students ages 10-18 who need connection as much as education.
+              It was founded in Westcliffe, Colorado, and now serves homeschool and online learners statewide.
+              Learning outside traditional classrooms can be empowering, but it can also feel isolating.
             </p>
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl">
-              That&apos;s why we build programs where teens can make friends, explore their
-              interests, and grow through outdoor adventures, creative arts, and community projects.
+              Our events give learners a place to belong. Each experience is individually offered and families can enroll in the opportunities that excite them most. Through outdoor adventures, creative arts, and community projects, students build friendships, explore interests, and grow in confidence.
             </p>
           </div>
         </div>
@@ -58,7 +57,7 @@ export default function Story_Mission() {
               className="
                 relative w-full
                 aspect-[5/3] sm:aspect-[16/9] xl:h-[300px] xl:aspect-auto
-                rounded-2xl overflow-hidden 
+                rounded-2xl overflow-hidden
                 shadow-[0_10px_25px_rgba(0,0,0,0.15),0_20px_40px_rgba(0,0,0,0.1)]
                 mt-4 transform rotate-1 hover:rotate-0
                 transition-all duration-300 ease-out
@@ -120,4 +119,3 @@ export default function Story_Mission() {
     </section>
   );
 }
-

@@ -57,8 +57,8 @@ export default function ContactSection() {
   return (
     <section>
         {/* Layout: cards + form */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left: quick contacts */}
+        {/* <div className="grid grid-cols-1 lg:grid-cols-3 mx-auto gap-8"> */}
+            {/* Left: quick contacts
             <div className="space-y-6 lg:col-span-1">
                 <div className="rounded-2xl bg-white/80 shadow-sm border border-wonderleaf/30 p-5">
                     <div className="rounded-2xl bg-white/80 shadow-sm border border-wonderleaf/30 p-5">
@@ -103,15 +103,16 @@ export default function ContactSection() {
                         </p>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Right: form */}
-            <div className="lg:col-span-2">
-                <form
+           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-2xl">
+                    <form
                     className="rounded-2xl bg-white/90 shadow-md border border-wonderleaf/30 p-6 sm:p-8 space-y-4"
                     onSubmit={handleSubmit}
                     noValidate
-                >
+                    >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -141,7 +142,7 @@ export default function ContactSection() {
 
                     <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Reason for contacting
+                        Reason for Contacting
                     </label>
                     <select
                         name="reason"
@@ -206,17 +207,6 @@ export default function ContactSection() {
                     </button>
                     </div>
                 </form>
-
-                {/* Location / nonprofit info */}
-                <div className="mt-6 text-xs text-gray-600 space-y-1">
-                    <p>
-                    WonderHood Project is a Colorado-based nonprofit serving homeschool and online-learning families across the state.
-                    </p>
-                    <p>
-                    WonderHood Project is a 501(c)(3) public charity. EIN: 39-3199830.
-                    Donations are tax-deductible to the fullest extent allowed by law.
-                    </p>
-                </div>
             </div>
         </div>
     </section>
