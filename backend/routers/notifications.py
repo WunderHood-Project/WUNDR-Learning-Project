@@ -5,7 +5,7 @@ from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_
 from typing import Annotated
 from db.prisma_client import db
 from datetime import datetime, timedelta, timezone
-import asyncio
+# import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.mongodb import MongoDBJobStore
@@ -61,6 +61,7 @@ MONGO_URI = os.getenv("DATABASE_URL")
 mongo_client = MongoClient(MONGO_URI)
 
 scheduler = AsyncIOScheduler(
+    timezone="America/Los_Angeles",
     jobstores = {
         "mongo": MongoDBJobStore(
             client=mongo_client,
@@ -172,6 +173,22 @@ def start_scheduler():
     """
     scheduler.start()
 
+# =======================================================
+async def delete_all_notifications_service():
+    """
+        Async function for deleting all notifications
+    """
+    await db.notifications.delete_many(where={})
+
+
+scheduler.add_job(
+        func=delete_all_notifications_service,
+        trigger="cron",
+        month="1,7",
+        day="1",
+        hour="10",
+        minute="15"
+    )
 
 # =======================================================
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -296,13 +313,6 @@ async def update_notification(
         }
 
 # =======================================================
-# @router.delete("/read", status_code=status.HTTP_204_NO_CONTENT)
-# async def delete_read_notifications(current_user: Annotated[User, Depends(get_current_user)]):
-#     enforce_authentication(current_user, "delete read notifications")
-#     await db.notifications.delete_many(
-#         where={"userId": current_user.id, "isRead": True}
-#     )
-#     return
 @router.delete("/read", status_code=status.HTTP_200_OK)
 async def delete_read_notifications(current_user: Annotated[User, Depends(get_current_user)]):
     enforce_authentication(current_user, "delete read notifications")

@@ -28,11 +28,8 @@ async def lifespan(app:FastAPI):
 
     # Start APScheduler here:
     start_scheduler()
+    # 
     yield
-
-# @asynccontextmanager
-# async def shutdown(app:FastAPI):
-#     # Shutdown APScheduler:
 
     scheduler.shutdown(wait=False)
     await db.disconnect()
@@ -40,6 +37,11 @@ async def lifespan(app:FastAPI):
 
 # instantiate FastAPI app and Prisma db client
 app = FastAPI(lifespan=lifespan)
+
+# Start the delete_notifications_scheduler when we start the app
+# @app.delete("/delete-all-notifications")
+# async def start_notifications_scheduler():
+#     delete_notifications_scheduler.start()
 
 # CORS Policy
 app.add_middleware(
