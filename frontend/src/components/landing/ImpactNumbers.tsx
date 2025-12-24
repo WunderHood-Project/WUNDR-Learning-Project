@@ -2,11 +2,10 @@ import CountUp from 'react-countup';
 
 const stats = [
   { value: 23, suffix: "+", label: "Families Joined" },
-  { value: 10, suffix: "+", label: "Events Organized" },
-  { value: 10, suffix: "+", label: "Ongoing Clubs" },
-  { value: 100, suffix: "+", label: "Workshops & Trips" },
-
-  { value: 100, suffix: "%", label: "Smiles Created" },
+  { value: 100, suffix: "+", label: "Trips & Workshops Planned" },
+  { value: 100, suffix: "%", label: "Real-World Learning" },
+  { value: 100, suffix: "%", label: "Mission-Driven" },
+  { value: 100, suffix: "%", label: "Community-Focused" },
 ];
 
 export default function ImpactStats() {
@@ -31,19 +30,30 @@ export default function ImpactStats() {
 
         {/* Grid */}
         <div className="
-          grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5
-          gap-6 sm:gap-8 md:gap-10
+          grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5
+          gap-x-8 gap-y-10
           max-w-7xl mx-auto mt-8
-          md:divide-x md:divide-green-300
-        ">
+                ">
           {stats.map((stat, idx) => (
-            <div key={stat.label} className="flex flex-col items-center px-4 sm:px-6">
-              <span className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-wondergreen mt-2">
+            <div
+              key={stat.label}
+              className={[
+                "flex flex-col items-center px-4 sm:px-4 md:px-6",
+                "lg:relative lg:pl-10",
+                idx > 0
+                  ? "lg:before:content-[''] lg:before:absolute lg:before:top-2 lg:before:bottom-2 lg:before:w-px lg:before:bg-green-300"
+                  : "",
+                idx === 1 ? "lg:before:left-[-28px]" : "lg:before:left-0",
+              ].join(" ")}
+
+            >
+              <span className="text-3xl sm:text-4xl md:text-[38px] xl:text-[40px] font-bold text-wondergreen mt-2">
                 <CountUp end={stat.value} duration={1.4 + idx * 0.2} suffix={stat.suffix} />
               </span>
-              <span className="mt-2 text-sm sm:text-base md:text-lg text-orange-400 font-medium text-center">
-                {stat.label}
-              </span>
+              <div className="mt-2 text-center text-orange-400 font-medium">
+                <div className="text-base sm:text-base xl:text-lg whitespace-nowrap">{stat.label}</div>
+              </div>
+
             </div>
           ))}
         </div>
