@@ -1,9 +1,12 @@
-from fastapi import APIRouter, status, HTTPException, Depends, Request
+from fastapi import APIRouter, status, HTTPException, Depends, Request, Cookie
+from fastapi.responses import RedirectResponse
 from models.interaction_models import DonationCreate
 
 from db.prisma_client import db
 import stripe
 import os
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 router = APIRouter()
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
@@ -39,7 +42,7 @@ async def create_payment(
                 }
             ],
             ui_mode="embedded",
-            return_url="http://whproject.org/tax-return", # CHANGE THIS BACK TO "whproject.org/tax-return" 
+            return_url="http://wonderhood-backend.onrender.com//payments/verify?session_id={CHECKOUT_SESSION_ID}",# Change this to backend production route for live  
             metadata=metadata
         )
         return {
@@ -48,6 +51,36 @@ async def create_payment(
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unable to make donation: {e}")
+    
+@router.get("/verify")
+async def verify_payment(session_id):
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+    except Exception:
+        return RedirectResponse(url=f"{FRONTEND_URL}/")
+    
+    if session.payment_status != "paid":
+        return RedirectResponse(url=f"{FRONTEND_URL}/")
+    
+    donation = await db.donations.find_unique(
+        where={"sessionId": session_id}
+    )
+
+    if not donation:
+        pass
+
+    response = RedirectResponse(url=f"{FRONTEND_URL}/tax-return")
+
+    response.set_cookie(
+        key="tax_return_allowed",
+        value=session_id,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=1800
+    )
+
+    return response
     
 @router.get("/latest")
 async def get_latest_donation():
