@@ -12,7 +12,7 @@ const ways: Way[] = [
         icon: Building2,
         title: "Venue Partner",
         // desc: "Host clubs and events at your location (gyms, libraries, parks, museums).",
-        desc: "Offer your space for clubs and events, such as gyms, libraries, parks, musuems, or studios.",
+        desc: "Offer your space for clubs and events, such as gyms, libraries, parks, museums, or studios.",
         bullets: ["Access to space or discounted rentals", "Safety walkthrough", "Seasonal or flexible scheduling"],
     },
     {

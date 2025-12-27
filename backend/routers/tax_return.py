@@ -48,7 +48,7 @@ async def create_tax_return_credentials(
         subject = "We Got Your Tax Return Request 📒"
         contents = (
             "Hello,\n\nWe appreciate your generosity and our team will process your request as soon as possible. "
-            "In the meantime, please check out all that we do on our About page.\n\nBest,\n\nWonderhood Team"
+            "In the meantime, please check out all that we do on our About page.\n\nBest,\n\nWonderHood Team"
         )
 
         background_tasks.add_task(
