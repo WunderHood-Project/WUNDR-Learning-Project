@@ -1,10 +1,10 @@
-const url = () => {
-    if (process.env.NODE_ENV === "development")
-        return "http://localhost:3000/";
-    return "";
-};
+// const url = () => {
+//     if (process.env.NODE_ENV === "development")
+//         return "http://localhost:3000/";
+//     return "";
+// };
 
-const homeLink = url()
+// const homeLink = url()
 
 const howToSignUp = () => {
     return (
@@ -31,7 +31,7 @@ export const FAQ = [
     },
     {
         title: "Insurance & waivers?",
-        content: "We use parental waivers and follow venue safety requirements. Background checks for all adult instructors and volunteers."
+        content: "We use parental waivers and follow venue safety requirements. We require background checks for all adult instructors and volunteers."
     },
 
     {
@@ -45,8 +45,8 @@ export const FAQ = [
     {
         title: "If I make a donation, will I receive an acknowledgement about the donation I made?",
         content: {
-            text: "When making a donation via our online portal, you will be prompted to opt-in to receive a tax return acknowledgement. ",
-            link: `${homeLink}donate`,
+            text: "When donating through our online portal, you can opt in to receive a donation receipt for tax purposes. ",
+            link: "/donate",
             label: "Donate Here →"
         }
     },
@@ -58,7 +58,8 @@ export const FAQ = [
         title: "What is WonderHood Project's privacy policy?",
         content: {
             text: "You can read our full privacy policy ",
-            link: `${homeLink}privacy-policy`,
+            // link: `${homeLink}privacy-policy`,
+            link: "/privacy-policy",
             label: "here →"
         }
     },
@@ -66,7 +67,8 @@ export const FAQ = [
         title: "How can I get in touch with someone at WonderHood Project?",
         content: {
             text: "You can reach us anytime. Just submit your question, and our team will follow up. ",
-            link: `${homeLink}contact-us`,
+            // link: `${homeLink}contact-us`,
+            link: "/contact-us",
             label: "Contact Us →"
         }
     }
