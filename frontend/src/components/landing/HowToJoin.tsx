@@ -92,8 +92,10 @@ export default function HowToJoin() {
           {/* Free banner */}
           <div className="bg-wondersun/40 border-2 border-wonderorange/30 rounded-2xl p-4  lg:p-4">
             <p className="text-base md:text-[17px] lg:text-[20px] text-gray-800 text-center">
-              Every WonderHood event is{" "}
-              <span className="font-bold text-wondergreen">free to join.</span>
+              WonderHood events are free for families, made possible through 
+              <span className="font-bold text-wondergreen"> grants, donations, </span>
+              and 
+              <span className="font-bold text-wondergreen"> community partners.</span>
             </p>
           </div>
         </div>

@@ -30,7 +30,7 @@ export default function Story_Mission() {
           <div className="text-center xl:text-left">
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl mb-4">
               WonderHood was created for Colorado home-learning students ages 10-18 who need connection as much as education.
-              It was founded in Westcliffe, Colorado, and now serves homeschool and online learners statewide.
+              Our current pilot programming is launching in Custer County (Westcliffe and surrounding areas), with expansion guided by partnerships and community needs.
               Learning outside traditional classrooms can be empowering, but it can also feel isolating.
             </p>
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl">

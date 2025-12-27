@@ -42,7 +42,7 @@ async def create_payment(
                 }
             ],
             ui_mode="embedded",
-            return_url="http://wonderhood-backend.onrender.com//payments/verify?session_id={CHECKOUT_SESSION_ID}",# Change this to backend production route for live  
+            return_url="http://wonderhood-backend.onrender.com/payments/verify?session_id={CHECKOUT_SESSION_ID}", # Change localhost:8000 to backend production route for live  
             metadata=metadata
         )
         return {

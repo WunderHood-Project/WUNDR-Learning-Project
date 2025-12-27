@@ -99,9 +99,6 @@ const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep
             placeholder="First Last"
             className="w-full p-2 border rounded-md"
             />
-            <p className="mt-1 text-xs text-gray-500">
-                For on-screen confirmation only. Not submitted to the server.
-            </p>
         </div>
 
         {/* Final legal agreement checkbox (serves as e-signature) */}
