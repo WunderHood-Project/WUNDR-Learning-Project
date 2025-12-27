@@ -24,13 +24,13 @@ export default function AboutPageContent() {
             <div className="rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
               <div className="space-y-3 sm:space-y-4 text-base sm:text-lg leading-relaxed text-gray-700">
                 <p>
-                  WonderHood began in Westcliffe, Colorado, and is growing to serve homeschool and online-learning families across the state. 
-                  Many homeschool students love the flexibility of learning at home—but still miss steady friendships and a sense of belonging. 
-                  For many online learners, screen time can crowd out real-life connection, especially in rural communities where it’s harder to meet peers regularly.
+                  WonderHood began in Westcliffe, Colorado, and is growing to serve homeschool and online-learning families statewide.
+                  Many homeschool and online learners love the flexibility of learning at home – but still miss steady friendships and a sense of belonging.
+                  In rural communities, it can be especially hard to meet peers regularly, and screen time can start to replace real-life connection.
                 </p>
                 <p>
-                  We built welcoming spaces where students feel supported and truly seen. Through outdoor adventures, creative arts, STEM
-                  exploration, life-skills, and service projects, kids make friends, discover new interests and grow together.
+                  We create welcoming spaces where students feel supported and truly seen. 
+                  Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
                 </p>
               </div>
             </div>
@@ -47,9 +47,10 @@ export default function AboutPageContent() {
 
             <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                WonderHood serves homeschool and online learners across Colorado. Our current pilot programming is currently launching in{" "}
-                <span className="font-semibold text-wondergreen">Custer County (Westcliffe and surrounding areas)</span>, with expansion planned as partnerships and community needs grow.
+                WonderHood serves homeschool and online learners across Colorado. Our pilot programming is launching in{" "}
+                <span className="font-semibold text-wondergreen">Custer County (Westcliffe and surrounding areas)</span>, with expansion guided by partnerships and community needs.
               </p>
+
             </div>
           </article>
 
@@ -62,15 +63,16 @@ export default function AboutPageContent() {
 
             <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                We support child well-being through connection, movement, and purpose. Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities. 
-                We also expand access to enrichment experiences and hands-on STEAM learning—especially important for rural and online-learning youth.
+               We support child well-being through connection, movement, and purpose. 
+               Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities. 
+               We also increase access to enrichment experiences and hands-on STEAM learning – especially important for rural and online-learning youth – so kids feel connected, confident, and supported.
               </p>
             </div>
           </article>
         </div>
 
         {/* Why We Do It */}
-        <section className="mb-10 sm:mb-12 md:mb-16 mt-28">
+        <section className="mt-20 sm:mt-24 md:mt-28 mb-10 sm:mb-12 md:mb-16">
           <div className="mb-6 sm:mb-8 text-center">
             <h2 className="mb-2 sm:mb-3 text-2xl sm:text-3xl md:text-4xl font-bold text-wondergreen [text-wrap:balance]">
                 Why We Do What We Do
@@ -85,7 +87,7 @@ export default function AboutPageContent() {
                     Connection
               </h3>
               <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                    Online learners often spend long stretches learning alone. We create spaces where friendships form naturally, where kids can meet, bond, and feel part of a community.
+                    Online learners can spend long stretches learning independently. We create spaces where friendships form naturally – where kids can meet, connect, and feel part of a community.
               </p>
               <div className="mt-auto" />
             </article>
@@ -96,7 +98,7 @@ export default function AboutPageContent() {
                     Skills for Life
               </h3>
               <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                 Communication, teamwork, leadership, and resilience are practiced through real projects and meaningful experiences.
+                 Communication, teamwork, leadership, and resilience are practiced through real projects, shared challenges, and meaningful experiences.
               </p>
               <div className="mt-auto" />
             </article>
@@ -107,8 +109,7 @@ export default function AboutPageContent() {
                 Real-world Confidence
               </h3>
               <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                Trips, showcases, volunteering, and youth-led events help students try new roles, share their work, and discover what
-                they&rsquo;re capable of.
+                Trips, showcases, volunteering, and youth-led events help students try new roles, share their work, and discover what they&rsquo;re capable of.
               </p>
               <div className="mt-auto" />
             </article>
@@ -119,7 +120,7 @@ export default function AboutPageContent() {
                 Healthy Choices
               </h3>
               <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                Outdoor activity, movement, wellness, mentoring, and positive peer groups help youth build strong habits and stay grounded as they grow.
+                Outdoor activity, movement, mentoring, and positive peer groups help youth build strong habits, reduce stress, and stay grounded as they grow.
               </p>
               <div className="mt-auto" />
             </article>
