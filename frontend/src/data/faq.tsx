@@ -40,12 +40,12 @@ export const FAQ = [
     },
     {
         title: "Is WonderHood Project a 501(c)(3) tax-exempt organization?",
-        content: "Yes, WonderHood Project is a 501(c)(3) tax-exempt organization. That means your contribution is tax-deductable."
+        content: "Yes, WonderHood Project is a 501(c)(3) tax-exempt organization. That means your contribution is tax-deductible."
     },
     {
         title: "If I make a donation, will I receive an acknowledgement about the donation I made?",
         content: {
-            text: "When making a donation via our online portal, you will be prompted to opt-in to receieve a tax return acknowledgement. ",
+            text: "When making a donation via our online portal, you will be prompted to opt-in to receive a tax return acknowledgement. ",
             link: `${homeLink}donate`,
             label: "Donate Here →"
         }
