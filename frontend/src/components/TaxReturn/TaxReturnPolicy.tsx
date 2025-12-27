@@ -27,7 +27,7 @@ export default function TaxReturnWaiver() {
                             aria-describedby="waiver-request"
                         />
                         <p className="ml-3 text-sm text-amber-900 leading-relaxed">
-                            I agree to receive a donation/sponsorship acknowledgement from <strong>Wonderhood Project</strong>.
+                            I agree to receive a donation/sponsorship acknowledgement from <strong>WonderHood Project</strong>.
                             Skip this step by clicking the “Next” button below. <strong>Donors that skip this step will not receive a tax return acknowledgement.</strong>
                         </p>
                     </div>
@@ -44,7 +44,7 @@ export default function TaxReturnWaiver() {
 
                             <ol className="list-decimal list-inside space-y-2">
                                 <li>
-                                    <strong>Purpose of the Gift:</strong> The funds you donate will be used by Wonderhood Project for its tax-exempt charitable purpose.
+                                    <strong>Purpose of the Gift:</strong> The funds you donate will be used by WonderHood Project for its tax-exempt charitable purpose.
                                 </li>
 
                                 <li>
@@ -52,11 +52,11 @@ export default function TaxReturnWaiver() {
                                 </li>
 
                                 <li>
-                                    <strong>Tax Deductibility:</strong> Wonderhood Project is recognized under § 501(c)(3) of the Internal Revenue Code and therefore contributions may be tax-deductible for the donor to the extent permitted by law. You should consult your tax advisor for your specific situation.
+                                    <strong>Tax Deductibility:</strong> WonderHood Project is recognized under § 501(c)(3) of the Internal Revenue Code and therefore contributions may be tax-deductible for the donor to the extent permitted by law. You should consult your tax advisor for your specific situation.
                                 </li>
 
                                 <li>
-                                    <strong>Use of a “1024 Waiver”:</strong> In certain circumstances, the IRS Form 1024 applies to organizations seeking recognition under § 501(a) other than § 501(c)(3). Please note that if Wonderhood Project is relying on such recognition (or has applied and is pending), the tax-deductibility of your donation may depend on final determination by the IRS.
+                                    <strong>Use of a “1024 Waiver”:</strong> In certain circumstances, the IRS Form 1024 applies to organizations seeking recognition under § 501(a) other than § 501(c)(3). Please note that if WonderHood Project is relying on such recognition (or has applied and is pending), the tax-deductibility of your donation may depend on final determination by the IRS.
                                 </li>
 
                                 <li>

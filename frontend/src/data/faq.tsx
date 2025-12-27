@@ -39,8 +39,8 @@ export const FAQ = [
         content: "We are currently raising funds through grants and donor contributions. \nWe ensure that the funds we raise are used appropriately, and we seek to be transparent and accountable with raising and spending funds."
     },
     {
-        title: "Is Wonderhood Project a 501(c)(3) tax-exempt organization?",
-        content: "Yes, Wonderhood Project is a 501(c)(3) tax-exempt organization. That means your contribution is tax-deductable."
+        title: "Is WonderHood Project a 501(c)(3) tax-exempt organization?",
+        content: "Yes, WonderHood Project is a 501(c)(3) tax-exempt organization. That means your contribution is tax-deductable."
     },
     {
         title: "If I make a donation, will I receive an acknowledgement about the donation I made?",
@@ -55,7 +55,7 @@ export const FAQ = [
         content: "Yes. We are committed to being transparent and accountable with all donations. We will post our annual report and IRS Form 990 here as soon as they become available.",
     },
     {
-        title: "What is Wonderhood Project's privacy policy?",
+        title: "What is WonderHood Project's privacy policy?",
         content: {
             text: "You can read our full privacy policy ",
             link: `${homeLink}privacy-policy`,
