@@ -218,7 +218,7 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
           Tell us a bit about yourself and your availability — we&apos;ll match you with a good fit.
         </p>
         <div className="mt-4 rounded-xl">
-          Wonderhood team will reach out within <span className="font-medium">2-3 business days</span>.
+          WonderHood team will reach out within <span className="font-medium">2-3 business days</span>.
         </div>
       </div>
 

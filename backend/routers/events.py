@@ -140,7 +140,7 @@ async def create_event(
             await db.notifications.create_many(data=notif_batch)
 
        subject = f'Check Out Our New Event at Wonderhood: {new_event.name}'
-       contents = f'Hello,\n\n Check out our new event at Wonderhood. We hope to see you there.\n\nBest,\n\nWonderhood Team'
+       contents = f'Hello,\n\n Check out our new event at Wonderhood. We hope to see you there.\n\nBest,\n\nWonderHood Team'
 
        background_tasks.add_task(
            send_email_multiple_users,
@@ -438,7 +438,7 @@ async def delete_event_by_id(
 
    # Send the email notification to users
    subject = f'Wonderhood: {event.name} Cancellation'
-   contents = f'Hello,\n\nWe regret to inform you that the {event.name} event on {convert_iso_date_to_string(event.date)} has been cancelled. Please take a look at our website for upcoming events.\n\n Best,\n\n Wonderhood Team'
+   contents = f'Hello,\n\nWe regret to inform you that the {event.name} event on {convert_iso_date_to_string(event.date)} has been cancelled. Please take a look at our website for upcoming events.\n\n Best,\n\n WonderHood Team'
 
 
    background_tasks.add_task(
@@ -712,7 +712,7 @@ async def remove_user_from_event(
    # Send notification to User that they have been removed from event
    if current_user.emailNotificationsEnabled == True:
         subject = f'Unenrollment Confirmation: {event.name}'
-        content = f'Hello,\n\nThis email confirms that you have been unenrolled from the {event.name} event at Wonderhood on {convert_iso_date_to_string(event.date)}.\n\nBest,\n\nWonderhood Team'
+        content = f'Hello,\n\nThis email confirms that you have been unenrolled from the {event.name} event at Wonderhood on {convert_iso_date_to_string(event.date)}.\n\nBest,\n\nWonderHood Team'
 
 
         background_tasks.add_task(
@@ -838,7 +838,7 @@ async def remove_child_from_event(
 
    # Notification to user for unenrolling child
    subject = f'Unenrollment Confirmation: {event.name}'
-   content = f'Hello,\n\nThis email confirms that your child has been unenrolled from the {event.name} on {convert_iso_date_to_string(event.date)}. Please find more events on our website.\n\nBest,\n\nWonderhood Team'
+   content = f'Hello,\n\nThis email confirms that your child has been unenrolled from the {event.name} on {convert_iso_date_to_string(event.date)}. Please find more events on our website.\n\nBest,\n\nWonderHood Team'
         
    await db.notifications.create(
         data={

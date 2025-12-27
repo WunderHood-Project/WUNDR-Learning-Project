@@ -151,8 +151,8 @@ async def send_email_and_reschedule(
     user = await db.users.find_unique(where={"id": user_id})
     event = await db.events.find_unique(where={"id": event_id})
 
-    subject = f"Reminder: Your Wonderhood event “{event.name}” is tomorrow"
-    body = f"Hey {user.firstName},\n\nJust a quick reminder that “{event.name}” with Wonderhood happens at {convert_iso_date_to_string(event_date)}.\n\nCheers!"
+    subject = f"Reminder: Your WonderHood event “{event.name}” is tomorrow"
+    body = f"Hey {user.firstName},\n\nJust a quick reminder that “{event.name}” with WonderHood happens at {convert_iso_date_to_string(event_date)}.\n\nCheers!"
     
     # Send the email with yagmail
     yag.send(to=user.email, subject=subject, contents=body)
@@ -216,7 +216,7 @@ async def blast_notification(
     user_emails = [user.email for user in users]
 
     # Add notification here
-    content = f'Hello,\n\n {notification.description}\n\nBest,\n\nWonderhood Team'
+    content = f'Hello,\n\n {notification.description}\n\nBest,\n\nWonderHood Team'
 
     if user_emails:
         notification_data = [
