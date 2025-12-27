@@ -24,10 +24,9 @@ export default function AboutPageContent() {
             <div className="rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
               <div className="space-y-3 sm:space-y-4 text-base sm:text-lg leading-relaxed text-gray-700">
                 <p>
-                  WonderHood began in Westcliffe, Colorado, and is growing to serve families across the state.
-                  It was created by parents and educators who saw a real gap: learning at home can be rich and
-                  flexible, but many students still long for daily friendship and a sense of belonging. Screens fill the time, confidence fades, and
-                  face-to-face communication becomes harder.
+                  WonderHood began in Westcliffe, Colorado, and is growing to serve homeschool and online-learning families across the state. 
+                  Many homeschool students love the flexibility of learning at home—but still miss steady friendships and a sense of belonging. 
+                  For many online learners, screen time can crowd out real-life connection, especially in rural communities where it’s harder to meet peers regularly.
                 </p>
                 <p>
                   We built welcoming spaces where students feel supported and truly seen. Through outdoor adventures, creative arts, STEM
@@ -38,8 +37,40 @@ export default function AboutPageContent() {
           </div>
         </section>
 
+        <div className="grid gap-5 sm:gap-8 md:gap-10 md:grid-cols-2 auto-rows-fr items-stretch">
+          {/* Service Area */}
+          <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
+            <div className="mb-4 flex items-center gap-3 sm:gap-4">
+              <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange shadow" />
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wondergreen">Service Area</h3>
+            </div>
+
+            <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
+              <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
+                WonderHood serves homeschool and online learners across Colorado. Our current pilot programming is currently launching in{" "}
+                <span className="font-semibold text-wondergreen">Custer County (Westcliffe and surrounding areas)</span>, with expansion planned as partnerships and community needs grow.
+              </p>
+            </div>
+          </article>
+
+          {/* Why Child Health */}
+          <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
+            <div className="mb-4 flex items-center gap-3 sm:gap-4">
+              <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderorange via-wondersun to-wonderleaf shadow" />
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wonderorange">Why Child Health?</h3>
+            </div>
+
+            <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
+              <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
+                We support child well-being through connection, movement, and purpose. Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities. 
+                We also expand access to enrichment experiences and hands-on STEAM learning—especially important for rural and online-learning youth.
+              </p>
+            </div>
+          </article>
+        </div>
+
         {/* Why We Do It */}
-        <section className="mb-10 sm:mb-12 md:mb-16">
+        <section className="mb-10 sm:mb-12 md:mb-16 mt-28">
           <div className="mb-6 sm:mb-8 text-center">
             <h2 className="mb-2 sm:mb-3 text-2xl sm:text-3xl md:text-4xl font-bold text-wondergreen [text-wrap:balance]">
                 Why We Do What We Do
