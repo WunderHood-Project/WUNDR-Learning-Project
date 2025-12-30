@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from .auth.login import get_current_user
 from .auth.utils import enforce_authentication, enforce_admin
 from datetime import datetime, time, timezone
+from prisma import Json
 
 
 router = APIRouter()
@@ -49,10 +50,23 @@ async def create_child(
                     "photoConsentAt": datetime.now(timezone.utc) if child_data.photoConsent else None,
                     "parentIds": [current_user.id], # Add the current user's ID to parentIDs
                     "eventIds": [], # Create activityIDs array so we can easily add to it later
-                    # "createdAt": child_data.createdAt,
-                    # "updatedAt": child_data.updatedAt
+                    "waiverSignedByName": child_data.waiverSignedByName if child_data.waiver else None,
                 },
             )
+
+            await tx.waiversignatures.create(
+                data={
+                    "child": {"connect": {"id": created_child.id}},
+                    "parent": {"connect": {"id": current_user.id}}, 
+
+                    "type": "liability",
+                    "version": WAIVER_VER,
+                    "signedAt": datetime.now(timezone.utc),
+                    "signedByName": (child_data.waiverSignedByName or "").strip(),
+                    "sectionsAck": Json(child_data.waiverSectionsAck or []),
+                }
+            )
+
 
             # create/link emergency contacts
             contacts: list = []
@@ -245,14 +259,19 @@ async def update_child(
     if update_data.waiver is not None:
         if update_data.waiver:
             extra_updates.update({
+                "waiver": True,
                 "waiverVersion": WAIVER_VER,
                 "waiverSignedAt": datetime.now(timezone.utc),
+                "waiverSignedByName": (update_data.waiverSignedByName or "").strip(),
             })
         else:
             extra_updates.update({
+                "waiver": False,
                 "waiverVersion": None,
                 "waiverSignedAt": None,
+                "waiverSignedByName": None,
             })
+
 
     if update_data.photoConsent is not None:
         if update_data.photoConsent:
@@ -280,6 +299,21 @@ async def update_child(
                     where={"id": child.id},
                     include={"parents": True, "emergencyContacts": True},
                 )
+
+            # If the waiver was switched to True (it was previously False)
+            await tx.waiversignatures.create(
+                data={
+                    "child": {"connect": {"id": updated_child.id}},
+                    "parent": {"connect": {"id": current_user.id}}, 
+
+                    "type": "liability",
+                    "version": WAIVER_VER,
+                    "signedAt": datetime.now(timezone.utc), 
+                    "signedByName": (update_data.waiverSignedByName or "").strip(),
+                    "sectionsAck": Json(update_data.waiverSectionsAck or []),
+                }
+            )
+
 
             # 2) Reconcile emergency contacts if provided
             if new_contacts is not None:

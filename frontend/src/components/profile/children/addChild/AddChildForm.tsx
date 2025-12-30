@@ -9,6 +9,7 @@ import { validateChildBasics } from "../../../../../utils/childValidations";
 import EmergencyContactsList from "../emergencyContact/EmergencyContactsList";
 import Stepper from "./Stepper";
 import Waiver from "./Waiver";
+import { WAIVER_SECTIONS } from "@/constants/policies";
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -38,6 +39,8 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 	const [serverError, setServerError] = useState<string | null>(null)
 	const [submitting, setSubmitting] = useState(false)
 	const [currentStep, setCurrentStep] = useState(1)
+	const [waiverFullName, setWaiverFullName] = useState("");
+	const [waiverAck, setWaiverAck] = useState<boolean[]>( Array(WAIVER_SECTIONS.length).fill(false));
 
 	const {ecs, ecErrors, ecErrorMap, rowKeys, setEcErrors, setEcErrorMap, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys, validateNow } = useEmergencyContactsCreate()
 
@@ -136,7 +139,17 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			return
 		}
 
-		const payload = { ...toCreatePayload(form), emergencyContacts: toPayload }
+		if (!waiverFullName.trim()) {
+			setServerError("Please enter Parent/Guardian Full Name")
+			return
+		}
+
+		const payload = {
+			...toCreatePayload(form),
+			emergencyContacts: toPayload,
+			waiverSignedByName: waiverFullName.trim(),
+			waiverSectionsAck: waiverAck,
+		}
 
 		try {
 			setSubmitting(true)
@@ -154,6 +167,8 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			setEcErrorMap({})
 			setServerError(null)
 			setCurrentStep(1)
+			setWaiverFullName("");
+			setWaiverAck(Array(WAIVER_SECTIONS.length).fill(false));
 		} catch (err) {
 			setServerError(err instanceof Error ? err.message : "Fail to join child to account. Please try again later.")
 		} finally {
@@ -235,6 +250,10 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					onChange={onChange}
 					submitting={submitting}
 					prevStep={prevStep}
+					ack={waiverAck}
+					setAck={setWaiverAck}
+					fullName={waiverFullName}
+					setFullName={setWaiverFullName}
 				/>
 			)}
 		</form>

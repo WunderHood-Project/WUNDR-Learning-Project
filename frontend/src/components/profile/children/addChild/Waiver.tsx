@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import type { ChildErrorsForm, CreateChildForm } from "@/types/child";
 import { WAIVER_VERSION, WAIVER_SECTIONS } from "@/constants/policies";
 
@@ -8,16 +8,13 @@ type Props = {
     onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
     submitting?: boolean;
     prevStep: () => void;
+    ack: boolean[];
+    setAck: React.Dispatch<React.SetStateAction<boolean[]>>;
+    fullName: string;
+    setFullName: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep }) => {
-    /**
-     * Local UX-only state. We do NOT send these to the server.
-     * - ack: per-section "I read this section" confirmations
-     * - fullName: typed parent/guardian name for on-screen confirmation
-     */
-    const [ack, setAck] = useState<boolean[]>(() => Array(WAIVER_SECTIONS.length).fill(false));
-    const [fullName, setFullName] = useState("");
+const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep, ack, setAck, fullName, setFullName }) => {
 
     // All sections acknowledged?
     const allSectionsAcked = useMemo(() => ack.every(Boolean), [ack]);
