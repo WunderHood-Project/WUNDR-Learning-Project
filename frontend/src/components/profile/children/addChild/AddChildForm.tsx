@@ -9,7 +9,7 @@ import { validateChildBasics } from "../../../../../utils/childValidations";
 import EmergencyContactsList from "../emergencyContact/EmergencyContactsList";
 import Stepper from "./Stepper";
 import Waiver from "./Waiver";
-import { WAIVER_SECTIONS } from "@/constants/policies";
+import { WAIVER_SECTIONS, WAIVER_VERSION } from "@/constants/policies";
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -20,6 +20,7 @@ type AddChildProps = {
 }
 
 const initCreateForm = (): CreateChildForm => ({
+	// Initial form state (matches backend ChildCreate fields)
 	firstName: "",
 	lastName: "",
 	preferredName: "",
@@ -39,8 +40,16 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 	const [serverError, setServerError] = useState<string | null>(null)
 	const [submitting, setSubmitting] = useState(false)
 	const [currentStep, setCurrentStep] = useState(1)
+	// Stores typed guardian full name for waiver signature
 	const [waiverFullName, setWaiverFullName] = useState("");
-	const [waiverAck, setWaiverAck] = useState<boolean[]>( Array(WAIVER_SECTIONS.length).fill(false));
+
+	const initialAck = React.useMemo(
+		// Build a stable "all sections unchecked" map (used to reset waiver acknowledgements)
+		() => Object.fromEntries(WAIVER_SECTIONS.map(s => [s.key, false] as const)),
+		[]
+	);
+	// Stores per-section waiver acknowledgements (each section must be checked)
+	const [waiverAck, setWaiverAck] = useState<Record<string, boolean>>(initialAck);
 
 	const {ecs, ecErrors, ecErrorMap, rowKeys, setEcErrors, setEcErrorMap, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys, validateNow } = useEmergencyContactsCreate()
 
@@ -50,23 +59,27 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 
 		if (!name) return
 		if (type === "checkbox") {
+			// Generic checkbox handler (waiver/photoConsent/homeschool etc.)
 			setForm(p => ({ ...p, [name]: checked }))
+			// If user toggles waiver, clear waiver error immediately (better UX)
 			if (name === 'waiver') setErrors(prev => ({ ...prev, waiver: undefined}))
 			 return
 		}
 
 		if (name === "grade") {
+			// Convert grade input to number (or null if empty)
 			setForm(p => ({ ...p, grade: value === "" ? null : Number(value) }))
 			return
 		}
 
-		setForm(p => ({ ...p, [name]: value }))
+		setForm(p => ({ ...p, [name]: value })) // Render nothing if the modal/form is hidden
 	}
 
 	if (!showForm) return null
 
 	const nextStep = () => {
 		if (currentStep === 1) {
+			// Step 1 validation: basic child fields
 			const errs = validateChildBasics({
 				firstName: form.firstName,
 				lastName: form.lastName,
@@ -82,6 +95,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		}
 
 		if (currentStep === 2) {
+			// Step 2 validation: at least 1 valid emergency contact
 			const { ok, deduped } = validateNow()
 
 			if (!ok || deduped.length === 0) {
@@ -89,7 +103,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 				return
 			}
 		}
-
+		// Clear errors when advancing
 		setServerError(null)
 		setErrors({})
 		setEcErrors([])
@@ -103,6 +117,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 	}
 
 	const toCreatePayload = (form: CreateChildForm): CreateChildForm => ({
+		// Normalize values for backend (trim strings / convert empty to null)
 		...form,
 		preferredName: form.preferredName === "" ? null : form.preferredName?.trim(),
 		birthday: form.birthday ? new Date(form.birthday).toISOString() : "",
@@ -114,6 +129,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		e.preventDefault()
 		setServerError(null)
 
+		// Re-validate Step 1 on final submit (protects against direct submit)
 		const childErrors: ChildErrorsForm = validateChildBasics({
 			firstName: form.firstName,
 			lastName: form.lastName,
@@ -127,28 +143,42 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			return
 		}
 
+		// Re-validate emergency contacts on submit as well
 		const { ok, deduped } = validateNow()
 		if (!ok || deduped.length === 0) {
 			setServerError("Please fix the Emergency Contact errors")
 			return
 		}
 
+		// Waiver must be checked (final e-sign agreement checkbox)
 		if (!form.waiver) {
 			setErrors(prev => ({ ...prev, waiver: "Please acknowledge the waiver to continue" }))
 			setServerError("Please acknowledge the waiver to continue")
 			return
 		}
 
+		// Guardian full name is required for signature record
 		if (!waiverFullName.trim()) {
 			setServerError("Please enter Parent/Guardian Full Name")
 			return
 		}
 
+		// All waiver sections must be acknowledged before submit
+		const allAcked = WAIVER_SECTIONS.every(sec => waiverAck[sec.key]);
+		if (!allAcked) {
+			setServerError("Please acknowledge all waiver sections.");
+		return;
+		}
+
 		const payload = {
 			...toCreatePayload(form),
-			emergencyContacts: toPayload,
-			waiverSignedByName: waiverFullName.trim(),
-			waiverSectionsAck: waiverAck,
+			emergencyContacts: toPayload, // Use normalized/deduped EC payload from the custom hook
+			waiverSignedByName: waiverFullName.trim(), // Stored in DB for signature audit trail
+			waiverSectionsAck: Object.entries(waiverAck)
+			.filter(([, v]) => v)
+			.map(([k]) => k),
+			waiverVersion: WAIVER_VERSION, // Helps backend store the version the user agreed to
+
 		}
 
 		try {
@@ -159,7 +189,9 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 				body: payload
 			})
 
+			// Notify parent component that child was created successfully
 			onSuccess(response.child)
+			// Reset the whole multi-step form state back to defaults
 			setForm(initCreateForm())
 			setEcs([{ firstName: "", lastName: "", relationship: "", phoneNumber: "" }])
 			setRowKeys([`${crypto.randomUUID()}`])
@@ -167,8 +199,10 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			setEcErrorMap({})
 			setServerError(null)
 			setCurrentStep(1)
+			// Reset waiver-specific state
 			setWaiverFullName("");
-			setWaiverAck(Array(WAIVER_SECTIONS.length).fill(false));
+			setWaiverAck(initialAck);
+
 		} catch (err) {
 			setServerError(err instanceof Error ? err.message : "Fail to join child to account. Please try again later.")
 		} finally {
@@ -245,17 +279,18 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 
 			{currentStep === 3 && (
 				<Waiver
-					child={form}
-					errors={errors}
-					onChange={onChange}
-					submitting={submitting}
-					prevStep={prevStep}
-					ack={waiverAck}
-					setAck={setWaiverAck}
-					fullName={waiverFullName}
-					setFullName={setWaiverFullName}
+				child={form}
+				errors={errors}
+				onChange={onChange}
+				submitting={submitting}
+				prevStep={prevStep}
+				ack={waiverAck}
+				setAck={setWaiverAck}
+				fullName={waiverFullName}
+				setFullName={setWaiverFullName}
 				/>
 			)}
+
 		</form>
 	)
 }

@@ -1,19 +1,45 @@
-import Link from "next/link";
+'use client';
 
-export default function AdministrationPage() {
+import Link from 'next/link';
+
+type Props = {
+  title: string;
+  children?: React.ReactNode;
+};
+
+const tile =
+  'admin-tile block rounded-xl border border-gray-200 bg-white p-4 ' +
+  'hover:bg-gray-50 hover:border-gray-300 transition shadow-sm';
+
+export default function AdministrationPage({ title, children }: Props) {
   return (
-    <div className="max-w-5xl mx-auto p-6 grid gap-4">
-      <h1 className="text-2xl font-bold mb-2">Administration</h1>
+    <div className="max-w-6xl mx-auto p-6 grid gap-5">
+      {/* Top bar */}
+      <div className="grid gap-1">
+        <h1 className="text-2xl font-bold">{title}</h1>
+        <p className="text-sm text-gray-500">Admin dashboard</p>
+      </div>
+        <div className="flex items-center justify-between">
+        <Link href="/" className="text-sm underline">
+          Back to site
+        </Link>
+      </div>
 
+      {/* NAV */}
       <nav className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <Link className="admin-tile" href="/admin/children">Children</Link>
-        <Link className="admin-tile" href="/admin/parents">Parents</Link>
-        <Link className="admin-tile" href="/admin/events">Events</Link>
-        <Link className="admin-tile" href="/admin/volunteers">Volunteers</Link>
-        <Link className="admin-tile" href="/admin/partners">Partners</Link>
+        <Link className={tile} href="/admin/children">Children</Link>
+        <Link className={tile} href="/admin/parents">Parents</Link>
+        <Link className={tile} href="/admin/events">Events</Link>
+        <Link className={tile} href="/admin/volunteers">Volunteers</Link>
+        <Link className={tile} href="/admin/partners">Partners</Link>
       </nav>
+
+      {/* Page content */}
+      {children ? (
+        <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          {children}
+        </section>
+      ) : null}
     </div>
   );
 }
-
-/* где-то в globals.css (или tailwind classes inline) */

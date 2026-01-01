@@ -246,7 +246,7 @@ class ChildCreate(BaseModel):
   emergencyContacts: List["EmergencyContactCreate"] = Field(default_factory=list)
 
   waiverSignedByName: Optional[str] = None
-  waiverSectionsAck: Optional[List[bool]] = None
+  waiverSectionsAck: Optional[List[str]] = None
 
   # createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
   # updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -270,7 +270,7 @@ class ChildUpdate(BaseModel):
   photoConsent: Optional[bool] = None
   waiver: Optional[bool] = None
   waiverSignedByName: Optional[str] = None
-  waiverSectionsAck: Optional[List[bool]] = None
+  waiverSectionsAck: Optional[List[str]] = None
 
   emergencyContacts: List["EmergencyContactCreate"] = Field(default_factory=list)
 
