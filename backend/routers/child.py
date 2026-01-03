@@ -211,13 +211,13 @@ async def admin_get_all_children(
 
     children = await db.children.find_many(
         include={
-            "parents": True,              # ✅ без select!
+            "parents": True,              # 
             "emergencyContacts": True,
             "events": True,
         }
     )
 
-    # ✅ sanitize parents (убираем пароль и лишнее)
+    # ✅ sanitize parents
     payload = jsonable_encoder(children)
     for c in payload:
         c["parents"] = [
