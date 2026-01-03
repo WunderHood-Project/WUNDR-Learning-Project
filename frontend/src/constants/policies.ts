@@ -44,6 +44,7 @@ Prohibited: bullying/harassment, abusive language or insults, dangerous behavior
 
 export const WAIVER_SECTIONS = [
   {
+    key: "assumption_of_risk",
     title: "Assumption of Risk",
     body: `I understand that participation in WonderHood programs/events (including outdoor activities,
 movement between locations, team games, and workshops) involves risks of injury, weather exposure,
@@ -51,45 +52,62 @@ uneven terrain, physical exertion, and other unforeseen circumstances. I volunta
 risks for myself and for the child named in the registration.`
   },
   {
+    key: "release_hold_harmless",
     title: "Release & Hold Harmless",
     body: `To the maximum extent permitted by law, I release and hold harmless WonderHood, its staff,
 volunteers, and directors from any loss, injury, or damage arising during participation, except in
 cases of gross negligence or willful misconduct by WonderHood.`
   },
   {
+    key: "code_of_conduct",
     title: "Code of Conduct",
     body: `The child will follow safety rules and staff directions. Violations (bullying, threats,
 dangerous behavior, property damage) may result in disciplinary action up to removal from an activity.`
   },
   {
+    key: "medical_first_aid",
     title: "Medical & First Aid Consent",
     body: `I authorize basic first aid (cleaning minor scrapes/cuts, bandages, cold compresses, rest/observation).
 In an emergency, I authorize calling 911 and arranging transport. WonderHood does not dispense prescriptions;
 OTC items are used topically only. If EpiPen®/inhaler is required, I will supply a labeled device.`
   },
   {
+    key: "health_disclosure",
     title: "Health Disclosure",
     body: `I will disclose allergies/medical considerations and provide up-to-date emergency contacts.
 I confirm the child is physically able to participate or I have disclosed relevant limitations.`
   },
   {
+    key: "transport_property",
     title: "Transportation & Property",
     body: `Personal belongings are brought at the participant’s own risk; WonderHood is not responsible
 for loss or damage. Travel to/from events is the family’s responsibility unless otherwise stated.`
   },
   {
+    key: "photo_consent_separate",
     title: "Photo Consent (separate)",
     body: `Photo/video consent is provided separately on the “Photo Consent” step and can be withdrawn by email.
 WonderHood will stop future use and make reasonable efforts to remove prior posts within its control.`
   },
   {
+    key: "fees_refunds",
     title: "Fees & Refunds (current & future)",
     body: `Currently, WonderHood events are free. In the future, membership dues or paid club programs may be
 introduced. When fees apply, refunds/reschedules are governed by the specific program rules presented at registration.`
   },
   {
+    key: "governing_law",
     title: "Governing Law",
     body: `This waiver is governed by Colorado law. If any portion is found invalid, the remaining provisions
 continue in full force and effect (severability).`
   }
 ];
+
+export const getWaiverSnapshotEN = () => ({
+  version: WAIVER_VERSION,
+  language: "en",
+  fullText: WAIVER_FULL_TEXT_EN,
+  sections: WAIVER_SECTIONS.map(s => ({ key: s.key, title: s.title, body: s.body })),
+  conductPolicyShort: CONDUCT_POLICY_SHORT_EN,
+});
+

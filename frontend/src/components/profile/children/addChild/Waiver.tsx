@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import type { ChildErrorsForm, CreateChildForm } from "@/types/child";
 import { WAIVER_VERSION, WAIVER_SECTIONS } from "@/constants/policies";
 
@@ -8,46 +8,33 @@ type Props = {
     onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
     submitting?: boolean;
     prevStep: () => void;
-};
-
-const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep }) => {
-    /**
-     * Local UX-only state. We do NOT send these to the server.
-     * - ack: per-section "I read this section" confirmations
-     * - fullName: typed parent/guardian name for on-screen confirmation
-     */
-    const [ack, setAck] = useState<boolean[]>(() => Array(WAIVER_SECTIONS.length).fill(false));
-    const [fullName, setFullName] = useState("");
-
-    // All sections acknowledged?
-    const allSectionsAcked = useMemo(() => ack.every(Boolean), [ack]);
-
-    // Simple full name check – adjust as needed (e.g., require a space)
-    const fullNameOk = fullName.trim().length >= 2;
-
-    /**
-     * We allow checking the FINAL legal checkbox (child.waiver) only when:
-     * - user acknowledged ALL sections, AND
-     * - typed a full name
-     */
-    const canAgreeAll = allSectionsAcked && fullNameOk;
-
-    /**
-     * The form can be submitted only when:
-     * - the final checkbox (child.waiver) is checked (this is the e-signature), AND
-     * - canAgreeAll is true
-     */
-    const canSubmit = (child.waiver ?? false) && canAgreeAll;
-
-    // Toggle per-section acknowledgment flag
-    const toggleAck = (i: number) => {
-        setAck(prev => {
-            const next = [...prev];
-            next[i] = !next[i];
-            return next;
-        });
+    ack: Record<string, boolean>;
+    setAck: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    fullName: string;
+    setFullName: React.Dispatch<React.SetStateAction<string>>;
     };
 
+const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep, ack, setAck, fullName, setFullName}) => {
+
+    // Determines whether the user acknowledged EVERY waiver section (required to proceed).
+    const allSectionsAcked = useMemo(
+        () => WAIVER_SECTIONS.every(sec => Boolean(ack[sec.key])),
+        [ack]
+    );
+
+    // Minimal validation for the typed full name (used as an e-signature name field).
+    const fullNameOk = fullName.trim().length >= 2;
+    // "Can enable the final waiver checkbox" gate: requires all section acknowledgements + a typed name.
+    const canAgreeAll = allSectionsAcked && fullNameOk;
+     // "Can submit the whole form" gate: requires the final waiver checkbox + the above conditions.
+    const canSubmit = (child.waiver ?? false) && canAgreeAll;
+
+    // Toggles a single section acknowledgement flag in local state.
+    const toggleAck = (key: string) => {
+        setAck(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+   
     return (
         <>
         <h2 className="flex flex-col text-xl mt-4 text-center">
@@ -62,7 +49,7 @@ const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep
         {/* Accordion-style sections; each must be acknowledged */}
         <div className="mt-4 space-y-3">
             {WAIVER_SECTIONS.map((sec, i) => (
-                <details key={sec.title} className="rounded-lg border bg-gray-50 open:bg-white">
+                <details key={sec.key} className="rounded-lg border bg-gray-50 open:bg-white">
                     <summary className="cursor-pointer select-none px-3 py-2 font-medium">
                         {i + 1}. {sec.title}
                     </summary>
@@ -75,8 +62,8 @@ const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep
                         <label className="mt-3 inline-flex items-center gap-2 text-sm">
                             <input
                             type="checkbox"
-                            checked={ack[i]}
-                            onChange={() => toggleAck(i)}
+                            checked={Boolean(ack[sec.key])}
+                            onChange={() => toggleAck(sec.key)}
                             className="h-4 w-4"
                             />
                             <span>I have read and understand this section.</span>
@@ -86,20 +73,20 @@ const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep
             ))}
         </div>
 
-        {/* Parent/guardian full name (UX-only, not sent to server) */}
         <div className="mt-4">
             <label htmlFor="waiver-fullname" className="block text-sm font-medium mb-1">
                 Parent/Guardian Full Name
             </label>
             <input
-            id="waiver-fullname"
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="First Last"
-            className="w-full p-2 border rounded-md"
+                id="waiver-fullname"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="First Last"
+                className="w-full p-2 border rounded-md"
             />
         </div>
+
 
         {/* Final legal agreement checkbox (serves as e-signature) */}
         <div className="mt-4">

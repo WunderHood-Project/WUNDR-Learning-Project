@@ -45,6 +45,7 @@ model Users {
 
   // One-to-one
   volunteer Volunteers?
+  waiverSignatures WaiverSignatures[]
 }
 
 enum Roles {
@@ -89,7 +90,44 @@ model Children {
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime? @updatedAt
+
+  waiverSignatures      WaiverSignatures[]
+  waiverSignedByParentId String? @db.ObjectId
 }
+
+//! WaiverSignatures        =============================================================================
+
+enum ConsentType {
+  liability
+  photo
+}
+
+model WaiverSignatures {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+
+  childId        String   @db.ObjectId
+  child          Children @relation(fields: [childId], references: [id])
+
+  parentId       String   @db.ObjectId
+  parent         Users    @relation(fields: [parentId], references: [id])
+
+  type           ConsentType
+  version        String
+  signedByName   String
+  signedAt       DateTime @default(now())
+
+  sectionsAck    Json?
+  waiverSnapshot Json?
+  waiverTextHash String?
+  ip             String?
+  userAgent      String?
+
+  @@index([childId])
+  @@index([parentId])
+  @@index([type, version])
+  @@index([childId, parentId, type, version])
+}
+
 
 //  ! Volunteer             =============================================================================
 
