@@ -63,17 +63,12 @@ model Children {
   lastName              String
   preferredName         String?
   homeschool            Boolean
-  // homeschoolProgram     String?
   grade                 Int?
   birthday              DateTime
   allergiesMedical      String?
   notes                 String?
   photoConsent          Boolean
   waiver                Boolean
-
-  waiverVersion         String?
-  waiverSignedAt        DateTime?
-  waiverSignedByName    String?
   
   photoConsentVer       String?
   photoConsentAt        DateTime?
@@ -92,7 +87,6 @@ model Children {
   updatedAt             DateTime? @updatedAt
 
   waiverSignatures      WaiverSignatures[]
-  waiverSignedByParentId String? @db.ObjectId
 }
 
 //! WaiverSignatures        =============================================================================
@@ -121,6 +115,13 @@ model WaiverSignatures {
   waiverTextHash String?
   ip             String?
   userAgent      String?
+
+  // For PDF on GCS
+  pdfObjectName  String?   // ex: waivers/{childId}/{id}.pdf
+  pdfGsUri       String?   // ex: gs://wonderhood-waiver-pdfs/waivers/...
+  pdfSha256      String?   // PDF hash (for integrity verification)
+  pdfSizeBytes   Int?      // file size
+  pdfCreatedAt   DateTime? // When was the PDF created?
 
   @@index([childId])
   @@index([parentId])

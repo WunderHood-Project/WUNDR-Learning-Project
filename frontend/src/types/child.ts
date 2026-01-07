@@ -42,8 +42,10 @@ export type UpdateChildForm = Partial<Omit<ChildMutable, 'waiver'>>
 export type ChildErrorsForm = Partial<Record<keyof CreateChildForm, string>>
 
 export type CreateChildResponse = {
-    child: Child
-    parent: User
+    child: Child;
+    parent: User;
     emergencyContacts: EmergencyContact[];
     message: string;
+    waiverSignatureId?: string | null;
+    waiverSignedAt?: string | null;
 }

@@ -12,11 +12,18 @@ const WONDERHOOD_URL = determineEnv();
 type Props = { childId: string };
 
 type ChildDetailResponse = { child: Child };
-type WaiverResponse = { waiver: any };
+type WaiverSignatureLite = {
+  type: string;              // "liability" will come as a string
+  version: string;
+  signedAt: string;
+  signedByName: string | null;
+};
+
+type WaiverResponse = { waiver: WaiverSignatureLite | null };
 
 export default function ChildDetails({ childId }: Props) {
   const [child, setChild] = useState<Child | null>(null);  //Holds child profile returned from API.
-  const [waiver, setWaiver] = useState<any>(null);         //Holds latest waiver signature returned from API (admin route).
+  const [waiver, setWaiver] = useState<WaiverSignatureLite | null>(null);         //Holds latest waiver signature returned from API (admin route).
   const [loading, setLoading] = useState(true);           // Simple loading state for UI.
   const [error, setError] = useState<string | null>(null); //Stores error message to show in UI.
 

@@ -30,12 +30,12 @@ export default function PrivacyPolicy() {
         <h2 className="text-xl font-semibold text-wondergreen">1) Information We Collect</h2>
         <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
           <li><b>Account & profile</b>: name, email, city/state, (hashed) password, optional avatar.</li>
-          <li><b>Child/participant</b> (provided by parent/guardian): first name, age/grade, allergies/health notes for safety, emergency contact.</li>
-          <li><b>Events</b>: registrations, attendance, waitlists, messages related to an event.</li>
+          <li><b>Child/participant</b> (provided by parent/guardian): first name, last name, preferred name, date of birth, grade, allergies/health notes for safety, emergency contact.</li>
           <li><b>Donations</b>: amount, date/time, donor contact; <b>we do not store full card/bank details</b>.</li>
           <li><b>Photos & media</b>: event photos/videos with consent.</li>
           <li><b>Technical</b>: IP, device/browser, cookies/localStorage, pages visited, timestamps.</li>
-          <li><b>Communications</b>: emails/messages and preferences (e.g., newsletters).</li>
+          <li><b>Waiver/consent records</b>: signature name, timestamp, version, acknowledgements (sections checked), and a copy of the waiver text as presented at signing. We may also store technical metadata (e.g., IP address and user-agent) at the time of signing for security and audit purposes.</li>
+          <li><b>Communications</b>: emails/messages you send us and our operational communications with you (sent via Google Workspace / Gmail).</li>
         </ul>
       </section>
 
@@ -55,20 +55,23 @@ export default function PrivacyPolicy() {
         <h2 className="text-xl font-semibold text-wondergreen">3) Legal Basis / Consent</h2>
         <p>
           We process information with your consent, to fulfill a request/registration/donation, and/or for legitimate nonprofit purposes
-          such as participant safety and reporting. Children&lsquos data is supplied by a parent/guardian (see §9).
+          such as participant safety and reporting. Children’s data is supplied by a parent/guardian (see §9).
         </p>
       </section>
 
       <section>
         <h2 className="text-xl font-semibold text-wondergreen">4) Sharing & Service Providers</h2>
-        <p className="mt-2">We do <b>not</b> sell personal information or share it for targeted advertising. We share data only with providers that help us operate:</p>
+        <p className="mt-2">We do <b>not</b> sell personal information and we do not share it for targeted advertising.
+                            We share information only with trusted service providers that help us operate our Services:</p>
         <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
-          <li><b>Payments:</b> Stripe (donations/transactions).</li>
-          <li><b>Hosting/CDN:</b> Vercel (U.S.).</li>
+          <li><b>Payments:</b> Stripe (donations/transactions processing).</li>
           <li><b>Database:</b> MongoDB Atlas (U.S. region).</li>
-          <li><b>Email/notifications</b> and basic analytics. Providers are bound by confidentiality and processing terms.</li>
+          <li><b>Document storage:</b> Google Cloud Storage (signed waiver PDFs and related records).</li>
+          <li><b>Email/communications:</b> Google Workspace / Gmail (sending confirmations, notices, and administrative emails).</li>
+          <li><b>Basic analytics:</b> limited, aggregated usage data to improve the site (no targeted advertising).</li>
         </ul>
-        <p className="mt-2">We may disclose information if required by law or to protect rights/safety. We do not disclose children’s information publicly.</p>
+        <p className="mt-2">These providers are bound by confidentiality and data processing terms. We may disclose information if required by law
+    or to protect rights and safety. We do not disclose children’s information publicly.</p>
       </section>
 
       <section>
@@ -96,11 +99,10 @@ export default function PrivacyPolicy() {
       <section>
         <h2 className="text-xl font-semibold text-wondergreen">7) Storage, Location & Security</h2>
         <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
-          <li><b>Location:</b> hosting on Vercel (U.S.); data stored in MongoDB Atlas (U.S.).</li>
+          <li><b>Location:</b> we operate in the United States. Data is stored in MongoDB Atlas (U.S. region). Signed waiver PDFs are stored in Google Cloud Storage (U.S.). Operational emails are sent and stored via Google Workspace / Gmail.</li>
           <li><b>In transit:</b> HTTPS/TLS encryption.</li>
           <li><b>Access control:</b> limited to staff/volunteers on a need-to-know basis.</li>
-          <li><b>Retention:</b> accounts — while active; event/registration forms — up to <b>3 years</b>; donation/financial records — up to <b>7 years</b>;
-            media — until consent is withdrawn or content is retired. Then we delete or anonymize unless law requires longer.</li>
+          <li><b>Retention:</b> accounts — while active; event/registration records — up to 3 years; waiver/consent records (including signed waiver PDFs) — up to 7 years; donation/financial records — up to 7 years; media — until consent is withdrawn or content is retired. Then we delete or anonymize unless law requires longer.</li>
         </ul>
         <p className="mt-2">No method of transmission or storage is 100% secure, but we apply reasonable safeguards for a small nonprofit.</p>
       </section>
@@ -116,11 +118,11 @@ export default function PrivacyPolicy() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-wondergreen">9) Children&lsquos Privacy</h2>
+        <h2 className="text-xl font-semibold text-wondergreen">9) Children’s Privacy</h2>
         <p className="mt-2">
           Accounts/registrations are created by a parent or legal guardian. We collect only the minimum information needed for safe participation.
           We do not knowingly collect personal information directly from children under 13 online without verifiable parental consent.
-          Parents/guardians can review or delete their child&lsquos information and withdraw participation at any time.
+          Parents/guardians can review or delete their child’s information and withdraw participation at any time.
         </p>
       </section>
 
