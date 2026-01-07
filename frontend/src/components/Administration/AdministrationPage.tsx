@@ -19,20 +19,28 @@ export default function AdministrationPage({ title, children }: Props) {
         <h1 className="text-2xl font-bold">{title}</h1>
         <p className="text-sm text-gray-500">Admin dashboard</p>
       </div>
-        <div className="flex items-center justify-between">
-        <Link href="/" className="text-sm underline">
-          Back to site
+      <div className="flex items-center justify-between">
+        <Link href="/" className="ml-auto text-green-800 underline">
+        Back to site
         </Link>
       </div>
 
       {/* NAV */}
-      <nav className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <Link className={tile} href="/admin/children">Children</Link>
-        <Link className={tile} href="/admin/parents">Parents</Link>
-        <Link className={tile} href="/admin/events">Events</Link>
-        <Link className={tile} href="/admin/volunteers">Volunteers</Link>
-        <Link className={tile} href="/admin/partners">Partners</Link>
+      <nav className="
+      -mx-6 px-6
+      flex gap-3 overflow-x-auto pb-3
+      snap-x snap-mandatory
+      scroll-smooth
+      [scrollbar-width:none] [-ms-overflow-style:none]
+      "
+      >
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/children">Children</Link>
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/parents">Parents</Link>
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/events">Events</Link>
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/volunteers">Volunteers</Link>
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partners">Partners</Link>
       </nav>
+
 
       {/* Page content */}
       {children ? (

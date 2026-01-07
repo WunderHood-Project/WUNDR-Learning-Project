@@ -95,3 +95,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# secrets
+*.json
+secrets/
+*.key
+

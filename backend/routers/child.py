@@ -8,16 +8,37 @@ from .auth.login import get_current_user
 from .auth.utils import enforce_authentication, enforce_admin
 from datetime import datetime, time, timezone
 from prisma import Json
+from services.waiver_pdf import build_waiver_pdf_bytes
+from services.gcs import upload_bytes
+from policies.waiver_registry import get_waiver_snapshot
+import hashlib, json
+from fastapi import Request
 
 
 router = APIRouter()
 WAIVER_VER = "1.0"
 CONSENT_VER = "1.0"
 
+def get_request_ip(request: Request) -> str | None:
+    # If the app is behind a reverse proxy (Render / Nginx / Cloudflare),
+    # the real client IP is commonly passed via the X-Forwarded-For header.
+    xff = request.headers.get("x-forwarded-for")
+    if xff:
+        # X-Forwarded-For may contain multiple IPs:
+        # "client_ip, proxy_ip1, proxy_ip2" — we want the first one.
+        return xff.split(",")[0].strip()
+
+    # Fallback for direct connections (local/dev, or when proxy headers are not present)
+    if request.client:
+        return request.client.host
+
+    return None
+
 
 # ! Create Child
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_child(
+    request: Request,
     # apply Pydantic model for data validation
     child_data: ChildCreate,
     current_user: Annotated[User, Depends(get_current_user)]
@@ -44,21 +65,30 @@ async def create_child(
                     "notes": child_data.notes,
                     "waiver": child_data.waiver,
                     "photoConsent": child_data.photoConsent,
-                    "waiverVersion": WAIVER_VER if child_data.waiver else None,
-                    "waiverSignedAt": datetime.now(timezone.utc) if child_data.waiver else None,
                     "photoConsentVer": CONSENT_VER if child_data.photoConsent else None,
                     "photoConsentAt": datetime.now(timezone.utc) if child_data.photoConsent else None,
                     "parentIds": [current_user.id], # Add the current user's ID to parentIDs
                     "eventIds": [], # Create activityIDs array so we can easily add to it later
-                    "waiverSignedByName": child_data.waiverSignedByName if child_data.waiver else None,
                 },
             )
 
             # We create a waiver signature ONLY if the waiver was actually signed (waiver == True).
             # This prevents writing empty/invalid waiver records when the user did not sign anything.
 
+            waiver_sig = None
+
             if child_data.waiver:
-                await tx.waiversignatures.create(
+                # Capture an immutable snapshot of the waiver content shown in the UI at signing time.
+                snapshot = get_waiver_snapshot(WAIVER_VER, "en")
+                snapshot_hash = hashlib.sha256(
+                    json.dumps(snapshot, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+
+                # Capture audit metadata (IP + User-Agent) at signing time.
+                ip = get_request_ip(request)
+                user_agent = request.headers.get("user-agent")
+
+                waiver_sig = await tx.waiversignatures.create(
                     data={
                         "child": {"connect": {"id": created_child.id}},
                         "parent": {"connect": {"id": current_user.id}},
@@ -67,8 +97,71 @@ async def create_child(
                         "signedAt": datetime.now(timezone.utc),
                         "signedByName": (child_data.waiverSignedByName or "").strip(),
                         "sectionsAck": Json(child_data.waiverSectionsAck or []),
+                        # Audit metadata
+                        "ip": ip,
+                        "userAgent": user_agent,
+                        # Immutable waiver content + integrity hash
+                        "waiverSnapshot": Json(snapshot),
+                        "waiverTextHash": snapshot_hash,
                     }
                 )
+
+                # Create the waiver signature record (includes snapshot + hash for audit integrity).
+                pdf_bytes = build_waiver_pdf_bytes(
+                    waiver_signature=waiver_sig,
+                    waiver_snapshot=snapshot,
+                    child=created_child,
+                    parent=current_user,
+                )
+
+                pdf_sha256 = hashlib.sha256(pdf_bytes).hexdigest()
+                pdf_size = len(pdf_bytes)
+
+                # Upload the PDF to cloud storage (GCS).
+                object_name = f"waivers/{created_child.id}/{waiver_sig.id}.pdf"
+                gs_uri = upload_bytes(pdf_bytes, object_name, content_type="application/pdf")
+
+                # Persist PDF metadata for audit and integrity verification.
+                waiver_sig = await tx.waiversignatures.update(
+                    where={"id": waiver_sig.id},
+                    data={
+                        "pdfObjectName": object_name,
+                        "pdfGsUri": gs_uri,
+                        "pdfSha256": pdf_sha256,
+                        "pdfSizeBytes": pdf_size,
+                        "pdfCreatedAt": datetime.now(timezone.utc),
+                    },
+                )
+
+
+            # if child_data.waiver:
+            #     waiver_sig = await tx.waiversignatures.create(
+            #         data={
+            #             "child": {"connect": {"id": created_child.id}},
+            #             "parent": {"connect": {"id": current_user.id}},
+            #             "type": "liability",
+            #             "version": WAIVER_VER,
+            #             "signedAt": datetime.now(timezone.utc),
+            #             "signedByName": (child_data.waiverSignedByName or "").strip(),
+            #             "sectionsAck": Json(child_data.waiverSectionsAck or []),
+            #         }
+            #     )
+
+            #     pdf_bytes = build_waiver_pdf_bytes(
+            #         waiver=waiver_sig,
+            #         child=created_child,
+            #         parent=current_user,
+            #     )
+
+            #     object_name = f"waivers/{waiver_sig.id}.pdf"
+            #     gs_uri = upload_bytes(pdf_bytes, object_name, content_type="application/pdf")
+
+            #     waiver_sig = await tx.waiversignatures.update(
+            #         where={"id": waiver_sig.id},
+            #         data={"pdfObjectName": object_name, "pdfGsUri": gs_uri},
+            #     )
+
+
 
 
 
@@ -132,7 +225,9 @@ async def create_child(
             "child": created_child,
             "parent": updated_user,
             "emergencyContacts": contacts,
-            "message": "Child added successfully"
+            "message": "Child added successfully",
+            "waiverSignatureId": waiver_sig.id if waiver_sig else None,
+            "waiverSignedAt": waiver_sig.signedAt.isoformat() if waiver_sig else None,
         }
 
     except HTTPException:
