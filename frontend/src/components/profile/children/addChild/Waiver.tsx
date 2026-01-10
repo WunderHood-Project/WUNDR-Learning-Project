@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import type { ChildErrorsForm, CreateChildForm } from "@/types/child";
-import { WAIVER_VERSION, WAIVER_SECTIONS } from "@/constants/policies";
 
 type Props = {
     child: CreateChildForm;
@@ -8,75 +7,92 @@ type Props = {
     onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
     submitting?: boolean;
     prevStep: () => void;
-};
-
-const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep }) => {
-    /**
-     * Local UX-only state. We do NOT send these to the server.
-     * - ack: per-section "I read this section" confirmations
-     * - fullName: typed parent/guardian name for on-screen confirmation
-     */
-    const [ack, setAck] = useState<boolean[]>(() => Array(WAIVER_SECTIONS.length).fill(false));
-    const [fullName, setFullName] = useState("");
-
-    // All sections acknowledged?
-    const allSectionsAcked = useMemo(() => ack.every(Boolean), [ack]);
-
-    // Simple full name check – adjust as needed (e.g., require a space)
-    const fullNameOk = fullName.trim().length >= 2;
-
-    /**
-     * We allow checking the FINAL legal checkbox (child.waiver) only when:
-     * - user acknowledged ALL sections, AND
-     * - typed a full name
-     */
-    const canAgreeAll = allSectionsAcked && fullNameOk;
-
-    /**
-     * The form can be submitted only when:
-     * - the final checkbox (child.waiver) is checked (this is the e-signature), AND
-     * - canAgreeAll is true
-     */
-    const canSubmit = (child.waiver ?? false) && canAgreeAll;
-
-    // Toggle per-section acknowledgment flag
-    const toggleAck = (i: number) => {
-        setAck(prev => {
-            const next = [...prev];
-            next[i] = !next[i];
-            return next;
-        });
+    // Per-section acknowledgements (key -> checked). User must acknowledge all sections.
+    ack: Record<string, boolean>;
+    setAck: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    // Typed guardian name used for the waiver signature record.
+    fullName: string;
+    setFullName: React.Dispatch<React.SetStateAction<string>>;
+    // Display-only signed time (backend timestamp formatted for MT), if available.
+    signedAtLocal?: string | null;
+    // Waiver content snapshot (from backend).
+    waiverSections: { key: string; title: string; body: string }[];
+    waiverVersion: string;
+     // Optional short conduct policy text that may be appended to the conduct section.
+    conductPolicyShort?: string;
     };
 
+    const Waiver: React.FC<Props> = ({
+        child, errors, onChange, submitting, prevStep,
+        ack, setAck, fullName, setFullName, signedAtLocal,
+        waiverSections, waiverVersion, conductPolicyShort,
+    }) => {
+
+
+    // True when every waiver section has been acknowledged.
+    const allSectionsAcked = useMemo(
+        () => waiverSections.every(sec => Boolean(ack[sec.key])),
+        [ack, waiverSections]
+    );
+
+
+    // Minimal validation for the typed full name (used as an e-signature name field).
+    const fullNameOk = fullName.trim().length >= 2;
+    // "Can enable the final waiver checkbox" gate: requires all section acknowledgements + a typed name.
+    const canAgreeAll = allSectionsAcked && fullNameOk;
+     // "Can submit the whole form" gate: requires the final waiver checkbox + the above conditions.
+    const canSubmit = (child.waiver ?? false) && canAgreeAll;
+
+    // Toggles a single section acknowledgement flag in local state.
+    const toggleAck = (key: string) => {
+        setAck(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+   
     return (
         <>
         <h2 className="flex flex-col text-xl mt-4 text-center">
             Liability Waiver
-            <div className="text-xs text-gray-500 space-y-1">
-                <p>Version {WAIVER_VERSION} • Your agreement time is recorded automatically.</p>
-                <p className="font-bold">Instructions: Please check all boxes in each dropdown menu to proceed.</p>
+            <div className="text-xs text-gray-500 space-y-1 mt-1">
+                <p>
+                    Version {waiverVersion} • Your agreement time is recorded automatically. Questions? wonderhood.project@gmail.com
+                </p>
+                <p className="font-bold">
+                    Instructions: Please review each section and check the acknowledgement box to continue.
+                </p>
             </div>
-
         </h2>
+
+
 
         {/* Accordion-style sections; each must be acknowledged */}
         <div className="mt-4 space-y-3">
-            {WAIVER_SECTIONS.map((sec, i) => (
-                <details key={sec.title} className="rounded-lg border bg-gray-50 open:bg-white">
+            {waiverSections.map((sec, i) => (
+                <details key={sec.key} className="rounded-lg border bg-gray-50 open:bg-white">
                     <summary className="cursor-pointer select-none px-3 py-2 font-medium">
                         {i + 1}. {sec.title}
                     </summary>
 
                     <div className="px-3 pb-3 pt-1 text-sm leading-relaxed text-gray-800">
                         {/* Long text rendered with preserved line breaks */}
-                        <div className="max-h-40 overflow-auto whitespace-pre-line">{sec.body}</div>
+                        <div className="max-h-40 overflow-auto whitespace-pre-line">
+                            {sec.body}
+
+                            {sec.key === "code_of_conduct" && conductPolicyShort && (
+                                <>
+                                {"\n\n"}
+                                {conductPolicyShort}
+                                </>
+                            )}
+                        </div>
+
 
                         {/* Section acknowledgment */}
                         <label className="mt-3 inline-flex items-center gap-2 text-sm">
                             <input
                             type="checkbox"
-                            checked={ack[i]}
-                            onChange={() => toggleAck(i)}
+                            checked={Boolean(ack[sec.key])}
+                            onChange={() => toggleAck(sec.key)}
                             className="h-4 w-4"
                             />
                             <span>I have read and understand this section.</span>
@@ -86,20 +102,41 @@ const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep
             ))}
         </div>
 
-        {/* Parent/guardian full name (UX-only, not sent to server) */}
-        <div className="mt-4">
+        <div className="mt-5">
             <label htmlFor="waiver-fullname" className="block text-sm font-medium mb-1">
-                Parent/Guardian Full Name
+                Parent/Guardian Full Legal Name
             </label>
+
             <input
-            id="waiver-fullname"
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="First Last"
-            className="w-full p-2 border rounded-md"
+                id="waiver-fullname"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="First Middle Last"
+                className="w-full p-2 border rounded-md"
             />
+
+            {fullName.trim().length > 0 && !fullNameOk && (
+                <p className="mt-2 text-xs text-red-600">
+                    Please enter your full legal name to continue.
+                </p>
+            )}
+
+            <p className="mt-2 text-xs text-gray-500">
+                Type your full legal name as your electronic signature.
+                <span className="block">
+                By typing your name, you agree this constitutes your legal signature and you consent to electronic records.
+                </span>
+            </p>
         </div>
+
+        <div className="mt-4 rounded-lg border bg-gray-50 px-3 py-2 text-xs text-gray-600">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <span>Signed at: {signedAtLocal ? signedAtLocal : "recorded upon submission (MT)"}</span>
+                <span>Waiver version: {waiverVersion}</span>
+            </div>
+        </div>
+
 
         {/* Final legal agreement checkbox (serves as e-signature) */}
         <div className="mt-4">
@@ -116,7 +153,8 @@ const Waiver: React.FC<Props> = ({ child, errors, onChange, submitting, prevStep
                 required
                 />
                 <span className="text-sm">
-                        I have read all sections above and agree to WonderHood’s Liability Waiver (v{WAIVER_VERSION}). I am the child’s parent/guardian.
+                        I have read and agree to the WonderHood Liability Waiver Version:({waiverVersion}). 
+                        I am the child’s parent/legal guardian (18+) and I am signing electronically.
                         {!canAgreeAll && (
                             <span className="block text-xs text-gray-500 mt-1">
                                 Please acknowledge all sections and enter your full name to enable this checkbox.

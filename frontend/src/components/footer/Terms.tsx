@@ -12,7 +12,7 @@ export default function Terms() {
                 </p>
             </header>
 
-            <section className="space-2">
+            <section className="space-y-2">
                 <p>
                     These Terms of Service (“Terms”) govern your use of the WonderHood website, programs, and events
                     (collectively, the “Services”). By accessing or using the Services, you agree to these Terms and to our{" "}
@@ -42,7 +42,7 @@ export default function Terms() {
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">3) Programs, Registration & Cancellations</h2>
                 <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
-                <li>Spots may be limited. Registration is confirmed upon receipt of confirmation email/notice.</li>
+                <li>Spots may be limited. Registration is confirmed when you receive a confirmation email or see a confirmation notice in your account.</li>
                 <li>We may reschedule or cancel an event for safety, weather, or operational reasons; we’ll notify registrants as soon as practical.</li>
                 <li>Some activities may require a separate <b>Participant Waiver/Release</b> (including emergency contact/health notes). Participation may be denied without a signed waiver.</li>
                 </ul>
@@ -51,16 +51,22 @@ export default function Terms() {
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">4) Donations & Payments</h2>
                 <p className="mt-2">
-                Donations and program fees (if any) are processed by <b>Stripe</b>. We do not store full card or bank details.
-                All donations are <b>non-refundable</b>. If a payment was made by mistake (duplicate or incorrect amount), email us within 7 days at{" "}
-                <a href="mailto:wonderhood.project@gmail.com" className="text-wondergreen hover:text-wonderleaf">wonderhood.project@gmail.com</a>{" "}
-                and we’ll review your request at our discretion.
+                    Donations and program fees (if any) are processed by <b>Stripe</b>. We do not store full card or bank account details.
+                    Donations are generally <b>non-refundable</b>. If you believe a donation was made in error (for example, a duplicate charge
+                    or incorrect amount), please contact us within 7 days at{" "}
+                    <a href="mailto:wonderhood.project@gmail.com" className="text-wondergreen hover:text-wonderleaf">
+                    wonderhood.project@gmail.com
+                    </a>
+                    . We will review the request and, if appropriate, issue a refund to the original payment method. Note: banks and card issuers
+                    may also offer dispute/chargeback rights under their policies.
                 </p>
+
                 <p className="mt-2">
-                We email receipts that include our EIN. If no goods or services were provided in exchange for a contribution,
-                the donation may be tax-deductible under U.S. law (“No goods or services were provided in exchange for this contribution.”).
+                    We email receipts that include our EIN. If no goods or services were provided in exchange for a contribution, the donation may
+                    be tax-deductible under U.S. law (“No goods or services were provided in exchange for this contribution.”).
                 </p>
             </section>
+
 
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">5) Photos & Media</h2>
@@ -75,21 +81,19 @@ export default function Terms() {
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">6) User Content & Intellectual Property</h2>
                 <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
-                <li>Site content, logos, and materials are owned by WonderHood or licensed to us and are protected by law.</li>
-                <li>
-                    If you submit content (e.g., testimonials or photos you own), you grant WonderHood a non-exclusive, royalty-free license
-                    to use, reproduce, and display it for nonprofit purposes related to our mission, unless you revoke this in writing.
-                </li>
-                <li>Do not upload content you do not have the right to share or that violates others’ rights.</li>
+                    <li>Site content, logos, and materials are owned by WonderHood or licensed to us and are protected by law.</li>
+                    <li>If you submit content you own (for example, testimonials or photos), you grant WonderHood a non-exclusive, royalty-free license to use, reproduce, and display it for nonprofit purposes related to our mission.</li>
+                    <li>Do not upload content you do not have the right to share or that violates others’ rights.</li>
                 </ul>
             </section>
+
 
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">7) Assumption of Risk & Waiver</h2>
                 <p className="mt-2">
                 Outdoor and community activities involve inherent risks (weather, terrain, physical exertion, etc.). By registering yourself or a child,
                 you acknowledge these risks and agree to follow safety guidance from staff/volunteers. Some events may require signing an additional
-                <b> Waiver/Release</b>; participation may be denied without it. WonderHood does not provide medical advice or services.
+                <b> Waiver/Release</b>; participation may be denied without it. WonderHood does not provide medical advice or services. Waivers may be signed electronically.
                 </p>
             </section>
 
@@ -104,12 +108,14 @@ export default function Terms() {
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">9) Limitation of Liability</h2>
                 <p className="mt-2">
-                To the maximum extent permitted by law, WonderHood and its volunteers, staff, and directors shall not be liable for any indirect,
-                incidental, special, consequential, or punitive damages, or for lost profits or data. Our total liability for any claims related
-                to the Services shall not exceed the amount you paid to us (if any) in the 12 months preceding the event giving rise to the claim.
-                Some states do not allow certain limitations; in such cases, the limitation applies to the fullest extent permitted by law.
+                    To the maximum extent permitted by law, WonderHood and its volunteers, staff, and directors will not be liable for any indirect,
+                    incidental, special, consequential, or punitive damages, or for any loss of profits or data, arising out of or related to your use
+                    of the Services. Our total liability for any claims related to the Services will not exceed the amount you paid to us (if any) in the
+                    12 months preceding the event giving rise to the claim, or $100, whichever is greater. Some states do not allow certain limitations,
+                    so the limitation above applies to the fullest extent permitted by law.
                 </p>
             </section>
+
 
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">10) Termination</h2>

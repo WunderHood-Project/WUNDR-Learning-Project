@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react";
 import { ChildErrorsForm, CreateChildForm, CreateChildResponse } from "@/types/child";
 import { makeApiRequest } from "../../../../../utils/api";
 import { Child } from "@/types/child";
@@ -9,6 +9,7 @@ import { validateChildBasics } from "../../../../../utils/childValidations";
 import EmergencyContactsList from "../emergencyContact/EmergencyContactsList";
 import Stepper from "./Stepper";
 import Waiver from "./Waiver";
+import type { WaiverSnapshot } from "@/types/policies";
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -19,6 +20,7 @@ type AddChildProps = {
 }
 
 const initCreateForm = (): CreateChildForm => ({
+	// Initial form state (matches backend ChildCreate fields)
 	firstName: "",
 	lastName: "",
 	preferredName: "",
@@ -38,8 +40,78 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 	const [serverError, setServerError] = useState<string | null>(null)
 	const [submitting, setSubmitting] = useState(false)
 	const [currentStep, setCurrentStep] = useState(1)
+	const [createdWaiverId, setCreatedWaiverId] = useState<string | null>(null);
+	const [showSuccess, setShowSuccess] = useState(false);
+	const [createdChild, setCreatedChild] = useState<Child | null>(null);
+	const [signedAtLocal, setSignedAtLocal] = useState<string | null>(null);
+	// Stores typed guardian full name for waiver signature
+	const [waiverFullName, setWaiverFullName] = useState("");
+	const [waiverLoading, setWaiverLoading] = useState(true);
+	const [waiverLoadError, setWaiverLoadError] = useState<string | null>(null);
+
+	// 1) Snapshot from backend
+	const [waiverSnapshot, setWaiverSnapshot] = useState<WaiverSnapshot | null>(null);
+
+	React.useEffect(() => {
+		let cancelled = false;
+
+		(async () => {
+			try {
+			setWaiverLoading(true);
+			setWaiverLoadError(null);
+
+			const snap = await makeApiRequest<WaiverSnapshot>(
+				`${WONDERHOOD_URL}/api/policies/waiver?version=1.0&lang=en`,
+				{ method: "GET" }
+			);
+
+			if (!cancelled) setWaiverSnapshot(snap);
+			} catch (e) {
+			console.error("Failed to load waiver snapshot", e);
+			if (!cancelled) {
+				setWaiverSnapshot(null);
+				setWaiverLoadError("Failed to load waiver text. Please try again.");
+			}
+			} finally {
+			if (!cancelled) setWaiverLoading(false);
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	// 2) Use snapshot data when loaded; otherwise empty defaults
+	const waiverSections = useMemo(() => waiverSnapshot?.sections ?? [], [waiverSnapshot]);
+	const waiverVersion = waiverSnapshot?.version ?? "1.0";
+	const conductPolicyShort = waiverSnapshot?.conductPolicyShort ?? "";
+
+	// 3) Build default checkbox state for all waiver sections (unchecked)
+	const initialAck = React.useMemo(
+	() => Object.fromEntries(waiverSections.map(s => [s.key, false] as const)),
+	[waiverSections]
+	);
+
+	// 4) State for section checkboxes (key -> checked)
+	const [waiverAck, setWaiverAck] = useState<Record<string, boolean>>(() => initialAck);
+
+	// 5) Sync checkbox map whenever sections change (keep user's checks)
+	React.useEffect(() => {
+	setWaiverAck(prev => {
+		const next: Record<string, boolean> = { ...initialAck };
+		for (const k of Object.keys(prev)) {
+		if (k in next) next[k] = prev[k];
+		}
+		return next;
+	});
+	}, [initialAck]);
+
+
+	// Stores per-section waiver acknowledgements (each section must be checked)
 
 	const {ecs, ecErrors, ecErrorMap, rowKeys, setEcErrors, setEcErrorMap, addEC, removeEC, changeEC, changePhone, toPayload, setEcs, setRowKeys, validateNow } = useEmergencyContactsCreate()
+
 
 	const onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> = (e) => {
 		const target = e.currentTarget as HTMLInputElement
@@ -47,23 +119,27 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 
 		if (!name) return
 		if (type === "checkbox") {
+			// Generic checkbox handler (waiver/photoConsent/homeschool etc.)
 			setForm(p => ({ ...p, [name]: checked }))
+			// If user toggles waiver, clear waiver error immediately (better UX)
 			if (name === 'waiver') setErrors(prev => ({ ...prev, waiver: undefined}))
 			 return
 		}
 
 		if (name === "grade") {
+			// Convert grade input to number (or null if empty)
 			setForm(p => ({ ...p, grade: value === "" ? null : Number(value) }))
 			return
 		}
 
-		setForm(p => ({ ...p, [name]: value }))
+		setForm(p => ({ ...p, [name]: value })) 
 	}
 
-	if (!showForm) return null
+	if (!showForm) return null // Render nothing if the modal/form is hidden
 
 	const nextStep = () => {
 		if (currentStep === 1) {
+			// Step 1 validation: basic child fields
 			const errs = validateChildBasics({
 				firstName: form.firstName,
 				lastName: form.lastName,
@@ -79,6 +155,15 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		}
 
 		if (currentStep === 2) {
+			if (waiverLoading) {
+				setServerError("Waiver is still loading. Please wait.");
+			return;
+			}
+			if (waiverLoadError || waiverSections.length === 0) {
+				setServerError("Waiver text is unavailable. Please refresh and try again.");
+			return;
+			}
+			// Step 2 validation: at least 1 valid emergency contact
 			const { ok, deduped } = validateNow()
 
 			if (!ok || deduped.length === 0) {
@@ -86,7 +171,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 				return
 			}
 		}
-
+		// Clear errors when advancing
 		setServerError(null)
 		setErrors({})
 		setEcErrors([])
@@ -100,6 +185,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 	}
 
 	const toCreatePayload = (form: CreateChildForm): CreateChildForm => ({
+		// Normalize values for backend (trim strings / convert empty to null)
 		...form,
 		preferredName: form.preferredName === "" ? null : form.preferredName?.trim(),
 		birthday: form.birthday ? new Date(form.birthday).toISOString() : "",
@@ -107,10 +193,29 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		notes: form.notes === "" ? null : form.notes?.trim(),
 	})
 
+	const handleDownloadWaiver = async () => {
+		if (!createdWaiverId) return;
+
+		try {
+			const res = await makeApiRequest<{ url: string }>(
+				`${WONDERHOOD_URL}/api/waivers/${createdWaiverId}/download`,
+				{ method: "GET" }
+			);
+
+
+			// Open the signed URL in a new tab (convenient for printing as well)
+			window.open(res.url, "_blank", "noopener,noreferrer");
+		} catch (e) {
+			setServerError(e instanceof Error ? e.message : "Failed to download waiver.");
+		}
+	};
+
+
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
 		e.preventDefault()
 		setServerError(null)
 
+		// Re-validate Step 1 on final submit (protects against direct submit)
 		const childErrors: ChildErrorsForm = validateChildBasics({
 			firstName: form.firstName,
 			lastName: form.lastName,
@@ -124,42 +229,154 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 			return
 		}
 
+		// Re-validate emergency contacts on submit as well
 		const { ok, deduped } = validateNow()
 		if (!ok || deduped.length === 0) {
 			setServerError("Please fix the Emergency Contact errors")
 			return
 		}
 
+		// Waiver must be checked (final e-sign agreement checkbox)
 		if (!form.waiver) {
 			setErrors(prev => ({ ...prev, waiver: "Please acknowledge the waiver to continue" }))
 			setServerError("Please acknowledge the waiver to continue")
 			return
 		}
 
-		const payload = { ...toCreatePayload(form), emergencyContacts: toPayload }
+		// Guardian full name is required for signature record
+		if (!waiverFullName.trim()) {
+			setServerError("Please enter Parent/Guardian Full Name")
+			return
+		}
+
+		// All waiver sections must be acknowledged before submit
+		if (waiverLoading) {
+				setServerError("Waiver is still loading. Please wait.");
+			return;
+			}
+
+			if (waiverLoadError || waiverSections.length === 0) {
+				setServerError("Waiver text is unavailable. Please refresh and try again.");
+			return;
+		}
+
+		const allAcked = waiverSections.every(sec => waiverAck[sec.key]);
+		if (!allAcked) {
+			setServerError("Please acknowledge all waiver sections.");
+		return;
+		}
+
+		const payload = {
+			...toCreatePayload(form),
+			emergencyContacts: toPayload, // Use normalized/deduped EC payload from the custom hook
+			waiverSignedByName: waiverFullName.trim(), // Stored in DB for signature audit trail
+			waiverSectionsAck: Object.entries(waiverAck)
+			.filter(([, v]) => v)
+			.map(([k]) => k),
+			waiverVersion: waiverVersion, // Helps backend store the version the user agreed to
+
+		}
 
 		try {
-			setSubmitting(true)
+			setSubmitting(true);
+
 			const response = await makeApiRequest<CreateChildResponse>(`${WONDERHOOD_URL}/child`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: payload
-			})
+				body: payload,
+			});
 
-			onSuccess(response.child)
-			setForm(initCreateForm())
-			setEcs([{ firstName: "", lastName: "", relationship: "", phoneNumber: "" }])
-			setRowKeys([`${crypto.randomUUID()}`])
-			setEcErrors([{}])
-			setEcErrorMap({})
-			setServerError(null)
-			setCurrentStep(1)
-		} catch (err) {
-			setServerError(err instanceof Error ? err.message : "Fail to join child to account. Please try again later.")
-		} finally {
-			setSubmitting(false)
-		}
+			setCreatedChild(response.child);
+			setCreatedWaiverId(response.waiverSignatureId ?? null);
+			setShowSuccess(true);
+			// Show exact signed time returned by backend (displayed in Mountain Time)
+			if (response.waiverSignedAt) {
+				const dt = new Date(response.waiverSignedAt);
+
+				const formatted = dt.toLocaleString("en-US", {
+					timeZone: "America/Denver",
+					year: "numeric",
+					month: "short",
+					day: "numeric",
+					hour: "numeric",
+					minute: "2-digit",
+				});
+
+				setSignedAtLocal(`${formatted} (MT)`);
+			}
+
+			//errors
+			setServerError(null);
+			setErrors({});
+			setEcErrors([]);
+			setEcErrorMap({});
+			} catch (err) {
+			setServerError(
+				err instanceof Error
+				? err.message
+				: "Fail to join child to account. Please try again later."
+			);
+			} finally {
+			setSubmitting(false);
+			}
+
 	}
+	
+	if (showSuccess) {
+		return (
+			<div className="border border-green-200 p-4 rounded-lg bg-green-50">
+				<h2 className="text-lg font-semibold text-green-800">Child added successfully ✅</h2>
+
+				<p className="mt-2 text-sm text-green-700">
+					You can download the signed waiver for your records.
+				</p>
+
+				{signedAtLocal && (
+					<p className="mt-2 text-sm text-green-700">
+						Signed at: {signedAtLocal}
+					</p>
+				)}
+
+				<div className="mt-4 flex flex-col sm:flex-row gap-3">
+					<button
+					type="button"
+					onClick={handleDownloadWaiver}
+					disabled={!createdWaiverId}
+					className="bg-green-600 text-white text-sm sm:text-base px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-60 leading-snug"
+					>
+					Download PDF copy
+					</button>
+
+					<button
+					type="button"
+					onClick={() => {
+						if (createdChild) onSuccess(createdChild); 
+
+						setShowSuccess(false);
+						setCreatedWaiverId(null);
+						setCreatedChild(null);
+						setSignedAtLocal(null);
+
+						setForm(initCreateForm());
+						setEcs([{ firstName: "", lastName: "", relationship: "", phoneNumber: "" }]);
+						setRowKeys([`${crypto.randomUUID()}`]);
+						setEcErrors([{}]);
+						setEcErrorMap({});
+						setServerError(null);
+						setCurrentStep(1);
+						setWaiverFullName("");
+						setWaiverAck(initialAck);
+						}}
+
+					className="bg-gray-200 text-gray-700 text-sm sm:text-base px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-300 leading-snug"
+					>
+						Done
+					</button>
+				</div>
+			</div>
+		);
+	}
+
 
 	return (
 		<form className="border border-gray-200 p-4 rounded-lg bg-gray-50" onSubmit={handleSubmit} noValidate>
@@ -227,15 +444,34 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 					</div>
 				</>
 			)}
+			
 
 			{currentStep === 3 && (
-				<Waiver
+				waiverLoading ? (
+					<div className="rounded-lg border bg-yellow-50 p-3 text-yellow-800">
+					Loading waiver text… Please wait.
+					</div>
+				) : waiverLoadError ? (
+					<div className="rounded-lg border bg-red-50 p-3 text-red-700">
+					{waiverLoadError}
+					</div>
+				) : (
+					<Waiver
 					child={form}
 					errors={errors}
 					onChange={onChange}
 					submitting={submitting}
 					prevStep={prevStep}
-				/>
+					ack={waiverAck}
+					setAck={setWaiverAck}
+					fullName={waiverFullName}
+					setFullName={setWaiverFullName}
+					signedAtLocal={signedAtLocal}
+					waiverSections={waiverSections}
+					waiverVersion={waiverVersion}
+					conductPolicyShort={conductPolicyShort}
+					/>
+				)
 			)}
 		</form>
 	)

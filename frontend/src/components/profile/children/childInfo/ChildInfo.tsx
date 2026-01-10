@@ -173,7 +173,7 @@ export default function ChildrenInfoPage() {
             {mode === "add" ? (
                 <div
                 ref={formAnchorRef}
-                className="mt-6 sm:mt-8 bg-white rounded-2xl ring-1 ring-black/5 shadow-sm p-4 sm:p-6"
+                className="w-full max-w-4xl mt-6 sm:mt-8 bg-white rounded-2xl ring-1 ring-black/5 shadow-sm p-4 sm:p-6 lg:ml-12"
                 >
                     <AddChildForm showForm={true} onSuccess={handleFormSuccess} />
                 </div>

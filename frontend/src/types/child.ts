@@ -1,6 +1,8 @@
 import { EmergencyContact } from "./emergencyContact";
 import { User } from "./user";
 
+export type WaiverSectionsAck = string[]; 
+
 export type Child = {
     id: string;
     firstName: string;
@@ -18,26 +20,32 @@ export type Child = {
     waiver: boolean
     waiverVersion?: string | null;
     waiverSignedAt?: string | null;
-
-
-
+    waiverSignedByName?: string | null;
+    waiverSectionsAck?: WaiverSectionsAck | null;
     parents: User[]
     emergencyContacts?: EmergencyContact[]
-
     createdAt?: string;
     updatedAt?: string
 }
 
-type ServerManaged = "id" | "parents" | "createdAt" | "updatedAt" | "waiverVersion" | "waiverSignedAt" | "photoConsentVer" | "photoConsentAt";
+type ServerManaged = "id" | "parents" | "createdAt" | "updatedAt" | "waiverVersion" | "waiverSignedAt" | "waiverSignedByName" | "waiverSectionsAck" | "photoConsentVer" | "photoConsentAt";
 type ChildMutable = Omit<Child, ServerManaged>
 
-export type CreateChildForm = ChildMutable
+export type CreateChildForm = ChildMutable & {
+    waiverSignedByName?: string;
+    waiverSectionsAck?: string[];
+    waiverVersion?: string;
+}
+
 export type UpdateChildForm = Partial<Omit<ChildMutable, 'waiver'>>
-export type ChildErrorsForm = Partial<Record<keyof ChildMutable, string>>
+// export type ChildErrorsForm = Partial<Record<keyof ChildMutable, string>>
+export type ChildErrorsForm = Partial<Record<keyof CreateChildForm, string>>
 
 export type CreateChildResponse = {
-    child: Child
-    parent: User
+    child: Child;
+    parent: User;
     emergencyContacts: EmergencyContact[];
     message: string;
+    waiverSignatureId?: string | null;
+    waiverSignedAt?: string | null;
 }

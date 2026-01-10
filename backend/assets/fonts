@@ -1,0 +1,7 @@
+These fonts are used for ReportLab PDF generation to support Unicode characters (smart quotes, em-dashes, ®, etc.).
+DejaVuSans is used for body text, DejaVuSansMono for technical metadata.
+If missing, the app falls back to core PDF fonts and sanitizes special characters.
+
+DejaVuSans.ttf
+
+DejaVuSansMono.ttf

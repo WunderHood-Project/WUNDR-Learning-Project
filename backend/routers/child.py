@@ -7,16 +7,38 @@ from fastapi.responses import JSONResponse
 from .auth.login import get_current_user
 from .auth.utils import enforce_authentication, enforce_admin
 from datetime import datetime, time, timezone
+from prisma import Json
+from services.waiver_pdf import build_waiver_pdf_bytes
+from services.gcs import upload_bytes
+from policies.waiver_registry import get_waiver_snapshot
+import hashlib, json
+from fastapi import Request
 
 
 router = APIRouter()
 WAIVER_VER = "1.0"
 CONSENT_VER = "1.0"
 
+def get_request_ip(request: Request) -> str | None:
+    # If the app is behind a reverse proxy (Render / Nginx / Cloudflare),
+    # the real client IP is commonly passed via the X-Forwarded-For header.
+    xff = request.headers.get("x-forwarded-for")
+    if xff:
+        # X-Forwarded-For may contain multiple IPs:
+        # "client_ip, proxy_ip1, proxy_ip2" — we want the first one.
+        return xff.split(",")[0].strip()
+
+    # Fallback for direct connections (local/dev, or when proxy headers are not present)
+    if request.client:
+        return request.client.host
+
+    return None
+
 
 # ! Create Child
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_child(
+    request: Request,
     # apply Pydantic model for data validation
     child_data: ChildCreate,
     current_user: Annotated[User, Depends(get_current_user)]
@@ -43,16 +65,105 @@ async def create_child(
                     "notes": child_data.notes,
                     "waiver": child_data.waiver,
                     "photoConsent": child_data.photoConsent,
-                    "waiverVersion": WAIVER_VER if child_data.waiver else None,
-                    "waiverSignedAt": datetime.now(timezone.utc) if child_data.waiver else None,
                     "photoConsentVer": CONSENT_VER if child_data.photoConsent else None,
                     "photoConsentAt": datetime.now(timezone.utc) if child_data.photoConsent else None,
                     "parentIds": [current_user.id], # Add the current user's ID to parentIDs
                     "eventIds": [], # Create activityIDs array so we can easily add to it later
-                    # "createdAt": child_data.createdAt,
-                    # "updatedAt": child_data.updatedAt
                 },
             )
+
+            # We create a waiver signature ONLY if the waiver was actually signed (waiver == True).
+            # This prevents writing empty/invalid waiver records when the user did not sign anything.
+
+            waiver_sig = None
+
+            if child_data.waiver:
+                # Capture an immutable snapshot of the waiver content shown in the UI at signing time.
+                snapshot = get_waiver_snapshot(WAIVER_VER, "en")
+                snapshot_hash = hashlib.sha256(
+                    json.dumps(snapshot, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+
+                # Capture audit metadata (IP + User-Agent) at signing time.
+                ip = get_request_ip(request)
+                user_agent = request.headers.get("user-agent")
+
+                waiver_sig = await tx.waiversignatures.create(
+                    data={
+                        "child": {"connect": {"id": created_child.id}},
+                        "parent": {"connect": {"id": current_user.id}},
+                        "type": "liability",
+                        "version": WAIVER_VER,
+                        "signedAt": datetime.now(timezone.utc),
+                        "signedByName": (child_data.waiverSignedByName or "").strip(),
+                        "sectionsAck": Json(child_data.waiverSectionsAck or []),
+                        # Audit metadata
+                        "ip": ip,
+                        "userAgent": user_agent,
+                        # Immutable waiver content + integrity hash
+                        "waiverSnapshot": Json(snapshot),
+                        "waiverTextHash": snapshot_hash,
+                    }
+                )
+
+                # Create the waiver signature record (includes snapshot + hash for audit integrity).
+                pdf_bytes = build_waiver_pdf_bytes(
+                    waiver_signature=waiver_sig,
+                    waiver_snapshot=snapshot,
+                    child=created_child,
+                    parent=current_user,
+                )
+
+                pdf_sha256 = hashlib.sha256(pdf_bytes).hexdigest()
+                pdf_size = len(pdf_bytes)
+
+                # Upload the PDF to cloud storage (GCS).
+                object_name = f"waivers/{created_child.id}/{waiver_sig.id}.pdf"
+                gs_uri = upload_bytes(pdf_bytes, object_name, content_type="application/pdf")
+
+                # Persist PDF metadata for audit and integrity verification.
+                waiver_sig = await tx.waiversignatures.update(
+                    where={"id": waiver_sig.id},
+                    data={
+                        "pdfObjectName": object_name,
+                        "pdfGsUri": gs_uri,
+                        "pdfSha256": pdf_sha256,
+                        "pdfSizeBytes": pdf_size,
+                        "pdfCreatedAt": datetime.now(timezone.utc),
+                    },
+                )
+
+
+            # if child_data.waiver:
+            #     waiver_sig = await tx.waiversignatures.create(
+            #         data={
+            #             "child": {"connect": {"id": created_child.id}},
+            #             "parent": {"connect": {"id": current_user.id}},
+            #             "type": "liability",
+            #             "version": WAIVER_VER,
+            #             "signedAt": datetime.now(timezone.utc),
+            #             "signedByName": (child_data.waiverSignedByName or "").strip(),
+            #             "sectionsAck": Json(child_data.waiverSectionsAck or []),
+            #         }
+            #     )
+
+            #     pdf_bytes = build_waiver_pdf_bytes(
+            #         waiver=waiver_sig,
+            #         child=created_child,
+            #         parent=current_user,
+            #     )
+
+            #     object_name = f"waivers/{waiver_sig.id}.pdf"
+            #     gs_uri = upload_bytes(pdf_bytes, object_name, content_type="application/pdf")
+
+            #     waiver_sig = await tx.waiversignatures.update(
+            #         where={"id": waiver_sig.id},
+            #         data={"pdfObjectName": object_name, "pdfGsUri": gs_uri},
+            #     )
+
+
+
+
 
             # create/link emergency contacts
             contacts: list = []
@@ -114,7 +225,9 @@ async def create_child(
             "child": created_child,
             "parent": updated_user,
             "emergencyContacts": contacts,
-            "message": "Child added successfully"
+            "message": "Child added successfully",
+            "waiverSignatureId": waiver_sig.id if waiver_sig else None,
+            "waiverSignedAt": waiver_sig.signedAt.isoformat() if waiver_sig else None,
         }
 
     except HTTPException:
@@ -180,6 +293,103 @@ async def get_children(
     )
     return children
 
+# =========================
+# Admin: Children
+# =========================
+
+@router.get("/admin", status_code=status.HTTP_200_OK)
+async def admin_get_all_children(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    enforce_authentication(current_user)
+    enforce_admin(current_user)
+
+    children = await db.children.find_many(
+        include={
+            "parents": True,              # 
+            "emergencyContacts": True,
+            "events": True,
+        }
+    )
+
+    # ✅ sanitize parents
+    payload = jsonable_encoder(children)
+    for c in payload:
+        c["parents"] = [
+            {
+                "id": p.get("id"),
+                "firstName": p.get("firstName"),
+                "lastName": p.get("lastName"),
+                "email": p.get("email"),
+                "phoneNumber": p.get("phoneNumber"),
+                "address": p.get("address"),
+                "city": p.get("city"),
+                "state": p.get("state"),
+                "zipCode": p.get("zipCode"),
+                "role": p.get("role"),
+            }
+            for p in (c.get("parents") or [])
+        ]
+
+    return {"children": payload}
+
+
+@router.get("/admin/{child_id}", status_code=status.HTTP_200_OK)
+async def admin_get_child_detail(
+    child_id: str,
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    enforce_authentication(current_user)
+    enforce_admin(current_user)
+
+    child = await db.children.find_unique(
+        where={"id": child_id},
+        include={
+            "parents": True,
+            "events": True,
+            "emergencyContacts": True,
+        }
+    )
+
+    if not child:
+        raise HTTPException(status_code=404, detail="Child not found")
+
+    payload = jsonable_encoder(child)
+    payload["parents"] = [
+        {
+            "id": p.get("id"),
+            "firstName": p.get("firstName"),
+            "lastName": p.get("lastName"),
+            "email": p.get("email"),
+            "phoneNumber": p.get("phoneNumber"),
+            "address": p.get("address"),
+            "city": p.get("city"),
+            "state": p.get("state"),
+            "zipCode": p.get("zipCode"),
+            "role": p.get("role"),
+        }
+        for p in (payload.get("parents") or [])
+    ]
+
+    return {"child": payload}
+
+
+
+
+@router.get("/admin/{child_id}/waiver", status_code=status.HTTP_200_OK)
+async def admin_get_child_waiver(
+    child_id: str,
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    enforce_authentication(current_user)
+    enforce_admin(current_user)
+
+    waiver = await db.waiversignatures.find_first(
+        where={"childId": child_id, "type": "liability"}
+    )
+
+    return {"waiver": waiver}
+
 
 # ! Get Child by ID
 @router.get("/{child_id}", status_code=status.HTTP_200_OK)
@@ -236,39 +446,49 @@ async def update_child(
     if current_user.id not in child.parentIds:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a parent of this child.")
 
-    # Split payload
-    non_contact_data = update_data.model_dump(exclude_unset=True, exclude={"emergencyContacts"})
+    # Build update payload for non-contact fields.
+    # We explicitly EXCLUDE waiver-related fields because waiver should NOT change here.
+    # Waiver signing/updating is handled separately (e.g., when a new waiver version is introduced).
+    non_contact_data = update_data.model_dump(
+        exclude_unset=True,
+        exclude={
+            "emergencyContacts",
+            "waiver",
+            "waiverSignedByName",
+            "waiverSectionsAck",
+            "waiverVersion",
+            "waiverSignedAt",
+            "photoConsent",
+        }
+    )
+
+    # Emergency contacts are handled separately to avoid mixing relational updates
+    # with simple scalar field updates.
     new_contacts = update_data.emergencyContacts
 
-    # Add waiver/photoConsent versioning if toggled
-    extra_updates: dict = {}
-    if update_data.waiver is not None:
-        if update_data.waiver:
-            extra_updates.update({
-                "waiverVersion": WAIVER_VER,
-                "waiverSignedAt": datetime.now(timezone.utc),
-            })
-        else:
-            extra_updates.update({
-                "waiverVersion": None,
-                "waiverSignedAt": None,
-            })
 
+    # Photo consent can be toggled on/off.
+    # When turned ON, we record the current consent version and timestamp.
+    # When turned OFF, we clear the version and timestamp.
+    extra_updates: dict = {}
     if update_data.photoConsent is not None:
         if update_data.photoConsent:
             extra_updates.update({
+                "photoConsent": True,
                 "photoConsentVer": CONSENT_VER,
                 "photoConsentAt": datetime.now(timezone.utc),
             })
         else:
             extra_updates.update({
+                "photoConsent": False,
                 "photoConsentVer": None,
                 "photoConsentAt": None,
             })
 
     try:
         async with db.tx() as tx:
-            # 1) Update non-contact fields (+ extra_updates)
+            # Update the child record with scalar fields and consent metadata (if provided).
+            # If nothing was provided, we simply fetch the current child with relations.
             if non_contact_data or extra_updates:
                 updated_child = await tx.children.update(
                     where={"id": child.id},
@@ -281,60 +501,53 @@ async def update_child(
                     include={"parents": True, "emergencyContacts": True},
                 )
 
-            # 2) Reconcile emergency contacts if provided
-            if new_contacts is not None:
-                if len(new_contacts) == 0:
-                    pass
-                else:
-                    contact_ids: list[str] = []
 
-                    for ec in new_contacts or []:
-                        existing_contact = await tx.emergencycontact.find_first(
-                            where={
+            # Reconcile emergency contacts:
+        # - Reuse existing contacts when possible (to avoid duplicates)
+        # - Ensure each contact is linked to this child
+        # - Update the child's emergencyContactIds to match the final set
+            if new_contacts is not None:
+                contact_ids: list[str] = []
+
+                for ec in new_contacts or []:
+                    existing_contact = await tx.emergencycontact.find_first(
+                        where={
+                            "firstName": ec.firstName,
+                            "lastName": ec.lastName,
+                            "phoneNumber": ec.phoneNumber,
+                            "relationship": ec.relationship,
+                        }
+                    )
+
+                    if existing_contact:
+                        current_ids = existing_contact.childIds or []
+                        next_ids = list(dict.fromkeys([*current_ids, updated_child.id]))
+                        if next_ids != current_ids:
+                            await tx.emergencycontact.update(
+                                where={"id": existing_contact.id},
+                                data={"childIds": {"set": next_ids}},
+                            )
+                        contact_ids.append(str(existing_contact.id))
+                    else:
+                        new_contact = await tx.emergencycontact.create(
+                            data={
                                 "firstName": ec.firstName,
                                 "lastName": ec.lastName,
                                 "phoneNumber": ec.phoneNumber,
                                 "relationship": ec.relationship,
+                                "childIds": [updated_child.id],
                             }
                         )
+                        contact_ids.append(str(new_contact.id))
 
-                        if existing_contact:
-                            current_ids = existing_contact.childIds or []
-                            next_ids = list(dict.fromkeys([*current_ids, updated_child.id]))
-                            if next_ids != current_ids:
-                                await tx.emergencycontact.update(
-                                    where={"id": existing_contact.id},
-                                    data={"childIds": {"set": next_ids}},
-                                )
-                            contact_ids.append(str(existing_contact.id))
-                        else:
-                            new_contact = await tx.emergencycontact.create(
-                                data={
-                                    "firstName": ec.firstName,
-                                    "lastName": ec.lastName,
-                                    "phoneNumber": ec.phoneNumber,
-                                    "relationship": ec.relationship,
-                                    "childIds": [updated_child.id],
-                                }
-                            )
-                            contact_ids.append(str(new_contact.id))
+                # De-duplicate IDs and update the child's emergencyContactIds list
+                unique_ids = list(dict.fromkeys(contact_ids))
 
-                    # dedupe
-                    unique_ids: list[str] = []
-                    for cid in contact_ids:
-                        if isinstance(cid, list):
-                            for x in cid:
-                                if x not in unique_ids:
-                                    unique_ids.append(str(x))
-                        else:
-                            if cid not in unique_ids:
-                                unique_ids.append(str(cid))
-
-                    updated_child = await tx.children.update(
-                        where={"id": updated_child.id},
-                        data={"emergencyContactIds": {"set": unique_ids}},
-                        include={"emergencyContacts": True, "parents": True},
-                    )
+                updated_child = await tx.children.update(
+                    where={"id": updated_child.id},
+                    data={"emergencyContactIds": {"set": unique_ids}},
+                    include={"emergencyContacts": True, "parents": True},
+                )
 
         return {"child": updated_child, "message": "Child updated successfully"}
 
@@ -349,57 +562,42 @@ async def update_child(
 
 # ! Delete Child
 @router.delete("/{child_id}", status_code=status.HTTP_200_OK)
-async def delete_child(
-    child_id: str,
-    current_user: Annotated[User, Depends(get_current_user)]
-):
+async def delete_child(child_id: str, current_user: Annotated[User, Depends(get_current_user)]):
 
-    # Make sure the user is authenticated
     enforce_authentication(current_user, "remove your child")
 
-    # Fetch the child
-    child = await db.children.find_unique(
-        where={"id": child_id}
-    )
-
+    child = await db.children.find_unique(where={"id": child_id})
     if not child:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Child not found."
-        )
+        raise HTTPException(status_code=404, detail="Child not found.")
 
-    # Make sure the current usr is a parent of the child
     if current_user.id not in child.parentIds:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied: You are not a parent of this child."
-        )
+        raise HTTPException(status_code=403, detail="Access denied: You are not a parent of this child.")
 
-    # Delete the child
-    await db.children.delete(
-        where={"id": child_id}
-    )
+    try:
+        async with db.tx() as tx:
+            # 1) delete waiver signatures tied to this child
+            await tx.waiversignatures.delete_many(where={"childId": child_id})
 
-    # Remove the child ID from the parent document
-    parent = await db.users.find_unique(where={"id": current_user.id})
-    # Remove the current child's ID from the parent's 'childIDs' array
-    updated_childIds = [cid for cid in parent.childIds if cid != child_id]
+            # (If there are any other dependent tables, include them here as well)
 
-    updated_user = await db.users.update(
-        where={"id": current_user.id},
-        data={"childIds": updated_childIds},
-        include={"children": True}
-    )
+            # 2) delete child
+            await tx.children.delete(where={"id": child_id})
 
-    return {
-        "message": "Child deleted successfully.",
-        "parent": updated_user
-    }
+            # 3) remove child from user.childIds
+            parent = await tx.users.find_unique(where={"id": current_user.id})
+            updated_childIds = [cid for cid in (parent.childIds or []) if cid != child_id]
 
-@router.get("/ping")
-async def ping():
-    print("PING /child/__ping")
-    return {"ok": True}
+            updated_user = await tx.users.update(
+                where={"id": current_user.id},
+                data={"childIds": updated_childIds},
+                include={"children": True}
+            )
+
+        return {"message": "Child deleted successfully.", "parent": updated_user}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # Emergency Contact Routes =================================================
 
