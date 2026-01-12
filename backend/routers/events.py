@@ -331,17 +331,17 @@ async def update_event(
     event_link = get_event_link(event.id)
 
     if start_changed and not end_changed:
-        description = f'The time of the event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+        description = f'The time of the event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
     elif end_changed and not start_changed:
-        description = f'The time of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+        description = f'The time of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
     elif date_changed and start_changed:
-        description = f'The time and date of this event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+        description = f'The time and date of this event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
     elif date_changed and end_changed:
-        description = f'The time and date of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+        description = f'The time and date of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
     elif date_changed and start_changed and end_changed:
-        description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["start_time"]}. The end time has changed to {desc_lines["end_time"]}. The date has changed to {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to wonderhood.project@gmail.com.'
+        description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["start_time"]}. The end time has changed to {desc_lines["end_time"]}. The date has changed to {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
     else:
-        description = f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to wonderhood.project@gmail.com.'
+        description = f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to info@whproject.org.'
 
     # --- create notifications in DB---
     now_utc = datetime.now(timezone.utc)
@@ -1240,7 +1240,7 @@ async def volunteer_signup_for_event(
 
        title = f"Volunteer Enrollment Confirmation: {event.name}"
        # ? ADD link to make changes still
-       description = f'This email confirms that you are enrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to volunteer at the event, please contact us at wonderhood.project@gmail.com.\n\nBest,\n\nWondherhood Team'
+       description = f'This email confirms that you are enrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to volunteer at the event, please contact us at info@whproject.org.\n\nBest,\n\nWondherhood Team'
 
        notification_data =  {
                "title": title,

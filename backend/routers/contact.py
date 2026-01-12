@@ -39,7 +39,7 @@ async def submit_contact(payload: ContactPayload):
     """.strip()
 
     try:
-        recipient = "wonderhood.project@gmail.com"
+        recipient = "info@whproject.org"
 
         send_email_one_user(
             user_email=recipient,
