@@ -42,10 +42,10 @@ export default function Opportunities({
     (async () => {
       try {
         // if (user) {
-          const res = await makeApiRequest<{ opportunityIds?: string[] }>(`${API}/volunteer/my-opportunities`, {token});
-          if (cancelled) return;
-          (res.opportunityIds ?? []).forEach(id => markOppSubmitted(id));
-          fetched.current = true;
+        const res = await makeApiRequest<{ opportunityIds?: string[] }>(`${API}/volunteer/my-opportunities`, { token });
+        if (cancelled) return;
+        (res.opportunityIds ?? []).forEach(id => markOppSubmitted(id));
+        fetched.current = true;
         // }
       } catch {
         fetched.current = true;
@@ -101,17 +101,17 @@ export default function Opportunities({
             </h3>
           </div>
           <p className="text-sm sm:text-base md:max-w-4xl text-gray-700">
-              Earn service hours, develop leadership skills, and make a difference. All under staff supervision, WonderTeen volunteers help at events, assist instructors, and support younger learners.
-              <span className="block mt-2">Want to join? Email us at {" "}
-                <a
-                  href="mailto:wonderhood.project@gmail.com"
-                  rel="noopener noreferrer"
-                  className="underline transition-colors duration-200 text-wonderleaf hover:text-wondergreen"
-                >
-                  wonderhood.project@gmail.com
-                </a>
-                .
-              </span>
+            Earn service hours, develop leadership skills, and make a difference. All under staff supervision, WonderTeen volunteers help at events, assist instructors, and support younger learners.
+            <span className="block mt-2">Want to join? Email us at {" "}
+              <a
+                href="mailto:info@whproject.org"
+                rel="noopener noreferrer"
+                className="underline transition-colors duration-200 text-wonderleaf hover:text-wondergreen"
+              >
+                info@whproject.org
+              </a>
+              .
+            </span>
           </p>
         </div>
       </section>
@@ -141,9 +141,8 @@ export default function Opportunities({
               <article
                 key={r.id}
                 data-applied={applied ? 'true' : 'false'}
-                className={`h-full flex flex-col rounded-2xl bg-white border p-5 shadow-sm hover:shadow transition border-wonderleaf/20 ${
-                  applied ? 'opacity-75 ring-1 ring-emerald-200' : ''
-                }`}
+                className={`h-full flex flex-col rounded-2xl bg-white border p-5 shadow-sm hover:shadow transition border-wonderleaf/20 ${applied ? 'opacity-75 ring-1 ring-emerald-200' : ''
+                  }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-xl font-semibold text-wondergreen">{r.title}</h3>
@@ -199,9 +198,8 @@ export default function Opportunities({
                   <button
                     onClick={() => openApply(r.id, r.title)}
                     disabled={applied}
-                    className={`px-5 py-2.5 rounded-lg text-white transition-colors ${
-                      applied ? 'bg-gray-300 cursor-not-allowed' : 'bg-wondergreen hover:bg-wonderleaf'
-                    }`}
+                    className={`px-5 py-2.5 rounded-lg text-white transition-colors ${applied ? 'bg-gray-300 cursor-not-allowed' : 'bg-wondergreen hover:bg-wonderleaf'
+                      }`}
                   >
                     {applied ? 'Applied' : 'Apply for this role'}
                   </button>
