@@ -14,7 +14,7 @@ export default function PhotoConsentText() {
         images without separate explicit permission.
       </p>
       <p>
-        I may withdraw consent at any time by emailing <b>wonderhood.project@gmail.com</b>.
+        I may withdraw consent at any time by emailing <b>info@whproject.org</b>.
         WonderHood will stop future use and make reasonable efforts to remove prior posts within
         its control. This consent is voluntary and not a condition of participation (where allowed
         by program rules). This consent is governed by the laws of Colorado.

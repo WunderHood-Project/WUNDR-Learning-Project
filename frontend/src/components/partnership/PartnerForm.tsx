@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { PartnerApplication, PartnerType } from "../../types/partnership";
-import {determineEnv, makeApiRequest } from "../../../utils/api";
+import { determineEnv, makeApiRequest } from "../../../utils/api";
 import { normalizeWebsite } from "../../../utils/url";
 import { onlyDigitals, formatUs, toE164US } from "../../../utils/formatPhoneNumber";
 
@@ -24,53 +24,53 @@ export default function PartnerForm() {
         setData((d) => ({ ...d, [k]: v }));
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    void (async () => {
-        setLoading(true);
-        setOk(null);
+        event.preventDefault();
+        void (async () => {
+            setLoading(true);
+            setOk(null);
 
-        const payload = {
-        ...data,
-        website: normalizeWebsite(data.website) ?? undefined,
-        phone: toE164US(data.phone) || undefined,
-        city: data.city || undefined,
-        state: data.state || undefined,
-        howCanYouHelp: data.howCanYouHelp || undefined,
-        preferredDates: data.preferredDates || undefined,
-        budgetOrInKind: data.budgetOrInKind || undefined,
-        notes: data.notes || undefined,
-        };
+            const payload = {
+                ...data,
+                website: normalizeWebsite(data.website) ?? undefined,
+                phone: toE164US(data.phone) || undefined,
+                city: data.city || undefined,
+                state: data.state || undefined,
+                howCanYouHelp: data.howCanYouHelp || undefined,
+                preferredDates: data.preferredDates || undefined,
+                budgetOrInKind: data.budgetOrInKind || undefined,
+                notes: data.notes || undefined,
+            };
 
-        try {
-            await makeApiRequest(`${WONDERHOOD_URL}/partners`, {
-                method: "POST",
-                body: payload,
-            });
-            setOk("ok");
-            setData(defaultData);
-        } catch {
-            const subject = encodeURIComponent("Partnership Inquiry");
-            const body = encodeURIComponent(
-                [
-                `Organization: ${data.orgName}`,
-                `Contact: ${data.contactName}`,
-                `Email: ${data.email}`,
-                `Phone: ${data.phone ?? ""}`,
-                `Type: ${data.partnerType}`,
-                `Website: ${normalizeWebsite(data.website) ?? ""}`,
-                `Location: ${[data.city, data.state].filter(Boolean).join(", ")}`,
-                `How can you help: ${data.howCanYouHelp ?? ""}`,
-                `Preferred dates: ${data.preferredDates ?? ""}`,
-                `Budget or in-kind: ${data.budgetOrInKind ?? ""}`,
-                `Notes: ${data.notes ?? ""}`,
-                ].join("\n")
-        );
-        window.location.href = `mailto:wonderhood.project@gmail.com?subject=${subject}&body=${body}`;
-        setOk("ok");
-        } finally {
-        setLoading(false);
-        }
-    })();
+            try {
+                await makeApiRequest(`${WONDERHOOD_URL}/partners`, {
+                    method: "POST",
+                    body: payload,
+                });
+                setOk("ok");
+                setData(defaultData);
+            } catch {
+                const subject = encodeURIComponent("Partnership Inquiry");
+                const body = encodeURIComponent(
+                    [
+                        `Organization: ${data.orgName}`,
+                        `Contact: ${data.contactName}`,
+                        `Email: ${data.email}`,
+                        `Phone: ${data.phone ?? ""}`,
+                        `Type: ${data.partnerType}`,
+                        `Website: ${normalizeWebsite(data.website) ?? ""}`,
+                        `Location: ${[data.city, data.state].filter(Boolean).join(", ")}`,
+                        `How can you help: ${data.howCanYouHelp ?? ""}`,
+                        `Preferred dates: ${data.preferredDates ?? ""}`,
+                        `Budget or in-kind: ${data.budgetOrInKind ?? ""}`,
+                        `Notes: ${data.notes ?? ""}`,
+                    ].join("\n")
+                );
+                window.location.href = `mailto:info@whproject.org?subject=${subject}&body=${body}`;
+                setOk("ok");
+            } finally {
+                setLoading(false);
+            }
+        })();
     }
 
 
@@ -88,8 +88,8 @@ export default function PartnerForm() {
                 </div>
 
                 <form
-                onSubmit={handleSubmit}
-                className="grid grid-cols-1 gap-5 rounded-2xl bg-white p-5 sm:p-6 ring-1 ring-wonderleaf/20 shadow-sm"
+                    onSubmit={handleSubmit}
+                    className="grid grid-cols-1 gap-5 rounded-2xl bg-white p-5 sm:p-6 ring-1 ring-wonderleaf/20 shadow-sm"
                 >
                     {/* left */}
                     <div className="grid gap-4">
@@ -105,22 +105,22 @@ export default function PartnerForm() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Field label="Contact Name *">
                                 <input
-                                required
-                                value={data.contactName}
-                                onChange={(e) => update("contactName", e.target.value)}
-                                className={inputCls}
+                                    required
+                                    value={data.contactName}
+                                    onChange={(e) => update("contactName", e.target.value)}
+                                    className={inputCls}
                                 />
                             </Field>
                             <Field label="Email *">
                                 <input
-                                required
-                                type="email"
-                                autoCapitalize="none"
-                                autoCorrect="off"
-                                autoComplete="email"
-                                value={data.email}
-                                onChange={(e) => update("email", e.target.value)}
-                                className={inputCls}
+                                    required
+                                    type="email"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                    autoComplete="email"
+                                    value={data.email}
+                                    onChange={(e) => update("email", e.target.value)}
+                                    className={inputCls}
                                 />
                             </Field>
                         </div>
@@ -131,14 +131,14 @@ export default function PartnerForm() {
                                     value={formatUs(data.phone ?? "")}
                                     onChange={(e) => update("phone", onlyDigitals(e.target.value))}
                                     onPaste={(e: React.ClipboardEvent<HTMLInputElement>) => {
-                                    e.preventDefault();
-                                    const text = e.clipboardData.getData("text");
-                                    update("phone", onlyDigitals(text));
+                                        e.preventDefault();
+                                        const text = e.clipboardData.getData("text");
+                                        update("phone", onlyDigitals(text));
                                     }}
                                     inputMode="tel"
-                                    pattern="^[0-9]{3}-[0-9]{3}-[0-9]{4}$" 
+                                    pattern="^[0-9]{3}-[0-9]{3}-[0-9]{4}$"
                                     autoComplete="tel"
-                                    maxLength={12} 
+                                    maxLength={12}
                                     placeholder="555-123-4567"
                                     className={inputCls}
                                 />
@@ -147,14 +147,14 @@ export default function PartnerForm() {
 
                             <Field label="Partner Type">
                                 <select
-                                value={data.partnerType}
-                                onChange={(e) => update("partnerType", e.target.value as PartnerType)}
-                                className={inputCls}
+                                    value={data.partnerType}
+                                    onChange={(e) => update("partnerType", e.target.value as PartnerType)}
+                                    className={inputCls}
                                 >
-                                <option value="venue">Venue</option>
-                                <option value="program">Program</option>
-                                <option value="resource">Resource Sponsor</option>
-                                <option value="education">Education</option>
+                                    <option value="venue">Venue</option>
+                                    <option value="program">Program</option>
+                                    <option value="resource">Resource Sponsor</option>
+                                    <option value="education">Education</option>
                                 </select>
                             </Field>
                         </div>
@@ -162,31 +162,31 @@ export default function PartnerForm() {
                         <div className="grid  gap-4">
                             <Field label="Website">
                                 <input
-                                type="url"
-                                inputMode="url"
-                                autoComplete="url"
-                                placeholder="https://example.org"
-                                value={data.website ?? ""}
-                                onChange={(e) => update("website", e.target.value)}
-                                className={inputCls}
+                                    type="url"
+                                    inputMode="url"
+                                    autoComplete="url"
+                                    placeholder="https://example.org"
+                                    value={data.website ?? ""}
+                                    onChange={(e) => update("website", e.target.value)}
+                                    className={inputCls}
                                 />
                             </Field>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Field label="City">
-                            <input
-                                value={data.city ?? ""}
-                                onChange={(e) => update("city", e.target.value)}
-                                className={inputCls}
-                            />
-                            </Field>
-                            <Field label="State">
-                            <input
-                                value={data.state ?? ""}
-                                onChange={(e) => update("state", e.target.value)}
-                                className={inputCls}
-                            />
-                            </Field>
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Field label="City">
+                                    <input
+                                        value={data.city ?? ""}
+                                        onChange={(e) => update("city", e.target.value)}
+                                        className={inputCls}
+                                    />
+                                </Field>
+                                <Field label="State">
+                                    <input
+                                        value={data.state ?? ""}
+                                        onChange={(e) => update("state", e.target.value)}
+                                        className={inputCls}
+                                    />
+                                </Field>
+                            </div>
                         </div>
                     </div>
 
@@ -204,27 +204,27 @@ export default function PartnerForm() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Field label="Preferred dates / season">
                                 <input
-                                value={data.preferredDates ?? ""}
-                                onChange={(e) => update("preferredDates", e.target.value)}
-                                className={inputCls}
+                                    value={data.preferredDates ?? ""}
+                                    onChange={(e) => update("preferredDates", e.target.value)}
+                                    className={inputCls}
                                 />
                             </Field>
                             <Field label="Budget or in-kind">
                                 <input
-                                value={data.budgetOrInKind ?? ""}
-                                onChange={(e) => update("budgetOrInKind", e.target.value)}
-                                className={inputCls}
+                                    value={data.budgetOrInKind ?? ""}
+                                    onChange={(e) => update("budgetOrInKind", e.target.value)}
+                                    className={inputCls}
                                 />
                             </Field>
                         </div>
 
                         <Field label="Notes">
-                        <textarea
-                            rows={3}
-                            value={data.notes ?? ""}
-                            onChange={(e) => update("notes", e.target.value)}
-                            className={inputCls}
-                        />
+                            <textarea
+                                rows={3}
+                                value={data.notes ?? ""}
+                                onChange={(e) => update("notes", e.target.value)}
+                                className={inputCls}
+                            />
                         </Field>
 
                         {/* btn submit */}
@@ -250,13 +250,13 @@ export default function PartnerForm() {
             </div>
         </section>
     );
-    }
+}
 
-    function Field({ label, children }: { label: string; children: React.ReactNode }) {
-        return (
-            <label className="grid gap-1">
-                <span className="text-[13px] sm:text-sm font-medium text-wondergreen/90">{label}</span>
-                    {children}
-            </label>
-        );
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <label className="grid gap-1">
+            <span className="text-[13px] sm:text-sm font-medium text-wondergreen/90">{label}</span>
+            {children}
+        </label>
+    );
 }

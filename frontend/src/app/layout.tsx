@@ -9,6 +9,11 @@ import { AuthProvider } from "@/context/auth";
 import ResetPasswordWrapper from "@/components/login/ResetPasswordWrapper";
 import AuthGuard from "@/components/auth/AuthGuard";
 import DonateFloating from "@/components/donate/DonateFloating";
+import { GoogleTagManager } from '@next/third-parties/google'
+
+const gtmId: string | gtmScriptUrl | undefined = process.env.GOOGLE_TAG_MANAGER_ID
+
+console.log("LALA", gtmId)
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,6 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <AuthGuard />
             <Navbar />
             <DonateFloating />
+            <GoogleTagManager gtmId={gtmId} />
             <main className="flex-grow flex flex-col">
               {children}
               <ResetPasswordWrapper />

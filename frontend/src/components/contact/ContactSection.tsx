@@ -47,7 +47,7 @@ export default function ContactSection() {
     } catch (err) {
       console.error(err);
       setError(
-        "Something went wrong. Please try again later or email us directly at wonderhood.project@gmail.com."
+        "Something went wrong. Please try again later or email us directly at info@whproject.org."
       );
     } finally {
       setPending(false);
@@ -56,9 +56,9 @@ export default function ContactSection() {
 
   return (
     <section>
-        {/* Layout: cards + form */}
-        {/* <div className="grid grid-cols-1 lg:grid-cols-3 mx-auto gap-8"> */}
-            {/* Left: quick contacts
+      {/* Layout: cards + form */}
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 mx-auto gap-8"> */}
+      {/* Left: quick contacts
             <div className="space-y-6 lg:col-span-1">
                 <div className="rounded-2xl bg-white/80 shadow-sm border border-wonderleaf/30 p-5">
                     <div className="rounded-2xl bg-white/80 shadow-sm border border-wonderleaf/30 p-5">
@@ -69,7 +69,7 @@ export default function ContactSection() {
                         Have a question about WonderHood or how our programs work?
                     </p>
                     <p className="text-sm font-semibold text-wondergreen break-all">
-                        wonderhood.project@gmail.com
+                        info@whproject.org
                     </p>
                     <p className="mt-2 text-xs text-gray-600">
                         Messages are reviewed by our leadership and operations team:
@@ -105,110 +105,110 @@ export default function ContactSection() {
                 </div>
             </div> */}
 
-            {/* Right: form */}
-           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                <div className="mx-auto max-w-2xl">
-                    <form
-                    className="rounded-2xl bg-white/90 shadow-md border border-wonderleaf/30 p-6 sm:p-8 space-y-4"
-                    onSubmit={handleSubmit}
-                    noValidate
-                    >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Full Name
-                        </label>
-                        <input
-                        type="text"
-                        name="name"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
-                        placeholder="Your name"
-                        required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email
-                        </label>
-                        <input
-                        type="email"
-                        name="email"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
-                        placeholder="you@example.com"
-                        required
-                        />
-                    </div>
-                    </div>
-
-                    <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Reason for Contacting
-                    </label>
-                    <select
-                        name="reason"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
-                        defaultValue=""
-                    >
-                        <option value="" disabled>
-                        Select an option
-                        </option>
-                        <option value="Question about programs or events">
-                        Question about programs or events
-                        </option>
-                        <option value="Volunteering">Volunteering</option>
-                        <option value="Donations / Sponsorship">
-                        Donations / Sponsorship
-                        </option>
-                        <option value="Partnership / Collaboration">
-                        Partnership / Collaboration
-                        </option>
-                        <option value="Other">Other</option>
-                    </select>
-                    </div>
-
-                    <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Message
-                    </label>
-                    <textarea
-                        name="message"
-                        rows={5}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
-                        placeholder="Tell us how we can help..."
-                        required
-                    />
-                    </div>
-
-                    {/* Errors */}
-                    {error && (
-                    <p className="text-sm text-red-600" role="alert">
-                        {error}
-                    </p>
-                    )}
-                    {success && (
-                    <p className="text-sm text-green-600" role="status">
-                        {success}
-                    </p>
-                    )}
-
-                    <p className="text-xs text-gray-500">
-                    Please do not share medical, financial, or other highly sensitive personal
-                    information in this form. If your question is urgent or safety-related,
-                    please contact local emergency services.
-                    </p>
-
-                    <div className="pt-2">
-                    <button
-                        type="submit"
-                        disabled={pending}
-                        className="inline-flex items-center justify-center rounded-xl bg-wondergreen px-6 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-wonderleaf transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        {pending ? "Sending..." : "Send Message"}
-                    </button>
-                    </div>
-                </form>
+      {/* Right: form */}
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl">
+          <form
+            className="rounded-2xl bg-white/90 shadow-md border border-wonderleaf/30 p-6 sm:p-8 space-y-4"
+            onSubmit={handleSubmit}
+            noValidate
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
+                  placeholder="Your name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Reason for Contacting
+              </label>
+              <select
+                name="reason"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select an option
+                </option>
+                <option value="Question about programs or events">
+                  Question about programs or events
+                </option>
+                <option value="Volunteering">Volunteering</option>
+                <option value="Donations / Sponsorship">
+                  Donations / Sponsorship
+                </option>
+                <option value="Partnership / Collaboration">
+                  Partnership / Collaboration
+                </option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Message
+              </label>
+              <textarea
+                name="message"
+                rows={5}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-wondergreen/60 focus:border-wondergreen"
+                placeholder="Tell us how we can help..."
+                required
+              />
+            </div>
+
+            {/* Errors */}
+            {error && (
+              <p className="text-sm text-red-600" role="alert">
+                {error}
+              </p>
+            )}
+            {success && (
+              <p className="text-sm text-green-600" role="status">
+                {success}
+              </p>
+            )}
+
+            <p className="text-xs text-gray-500">
+              Please do not share medical, financial, or other highly sensitive personal
+              information in this form. If your question is urgent or safety-related,
+              please contact local emergency services.
+            </p>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={pending}
+                className="inline-flex items-center justify-center rounded-xl bg-wondergreen px-6 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-wonderleaf transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {pending ? "Sending..." : "Send Message"}
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </section>
   );
 }
