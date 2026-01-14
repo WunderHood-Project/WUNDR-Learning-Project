@@ -8,7 +8,7 @@ export default function Terms() {
                     <span className="font-medium">Planned review by:</span> December 31, 2026
                 </p>
                 <p className="text-md text-gray-600">
-                    Organization: WonderHood, a 501(c)(3) nonprofit (EIN 39-3199830), Westcliffe, CO, USA.
+                    Organization: WonderHood, a 501(c)(3) nonprofit (EIN 39-3199830), Colorado, USA.
                 </p>
             </header>
 
@@ -24,6 +24,9 @@ export default function Terms() {
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">1) Eligibility & Accounts</h2>
                 <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
+                    <li>WonderHood programs are designed for homeschool and online-learning youth. Participation in events, clubs, workshops,
+                        and camps is intended for participants who are currently homeschooled or enrolled in an online learning program.
+                    </li>
                     <li>Accounts are created by adults (parent/guardian) for themselves and on behalf of participating children.</li>
                     <li>You agree to provide accurate information and to keep your login credentials secure.</li>
                     <li>We may suspend or terminate accounts for violations of these Terms or for safety reasons.</li>
@@ -42,6 +45,7 @@ export default function Terms() {
             <section>
                 <h2 className="text-xl font-semibold text-wondergreen">3) Programs, Registration & Cancellations</h2>
                 <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
+                    <li>For safety and planning, each participating child must be registered/enrolled for the event. Children may not attend without registration and a signed waiver when required.</li>
                     <li>Spots may be limited. Registration is confirmed when you receive a confirmation email or see a confirmation notice in your account.</li>
                     <li>We may reschedule or cancel an event for safety, weather, or operational reasons; we’ll notify registrants as soon as practical.</li>
                     <li>Some activities may require a separate <b>Participant Waiver/Release</b> (including emergency contact/health notes). Participation may be denied without a signed waiver.</li>

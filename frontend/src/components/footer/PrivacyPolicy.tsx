@@ -79,7 +79,7 @@ export default function PrivacyPolicy() {
         <p className="mt-2">
           Payments are processed by <b>Stripe</b>. We <b>do not store</b> full card numbers or bank account numbers on our servers.
           We retain donation metadata (amount, date, donor contact) for receipts and nonprofit reporting.
-          All donations are <b>non-refundable</b>. If you believe a payment was made by mistake (duplicate or wrong amount),
+          Donations are generally <b>non-refundable</b>. If you believe a payment was made by mistake (duplicate or wrong amount),
           email us within 7 days at <a href="mailto:info@whproject.org" className="text-wondergreen hover:text-wonderleaf">info@whproject.org</a>.
         </p>
         <p className="mt-2">
