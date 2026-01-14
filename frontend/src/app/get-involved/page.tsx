@@ -27,7 +27,7 @@ export default function GetInvolved() {
 
       {/* MAIN CONTENT */}
       <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 break-words [text-wrap:balance]">
-      {/* <main className="bg-wonderbg min-h-screen pb-16"> */}
+        {/* <main className="bg-wonderbg min-h-screen pb-16"> */}
         {/* Intro Text + CARDS */}
         {/* <p className="text-base sm:text-lg leading-relaxed text-center max-w-3xl mx-auto text-gray-700 mb-12 sm:mb-16">
           There are many ways to support and participate in our mission to empower families through connection, creativity, and community-based learning. Choose the path that resonates with you!
@@ -43,7 +43,7 @@ export default function GetInvolved() {
 
           <div className="grid gap-5 sm:gap-6 md:grid-cols-3 items-stretch">
             {/* Volunteer */}
-            {/* <Link href="/volunteer" className="group block h-full">
+        {/* <Link href="/volunteer" className="group block h-full">
               <div className="relative h-full cursor-pointer overflow-hidden rounded-xl border-2 border-wonderleaf/20 bg-white p-5 sm:p-6 pb-14 sm:pb-16 shadow-lg transition-colors duration-300 hover:border-wonderleaf flex flex-col">
                 <div className="mb-3 sm:mb-4">
                   <VolunteerBadge className="w-12 h-12 sm:w-14 sm:h-14" />
@@ -54,7 +54,7 @@ export default function GetInvolved() {
                 </p>
                 <p className="mt-3 flex items-center gap-1 text-[12px] sm:text-xs text-wondergreen/80">
                   {/* <span className='mb-4' aria-hidden="true">🛡️</span> */}
-                  {/* 🛡️ All adult volunteers complete a standard screening.
+        {/* 🛡️ All adult volunteers complete a standard screening.
                 </p>
                 <div className="mt-auto" />
                 <span className="pointer-events-none absolute bottom-3 sm:bottom-4 left-0 right-0 mx-auto select-none px-4 text-center text-sm sm:text-base text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -63,8 +63,8 @@ export default function GetInvolved() {
               </div>
             </Link> */}
 
-            {/* Partnership */}
-            {/* <Link href="/get-involved/partnership" className="group block h-full">
+        {/* Partnership */}
+        {/* <Link href="/get-involved/partnership" className="group block h-full">
               <div className="relative h-full cursor-pointer overflow-hidden rounded-xl border-2 border-wonderorange/40 bg-white p-5 sm:p-6 pb-14 sm:pb-16 shadow-lg transition-colors duration-300 hover:border-wonderorange flex flex-col">
                 <div className="mb-3 sm:mb-4">
                   <PartnershipBadge className="w-12 h-12 sm:w-14 sm:h-14" />
@@ -81,8 +81,8 @@ export default function GetInvolved() {
               </div>
             </Link> */}
 
-            {/* Donate */}
-            {/* <Link href="/donate" className="group block h-full">
+        {/* Donate */}
+        {/* <Link href="/donate" className="group block h-full">
               <div className="relative h-full cursor-pointer overflow-hidden rounded-xl border-2 border-wondergreen/20 bg-white p-5 sm:p-6 pb-14 sm:pb-16 shadow-lg transition-colors duration-300 hover:border-wondergreen flex flex-col">
                 <div className="mb-3 sm:mb-4">
                   <DonationBadge className="w-12 h-12 sm:w-14 sm:h-14" />
@@ -281,17 +281,17 @@ export default function GetInvolved() {
               </h3>
             </div>
             <p className="text-sm sm:text-base md:max-w-4xl text-gray-700">
-                Earn service hours, develop leadership skills, and make a difference. All under staff supervision, WonderTeen volunteers help at events, assist instructors, and support younger learners.
-                <span className="block mt-2">Want to join? Email us at {" "}
-                  <a
-                    href="mailto:wonderhood.project@gmail.com"
-                    rel="noopener noreferrer"
-                    className="underline transition-colors duration-200 text-wonderleaf hover:text-wondergreen"
-                  >
-                    wonderhood.project@gmail.com
-                  </a>
-                  .
-                </span>
+              Earn service hours, develop leadership skills, and make a difference. All under staff supervision, WonderTeen volunteers help at events, assist instructors, and support younger learners.
+              <span className="block mt-2">Want to join? Email us at {" "}
+                <a
+                  href="mailto:info@whproject.org"
+                  rel="noopener noreferrer"
+                  className="underline transition-colors duration-200 text-wonderleaf hover:text-wondergreen"
+                >
+                  info@whproject.org
+                </a>
+                .
+              </span>
             </p>
 
             {/* mini safety footnote */}

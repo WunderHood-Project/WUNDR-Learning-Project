@@ -10,8 +10,8 @@ export default function PrivacyPolicy() {
         </p>
         <p className="text-md text-gray-600">
           Contact:{" "}
-          <a href="mailto:wonderhood.project@gmail.com" className="text-wondergreen hover:text-wonderleaf">
-            wonderhood.project@gmail.com
+          <a href="mailto:info@whproject.org" className="text-wondergreen hover:text-wonderleaf">
+            info@whproject.org
           </a>
         </p>
         <p className="text-md text-gray-600">
@@ -79,8 +79,8 @@ export default function PrivacyPolicy() {
         <p className="mt-2">
           Payments are processed by <b>Stripe</b>. We <b>do not store</b> full card numbers or bank account numbers on our servers.
           We retain donation metadata (amount, date, donor contact) for receipts and nonprofit reporting.
-          All donations are <b>non-refundable</b>. If you believe a payment was made by mistake (duplicate or wrong amount),
-          email us within 7 days at <a href="mailto:wonderhood.project@gmail.com" className="text-wondergreen hover:text-wonderleaf">wonderhood.project@gmail.com</a>.
+          Donations are generally <b>non-refundable</b>. If you believe a payment was made by mistake (duplicate or wrong amount),
+          email us within 7 days at <a href="mailto:info@whproject.org" className="text-wondergreen hover:text-wonderleaf">info@whproject.org</a>.
         </p>
         <p className="mt-2">
           <b>Tax acknowledgment:</b> we email a receipt including our EIN. If no goods or services were provided in exchange for your contribution,
@@ -110,7 +110,7 @@ export default function PrivacyPolicy() {
       <section>
         <h2 className="text-xl font-semibold text-wondergreen">8) Your Choices & Rights</h2>
         <ul className="mt-2 list-disc pl-6 space-y-1 text-gray-800">
-          <li>Request access, correction, or deletion via <a href="mailto:wonderhood.project@gmail.com" className="text-wondergreen hover:text-wonderleaf">wonderhood.project@gmail.com</a>.</li>
+          <li>Request access, correction, or deletion via <a href="mailto:info@whproject.org" className="text-wondergreen hover:text-wonderleaf">info@whproject.org</a>.</li>
           <li>Unsubscribe from emails via the link or by contacting us.</li>
           <li>Withdraw photo/media consent; we will stop future use and make reasonable efforts to remove past posts within our control.</li>
           <li>Manage cookies in your browser settings.</li>
@@ -148,8 +148,8 @@ export default function PrivacyPolicy() {
         <h2 className="text-xl font-semibold text-wondergreen">Contact Us</h2>
         <p className="mt-2">
           Email:{" "}
-          <a href="mailto:wonderhood.project@gmail.com" className="text-wondergreen hover:text-wonderleaf">
-            wonderhood.project@gmail.com
+          <a href="mailto:info@whproject.org" className="text-wondergreen hover:text-wonderleaf">
+            info@whproject.org
           </a>{" "}
         </p>
       </section>

@@ -15,16 +15,16 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 		<>
 			<div className="flex flex-col gap-3 md:flex-row">
 				<div className="flex flex-col w-full md:w-1/2">
-				<input
-					name="firstName"
-					placeholder="Legal First Name"
-					value={child.firstName}
-					onChange={onChange}
-					className="w-full p-3 border rounded-lg"
-					maxLength={50}
-					required
-				/>
-				{errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
+					<input
+						name="firstName"
+						placeholder="Legal First Name"
+						value={child.firstName}
+						onChange={onChange}
+						className="w-full p-3 border rounded-lg"
+						maxLength={50}
+						required
+					/>
+					{errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
 				</div>
 
 				<div className="flex flex-col">
@@ -95,22 +95,22 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 				<div className="font-bold mb-1">PHOTO CONSENT</div>
 
 				<label className="inline-flex items-start gap-2">
-				<input
-					name="photoConsent"
-					type="checkbox"
-					checked={child.photoConsent}
-					onChange={onChange}
-					className="mt-1 h-4 w-4"
-					aria-describedby="photo-consent-help"
-				/>
-				<span className="text-sm">
-					I allow WonderHood to use photos/videos of my child for website and social updates (v{PHOTO_CONSENT_VERSION}).
-					<span id="photo-consent-help" className="block text-xs text-gray-600 mt-1">
-						You may withdraw consent anytime via <b>wonderhood.project@gmail.com</b>.
+					<input
+						name="photoConsent"
+						type="checkbox"
+						checked={child.photoConsent}
+						onChange={onChange}
+						className="mt-1 h-4 w-4"
+						aria-describedby="photo-consent-help"
+					/>
+					<span className="text-sm">
+						I allow WonderHood to use photos/videos of my child for website and social updates (v{PHOTO_CONSENT_VERSION}).
+						<span id="photo-consent-help" className="block text-xs text-gray-600 mt-1">
+							You may withdraw consent anytime via <b>info@whproject.org</b>.
+						</span>
 					</span>
-				</span>
 				</label>
-				
+
 				<PhotoConsentDisclosure />
 			</div>
 

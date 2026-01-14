@@ -53,7 +53,7 @@ const PEOPLE: Person[] = [
 },
 {
     name: "Heather Wingfeld",
-    title: "Board Secretary & Parent Advisor",
+    title: "Parent Advisor",
     group: "Board of Directors",
     bio: "Supports governance, documentation, and brings the homeschool parent perspective to planning.",
     // imageSrc: "/our_foto/Heather.png",

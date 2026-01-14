@@ -15,6 +15,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6 text-md md:text-md">
           <span>&copy; 2025 WonderHood. All rights reserved.</span>
           <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
+          <a href="/anti-discrimination" className="hover:underline">Anti Discrimination Policy</a>
           <a href="/terms" className="hover:underline">Terms of Service</a>
         </div>
 
