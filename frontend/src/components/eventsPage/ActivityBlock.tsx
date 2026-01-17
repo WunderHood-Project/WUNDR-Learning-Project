@@ -197,7 +197,7 @@ export default function ActivityBlock({
           //   </p>
           // </div>
           <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
-            <p className="text-xl font-semibold leading-snug text-gray-700">
+            <p className="text-base md:text-lg font-semibold leading-snug text-gray-700">
               Our Spring 2026 program schedule is being finalized.
             </p>
 
