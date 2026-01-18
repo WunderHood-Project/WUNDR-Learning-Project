@@ -10,8 +10,11 @@ import ResetPasswordWrapper from "@/components/login/ResetPasswordWrapper";
 import AuthGuard from "@/components/auth/AuthGuard";
 import DonateFloating from "@/components/donate/DonateFloating";
 import { GoogleTagManager } from '@next/third-parties/google'
+import Script from "next/script";
 
 const gtmId: string | undefined = process.env.GOOGLE_TAG_MANAGER_ID
+
+const adsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +44,25 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="en">
+      <head>
+        {adsId ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${adsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-ads" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${adsId}');
+              `}
+            </Script>
+          </>
+        ) : null}
+      </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <AuthProvider>
