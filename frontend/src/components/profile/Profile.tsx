@@ -59,7 +59,8 @@ export default function Profile() {
                     }
                     className="w-full px-5 py-0 text-sm text-red-600 hover:bg-red-50 rounded-xl mb-4"
                     modalComponent={<DeleteUser currUser={user} />}
-                    onButtonClick={closeMenu}
+                    // onButtonClick={closeMenu}
+                    onButtonClick={() => setTimeout(closeMenu, 0)}
                     />
                     </>
                     
