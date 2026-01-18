@@ -193,22 +193,87 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 		notes: form.notes === "" ? null : form.notes?.trim(),
 	})
 
+	// const handleDownloadWaiver = async () => {
+	// 	if (!createdWaiverId) return;
+
+	// 	try {
+	// 		const res = await makeApiRequest<{ url: string }>(
+	// 			`${WONDERHOOD_URL}/api/waivers/${createdWaiverId}/download`,
+	// 			{ method: "GET" }
+	// 		);
+
+
+	// 		// Open the signed URL in a new tab (convenient for printing as well)
+	// 		window.open(res.url, "_blank", "noopener,noreferrer");
+	// 	} catch (e) {
+	// 		setServerError(e instanceof Error ? e.message : "Failed to download waiver.");
+	// 	}
+	// };
+
+	// ✅ iOS Safari often blocks `window.open()` if it happens AFTER an async `await`.
+	// This helper detects iOS so we can use a safe workaround only there.
+	const isIOS = () => {
+		if (typeof navigator === "undefined") return false;
+		return /iPad|iPhone|iPod/.test(navigator.userAgent);
+	};
+
 	const handleDownloadWaiver = async () => {
 		if (!createdWaiverId) return;
 
+		// Use the "open blank tab immediately" workaround ONLY on iOS.
+		// Desktop/Android can safely open the PDF after the async call.
+		const usePopupWorkaround = isIOS();
+		let popup: Window | null = null;
+
+		// iOS workaround:
+		// Open a new blank tab synchronously inside the click handler.
+		// This prevents Safari from blocking the popup.
+		if (usePopupWorkaround) {
+			popup = window.open("", "_blank");
+
+			// Optional: show a friendly message instead of a blank white page
+			// while we fetch the signed download URL.
+			if (popup) {
+			try {
+				popup.document.write(
+				`<p style="font-family: system-ui; padding: 16px;">Opening your PDF…</p>`
+				);
+				popup.document.close();
+			} catch {
+				// Some browsers may block writing to the popup; ignore safely.
+			}
+			}
+		}
+
 		try {
+			// 1) Ask backend for a signed URL to the PDF
 			const res = await makeApiRequest<{ url: string }>(
-				`${WONDERHOOD_URL}/api/waivers/${createdWaiverId}/download`,
-				{ method: "GET" }
+			`${WONDERHOOD_URL}/api/waivers/${createdWaiverId}/download`,
+			{ method: "GET" }
 			);
 
+			// Defensive check
+			if (!res?.url) throw new Error("Download link is missing.");
 
-			// Open the signed URL in a new tab (convenient for printing as well)
+			// 2) iOS: redirect the already-opened tab to the signed URL
+			if (popup) {
+			popup.location.replace(res.url);
+			return;
+			}
+
+			// 3) Desktop/Android: stay on the current page and open PDF in a new tab
 			window.open(res.url, "_blank", "noopener,noreferrer");
 		} catch (e) {
+			// If anything fails, close the blank tab (if it exists) and show an error
+			try {
+			popup?.close();
+			} catch {
+			// Ignore close errors
+			}
 			setServerError(e instanceof Error ? e.message : "Failed to download waiver.");
 		}
 	};
+
 
 
 	const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
