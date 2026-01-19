@@ -9,10 +9,12 @@ import { AuthProvider } from "@/context/auth";
 import ResetPasswordWrapper from "@/components/login/ResetPasswordWrapper";
 import AuthGuard from "@/components/auth/AuthGuard";
 import DonateFloating from "@/components/donate/DonateFloating";
-import { GoogleTagManager } from '@next/third-parties/google'
+// import { GoogleTagManager } from '@next/third-parties/google'
 import Script from "next/script";
 
-const gtmId: string | undefined = process.env.GOOGLE_TAG_MANAGER_ID
+// const gtmId: string | undefined = process.env.GOOGLE_TAG_MANAGER_ID
+
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 const adsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
@@ -45,18 +47,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <head>
-        {adsId ? (
+        {(gaId || adsId) ? (
           <>
             <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${adsId}`}
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId || adsId}`}
               strategy="afterInteractive"
             />
-            <Script id="google-ads" strategy="afterInteractive">
+            <Script id="gtag-init" strategy="afterInteractive">
               {`
                 window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments);}
+                function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${adsId}');
+                ${gaId ? `gtag('config', '${gaId}');` : ""}
+                ${adsId ? `gtag('config', '${adsId}');` : ""}
               `}
             </Script>
           </>
@@ -70,7 +74,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <AuthGuard />
             <Navbar />
             <DonateFloating />
-            <GoogleTagManager gtmId={gtmId} gtmScriptUrl="https://www.googletagmanager.com/gtag/js?id=G-BCYXDD5Z2M" />
+            {/* <GoogleTagManager gtmId={gtmId} gtmScriptUrl="https://www.googletagmanager.com/gtag/js?id=G-6S8G36JYSV" /> */}
             <main className="flex-grow flex flex-col">
               {children}
               <ResetPasswordWrapper />
