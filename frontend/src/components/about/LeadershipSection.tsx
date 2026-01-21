@@ -21,7 +21,7 @@ const PEOPLE: Person[] = [
     title: "Board Chair",
     group: "Board of Directors",
     bio: "Provides strategic guidance and governance oversight for WonderHood.",
-    // imageSrc: "/our_foto/Dmitriy.png",
+    imageSrc: "/our_foto/Dmitriy.png",
 },
 {
     name: "Anastasiia Muzhzhavlev",
@@ -49,7 +49,7 @@ const PEOPLE: Person[] = [
     title: "Board Member",
     group: "Board of Directors",
     bio: "Offers community perspective and input on program direction and youth needs.",
-    // imageSrc: "/our_foto/James.png",
+    imageSrc: "/our_foto/James.png",
 },
 {
     name: "Heather Wingfeld",

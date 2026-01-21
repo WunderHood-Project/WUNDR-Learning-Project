@@ -1,10 +1,12 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
 from models.interaction_models import VolunteerOpportunityCreate, VolunteerOpportunityUpdate
 from .auth.login import get_current_user
-from .auth.utils import enforce_admin, enforce_authentication
+from .auth.utils import enforce_admin, enforce_authentication, get_home_link
+from datetime import datetime, timezone
+from .notifications import send_email_multiple_users
 
 router = APIRouter()
 
@@ -42,11 +44,46 @@ async def applications_by_opportunity(opportunity_id: str, current_user: Annotat
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_volunteer_opportunity(
     current_user: Annotated[User, Depends(get_current_user)],
-    opportunity_data: VolunteerOpportunityCreate
+    opportunity_data: VolunteerOpportunityCreate,
+    background_tasks: BackgroundTasks
 ):
     enforce_authentication(current_user); enforce_admin(current_user)
     data = opportunity_data.model_dump()
     opp = await db.volunteeropportunities.create(data=data)
+
+    home_link = get_home_link()
+    users = await db.users.find_many(where={"emailNotificationsEnabled": True})
+
+    # Send notification to users with opted in email
+    if users:
+        title = f"New Volunteer Opportunity at WonderHood Project!"
+        description = f"Hello!\n\nWe wanted to let you know that we need volunteers for {opp.title}. Please register as soon as possible here {home_link}. We appreciate your help!\n\nBest,\nWonderHood Team"
+    
+        # Create notifications to store in db
+        now_utc = datetime.now(timezone.utc)
+        await db.notifications.create_many(
+                data = [
+                    {
+                        "title": title,
+                        "description": description,
+                        "userId":u.id,
+                        "isRead": False,
+                        "time": now_utc
+                    }
+                    for u in users
+                ]
+            )
+
+    # Send email notification directly to users
+        user_emails = [u.email for u in users]
+
+        background_tasks.add_task(
+            send_email_multiple_users,
+            user_emails,
+            title,
+            description
+        )
+
     return {"opportunity": opp}
 
 

@@ -17,7 +17,7 @@ export default function AntiDiscriminationPolicy() {
         </p>
 
         <p className="text-md text-gray-600">
-          Organization: WonderHood, a 501(c)(3) nonprofit (EIN 39-3199830), Colorado, USA.
+          Organization: WonderHood, a 501(c)(3) nonprofit, Colorado, USA.
         </p>
       </header>
 
