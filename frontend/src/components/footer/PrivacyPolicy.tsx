@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
           </a>
         </p>
         <p className="text-md text-gray-600">
-          Organization: WonderHood, a 501(c)(3) nonprofit (EIN 39-3199830). We operate in the U.S. and process/store data in the U.S. only.
+          Organization: WonderHood, a 501(c)(3) nonprofit. We operate in the U.S. and process/store data in the U.S. only.
         </p>
       </header>
 

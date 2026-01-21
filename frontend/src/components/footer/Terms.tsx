@@ -8,7 +8,7 @@ export default function Terms() {
                     <span className="font-medium">Planned review by:</span> December 31, 2026
                 </p>
                 <p className="text-md text-gray-600">
-                    Organization: WonderHood, a 501(c)(3) nonprofit (EIN 39-3199830), Colorado, USA.
+                    Organization: WonderHood, a 501(c)(3) nonprofit, Colorado, USA.
                 </p>
             </header>
 
