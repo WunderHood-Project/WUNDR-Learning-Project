@@ -61,8 +61,7 @@ async def create_volunteer_opportunity(
     
         # Create notifications to store in db
         now_utc = datetime.now(timezone.utc)
-        try:
-            await db.notifications.create_many(
+        await db.notifications.create_many(
                 data = [
                     {
                         "title": title,
@@ -74,23 +73,8 @@ async def create_volunteer_opportunity(
                     for u in users
                 ]
             )
-        except Exception:
-            # send one-by-one to avoid losing the notification
-            for u in users:
-                try:
-                    await db.notifications.create(
-                        data={
-                            "title": title,
-                            "description": description,
-                            "userId":u.id,
-                            "isRead": False,
-                            "time": now_utc
-                        }
-                    )
-                except:
-                    pass
 
-        # Send email notification directly to users
+    # Send email notification directly to users
         user_emails = [u.email for u in users]
 
         background_tasks.add_task(
