@@ -9,7 +9,7 @@ import { AuthProvider } from "@/context/auth";
 import ResetPasswordWrapper from "@/components/login/ResetPasswordWrapper";
 import AuthGuard from "@/components/auth/AuthGuard";
 import DonateFloating from "@/components/donate/DonateFloating";
-// import { GoogleTagManager } from '@next/third-parties/google'
+import CookieConsentBanner from "@/components/cookieConsent/CookieConsentBanner";
 import Script from "next/script";
 
 // const gtmId: string | undefined = process.env.GOOGLE_TAG_MANAGER_ID
@@ -61,8 +61,22 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 gtag('js', new Date());
                 ${gaId ? `gtag('config', '${gaId}');` : ""}
                 ${adsId ? `gtag('config', '${adsId}');` : ""}
+
+                gtag('consent', 'default', {
+                analytics_storage: 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied'
+              });
               `}
             </Script>
+
+            <Script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+
           </>
         ) : null}
       </head>
@@ -74,13 +88,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <AuthGuard />
             <Navbar />
             <DonateFloating />
-            {/* <GoogleTagManager gtmId={gtmId} gtmScriptUrl="https://www.googletagmanager.com/gtag/js?id=G-6S8G36JYSV" /> */}
             <main className="flex-grow flex flex-col">
               {children}
               <ResetPasswordWrapper />
             </main>
             <Footer />
             <Modal />
+            <CookieConsentBanner />
           </ModalProvider>
         </AuthProvider>
       </body>
