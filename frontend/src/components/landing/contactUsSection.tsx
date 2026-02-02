@@ -1,6 +1,6 @@
 export default function ContactUsSection() {
   return (
-    <section className="mb-14 sm:mb-16">
+    <section className="">
       <div className="mx-auto max-w-4xl rounded-2xl border border-wonderleaf/20 bg-white/60 p-6 sm:p-8 text-center backdrop-blur-sm">
         <p className="mb-3 sm:mb-4 text-sm sm:text-lg text-gray-600">
           Any questions? We&rsquo;d love to hear from you!
