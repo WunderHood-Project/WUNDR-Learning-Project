@@ -52,7 +52,7 @@ export default function HeroSection() {
                                 Serving homeschool and online learners in Custer County, CO.
 
                                 </span>
-                            </p>
+                            </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
@@ -109,7 +109,7 @@ export default function HeroSection() {
                             <span className="hidden md:inline">
                                 For homeschoolers seeking fun, friendships, and meaningful adventures.
                             </span>
-                        </p>
+                        </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
@@ -167,7 +167,7 @@ export default function HeroSection() {
                                 Creative activities, new friendships, real-life experiences.
                             </span>
 
-                        </p>
+                        </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
