@@ -51,7 +51,7 @@ export default function HeroSection() {
                                     Connection, adventure, and friendship for youth ages 10-18.
                                 <br />
                                 Serving homeschool & online learners across Colorado.
-                                    
+
                                 </span>
                             </p>
 
@@ -66,7 +66,7 @@ export default function HeroSection() {
                             </Link>
 
                             {/* Only for mob and tablet Events btn */}
-                            <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
+                            {/* <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
                                 <div className="mx-auto w-[200px] md:w-[240px] max-w-full
                                                 bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
                                                 text-sm md:text-[17px] font-semibold shadow
@@ -74,7 +74,7 @@ export default function HeroSection() {
                                                 transition-all duration-300 hover:bg-white md:mb-6">
                                     View Upcoming Events
                                 </div>
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 </div>
@@ -110,7 +110,7 @@ export default function HeroSection() {
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
                             <span className="hidden md:inline">
                                 For homeschoolers seeking fun, friendships, and meaningful adventures.
-                            </span>                
+                            </span>
                         </p>
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
@@ -124,7 +124,7 @@ export default function HeroSection() {
                             </Link>
 
                             {/* Only for mob and tablet Events btn */}
-                            <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
+                            {/* <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
                                 <div className="mx-auto w-[200px] md:w-[240px] max-w-full
                                                 bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
                                                 text-sm md:text-[17px] font-semibold shadow
@@ -132,7 +132,7 @@ export default function HeroSection() {
                                                 transition-all duration-300 hover:bg-white md:mb-6">
                                     View Upcoming Events
                                 </div>
-                            </Link>
+                            </Link>  */}
                         </div>
                     </div>
                 </div>
@@ -168,7 +168,7 @@ export default function HeroSection() {
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
                             <span className="hidden md:inline">
                                 Creative activities, new friendships, real-life experiences.
-                            </span>            
+                            </span>
 
                         </p>
 
@@ -183,7 +183,7 @@ export default function HeroSection() {
                             </Link>
 
                             {/* Only for mob and tablet Events btn */}
-                            <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
+                            {/* <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
                                 <div className="mx-auto w-[200px] md:w-[240px] max-w-full
                                                 bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
                                                 text-sm md:text-[17px] font-semibold shadow
@@ -191,7 +191,7 @@ export default function HeroSection() {
                                                 transition-all duration-300 hover:bg-white md:mb-6">
                                     View Upcoming Events
                                 </div>
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 </div>

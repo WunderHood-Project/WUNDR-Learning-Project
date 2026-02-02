@@ -10,7 +10,7 @@ const stats = [
 
 export default function ImpactStats() {
   return (
-    <section className="w-full py-10 text-wondergreen bg-[#FAF7ED] mt-8">
+    <section className="w-full pt-10 pb-7 text-wondergreen bg-[#FAF7ED] my-8">
       <div className="max-w-7xl mx-auto flex flex-col items-center px-4">
         {/* Title */}
         <h2 className="text-3xl sm:text-4xl md:text-[34px] lg:text-[36px] xl:text-[42px] font-bold mb-4 text-center leading-tight">
