@@ -43,7 +43,7 @@ export default function HeroSection() {
                                 More than Just Homeschooling
                             </h1>
 
-                            <p className="text-white mt-3 md:mt-4
+                            {/* <p className="text-white mt-3 md:mt-4
                                             text-base sm:text-lg md:text-xl lg:text-2xl
                                             max-w-3xl mx-auto
                                             drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
@@ -53,7 +53,7 @@ export default function HeroSection() {
                                 Serving homeschool & online learners across Colorado.
 
                                 </span>
-                            </p>
+                            </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
@@ -104,14 +104,14 @@ export default function HeroSection() {
                                 A Place to Belong, Explore, and Create
                             </h1>
 
-                        <p className="text-white mt-3 md:mt-4
+                        {/* <p className="text-white mt-3 md:mt-4
                                     text-base sm:text-lg md:text-xl lg:text-2xl
                                     max-w-3xl mx-auto
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
                             <span className="hidden md:inline">
                                 For homeschoolers seeking fun, friendships, and meaningful adventures.
                             </span>
-                        </p>
+                        </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
@@ -162,7 +162,7 @@ export default function HeroSection() {
                         Where Teens Connect &amp; Grow
                         </h1>
 
-                        <p className="text-white mt-3 md:mt-4
+                        {/* <p className="text-white mt-3 md:mt-4
                                     text-base sm:text-lg md:text-xl lg:text-2xl
                                     max-w-3xl mx-auto
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
@@ -170,7 +170,7 @@ export default function HeroSection() {
                                 Creative activities, new friendships, real-life experiences.
                             </span>
 
-                        </p>
+                        </p> */}
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
                                 <div className="bg-wondergreen text-white
