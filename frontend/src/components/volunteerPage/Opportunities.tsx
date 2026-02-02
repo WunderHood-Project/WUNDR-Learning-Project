@@ -82,7 +82,7 @@ export default function Opportunities({
     <section className="max-w-6xl mx-auto px-4 py-2">
       <header className="text-center mb-8">
         <p className="mt-3 text-sm md:text-lg text-gray-700">
-          Want to get involved? Tell us your skills - we&apos;ll find a good fit.
+          Want to get involved? Tell us your skills and we&apos;ll find a good fit.
         </p>
         <p className="mt-2 text-xs md:text-sm text-gray-600">
           In the application, please include availability and desired location.
@@ -122,7 +122,7 @@ export default function Opportunities({
             <article className="w-full max-w-xl rounded-2xl bg-white border border-wonderleaf/20 p-6 text-center shadow-sm">
               <h3 className="text-base md:text-xl font-semibold text-gray-900">No open opportunities right now</h3>
               <p className="mt-2 text-gray-700 text-sm md:text-lg">
-                You can still apply as a volunteer — we&apos;ll contact you when there&apos;s a good fit.
+                You can still apply as a volunteer and we&apos;ll contact you when there&apos;s a good fit.
                 Thank you for your willingness to help!
               </p>
               <button
