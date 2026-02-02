@@ -24,23 +24,22 @@ export default function CookieConsentBanner() {
     };
 
     return (
-
-        <CookieConsent
-            cookieName="ga_cookie_consent"
-            enableDeclineButton
-            onDecline={() => {
-                alert("Cookies Declined");
-            }}
-            declineButtonStyle={{ color: "white" }}
-            declineButtonText="Decline"
-            overlay
-            location="bottom"
-            buttonText="Accept"
-            style={{ background: "#fdf6e9", color: "#2f5d3e", fontWeight: "bold", fontStyle: "italic", fontSize: "18px" }}
-            buttonStyle={{ background: "#90b35c", color: "white", fontSize: "18px", borderStyle: "rounded" }}
-            onAccept={acceptSelection}
-        >
-            <div className="space-y-3">
+        <div className="space-y-3">
+            <CookieConsent
+                cookieName="ga_cookie_consent"
+                enableDeclineButton
+                onDecline={() => {
+                    alert("Cookies Declined");
+                }}
+                declineButtonStyle={{ color: "white", borderRadius: "9999px", background: "#f5a940", paddingInline: "30px" }}
+                declineButtonText="Decline"
+                overlay
+                location="bottom"
+                buttonText="Accept"
+                style={{ background: "#fdf6e9", color: "#2f5d3e", fontWeight: "bold", fontSize: "20px", paddingInline: "80px", display: "flex", alignItems: "center", marginTop: "25px" }}
+                buttonStyle={{ background: "#90b35c", color: "white", fontSize: "20px", borderRadius: "9999px", paddingInline: "30px" }}
+                onAccept={acceptSelection}
+            >
                 <p>
                     We use cookies to improve the site. You can choose which cookies you
                     allow.
@@ -63,7 +62,7 @@ export default function CookieConsentBanner() {
                     />
                     <span>Advertising cookies</span>
                 </label>
-            </div>
-        </CookieConsent>
+            </CookieConsent>
+        </div>
     )
 }
