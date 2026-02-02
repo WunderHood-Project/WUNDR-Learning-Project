@@ -10,7 +10,7 @@ export default function AboutPageContent() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 break-words [text-wrap:balance]">
 
         {/* Our Story */}
-        <section className="relative my-8 sm:my-12 md:my-16">
+        <section className="relative mt-8 sm:mt-12 md:my-16">
           {/* decorative "spots" */}
           <div className="pointer-events-none absolute -right-10 top-6 hidden h-28 w-28 rounded-full bg-wonderorange/20 blur-3xl sm:block" />
           <div className="pointer-events-none absolute -left-8 bottom-6 hidden h-24 w-24 rounded-full bg-wonderleaf/25 blur-2xl sm:block" />
@@ -22,24 +22,28 @@ export default function AboutPageContent() {
             </div>
 
             <div className="rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
-              <div className="space-y-3 sm:space-y-4 text-base sm:text-lg leading-relaxed text-gray-700">
+              <div className="space-y-3 sm:space-y-4 text-left text-base sm:text-lg leading-7 text-gray-700 text-balance">
                 <p>
-                  WonderHood began in Westcliffe, Colorado, and is growing to serve homeschool and online-learning families statewide.
-                  Many homeschool and online learners love the flexibility of learning at home – but still miss steady friendships and a sense of belonging.
+                  WonderHood began in Westcliffe, Colorado, and is growing to serve homeschool and online learning families statewide.
+                  Many homeschool and online learners love the flexibility of learning at home but still miss steady friendships and a sense of belonging.
                   In rural communities, it can be especially hard to meet peers regularly, and screen time can start to replace real-life connection.
                 </p>
                 <p>
-                  We create welcoming spaces where students feel supported and truly seen. 
+                  We create welcoming spaces where students feel supported and truly seen.
                   Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
+                </p>
+                <p className="text-sm text-gray-500">
+                  *Our pilot programming is launching in{" "}
+                  <span className="font-semibold text-wondergreen">Custer County</span>, with expansion guided by partnerships and community needs.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <div className="grid gap-5 sm:gap-8 md:gap-10 md:grid-cols-2 auto-rows-fr items-stretch">
+        {/* <div className="grid gap-5 sm:gap-8 md:gap-10 md:grid-cols-2 auto-rows-fr items-stretch"> */}
           {/* Service Area */}
-          <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
+          {/* <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
             <div className="mb-4 flex items-center gap-3 sm:gap-4">
               <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange shadow" />
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wondergreen">Service Area</h3>
@@ -52,10 +56,10 @@ export default function AboutPageContent() {
               </p>
 
             </div>
-          </article>
+          </article> */}
 
           {/* Why Child Health */}
-          <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
+          {/* <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
             <div className="mb-4 flex items-center gap-3 sm:gap-4">
               <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderorange via-wondersun to-wonderleaf shadow" />
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wonderorange">Why Child Health?</h3>
@@ -63,18 +67,18 @@ export default function AboutPageContent() {
 
             <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-               We support child well-being through connection, movement, and purpose. 
-               Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities. 
+               We support child well-being through connection, movement, and purpose.
+               Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities.
                We also increase access to enrichment experiences and hands-on STEAM learning – especially important for rural and online-learning youth – so kids feel connected, confident, and supported.
               </p>
             </div>
           </article>
-        </div>
+        </div> */}
 
         {/* Why We Do It */}
-        <section className="mt-20 sm:mt-24 md:mt-28 mb-10 sm:mb-12 md:mb-16">
-          <div className="mb-6 sm:mb-8 text-center">
-            <h2 className="mb-2 sm:mb-3 text-2xl sm:text-3xl md:text-4xl font-bold text-wondergreen [text-wrap:balance]">
+        <section className="mt-20 sm:mt-15 mb-10 sm:mb-12 md:mb-16">
+          <div className="mb-6 sm:mb-7 text-center">
+            <h2 className="mb-2 text-2xl sm:text-3xl md:text-4xl font-bold text-wondergreen [text-wrap:balance]">
                 Why We Do What We Do
             </h2>
             <div className="mx-auto h-1 w-20 sm:w-24 rounded-full bg-gradient-to-r from-wonderleaf to-wonderorange" />
@@ -87,7 +91,7 @@ export default function AboutPageContent() {
                     Connection
               </h3>
               <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                    Online learners can spend long stretches learning independently. We create spaces where friendships form naturally – where kids can meet, connect, and feel part of a community.
+                    Online learners can spend long stretches learning independently. We create spaces where friendships form naturally and kids can part of a community.
               </p>
               <div className="mt-auto" />
             </article>
