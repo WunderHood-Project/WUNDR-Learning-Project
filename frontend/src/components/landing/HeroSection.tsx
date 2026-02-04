@@ -43,11 +43,12 @@ export default function HeroSection() {
                                 More than Just Homeschooling
                             </h1>
 
-                            {/* <p className="text-white mt-3 md:mt-4
+                            {/* <p className="hidden md:inline lg:hidden
+                                            text-white mt-3 md:mt-4
                                             text-base sm:text-lg md:text-xl lg:text-2xl
                                             max-w-3xl mx-auto
                                             drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
-                                <span className="hidden md:inline">
+                                <span className="hidden md:inline lg:hidden">
                                     Connection, adventure, and friendship for youth ages 10-18.
                                 <br />
                                 Serving homeschool & online learners across Colorado.
@@ -55,26 +56,28 @@ export default function HeroSection() {
                                 </span>
                             </p> */}
 
-                            <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
-                                <div className="bg-wondergreen text-white
-                                                px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
-                                                rounded-lg text-sm md:text-lg lg:text-xl
-                                                font-semibold shadow-lg
-                                                transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
-                                    Get Involved
-                                </div>
-                            </Link>
+                            <div className="flex flex-row justify-center gap-5">
+                                <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
+                                    <div className="bg-wondergreen text-white
+                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                    rounded-lg text-sm md:text-lg lg:text-xl
+                                                    font-semibold shadow-lg
+                                                    transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
+                                        Get Involved
+                                    </div>
+                                </Link>
 
-                            {/* Only for mob and tablet Events btn */}
-                            {/* <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
-                                <div className="mx-auto w-[200px] md:w-[240px] max-w-full
-                                                bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
-                                                text-sm md:text-[17px] font-semibold shadow
-                                                border border-wondergreen/30
-                                                transition-all duration-300 hover:bg-white md:mb-6">
-                                    View Upcoming Events
-                                </div>
-                            </Link> */}
+                                {/* Only for mob and tablet Events btn */}
+                                <Link href="/events" className="mt-4 block lg:hidden md:mt-8">
+                                    <div className="bg-white/90 text-wondergreen
+                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                    rounded-lg text-sm md:text-lg lg:text-xl
+                                                    font-semibold shadow-lg
+                                                    transition-all duration-300 hover:scale-105 hover:bg-white">
+                                        View Events
+                                    </div>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,26 +116,28 @@ export default function HeroSection() {
                             </span>
                         </p> */}
 
-                            <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
-                                <div className="bg-wondergreen text-white
-                                                px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
-                                                rounded-lg text-sm md:text-lg lg:text-xl
-                                                font-semibold shadow-lg
-                                                transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
-                                    Get Involved
-                                </div>
-                            </Link>
+                            <div className="flex flex-row justify-center gap-5">
+                                <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
+                                    <div className="bg-wondergreen text-white
+                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                    rounded-lg text-sm md:text-lg lg:text-xl
+                                                    font-semibold shadow-lg
+                                                    transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
+                                        Get Involved
+                                    </div>
+                                </Link>
 
-                            {/* Only for mob and tablet Events btn */}
-                            {/* <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
-                                <div className="mx-auto w-[200px] md:w-[240px] max-w-full
-                                                bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
-                                                text-sm md:text-[17px] font-semibold shadow
-                                                border border-wondergreen/30
-                                                transition-all duration-300 hover:bg-white md:mb-6">
-                                    View Upcoming Events
-                                </div>
-                            </Link>  */}
+                                {/* Only for mob and tablet Events btn */}
+                                <Link href="/events" className="mt-4 block lg:hidden md:mt-8">
+                                    <div className="bg-white/90 text-wondergreen
+                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                    rounded-lg text-sm md:text-lg lg:text-xl
+                                                    font-semibold shadow-lg
+                                                    transition-all duration-300 hover:scale-105 hover:bg-white">
+                                        View Events
+                                    </div>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -172,26 +177,28 @@ export default function HeroSection() {
 
                         </p> */}
 
-                            <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
-                                <div className="bg-wondergreen text-white
-                                                px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
-                                                rounded-lg text-sm md:text-lg lg:text-xl
-                                                font-semibold shadow-lg
-                                                transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
-                                    Get Involved
-                                </div>
-                            </Link>
+                            <div className="flex flex-row justify-center gap-5">
+                                <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
+                                    <div className="bg-wondergreen text-white
+                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                    rounded-lg text-sm md:text-lg lg:text-xl
+                                                    font-semibold shadow-lg
+                                                    transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
+                                        Get Involved
+                                    </div>
+                                </Link>
 
-                            {/* Only for mob and tablet Events btn */}
-                            {/* <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
-                                <div className="mx-auto w-[200px] md:w-[240px] max-w-full
-                                                bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
-                                                text-sm md:text-[17px] font-semibold shadow
-                                                border border-wondergreen/30
-                                                transition-all duration-300 hover:bg-white md:mb-6">
-                                    View Upcoming Events
-                                </div>
-                            </Link> */}
+                                {/* Only for mob and tablet Events btn */}
+                                <Link href="/events" className="mt-4 block lg:hidden md:mt-8">
+                                    <div className="bg-white/90 text-wondergreen
+                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                    rounded-lg text-sm md:text-lg lg:text-xl
+                                                    font-semibold shadow-lg
+                                                    transition-all duration-300 hover:scale-105 hover:bg-white">
+                                        View Events
+                                    </div>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
