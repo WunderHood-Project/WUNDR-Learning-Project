@@ -37,7 +37,7 @@ export default function HeroSection() {
                     <div className="absolute inset-0 z-10 flex items-center justify-center">
                         <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
                             <h1 className="text-white font-bold leading-[1.1]
-                                text-[clamp(28px,5vw,64px)]
+                                text-[clamp(28px,5vw,60px)]
                                 drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                                 More than Just Homeschooling
                             </h1>
@@ -97,7 +97,7 @@ export default function HeroSection() {
                     <div className="absolute inset-0 z-10 flex items-center justify-center">
                         <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
                             <h1 className="text-white font-bold leading-[1.1]
-                                text-[clamp(28px,5vw,64px)]
+                                text-[clamp(28px,5vw,60px)]
                                 drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                                 A Place to Belong, Explore, and Create
                             </h1>
@@ -154,7 +154,7 @@ export default function HeroSection() {
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
                     <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
                         <h1 className="text-white font-bold leading-[1.1]
-                                text-[clamp(28px,5vw,64px)]
+                                text-[clamp(28px,5vw,60px)]
                                 drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                         Where Teens Connect &amp; Grow
                         </h1>
