@@ -3,7 +3,7 @@ export default function PrivacyPolicy() {
   return (
     <article className=" flex flex-col mx-auto max-w-3xl px-4 py-12 space-y-8">
       <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-wondergreen">Privacy Policy — WonderHood</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-wondergreen">Privacy Policy – WonderHood</h1>
         <p className="text-md text-gray-600">
           <span className="font-medium">Effective date:</span> September 4, 2025 ·{" "}
           <span className="font-medium">Planned review by:</span> December 31, 2026
