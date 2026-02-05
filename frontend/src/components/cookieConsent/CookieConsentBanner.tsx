@@ -36,11 +36,18 @@ export default function CookieConsentBanner() {
                 overlay
                 location="bottom"
                 buttonText="Accept"
-                style={{ background: "#fdf6e9", color: "#2f5d3e", fontWeight: "bold", fontSize: "20px", paddingInline: "80px", display: "flex", alignItems: "center", marginTop: "25px" }}
+                style={{ background: "#fdf6e9", color: "#2f5d3e", fontWeight: "bold", fontSize: "20px", paddingInline: "80px", display: "flex", alignItems: "center", marginTop: "25px", justifyContent: "center" }}
                 buttonStyle={{ background: "#90b35c", color: "white", fontSize: "20px", borderRadius: "9999px", paddingInline: "30px" }}
                 onAccept={acceptSelection}
+                buttonWrapperClasses="
+                 flex 
+                 justify-center 
+                 items-center 
+                 gap-3 
+                 w-full
+              "
             >
-                <p>
+                <p className="xs:mb-6">
                     We use cookies to improve the site. You can choose which cookies you
                     allow.
                 </p>
