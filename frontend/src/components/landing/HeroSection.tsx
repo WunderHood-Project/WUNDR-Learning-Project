@@ -9,14 +9,14 @@ import 'swiper/css/pagination';
 
 export default function HeroSection() {
    return (
-    <section className="hero relative h-[45svh] w-full overflow-hidden">
+    <section className="hero relative min-h-[420px] h-[55svh] md:h-[45svh] w-full overflow-hidden">
         <Swiper
             modules={[Pagination, Autoplay]}
             pagination={{ clickable: true }}
             autoplay={{ delay: 10000, disableOnInteraction: false }}
             spaceBetween={0}
             slidesPerView={1}
-            className="h-[45svh] w-full"
+            className="h-full w-full"
         >
             {/* Slide 1 */}
             <SwiperSlide>
@@ -25,25 +25,25 @@ export default function HeroSection() {
                         src="/hero.webp"
                         alt="Kids outdoors"
                         fill
-                        className="object-cover object-[center_40%]"
+                        className="object-cover object-[center_35%]"
                         priority
                         sizes="100vw"
                     />
 
                     {/* overlay */}
-                    <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
+                    <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
 
                     {/* content*/}
                     <div className="absolute inset-0 z-10 flex items-center justify-center">
                         <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
                             <h1 className="text-white font-bold leading-[1.1]
-                                text-[clamp(28px,5vw,60px)]
-                                drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
+                                            text-3xl sm:text-4xl md:text-4xl lg:text-5xl
+                                            drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                                 More than Just Homeschooling
                             </h1>
 
                             <p className="text-white mt-3 md:mt-4
-                                            text-base sm:text-lg md:text-xl lg:text-2xl
+                                            text-base sm:text-lg md:text-lg lg:text-2xl
                                             max-w-3xl mx-auto
                                             drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                                 <span className="hidden md:inline">
@@ -65,12 +65,12 @@ export default function HeroSection() {
                             </Link>
 
                             {/* Only for mob and tablet Events btn */}
-                            <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
-                                <div className="mx-auto w-[200px] md:w-[240px] max-w-full
-                                                bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
-                                                text-sm md:text-[17px] font-semibold shadow
+                            <Link href="/events" className="mt-3 block md:hidden">
+                                <div className="mx-auto w-[200px] max-w-full
+                                                bg-white/90 text-wondergreen px-5 py-1.5 rounded-lg
+                                                text-sm font-semibold shadow
                                                 border border-wondergreen/30
-                                                transition-all duration-300 hover:bg-white md:mb-6">
+                                                transition-all duration-300 hover:bg-white">
                                     View Upcoming Events
                                 </div>
                             </Link>
@@ -97,13 +97,13 @@ export default function HeroSection() {
                     <div className="absolute inset-0 z-10 flex items-center justify-center">
                         <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
                             <h1 className="text-white font-bold leading-[1.1]
-                                text-[clamp(28px,5vw,60px)]
-                                drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
+                                            text-3xl sm:text-4xl md:text-4xl lg:text-5xl
+                                            drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                                 A Place to Belong, Explore, and Create
                             </h1>
 
                         <p className="text-white mt-3 md:mt-4
-                                    text-base sm:text-lg md:text-xl lg:text-2xl
+                                    text-base sm:text-lg md:text-lg lg:text-2xl
                                     max-w-3xl mx-auto
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                             <span className="hidden md:inline">
@@ -122,12 +122,12 @@ export default function HeroSection() {
                             </Link>
 
                             {/* Only for mob and tablet Events btn */}
-                            <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
-                                <div className="mx-auto w-[200px] md:w-[240px] max-w-full
-                                                bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
-                                                text-sm md:text-[17px] font-semibold shadow
+                            <Link href="/events" className="mt-3 block md:hidden">
+                                <div className="mx-auto w-[200px] max-w-full
+                                                bg-white/90 text-wondergreen px-5 py-1.5 rounded-lg
+                                                text-sm font-semibold shadow
                                                 border border-wondergreen/30
-                                                transition-all duration-300 hover:bg-white md:mb-6">
+                                                transition-all duration-300 hover:bg-white">
                                     View Upcoming Events
                                 </div>
                             </Link>
@@ -154,13 +154,13 @@ export default function HeroSection() {
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
                     <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
                         <h1 className="text-white font-bold leading-[1.1]
-                                text-[clamp(28px,5vw,60px)]
-                                drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
+                                        text-3xl sm:text-4xl md:text-4xl lg:text-5xl
+                                        drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                         Where Teens Connect &amp; Grow
                         </h1>
 
                         <p className="text-white mt-3 md:mt-4
-                                    text-base sm:text-lg md:text-xl lg:text-2xl
+                                    text-base sm:text-lg md:text-lg lg:text-2xl
                                     max-w-3xl mx-auto
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                             <span className="hidden md:inline">
@@ -180,12 +180,12 @@ export default function HeroSection() {
                             </Link>
 
                             {/* Only for mob and tablet Events btn */}
-                            <Link href="/events" className="mt-3 block lg:hidden md:mt-4">
-                                <div className="mx-auto w-[200px] md:w-[240px] max-w-full
-                                                bg-white/90 text-wondergreen px-5 py-1.5 md:px-4 md:py-2 rounded-lg
-                                                text-sm md:text-[17px] font-semibold shadow
+                            <Link href="/events" className="mt-3 block md:hidden">
+                                <div className="mx-auto w-[200px] max-w-full
+                                                bg-white/90 text-wondergreen px-5 py-1.5 rounded-lg
+                                                text-sm font-semibold shadow
                                                 border border-wondergreen/30
-                                                transition-all duration-300 hover:bg-white md:mb-6">
+                                                transition-all duration-300 hover:bg-white">
                                     View Upcoming Events
                                 </div>
                             </Link>
