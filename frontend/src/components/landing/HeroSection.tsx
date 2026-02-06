@@ -50,7 +50,7 @@ export default function HeroSection() {
                                     Connection, adventure, and friendship for youth ages 10-18.
                                 <br />
                                 Serving homeschool & online learners across Colorado.
-                                    
+
                                 </span>
                             </p>
 
@@ -71,7 +71,7 @@ export default function HeroSection() {
                                                 text-sm font-semibold shadow
                                                 border border-wondergreen/30
                                                 transition-all duration-300 hover:bg-white">
-                                    View Upcoming Events
+                                    View Events
                                 </div>
                             </Link>
                         </div>
@@ -108,7 +108,7 @@ export default function HeroSection() {
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                             <span className="hidden md:inline">
                                 For homeschoolers seeking fun, friendships, and meaningful adventures.
-                            </span>                
+                            </span>
                         </p>
 
                             <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
@@ -128,7 +128,7 @@ export default function HeroSection() {
                                                 text-sm font-semibold shadow
                                                 border border-wondergreen/30
                                                 transition-all duration-300 hover:bg-white">
-                                    View Upcoming Events
+                                    View Events
                                 </div>
                             </Link>
                         </div>
@@ -165,7 +165,7 @@ export default function HeroSection() {
                                     drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                             <span className="hidden md:inline">
                                 Creative activities, new friendships, real-life experiences.
-                            </span>            
+                            </span>
 
                         </p>
 
@@ -186,7 +186,7 @@ export default function HeroSection() {
                                                 text-sm font-semibold shadow
                                                 border border-wondergreen/30
                                                 transition-all duration-300 hover:bg-white">
-                                    View Upcoming Events
+                                    View Events
                                 </div>
                             </Link>
                         </div>
