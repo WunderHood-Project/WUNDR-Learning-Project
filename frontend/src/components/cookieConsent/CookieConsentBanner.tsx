@@ -31,7 +31,7 @@ export default function CookieConsentBanner() {
                 onDecline={() => {
                     alert("Cookies Declined");
                 }}
-                declineButtonStyle={{ color: "white", borderRadius: "9999px", background: "#f5a940", paddingInline: "30px" }}
+                declineButtonStyle={{ color: "white", borderRadius: "9999px", background: "#A52A2A", paddingInline: "30px" }}
                 declineButtonText="Decline"
                 overlay
                 location="bottom"
@@ -45,9 +45,10 @@ export default function CookieConsentBanner() {
                  items-center 
                  gap-3 
                  w-full
+                 mb-3
               "
             >
-                <p className="xs:mb-6">
+                <p className="xs:mb-6 lg:mb-2">
                     We use cookies to improve the site. You can choose which cookies you
                     allow.
                 </p>
