@@ -627,34 +627,34 @@ async def add_children_to_event(
 
    # Create notification
    home_link = get_home_link()
-#    subject = f'Enrollment Confirmation: {event.name}'
-#    content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. If your child is no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
+   subject = f'Enrollment Confirmation: {event.name}'
+   content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. If your child is no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
 
-#    await db.notifications.create(
-#             data= {
-#                 "title": subject,
-#                 "description": f"Confirmation for event {event.name}",
-#                 "userId": current_user.id,
-#                 "isRead": False,
-#                 "time": event.date
-#             }
-#         )
+   await db.notifications.create(
+            data= {
+                "title": subject,
+                "description": f"Confirmation for event {event.name}",
+                "userId": current_user.id,
+                "isRead": False,
+                "time": event.date
+            }
+        )
 
 
-#    if current_user.emailNotificationsEnabled == True:
-#         background_tasks.add_task(
-#             send_email_one_user,
-#             current_user.email,
-#             subject,
-#             content
-#         )
-#         # Schedule the one-day reminder
-#         background_tasks.add_task(
-#             schedule_reminder,
-#             current_user.id,
-#             event_id,
-#             event.date
-#         )
+   if current_user.emailNotificationsEnabled == True:
+        background_tasks.add_task(
+            send_email_one_user,
+            current_user.email,
+            subject,
+            content
+        )
+        # Schedule the one-day reminder
+        background_tasks.add_task(
+            schedule_reminder,
+            current_user.id,
+            event_id,
+            event.date
+        )
 
 
    return {"event": updated_event, "message": "Children added to event and user notified"}
@@ -863,6 +863,104 @@ async def remove_child_from_event(
    return {"event": updated_event, "message": f"Removed {len(to_remove)} child(ren) from event"}
 
 
+@router.get("/{event_id}/surveys", status_code=status.HTTP_200_OK)
+async def send_event_email_survey(
+    event_id:str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks
+):
+    """
+        check for enrolled participants of an event -> get the parents of the children -> check if event date passed -> send survey email
+    """
+    # Enforce admin
+    enforce_admin(current_user, "Send survey to enrolled users of an event")
+    
+    #! Query children from users DOES NOT WORK
+    # users = await db.users.find_many(
+    #     include={
+    #         "children":
+    #             "include"= {
+    #                 "events": True
+    #         }
+    #     }
+    # )
+
+    try:
+        event = await db.events.find_unique(
+        where={"id": event_id},
+        include={"children": {
+                        "include":{
+                        "parents": True
+                        }
+                        }
+                    }
+        )
+
+
+        if not event:
+            raise HTTPException(status_code=404, detail="Unable to obtain event")
+
+
+        # Add the parent IDs to a set
+        parent_ids = set()
+        for child in event.children:
+            parent_ids.update(child.parentIds)
+
+
+        # Query for the parents' email(s)
+        parent_emails = list()
+        for id in parent_ids:
+            users = await db.users.find_unique(
+                where={
+                    "id": id
+                    }
+            )
+            if users:
+                parent_emails.append(users.email)
+
+        
+        # Create the notifications for the UI
+        title= ""
+        description=f''
+
+        notification_data = [
+            {
+            "title": title,
+            "description": description,
+            "userId": id,
+            "isRead": False,
+            "time": event.date,
+            }
+            for id in parent_ids
+        ]
+
+        new_notification = await db.notifications.create_many(
+        data=notification_data
+        )
+
+        # Send the email -> not optimized because we are iterating/querying over parent_emails
+        for email in parent_emails:
+            user_enabled_notifications = await db.users.find_unique(
+                where={
+                    "email": email,
+                    "emailNotificationsEnabled": True
+                }
+            )
+
+            if user_enabled_notifications:
+                background_tasks.add_task(
+                    send_email_one_user,
+                    user_enabled_notifications.email,
+                    title,
+                    description
+                )
+
+        return {
+            "message": "Notification successfully sent to all parents",
+            "notification": new_notification
+            }
+
+    except Exception as e:
 
 
 ########### * Review endpoint(s) ###############
