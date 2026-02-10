@@ -880,17 +880,18 @@ async def send_event_email_survey(
         where={"id": event_id}
     )
 
-    print(event.date)
-    print("ONE DAY LATER", event_passed_date)
-
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     event_passed_date = event.date + timedelta(days=1)
 
-    if now < event_passed_date:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Event has not passed yet"
-        )
+    print(event.date)
+    print('now', now)
+    print("ONE DAY LATER", event_passed_date)
+
+    # if now < event_passed_date:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail="Event has not passed yet"
+    #     )
 
     #! Query users where ANY child have at least one event to event_id
     users = await db.users.find_many(
@@ -903,15 +904,15 @@ async def send_event_email_survey(
                 },
             }
         },
-        include={
-            "children": {
-                "where": {
-                    "events": {
-                        "some": { "id": event_id }
-                    }
-                }
-            }
-        }
+        # include={
+        #     "children": {
+        #         "where": {
+        #             "events": {
+        #                 "some": { "id": event_id }
+        #             }
+        #         }
+        #     }
+        # }
     )
 
     emails = [user.email for user in users if user.email]
