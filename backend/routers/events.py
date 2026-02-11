@@ -875,129 +875,77 @@ async def send_event_email_survey(
     # Enforce admin
     enforce_admin(current_user, "Send survey to enrolled users of an event")
 
-    #   query event
-    event = await db.events.find_unique(
-        where={"id": event_id}
-    )
+    try:
 
-    now = datetime.now(timezone.utc)
-    event_passed_date = event.date + timedelta(days=1)
+        # query event
+        event = await db.events.find_unique(
+            where={ "id": event_id }
+        )
 
-    print(event.date)
-    print('now', now)
-    print("ONE DAY LATER", event_passed_date)
+        if not event:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Event not found"
+            )
 
-    # if now < event_passed_date:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail="Event has not passed yet"
-    #     )
+        now = datetime.now(timezone.utc)
+        event_passed_date = event.date + timedelta(days=1)
 
-    #! Query users where ANY child have at least one event to event_id
-    users = await db.users.find_many(
-        where={
-            "children": {
-                "some": {
-                    "events": {
-                        "some": { "id": event_id }
+        if now == event_passed_date:
+            # raise HTTPException(
+            #     status_code=status.HTTP_400_BAD_REQUEST,
+            #     detail="Event has not passed yet"
+            # )
+
+            #! Query users where ANY child have at least one event to event_id
+            users = await db.users.find_many(
+                where={
+                    "children": {
+                        "some": {
+                            "events": {
+                                "some": { "id": event_id }
+                            }
+                        },
                     }
-                },
+                }
+            )
+
+            # creating notification
+            title = f'Tell us how we did at {event.name}!'
+            description = f'Hello, \n\n Thank you for attending {event.name} on {event.date}. We would like to know how we did. Please fill out the survey below if you would like to share your experience. \n\n Best,'
+
+            notification_data = [
+                {
+                    "title": title,
+                    "description": description,
+                    "userId": user.id,
+                    "isRead": False,
+                    "time": event.date,
+                }
+                    for user in users
+            ]
+
+            new_notification = await db.notifications.create_many(
+                data=notification_data
+            )
+
+            # send email to users
+            # iterate over users, check if email notification enabled, send emails if enabled
+            for user in users:
+                if user.emailNotificationsEnabled is True:
+                    background_tasks.add_task(
+                        send_email_one_user,
+                        user.email,
+                        title,
+                        description
+                    )
+
+            return {
+                "Notification": new_notification
             }
-        },
-        # include={
-        #     "children": {
-        #         "where": {
-        #             "events": {
-        #                 "some": { "id": event_id }
-        #             }
-        #         }
-        #     }
-        # }
-    )
+    except Exception as e:
+        return {"Error": f'This is the error {e}'}
 
-    emails = [user.email for user in users if user.email]
-
-
-    # IF EVENT PASSED, WE NEED TO SEND EMAIL to the returned emails []
-    # [ "andrew.lizon12@gmail.com", "andrew.lizon12@outlook.com" ]
-    return emails
-
-    # try:
-    # event = await db.events.find_unique(
-    # where={"id": event_id},
-    # include={"children": {
-    #                 "include":{
-    #                 "parents": True
-    #                 }
-    #                 }
-    #             }
-    # )
-
-
-    # if not event:
-    #     raise HTTPException(status_code=404, detail="Unable to obtain event")
-
-
-    # # Add the parent IDs to a set
-    # parent_ids = set()
-    # for child in event.children:
-    #     parent_ids.update(child.parentIds)
-
-
-    # # Query for the parents' email(s)
-    # parent_emails = list()
-    # for id in parent_ids:
-    #     users = await db.users.find_unique(
-    #         where={
-    #             "id": id
-    #             }
-    #     )
-    #     if users:
-    #         parent_emails.append(users.email)
-
-
-    # # Create the notifications for the UI
-    # title= ""
-    # description=f''
-
-    # notification_data = [
-    #     {
-    #     "title": title,
-    #     "description": description,
-    #     "userId": id,
-    #     "isRead": False,
-    #     "time": event.date,
-    #     }
-    #     for id in parent_ids
-    # ]
-
-    # new_notification = await db.notifications.create_many(
-    # data=notification_data
-    # )
-
-    # # Send the email -> not optimized because we are iterating/querying over parent_emails
-    # for email in parent_emails:
-    #     user_enabled_notifications = await db.users.find_unique(
-    #         where={
-    #             "email": email,
-    #             "emailNotificationsEnabled": True
-    #         }
-    #     )
-
-    #     if user_enabled_notifications:
-    #         background_tasks.add_task(
-    #             send_email_one_user,
-    #             user_enabled_notifications.email,
-    #             title,
-    #             description
-    #         )
-
-    # return {
-    #     "message": "Notification successfully sent to all parents",
-    #     "notification": new_notification
-    #     }
-
-    # except Exception as e:
 
 
 ########### * Review endpoint(s) ###############
