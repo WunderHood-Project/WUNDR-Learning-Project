@@ -7,6 +7,8 @@ from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string, get_event_link, get_home_link
 from datetime import datetime, timezone, time, timedelta
 from .notifications import send_email_one_user, schedule_reminder, send_email_multiple_users
+
+
 router = APIRouter()
 
 def format_us_date(dt):
@@ -891,58 +893,75 @@ async def send_event_email_survey(
         now = datetime.now(timezone.utc)
         event_passed_date = event.date + timedelta(days=1)
 
-        if now == event_passed_date:
+        # if now == event_passed_date:
             # raise HTTPException(
             #     status_code=status.HTTP_400_BAD_REQUEST,
             #     detail="Event has not passed yet"
             # )
 
-            #! Query users where ANY child have at least one event to event_id
-            users = await db.users.find_many(
-                where={
-                    "children": {
-                        "some": {
-                            "events": {
-                                "some": { "id": event_id }
-                            }
-                        },
-                    }
+        #! Query users where ANY child have at least one event to event_id
+        users = await db.users.find_many(
+            where={
+                "children": {
+                    "some": {
+                        "events": {
+                            "some": { "id": event_id }
+                        }
+                    },
                 }
-            )
-
-            # creating notification
-            title = f'Tell us how we did at {event.name}!'
-            description = f'Hello, \n\n Thank you for attending {event.name} on {event.date}. We would like to know how we did. Please fill out the survey below if you would like to share your experience. \n\n Best,'
-
-            notification_data = [
-                {
-                    "title": title,
-                    "description": description,
-                    "userId": user.id,
-                    "isRead": False,
-                    "time": event.date,
-                }
-                    for user in users
-            ]
-
-            new_notification = await db.notifications.create_many(
-                data=notification_data
-            )
-
-            # send email to users
-            # iterate over users, check if email notification enabled, send emails if enabled
-            for user in users:
-                if user.emailNotificationsEnabled is True:
-                    background_tasks.add_task(
-                        send_email_one_user,
-                        user.email,
-                        title,
-                        description
-                    )
-
-            return {
-                "Notification": new_notification
             }
+        )
+
+        # creating notification
+        title = f'Tell us how we did at {event.name}!'
+        description = f"""
+        <div>
+            Hello,
+            <p>Thank you for attending {event.name} on {format_us_date(event.date)}. We would like to know how we did. Please fill out the <a href=https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor>survey</a> if you would like to share your experience.
+            \n Best Regards,</p>
+            <div>
+                <img src="/static/images/wonderhood_logo_signature_260x90.png" alt="WonderHood Project Logo">
+                <p>WonderHood Project Team
+                info@whproject.org  |  whproject.org</p>
+            </div>
+        </div>
+        """
+
+        #  Hello, \n\n <p>Thank you for attending {event.name} on {format_us_date(event.date)}. We would like to know how we did. Please fill out the  
+        # <a href=https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor>survey</a>
+        # if you would like to share your experience. \n\n \n\n Best Regards,\n\n <img src=WUNDR-Learning-Project/backend/assets/wonderhood_logo_signature_260x90.png>
+        # WonderHood Project Team\ninfo@whproject.org  |  whproject.org<p>"""
+
+        notification_data = [
+            {
+                "title": title,
+                "description": description,
+                "userId": user.id,
+                "isRead": False,
+                "time": event.date,
+            }
+                for user in users
+        ]
+
+        # new_notification = await db.notifications.create_many(
+        #     data=notification_data
+        # )
+
+        # send email to users
+        # iterate over users, check if email notification enabled, send emails if enabled
+        for user in users:
+            if user.emailNotificationsEnabled is True:
+                background_tasks.add_task(
+                    send_email_one_user,
+                    user.email,
+                    title,
+                    description
+                )
+
+        return {
+            # "Notification": new_notification
+            "Meow"
+        }
     except Exception as e:
         return {"Error": f'This is the error {e}'}
 
