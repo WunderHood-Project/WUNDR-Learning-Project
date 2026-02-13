@@ -915,22 +915,26 @@ async def send_event_email_survey(
         # creating notification
         title = f'Tell us how we did at {event.name}!'
         description = f"""
-        <div>
-            Hello,
-            <p>Thank you for attending {event.name} on {format_us_date(event.date)}. We would like to know how we did. Please fill out the <a href=https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor>survey</a> if you would like to share your experience.
-            \n Best Regards,</p>
-            <div>
-                <img src="/static/images/wonderhood_logo_signature_260x90.png" alt="WonderHood Project Logo">
-                <p>WonderHood Project Team
-                info@whproject.org  |  whproject.org</p>
-            </div>
-        </div>
-        """
+            <div style="font-family: Arial, sans-serif;">
+                <p>
+                Hello,
 
-        #  Hello, \n\n <p>Thank you for attending {event.name} on {format_us_date(event.date)}. We would like to know how we did. Please fill out the  
-        # <a href=https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor>survey</a>
-        # if you would like to share your experience. \n\n \n\n Best Regards,\n\n <img src=WUNDR-Learning-Project/backend/assets/wonderhood_logo_signature_260x90.png>
-        # WonderHood Project Team\ninfo@whproject.org  |  whproject.org<p>"""
+                <br>
+                    Thank you for attending {event.name} on {format_us_date(event.date)}! We would like to know how we did. Please fill out the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor"> survey</a> if you would like to share your experience.
+                </br>
+                <br>Best Regards,</br>
+                </p>
+                <p style="margin-bottom: 8px;">
+                    <p>
+                        WonderHood Project Team
+                        info@whproject.org | whproject.org
+                        <img src="cid:wonderhood_logo.png" width="150" style="display:block;">
+                    <p>
+                </p>
+
+            </div>
+            """
+
 
         notification_data = [
             {
