@@ -103,7 +103,7 @@ export default function AboutPageContent() {
 
               <div className="rounded-2xl border border-wonderleaf/20 bg-white/80 p-5 sm:p-6 md:p-7 backdrop-blur-sm">
                 <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
-                  WonderHood's pilot programming is currently serving{" "}
+                  WonderHood’s pilot programming is currently serving{" "}
                   <span className="font-bold text-wondergreen bg-wonderleaf/10 px-2 py-0.5 rounded">
                     Custer County (Westcliffe and surrounding areas)
                   </span>
@@ -182,7 +182,7 @@ export default function AboutPageContent() {
                 Real-world Confidence
               </h3>
               <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
-                Trips, showcases, volunteering, and youth-led events help students try new roles, share their work, and discover what they're capable of.
+                Trips, showcases, volunteering, and youth-led events help students try new roles, share their work, and discover what they’re capable of.
               </p>
             </div>
           </article>
