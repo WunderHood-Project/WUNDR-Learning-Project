@@ -124,7 +124,7 @@ export default function OurPrograms() {
         {/* Bottom of the section */}
         <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <p className="text-sm text-gray-500">
-            Programs may vary by season and location.
+            Programs may vary by season as new local partnerships launch.
           </p>
           {/* <a href="/interest" className="text-sm font-semibold text-wondergreen underline underline-offset-4 hover:opacity-80">
             Join the interest list →
