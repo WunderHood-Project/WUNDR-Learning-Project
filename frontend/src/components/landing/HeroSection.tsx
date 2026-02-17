@@ -47,9 +47,9 @@ export default function HeroSection() {
                                             max-w-3xl mx-auto
                                             drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                                 <span className="hidden md:inline">
-                                    Connection, adventure, and friendship for youth ages 10-18.
+                                    Connection, adventure, and friendship for ages 10-18.
                                 <br />
-                                Serving homeschool & online learners across Colorado.
+                                Serving homeschool and online learners in Custer County, CO.
 
                                 </span>
                             </p>
