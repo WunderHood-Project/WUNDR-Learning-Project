@@ -31,16 +31,24 @@ export default function CookieConsentBanner() {
                 onDecline={() => {
                     alert("Cookies Declined");
                 }}
-                declineButtonStyle={{ color: "white", borderRadius: "9999px", background: "#f5a940", paddingInline: "30px" }}
+                declineButtonStyle={{ color: "white", borderRadius: "9999px", background: "#A52A2A", paddingInline: "30px" }}
                 declineButtonText="Decline"
                 overlay
                 location="bottom"
                 buttonText="Accept"
-                style={{ background: "#fdf6e9", color: "#2f5d3e", fontWeight: "bold", fontSize: "20px", paddingInline: "80px", display: "flex", alignItems: "center", marginTop: "25px" }}
+                style={{ background: "#fdf6e9", color: "#2f5d3e", fontWeight: "bold", fontSize: "20px", paddingInline: "80px", display: "flex", alignItems: "center", marginTop: "25px", justifyContent: "center" }}
                 buttonStyle={{ background: "#90b35c", color: "white", fontSize: "20px", borderRadius: "9999px", paddingInline: "30px" }}
                 onAccept={acceptSelection}
+                buttonWrapperClasses="
+                 flex 
+                 justify-center 
+                 items-center 
+                 gap-3 
+                 w-full
+                 mb-3
+              "
             >
-                <p>
+                <p className="xs:mb-6 lg:mb-2">
                     We use cookies to improve the site. You can choose which cookies you
                     allow.
                 </p>

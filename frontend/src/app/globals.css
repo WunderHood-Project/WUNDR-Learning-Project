@@ -32,6 +32,9 @@ textarea {
     --foreground: #ededed;
   }
 } */
+.hero .swiper-pagination {
+  bottom: 16px !important;
+}
 
 body {
   /* background: var(--background);
