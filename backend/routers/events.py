@@ -893,81 +893,73 @@ async def send_event_email_survey(
         now = datetime.now(timezone.utc)
         event_passed_date = event.date + timedelta(days=1)
 
-        # if now == event_passed_date:
-            # raise HTTPException(
-            #     status_code=status.HTTP_400_BAD_REQUEST,
-            #     detail="Event has not passed yet"
-            # )
-
-        #! Query users where ANY child have at least one event to event_id
-        users = await db.users.find_many(
-            where={
-                "children": {
-                    "some": {
-                        "events": {
-                            "some": { "id": event_id }
-                        }
-                    },
+        if now is event_passed_date:
+            #* Query users where ANY child have at least one event to event_id
+            users = await db.users.find_many(
+                where={
+                    "children": {
+                        "some": {
+                            "events": {
+                                "some": { "id": event_id }
+                            }
+                        },
+                    }
                 }
-            }
-        )
+            )
 
-        # creating notification
-        title = f'Tell us how we did at {event.name}!'
-        description = f"""
-            <div style="font-family: Arial, sans-serif;">
-                <p>
-                Hello,
-
-                <br>
+            # creating notification
+            title = f'Tell us how we did at {event.name}!'
+            description = f"""
+                    Hello,
+                
+                    
                     Thank you for attending {event.name} on {format_us_date(event.date)}! We would like to know how we did. Please fill out the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor"> survey</a> if you would like to share your experience.
-                </br>
-                <br>Best Regards,</br>
-                </p>
-                <p style="margin-bottom: 8px;">
-                    <p>
-                        WonderHood Project Team
-                        info@whproject.org | whproject.org
-                        <img src="cid:wonderhood_logo.png" width="150" style="display:block;">
-                    <p>
-                </p>
 
-            </div>
-            """
+                    
+                    Best Regards,
+                    
+
+                    WonderHood Project Team
+                    info@whproject.org | whproject.org
+                """
 
 
-        notification_data = [
-            {
-                "title": title,
-                "description": description,
-                "userId": user.id,
-                "isRead": False,
-                "time": event.date,
+            notification_data = [
+                {
+                    "title": title,
+                    "description": description,
+                    "userId": user.id,
+                    "isRead": False,
+                    "time": event.date,
+                }
+                    for user in users
+            ]
+
+            new_notification = await db.notifications.create_many(
+                data=notification_data
+            )
+
+            # send email to users
+            # iterate over users, check if email notification enabled, send emails if enabled
+            for user in users:
+                if user.emailNotificationsEnabled is True:
+                    background_tasks.add_task(
+                        send_email_one_user,
+                        user.email,
+                        title,
+                        description
+                    )
+
+            return {
+                "Notification": new_notification
             }
-                for user in users
-        ]
-
-        # new_notification = await db.notifications.create_many(
-        #     data=notification_data
-        # )
-
-        # send email to users
-        # iterate over users, check if email notification enabled, send emails if enabled
-        for user in users:
-            if user.emailNotificationsEnabled is True:
-                background_tasks.add_task(
-                    send_email_one_user,
-                    user.email,
-                    title,
-                    description
-                )
-
-        return {
-            # "Notification": new_notification
-            "Meow"
-        }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Event has not passed yet"
+            )
     except Exception as e:
-        return {"Error": f'This is the error {e}'}
+        return {"Error": f'Unable to send email survey: {e}'}
 
 
 
