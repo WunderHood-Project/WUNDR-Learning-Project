@@ -5,8 +5,10 @@ from models.user_models import User
 from models.interaction_models import EventCreate, EventUpdate, ReviewCreate, EnrollChildren, NotificationCreate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string, get_event_link, get_home_link
-from datetime import datetime, timezone, time
+from datetime import datetime, timezone, time, timedelta
 from .notifications import send_email_one_user, schedule_reminder, send_email_multiple_users
+
+
 router = APIRouter()
 
 def format_us_date(dt):
@@ -15,7 +17,7 @@ def format_us_date(dt):
         try:
             dt = datetime.fromisoformat(dt)
         except Exception:
-            return dt  
+            return dt
     return dt.strftime("%m/%d/%Y")
 
 def format_us_time(value):
@@ -132,10 +134,10 @@ async def create_event(
             "description": f"Check out our new event: {new_event.name}",
             "userId": u.id,
             "isRead": False,
-            "time": new_event.date, 
+            "time": new_event.date,
         }
         for u in users
-    ] 
+    ]
        if notif_batch:
             await db.notifications.create_many(data=notif_batch)
 
@@ -353,7 +355,7 @@ async def update_event(
                     "description": description,
                     "userId": uid,
                     "isRead": False,
-                    "time": now_utc,  
+                    "time": now_utc,
                 }
                 for uid in user_ids
             ]
@@ -607,7 +609,7 @@ async def add_children_to_event(
                status_code=403,
                detail="You are not the parent of this child."
            )
-       
+
    # validate that the limit is not exceeded
    if (len(existing_ids) + len(incoming_ids)) > event.limit:
         raise HTTPException(
@@ -627,34 +629,34 @@ async def add_children_to_event(
 
    # Create notification
    home_link = get_home_link()
-#    subject = f'Enrollment Confirmation: {event.name}'
-#    content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. If your child is no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
+   subject = f'Enrollment Confirmation: {event.name}'
+   content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. If your child is no longer available to join the event, please make changes by logging in to your account here, {home_link}, and navigating to the "Your Events" tab.\n\nWe look forward to see you there!\n\nBest,\n\nWonderhood Team'
 
-#    await db.notifications.create(
-#             data= {
-#                 "title": subject,
-#                 "description": f"Confirmation for event {event.name}",
-#                 "userId": current_user.id,
-#                 "isRead": False,
-#                 "time": event.date
-#             }
-#         )
+   await db.notifications.create(
+            data= {
+                "title": subject,
+                "description": f"Confirmation for event {event.name}",
+                "userId": current_user.id,
+                "isRead": False,
+                "time": event.date
+            }
+        )
 
 
-#    if current_user.emailNotificationsEnabled == True:
-#         background_tasks.add_task(
-#             send_email_one_user,
-#             current_user.email,
-#             subject,
-#             content
-#         )
-#         # Schedule the one-day reminder
-#         background_tasks.add_task(
-#             schedule_reminder,
-#             current_user.id,
-#             event_id,
-#             event.date
-#         )
+   if current_user.emailNotificationsEnabled == True:
+        background_tasks.add_task(
+            send_email_one_user,
+            current_user.email,
+            subject,
+            content
+        )
+        # Schedule the one-day reminder
+        background_tasks.add_task(
+            schedule_reminder,
+            current_user.id,
+            event_id,
+            event.date
+        )
 
 
    return {"event": updated_event, "message": "Children added to event and user notified"}
@@ -727,7 +729,7 @@ async def remove_user_from_event(
                     "description": f"You have been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
                     "userId": current_user.id,
                     "isRead": False,
-                    "time": event.date, 
+                    "time": event.date,
                 }
             )
 
@@ -839,14 +841,14 @@ async def remove_child_from_event(
    # Notification to user for unenrolling child
    subject = f'Unenrollment Confirmation: {event.name}'
    content = f'Hello,\n\nThis email confirms that your child has been unenrolled from the {event.name} on {convert_iso_date_to_string(event.date)}. Please find more events on our website.\n\nBest,\n\nWonderHood Team'
-        
+
    await db.notifications.create(
         data={
             "title": subject,
             "description": f"Your child has been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
             "userId": current_user.id,
             "isRead": False,
-            "time": event.date, 
+            "time": event.date,
             }
         )
         # Send notification e-mail
@@ -862,6 +864,102 @@ async def remove_child_from_event(
 
    return {"event": updated_event, "message": f"Removed {len(to_remove)} child(ren) from event"}
 
+
+@router.get("/{event_id}/surveys", status_code=status.HTTP_200_OK)
+async def send_event_email_survey(
+    event_id:str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks
+):
+    """
+        check for enrolled participants of an event -> get the parents of the children -> check if event date passed -> send survey email
+    """
+    # Enforce admin
+    enforce_admin(current_user, "Send survey to enrolled users of an event")
+
+    try:
+
+        # query event
+        event = await db.events.find_unique(
+            where={ "id": event_id }
+        )
+
+        if not event:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Event not found"
+            )
+
+        now = datetime.now(timezone.utc)
+        event_passed_date = event.date + timedelta(days=1)
+
+        if now is event_passed_date:
+            #* Query users where ANY child have at least one event to event_id
+            users = await db.users.find_many(
+                where={
+                    "children": {
+                        "some": {
+                            "events": {
+                                "some": { "id": event_id }
+                            }
+                        },
+                    }
+                }
+            )
+
+            # creating notification
+            title = f'Tell us how we did at {event.name}!'
+            description = f"""
+                    Hello,
+                
+                    
+                    Thank you for attending {event.name} on {format_us_date(event.date)}! We would like to know how we did. Please fill out the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor"> survey</a> if you would like to share your experience.
+
+                    
+                    Best Regards,
+                    
+
+                    WonderHood Project Team
+                    info@whproject.org | whproject.org
+                """
+
+
+            notification_data = [
+                {
+                    "title": title,
+                    "description": description,
+                    "userId": user.id,
+                    "isRead": False,
+                    "time": event.date,
+                }
+                    for user in users
+            ]
+
+            new_notification = await db.notifications.create_many(
+                data=notification_data
+            )
+
+            # send email to users
+            # iterate over users, check if email notification enabled, send emails if enabled
+            for user in users:
+                if user.emailNotificationsEnabled is True:
+                    background_tasks.add_task(
+                        send_email_one_user,
+                        user.email,
+                        title,
+                        description
+                    )
+
+            return {
+                "Notification": new_notification
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Event has not passed yet"
+            )
+    except Exception as e:
+        return {"Error": f'Unable to send email survey: {e}'}
 
 
 
