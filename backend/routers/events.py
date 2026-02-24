@@ -208,7 +208,7 @@ async def get_event_by_id(event_id: str):
                "reviews": True,
                "users": True,
                "activity": True,
-               "children": True
+            #    "children": True
            }
        )
 
@@ -227,6 +227,75 @@ async def get_event_by_id(event_id: str):
            status_code=500,
            detail=f"Failed to fetch event: {str(e)}"
        )
+
+@router.get("/{event_id}/attendees", status_code=status.HTTP_200_OK)
+async def get_event_attendees_admin(
+    event_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_authentication(current_user, "view event attendees")
+    enforce_admin(current_user, "view event attendees")
+
+    event = await db.events.find_unique(
+        where={"id": event_id},
+        include={
+            "children": {
+                "include": {
+                    "parents": True,
+                    "emergencyContacts": True,
+                }
+            }
+        }
+    )
+
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    children_out = []
+    for ch in event.children:
+        parents_out = [
+            {
+                "id": p.id,
+                "firstName": p.firstName,
+                "lastName": p.lastName,
+                "email": p.email,
+                "phoneNumber": p.phoneNumber,
+            }
+            for p in (ch.parents or [])
+        ]
+
+        emergency_out = [
+            {
+                "id": ec.id,
+                "firstName": ec.firstName,
+                "lastName": ec.lastName,
+                "phoneNumber": ec.phoneNumber,
+                "relationship": ec.relationship,
+            }
+            for ec in (ch.emergencyContacts or [])
+        ]
+
+        children_out.append({
+            "id": ch.id,
+            "firstName": ch.firstName,
+            "lastName": ch.lastName,
+            "preferredName": ch.preferredName,
+            "grade": ch.grade,
+            "birthday": ch.birthday,
+            "allergiesMedical": ch.allergiesMedical,
+            "notes": ch.notes,
+            "photoConsent": ch.photoConsent,
+            "waiver": ch.waiver,
+            "parents": parents_out,
+            "emergencyContacts": emergency_out,
+        })
+
+    return {
+        "eventId": event.id,
+        "participants": event.participants,
+        "limit": event.limit,
+        "children": children_out,
+    }       
 
 
 @router.patch("/{event_id}", status_code=status.HTTP_200_OK)
