@@ -21,6 +21,9 @@ from routers.partnership import router as partnership_router
 from routers.contact import router as contact_router
 from routers.waivers import router as waivers_router
 from routers.policies import router as policies_router
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 
 # When we start the app, connect to the db. When we shut down the app, disconnect
 # @app.on_event("startup")
@@ -39,6 +42,9 @@ async def lifespan(app:FastAPI):
 
 # instantiate FastAPI app and Prisma db client
 app = FastAPI(lifespan=lifespan)
+
+# Mount static file for rendering img in other files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Start the delete_notifications_scheduler when we start the app
 # @app.delete("/delete-all-notifications")

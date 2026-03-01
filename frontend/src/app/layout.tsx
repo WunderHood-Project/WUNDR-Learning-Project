@@ -82,21 +82,22 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
-        <AuthProvider>
-          <ModalProvider>
-            <AuthGuard />
-            <Navbar />
-            <DonateFloating />
-            <main className="flex-grow flex flex-col">
-              {children}
-              <ResetPasswordWrapper />
-            </main>
-            <Footer />
-            <Modal />
-            <CookieConsentBanner />
-          </ModalProvider>
-        </AuthProvider>
+        // className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased flex flex-col min-h-screen`}>
+          <AuthProvider>
+            <ModalProvider>
+              <AuthGuard />
+              <Navbar />
+              <DonateFloating />
+              <main className="flex-grow flex flex-col">
+                {children}
+                <ResetPasswordWrapper />
+              </main>
+              <Footer />
+              <Modal />
+              <CookieConsentBanner />
+            </ModalProvider>
+          </AuthProvider>
       </body>
     </html>
   );

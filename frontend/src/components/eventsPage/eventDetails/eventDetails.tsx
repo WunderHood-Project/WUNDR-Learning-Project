@@ -31,6 +31,48 @@ export default function EventDetails() {
     const [successEnroll, setSuccessEnroll] = useState(false);
     const [unenrollId, setUnenrollId] = useState<string | null>(null);
     const [unenrollError, setUnenrollError] = useState<string | null>(null);
+    // Admin attendees (admin-only)
+    // This section powers the "Attendees (Admin)" block in the aside card.
+    // We fetch sensitive child/parent/emergency info ONLY for admins via a protected endpoint
+    // to avoid leaking private data through the public event details response.
+    const [attendeesOpen, setAttendeesOpen] = useState(false);
+    const [attendeesLoading, setAttendeesLoading] = useState(false);
+    const [attendeesError, setAttendeesError] = useState<string | null>(null);
+    const [attendees, setAttendees] = useState<any[] | null>(null);
+
+    // Read token on the client only (localStorage is not available on the server).
+    // useMemo keeps the token stable so we don't re-trigger effects/render loops.
+    const token = useMemo(() => {
+        if (typeof window === 'undefined') return null;
+        return localStorage.getItem('token');
+    }, []);
+
+    // Feature flag: attendees are visible only to admins.
+    const isAdmin = user?.role === 'admin';
+
+    // Lazy-load attendees only when admin explicitly opens the section.
+    // This avoids unnecessary requests and keeps sensitive data out of normal flows.
+    const loadAttendees = async () => {
+        if (!isAdmin || !token) return;
+
+        try {
+            setAttendeesLoading(true);
+            setAttendeesError(null);
+            // Protected endpoint (admin-only). Requires Authorization header.
+            const res = await makeApiRequest<{ children: any[] }>(`${WONDERHOOD_URL}/event/${eventId}/attendees`,
+                {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            setAttendees(res.children ?? []);
+        } catch (e) {
+            setAttendeesError(e instanceof Error ? e.message : 'Failed to load attendees');
+        } finally {
+            setAttendeesLoading(false);
+        }
+    };
 
     const toggleChild = (id: string) => {
         setSelected(prev => {
@@ -188,6 +230,20 @@ export default function EventDetails() {
                         onToggleForm={() => setShowForm((v) => !v)}
                         successEnroll={successEnroll}
                         userHasChildEnrolled={userHasChildEnrolled}
+                        // Admin-only attendees UI: toggle + list + expandable details
+                        isAdmin={!!isAdmin}
+                        attendeesOpen={attendeesOpen}
+                        attendees={attendees}
+                        attendeesLoading={attendeesLoading}
+                        attendeesError={attendeesError}
+                        onToggleAttendees={async () => {
+                            // Toggle UI open/close. If opening for the first time, lazy-load attendees.
+                            const next = !attendeesOpen;
+                            setAttendeesOpen(next);
+                            if (next && attendees === null) {
+                            await loadAttendees();
+                            }
+                        }}
                     />
                 </div>
 

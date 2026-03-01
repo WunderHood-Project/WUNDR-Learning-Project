@@ -9,14 +9,14 @@ import 'swiper/css/pagination';
 
 export default function HeroSection() {
    return (
-    <section className="hero relative h-[45vh] w-full overflow-hidden">
+    <section className="hero relative min-h-[420px] h-[55svh] md:h-[45svh] w-full overflow-hidden">
         <Swiper
             modules={[Pagination, Autoplay]}
             pagination={{ clickable: true }}
             autoplay={{ delay: 10000, disableOnInteraction: false }}
             spaceBetween={0}
             slidesPerView={1}
-            className="h-[45vh] w-full"
+            className="h-full w-full"
         >
             {/* Slide 1 */}
             <SwiperSlide>
@@ -25,24 +25,24 @@ export default function HeroSection() {
                         src="/hero.webp"
                         alt="Kids outdoors"
                         fill
-                        className="object-cover object-[center_40%]"
+                        className="object-cover object-[center_35%]"
                         priority
                         sizes="100vw"
                     />
 
                     {/* overlay */}
-                    <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
+                    <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
 
                     {/* content*/}
-                    <div className="absolute inset-0 z-10 flex items-center justify-center mt-17 md:mt-16">
-                        <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center">
-                            <h1 className="text-white font-bold leading-tight
-                                            text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-6xl
-                                            lg:whitespace-nowrap
+                    <div className="absolute inset-0 z-10 flex items-center justify-center">
+                        <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
+                            <h1 className="text-white font-bold leading-[1.1]
+                                            text-3xl sm:text-4xl md:text-4xl lg:text-5xl
                                             drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                                 More than Just Homeschooling
                             </h1>
 
+<<<<<<< HEAD
                             {/* <p className="hidden md:inline lg:hidden
                                             text-white mt-3 md:mt-4
                                             text-base sm:text-lg md:text-xl lg:text-2xl
@@ -52,6 +52,16 @@ export default function HeroSection() {
                                     Connection, adventure, and friendship for youth ages 10-18.
                                 <br />
                                 Serving homeschool & online learners across Colorado.
+=======
+                            <p className="text-white mt-3 md:mt-4
+                                            text-base sm:text-lg md:text-lg lg:text-2xl
+                                            max-w-3xl mx-auto
+                                            drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
+                                <span className="hidden md:inline">
+                                    Connection, adventure, and friendship for ages 10-18.
+                                <br />
+                                Serving homeschool and online learners in Custer County, CO.
+>>>>>>> dev
 
                                 </span>
                             </p> */}
@@ -67,6 +77,7 @@ export default function HeroSection() {
                                     </div>
                                 </Link>
 
+<<<<<<< HEAD
                                 {/* Only for mob and tablet Events btn */}
                                 <Link href="/events" className="mt-4 block lg:hidden md:mt-8">
                                     <div className="bg-white/90 text-wondergreen
@@ -78,6 +89,18 @@ export default function HeroSection() {
                                     </div>
                                 </Link>
                             </div>
+=======
+                            {/* Only for mob and tablet Events btn */}
+                            <Link href="/events" className="mt-3 block md:hidden">
+                                <div className="mx-auto w-[200px] max-w-full
+                                                bg-white/90 text-wondergreen px-5 py-1.5 rounded-lg
+                                                text-sm font-semibold shadow
+                                                border border-wondergreen/30
+                                                transition-all duration-300 hover:bg-white">
+                                    View Events
+                                </div>
+                            </Link>
+>>>>>>> dev
                         </div>
                     </div>
                 </div>
@@ -98,23 +121,31 @@ export default function HeroSection() {
                     <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
 
                     {/* centered container */}
-                    <div className="absolute inset-0 z-10 flex items-center justify-center mt-17 md:mt-16">
-                        <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center">
-                            <h1 className="text-white font-bold leading-tight
-                                        text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-6xl
-                                        lg:whitespace-nowrap
-                                        drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
+                    <div className="absolute inset-0 z-10 flex items-center justify-center">
+                        <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
+                            <h1 className="text-white font-bold leading-[1.1]
+                                            text-3xl sm:text-4xl md:text-4xl lg:text-5xl
+                                            drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                                 A Place to Belong, Explore, and Create
                             </h1>
 
+<<<<<<< HEAD
                         {/* <p className="text-white mt-3 md:mt-4
                                     text-base sm:text-lg md:text-xl lg:text-2xl
+=======
+                        <p className="text-white mt-3 md:mt-4
+                                    text-base sm:text-lg md:text-lg lg:text-2xl
+>>>>>>> dev
                                     max-w-3xl mx-auto
-                                    drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
+                                    drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                             <span className="hidden md:inline">
                                 For homeschoolers seeking fun, friendships, and meaningful adventures.
                             </span>
+<<<<<<< HEAD
                         </p> */}
+=======
+                        </p>
+>>>>>>> dev
 
                             <div className="flex flex-row justify-center gap-5">
                                 <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
@@ -127,6 +158,7 @@ export default function HeroSection() {
                                     </div>
                                 </Link>
 
+<<<<<<< HEAD
                                 {/* Only for mob and tablet Events btn */}
                                 <Link href="/events" className="mt-4 block lg:hidden md:mt-8">
                                     <div className="bg-white/90 text-wondergreen
@@ -138,6 +170,18 @@ export default function HeroSection() {
                                     </div>
                                 </Link>
                             </div>
+=======
+                            {/* Only for mob and tablet Events btn */}
+                            <Link href="/events" className="mt-3 block md:hidden">
+                                <div className="mx-auto w-[200px] max-w-full
+                                                bg-white/90 text-wondergreen px-5 py-1.5 rounded-lg
+                                                text-sm font-semibold shadow
+                                                border border-wondergreen/30
+                                                transition-all duration-300 hover:bg-white">
+                                    View Events
+                                </div>
+                            </Link>
+>>>>>>> dev
                         </div>
                     </div>
                 </div>
@@ -158,19 +202,23 @@ export default function HeroSection() {
                     <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
 
                 {/* centered container */}
-                <div className="absolute inset-0 z-10 flex items-center justify-center mt-17 md:mt-16">
-                    <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center">
-                        <h1 className="text-white font-bold leading-tight
-                                    text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-6xl
-                                    lg:whitespace-nowrap
-                                    drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
+                <div className="absolute inset-0 z-10 flex items-center justify-center">
+                    <div className="w-full max-w-7xl px-6 md:px-8 lg:px-10 text-center translate-y-3 md:translate-y-6">
+                        <h1 className="text-white font-bold leading-[1.1]
+                                        text-3xl sm:text-4xl md:text-4xl lg:text-5xl
+                                        drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
                         Where Teens Connect &amp; Grow
                         </h1>
 
+<<<<<<< HEAD
                         {/* <p className="text-white mt-3 md:mt-4
                                     text-base sm:text-lg md:text-xl lg:text-2xl
+=======
+                        <p className="text-white mt-3 md:mt-4
+                                    text-base sm:text-lg md:text-lg lg:text-2xl
+>>>>>>> dev
                                     max-w-3xl mx-auto
-                                    drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)]">
+                                    drop-shadow-[1px_1px_4px_rgba(0,0,0,0.8)] md:min-h-[48px]">
                             <span className="hidden md:inline">
                                 Creative activities, new friendships, real-life experiences.
                             </span>
@@ -188,6 +236,7 @@ export default function HeroSection() {
                                     </div>
                                 </Link>
 
+<<<<<<< HEAD
                                 {/* Only for mob and tablet Events btn */}
                                 <Link href="/events" className="mt-4 block lg:hidden md:mt-8">
                                     <div className="bg-white/90 text-wondergreen
@@ -199,6 +248,18 @@ export default function HeroSection() {
                                     </div>
                                 </Link>
                             </div>
+=======
+                            {/* Only for mob and tablet Events btn */}
+                            <Link href="/events" className="mt-3 block md:hidden">
+                                <div className="mx-auto w-[200px] max-w-full
+                                                bg-white/90 text-wondergreen px-5 py-1.5 rounded-lg
+                                                text-sm font-semibold shadow
+                                                border border-wondergreen/30
+                                                transition-all duration-300 hover:bg-white">
+                                    View Events
+                                </div>
+                            </Link>
+>>>>>>> dev
                         </div>
                     </div>
                 </div>

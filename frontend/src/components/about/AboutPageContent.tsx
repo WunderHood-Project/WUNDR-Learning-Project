@@ -6,63 +6,98 @@ import ContactUsSection from "../landing/contactUsSection";
 export default function AboutPageContent() {
   return (
     <>
-      {/* container */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 break-words [text-wrap:balance]">
+    {/* container */}
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 break-words">
 
-        {/* Our Story */}
-        <section className="relative mt-8 sm:mt-12 md:my-16">
-          {/* decorative "spots" */}
-          <div className="pointer-events-none absolute -right-10 top-6 hidden h-28 w-28 rounded-full bg-wonderorange/20 blur-3xl sm:block" />
-          <div className="pointer-events-none absolute -left-8 bottom-6 hidden h-24 w-24 rounded-full bg-wonderleaf/25 blur-2xl sm:block" />
+      {/* Our Story  */}
+      <section className="relative my-8 sm:my-12 md:my-16">
+        {/* decorative "spots" */}
+        <div className="pointer-events-none absolute -right-12 top-4 hidden h-40 w-40 rounded-full bg-wonderorange/30 blur-3xl sm:block" />
+        <div className="pointer-events-none absolute -left-10 bottom-4 hidden h-32 w-32 rounded-full bg-wonderleaf/30 blur-3xl sm:block" />
 
-          <div className="relative z-10 rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/25 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
-            <div className="mb-4 sm:mb-5 flex items-center gap-3 sm:gap-4">
-              <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange shadow" />
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-wondergreen">Our Story</h2>
+        <div className="relative z-10 rounded-3xl border-2 border-wonderleaf/40 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white shadow-2xl overflow-hidden">
+          {/* Accent bar left*/}
+          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange" />
+
+          <div className="p-6 sm:p-8 md:p-10 pl-8 sm:pl-10 md:pl-12">
+            <div className="mb-5 sm:mb-6">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent">
+                Our Story
+              </h2>
             </div>
 
-            <div className="rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
-              <div className="space-y-3 sm:space-y-4 text-left text-base sm:text-lg leading-7 text-gray-700 text-balance">
+            <div className="rounded-2xl border border-wonderleaf/20 bg-white/80 p-5 sm:p-6 md:p-8 backdrop-blur-sm shadow-inner">
+              <div className="space-y-4 sm:space-y-5 text-base sm:text-lg leading-relaxed text-gray-700">
                 <p>
-                  WonderHood began in Westcliffe, Colorado, and is growing to serve homeschool and online learning families statewide.
-                  Many homeschool and online learners love the flexibility of learning at home but still miss steady friendships and a sense of belonging.
-                  In rural communities, it can be especially hard to meet peers regularly, and screen time can start to replace real-life connection.
+                  WonderHood began in Westcliffe, Colorado, to support homeschool and online-learning families in rural communities.
+                  Many homeschool and online learners love the flexibility of learning at home, but still miss steady friendships and a sense of belonging.
+                  In rural areas, it can be especially hard to meet peers regularly, and screen time can start to replace real-life connection.
                 </p>
                 <p>
                   We create welcoming spaces where students feel supported and truly seen.
                   Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
-                </p>
-                <p className="text-sm text-gray-500">
-                  *Our pilot programming is launching in{" "}
-                  <span className="font-semibold text-wondergreen">Custer County</span>, with expansion guided by partnerships and community needs.
+                  We create welcoming spaces where students feel supported and truly seen. Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
                 </p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* <div className="grid gap-5 sm:gap-8 md:gap-10 md:grid-cols-2 auto-rows-fr items-stretch"> */}
+        <div className="grid gap-5 sm:gap-8 md:gap-10 md:grid-cols-2 auto-rows-fr items-stretch">
           {/* Service Area */}
-          {/* <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
+          <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
             <div className="mb-4 flex items-center gap-3 sm:gap-4">
               <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange shadow" />
               <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wondergreen">Service Area</h3>
             </div>
+          </article>
 
-            <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
-              <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                WonderHood serves homeschool and online learners across Colorado. Our pilot programming is launching in{" "}
-                <span className="font-semibold text-wondergreen">Custer County (Westcliffe and surrounding areas)</span>, with expansion guided by partnerships and community needs.
-              </p>
+          {/* Vision */}
+          <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderorange/40 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:shadow-wonderorange/20 hover:scale-[1.02]">
+            {/* Accent corner */}
+            <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-br from-wonderorange/20 to-transparent rounded-bl-full" />
 
+            <div className="relative p-6 sm:p-8 md:p-10">
+              <div className="mb-5">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-wonderorange to-wondersun bg-clip-text text-transparent">
+                  Vision
+                </h3>
+              </div>
+
+              <div className="rounded-2xl border border-wonderorange/20 bg-white/80 p-5 sm:p-6 md:p-7 backdrop-blur-sm shadow-inner">
+                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                  Our vision is a connected, thriving network of rural communities where every home-learning teen has access to friendship, mentorship, and meaningful real-world experiences.
+                </p>
+              </div>
             </div>
-          </article> */}
+          </article>
+        </div>
+      </section>
 
-          {/* Why Child Health */}
-          {/* <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
-            <div className="mb-4 flex items-center gap-3 sm:gap-4">
-              <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderorange via-wondersun to-wonderleaf shadow" />
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wonderorange">Why Child Health?</h3>
+      {/* Service Area & Youth Wellness */}
+      <section className="mt-8 sm:mt-10 md:mt-12 [text-wrap:balance]">
+        <div className="grid gap-6 sm:gap-8 md:gap-10 md:grid-cols-2">
+          {/* Service Area */}
+          <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderleaf/40 bg-gradient-to-br from-wonderleaf/10 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute top-0 left-0 h-24 w-24 bg-gradient-to-br from-wonderleaf/20 to-transparent rounded-br-full" />
+
+            <div className="relative p-6 sm:p-8 md:p-10">
+              <div className="mb-5">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-wondergreen ">
+                  Service Area
+                </h3>
+              </div>
+
+              <div className="rounded-2xl border border-wonderleaf/20 bg-white/80 p-5 sm:p-6 md:p-7 backdrop-blur-sm">
+                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                  WonderHood’s pilot programming is currently serving{" "}
+                  <span className="font-bold text-wondergreen bg-wonderleaf/10 px-2 py-0.5 rounded">
+                    Custer County (Westcliffe and surrounding areas)
+                  </span>
+                  . We plan to expand over time through partnerships, community readiness, and sustainable funding.
+                </p>
+              </div>
             </div>
 
             <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
@@ -71,156 +106,103 @@ export default function AboutPageContent() {
                Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities.
                We also increase access to enrichment experiences and hands-on STEAM learning – especially important for rural and online-learning youth – so kids feel connected, confident, and supported.
               </p>
+          </article>
+
+          {/* Why Youth Wellness */}
+          <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderorange/40 bg-gradient-to-br from-wonderorange/10 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute top-0 left-0 h-24 w-24 bg-gradient-to-br from-wonderorange/20 to-transparent rounded-br-full" />
+
+            <div className="relative p-6 sm:p-8 md:p-10">
+              <div className="mb-5">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-wonderorange">
+                  Why Youth Wellness Matters
+                </h3>
+              </div>
+
+              <div className="rounded-2xl border border-wonderorange/20 bg-white/80 p-5 sm:p-6 md:p-7 backdrop-blur-sm">
+                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                  We support youth well-being through connection, movement, and purpose. Our programs help reduce isolation, encourage healthy outdoor activity, and create positive leadership and service opportunities for teens. We also increase access to enrichment experiences and hands-on STEAM learning, which is especially important for rural and online learners, so kids feel connected, confident, and supported.
+                </p>
+              </div>
             </div>
           </article>
-        </div> */}
+        </div>
+      </section>
 
-        {/* Why We Do It */}
-        <section className="mt-20 sm:mt-15 mb-10 sm:mb-12 md:mb-16">
-          <div className="mb-6 sm:mb-7 text-center">
-            <h2 className="mb-2 text-2xl sm:text-3xl md:text-4xl font-bold text-wondergreen [text-wrap:balance]">
-                Why We Do What We Do
-            </h2>
-            <div className="mx-auto h-1 w-20 sm:w-24 rounded-full bg-gradient-to-r from-wonderleaf to-wonderorange" />
-          </div>
+      {/* Why We Do It*/}
+      <section className="mt-20 sm:mt-24 md:mt-28 mb-10 sm:mb-12 md:mb-16">
+        <div className="mb-10 sm:mb-12 text-center">
+          <h2 className="mb-4 text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-wondergreen via-wonderleaf to-wonderorange bg-clip-text text-transparent">
+            Why We Do What We Do
+          </h2>
+          <div className="mx-auto h-1.5 w-32 rounded-full bg-gradient-to-r from-wonderleaf via-wondergreen to-wonderorange shadow-lg" />
+        </div>
 
-          <div className="grid gap-5 sm:gap-8 md:gap-10 md:grid-cols-2 auto-rows-fr items-stretch">
-            {/* 1 */}
-            <article className="h-full flex flex-col rounded-xl p-4 sm:p-6 bg-gradient-to-br from-wonderleaf/10 to-wondergreen/5 border-l-4 border-wonderleaf">
-              <h3 className="text-lg sm:text-2xl font-semibold text-wondergreen leading-tight">
-                    Connection
+        <div className="grid gap-6 sm:gap-8 md:grid-cols-2">
+          {/* 1 - Connection */}
+          <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wonderleaf/20 to-wondergreen/10 p-8 sm:p-10 border-2 border-wonderleaf/30 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wonderleaf/50">
+            {/* Decorative circle */}
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wonderleaf/10 group-hover:scale-150 transition-transform duration-500" />
+
+            <div className="relative">
+              <h3 className="text-2xl sm:text-3xl font-bold text-wondergreen mb-4">
+                Connection
               </h3>
-              <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                    Online learners can spend long stretches learning independently. We create spaces where friendships form naturally and kids can part of a community.
+              <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                Online learners can spend long stretches learning independently. We create spaces where friendships form naturally – where kids can meet, connect, and feel part of a community.
               </p>
-              <div className="mt-auto" />
-            </article>
+            </div>
+          </article>
 
-            {/* 2 */}
-            <article className="h-full flex flex-col rounded-xl p-4 sm:p-6 bg-gradient-to-br from-wonderorange/10 to-wondersun/5 border-l-4 border-wonderorange">
-              <h3 className="text-lg sm:text-2xl font-semibold text-wonderorange leading-tight">
-                    Skills for Life
+          {/* 2 - Skills for Life */}
+          <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wonderorange/20 to-wondersun/10 p-8 sm:p-10 border-2 border-wonderorange/30 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wonderorange/50">
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wonderorange/10 group-hover:scale-150 transition-transform duration-500" />
+
+            <div className="relative">
+              <h3 className="text-2xl sm:text-3xl font-bold text-wonderorange mb-4">
+                Skills for Life
               </h3>
-              <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                 Communication, teamwork, leadership, and resilience are practiced through real projects, shared challenges, and meaningful experiences.
+              <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                Communication, teamwork, leadership, and resilience are practiced through real projects, shared challenges, and meaningful experiences.
               </p>
-              <div className="mt-auto" />
-            </article>
+            </div>
+          </article>
 
-            {/* 3 */}
-            <article className="h-full flex flex-col rounded-xl p-4 sm:p-6 bg-gradient-to-br from-wondersun/20 to-wonderorange/10 border-l-4 border-wondersun">
-              <h3 className="text-lg sm:text-2xl font-semibold text-wonderorange leading-tight">
+          {/* 3 - Real-world Confidence */}
+          <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wondersun/30 to-wonderorange/15 p-8 sm:p-10 border-2 border-wondersun/40 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wondersun/60">
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wondersun/10 group-hover:scale-150 transition-transform duration-500" />
+
+            <div className="relative">
+              <h3 className="text-2xl sm:text-3xl font-bold text-wonderorange mb-4">
                 Real-world Confidence
               </h3>
-              <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-                Trips, showcases, volunteering, and youth-led events help students try new roles, share their work, and discover what they&rsquo;re capable of.
+              <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                Trips, showcases, volunteering, and youth-led events help students try new roles, share their work, and discover what they’re capable of.
               </p>
-              <div className="mt-auto" />
-            </article>
+            </div>
+          </article>
 
-            {/* 4 */}
-            <article className="h-full flex flex-col rounded-xl p-4 sm:p-6 bg-gradient-to-br from-wondergreen/10 to-wonderleaf/5 border-l-4 border-wondergreen">
-              <h3 className="text-lg sm:text-2xl font-semibold text-wondergreen leading-tight">
+          {/* 4 - Healthy Choices */}
+          <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wondergreen/20 to-wonderleaf/10 p-8 sm:p-10 border-2 border-wondergreen/30 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wondergreen/50">
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wondergreen/10 group-hover:scale-150 transition-transform duration-500" />
+
+            <div className="relative">
+              <h3 className="text-2xl sm:text-3xl font-bold text-wondergreen mb-4">
                 Healthy Choices
               </h3>
-              <p className="mt-2 sm:mt-3 text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
+              <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
                 Outdoor activity, movement, mentoring, and positive peer groups help youth build strong habits, reduce stress, and stay grounded as they grow.
               </p>
-              <div className="mt-auto" />
-            </article>
-          </div>
-        </section>
-
-
-        {/* In planning */}
-        {/* <section className="mb-10 sm:mb-12">
-          <div className="rounded-2xl border-2 border-wondersun/40 bg-white p-5 sm:p-6 md:p-8 shadow-lg">
-            <div className="mb-2 flex items-center gap-2 sm:gap-3">
-              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-wondersun to-wonderorange px-2 py-0.5 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-semibold text-white shadow">
-                In&nbsp;planning - remove!
-              </span>
-              <h3 className="text-lg sm:text-xl font-bold text-wondergreen">College &amp; Career Bridge</h3>
             </div>
-            <p className="text-base sm:text-lg leading-relaxed text-gray-700">
-                Portfolio building, verified service hours, job-shadow days, basic application support, and mentor
-                connections&mdash;so teens can explore careers and feel ready for what&rsquo;s next.
-            </p>
-          </div>
-        </section> */}
+          </article>
+        </div>
+      </section>
+
+      <LeadershipSection />
+      <ContactUsSection />
+    </div>
 
 
-        {/* Get Involved */}
-        {/* <section className="mb-14 sm:mb-16">
-          <div className="mb-6 sm:mb-8 text-center">
-            <h2 className="mb-2 sm:mb-3 text-2xl sm:text-3xl md:text-4xl font-bold text-wondergreen">Get Involved</h2>
-            <div className="mx-auto h-1 w-20 sm:w-24 rounded-full bg-gradient-to-r from-wonderorange to-wonderleaf" />
-          </div>
-
-          <div className="grid gap-5 sm:gap-6 md:grid-cols-3 items-stretch">
-            {/* Volunteer */}
-            {/* <Link href="/volunteer" className="group block h-full">
-              <div className="relative h-full cursor-pointer overflow-hidden rounded-xl border-2 border-wonderleaf/20 bg-white p-5 sm:p-6 pb-14 sm:pb-16 shadow-lg transition-colors duration-300 hover:border-wonderleaf flex flex-col">
-                <div className="mb-3 sm:mb-4">
-                  <VolunteerBadge className="w-12 h-12 sm:w-14 sm:h-14" />
-                </div>
-                <h3 className="mb-1.5 sm:mb-2 text-lg sm:text-xl font-bold text-wondergreen">Adult Volunteers</h3>
-                <p className="text-sm sm:text-base text-gray-700">
-                  Help organize events, support programs, or co-lead activities.
-                </p>
-                <p className="mt-3 flex items-center gap-1 text-[12px] sm:text-xs text-wondergreen/80">
-                  {/* <span className='mb-4' aria-hidden="true">🛡️</span> */}
-                  {/* 🛡️ All adult volunteers complete a standard screening.
-                </p>
-                <div className="mt-auto" />
-                <span className="pointer-events-none absolute bottom-3 sm:bottom-4 left-0 right-0 mx-auto select-none px-4 text-center text-sm sm:text-base text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  Thank you for bringing our community to life!
-                </span>
-              </div> */}
-            {/* </Link> */}
-
-            {/* Partnership */}
-            {/* <Link href="/get-involved/partnership" className="group block h-full">
-              <div className="relative h-full cursor-pointer overflow-hidden rounded-xl border-2 border-wonderorange/40 bg-white p-5 sm:p-6 pb-14 sm:pb-16 shadow-lg transition-colors duration-300 hover:border-wonderorange flex flex-col">
-                <div className="mb-3 sm:mb-4">
-                  <PartnershipBadge className="w-12 h-12 sm:w-14 sm:h-14" />
-                </div>
-                <h3 className="mb-1.5 sm:mb-2 text-lg sm:text-xl font-bold text-wondergreen">Partnership</h3>
-                <p className="text-sm sm:text-base text-gray-700">
-                    Museums, parks, youth organizations, studios&mdash;let&rsquo;s team up to create meaningful programs together. We welcome shared space, guest instructors, or pilot programs(?)/projects.
-                </p>
-
-                <div className="mt-auto" />
-                <span className="pointer-events-none absolute bottom-3 sm:bottom-4 left-0 right-0 mx-auto select-none px-4 text-center text-sm sm:text-base text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  Together we can do so much more!
-                </span>
-              </div>
-            </Link> */}
-
-            {/* Donate */}
-            {/* <Link href="/donate" className="group block h-full">
-              <div className="relative h-full cursor-pointer overflow-hidden rounded-xl border-2 border-wondergreen/20 bg-white p-5 sm:p-6 pb-14 sm:pb-16 shadow-lg transition-colors duration-300 hover:border-wondergreen flex flex-col">
-                <div className="mb-3 sm:mb-4">
-                  <DonationBadge className="w-12 h-12 sm:w-14 sm:h-14" />
-                </div>
-                <h3 className="mb-1.5 sm:mb-2 text-lg sm:text-xl font-bold text-wondergreen">Donate</h3>
-                <p className="mb-2 sm:mb-3 text-sm sm:text-base text-gray-700">
-                  Support scholarships, gear, and safety training. Your gift is tax-deductible.
-                </p>
-                <span className="font-semibold text-wonderorange underline transition-colors duration-300 hover:text-wondergreen">
-                  Support WonderHood &rarr;
-                </span>
-                <div className="mt-auto" />
-                <span className="pointer-events-none absolute bottom-3 sm:bottom-4 left-0 right-0 mx-auto select-none px-4 text-center text-sm sm:text-base text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  Every gift counts&mdash;thank you for supporting WonderHood!
-                </span>
-              </div>
-            </Link>
-          </div>
-        </section> */}
-
-        <LeadershipSection />
-        <ContactUsSection />
-      </div>
     </>
   );
 }

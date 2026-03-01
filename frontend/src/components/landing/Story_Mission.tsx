@@ -6,7 +6,7 @@ import "swiper/css";
 export default function Story_Mission() {
   return (
     <section className="w-full text-wondergreen bg-[#FAF7ED]">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-2 xl:gap-12 items-center min-h-[400px] px-4 sm:px-6 lg:px-8 py-10 -mt-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-[1.25fr_0.75fr] xl:gap-10 items-center min-h-[400px] px-4 sm:px-6 lg:px-8 py-10 -mt-10">
 
         {/* Left: Text */}
         <div className="flex flex-col justify-center">
@@ -29,19 +29,20 @@ export default function Story_Mission() {
           {/* Text center */}
           <div className="text-center xl:text-left">
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl mb-4">
-              WonderHood was created for Colorado home-learning students ages 10-18 who need connection as much as education.
-              Our current pilot programming is launching in Custer County (Westcliffe and surrounding areas), with expansion guided by partnerships and community needs.
-              Learning outside traditional classrooms can be empowering, but it can also feel isolating.
+              WonderHood was created for Colorado homeschool and online learners ages 10-18 who need connection as much as education. Our pilot programming is launching in Custer County (Westcliffe and surrounding areas), with future expansion guided by partnerships and community needs.
+            </p>
+            <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl mb-4">
+              Learning outside traditional classrooms can be empowering, but it can also feel isolating, especially in rural communities where it can be harder to meet peers regularly.
             </p>
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl">
-              Our events give learners a place to belong. Each experience is individually offered and families can enroll in the opportunities that excite them most. Through outdoor adventures, creative arts, and community projects, students build friendships, explore interests, and grow in confidence.
+              Our events give learners a place to belong. Families can choose the opportunities that excite them most. Through outdoor adventures, creative arts, STEAM exploration, and community projects, students build friendships, explore interests, and grow in confidence.
             </p>
           </div>
         </div>
 
         {/* Right: pinned image carousel */}
-        <div className="flex h-full items-center justify-center xl:justify-start mt-12 xl:mt-4">
-          <div className="relative w-full max-w-[720px] sm:max-w-[580px] lg:max-w-[580px] xl:max-w-[480px] xl:w-[460px]">
+        <div className="flex h-full items-center justify-center xl:justify-end mt-12 xl:mt-4">
+          <div className="relative w-full max-w-[720px] sm:max-w-[580px] lg:max-w-[580px] xl:max-w-[420px] xl:w-[420px]">
             <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
               <div className="relative">
                 <div className="absolute inset-0 bg-gray-400/30 blur-sm rounded-full translate-y-1" />
