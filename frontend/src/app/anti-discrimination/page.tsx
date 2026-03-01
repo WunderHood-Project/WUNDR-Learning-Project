@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AntiDiscrimination from "@/components/footer/AntiDiscrimination";
+import AntiDiscrimination from "@/components/policies/AntiDiscrimination";
 
 export const metadata: Metadata = {
   title: "Anti-Discrimination Policy — WonderHood",
