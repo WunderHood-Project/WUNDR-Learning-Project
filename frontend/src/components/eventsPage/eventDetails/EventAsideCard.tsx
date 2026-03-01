@@ -216,7 +216,7 @@ export default function EventAsideCard({
                         >
                             Manage enrollment
                         </button>
-                        
+
                         <div className="mt-2 text-center text-gray-700 bg-white/40 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 sm:py-3 font-semibold text-xs sm:text-sm">
                             Your child is enrolled. You can unenroll them below if your plans change.
                         </div>
