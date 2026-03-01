@@ -36,7 +36,6 @@ export default function AboutPageContent() {
                 <p>
                   We create welcoming spaces where students feel supported and truly seen.
                   Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
-                  We create welcoming spaces where students feel supported and truly seen. Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
                 </p>
               </div>
             </div>
@@ -44,12 +43,26 @@ export default function AboutPageContent() {
         </div>
       </section>
 
-        <div className="grid gap-5 sm:gap-8 md:gap-10 md:grid-cols-2 auto-rows-fr items-stretch">
-          {/* Service Area */}
-          <article className="flex-1 flex-col rounded-2xl border border-wonderleaf/30 bg-gradient-to-br from-wondersun/20 via-wonderbg to-white/90 p-5 sm:p-6 md:p-8 shadow-lg">
-            <div className="mb-4 flex items-center gap-3 sm:gap-4">
-              <div className="h-8 w-2 sm:h-10 sm:w-3 rounded-full bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange shadow" />
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-wondergreen">Service Area</h3>
+      {/* Mission & Vision */}
+      <section className="mt-8 sm:mt-10 md:mt-12">
+        <div className="grid gap-6 sm:gap-8 md:gap-10 md:grid-cols-2">
+          {/* Mission */}
+          <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderleaf/40 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:shadow-wonderleaf/20 hover:scale-[1.02]">
+            {/* Accent corner */}
+            <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-br from-wonderleaf/20 to-transparent rounded-bl-full" />
+
+            <div className="relative p-6 sm:p-8 md:p-10">
+              <div className="mb-5">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent">
+                  Mission
+                </h3>
+              </div>
+
+              <div className="rounded-2xl border border-wonderleaf/20 bg-white/80 p-5 sm:p-6 md:p-7 backdrop-blur-sm shadow-inner">
+                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                  Our mission is to help homeschool and online learners ages 10-18 build belonging, confidence, and healthy habits through outdoor adventures, creative arts, STEAM learning, and service projects.
+                </p>
+              </div>
             </div>
           </article>
 
@@ -106,24 +119,6 @@ export default function AboutPageContent() {
                Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities.
                We also increase access to enrichment experiences and hands-on STEAM learning – especially important for rural and online-learning youth – so kids feel connected, confident, and supported.
               </p>
-          </article>
-
-          {/* Why Youth Wellness */}
-          <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderorange/40 bg-gradient-to-br from-wonderorange/10 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:scale-[1.02]">
-            <div className="absolute top-0 left-0 h-24 w-24 bg-gradient-to-br from-wonderorange/20 to-transparent rounded-br-full" />
-
-            <div className="relative p-6 sm:p-8 md:p-10">
-              <div className="mb-5">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-wonderorange">
-                  Why Youth Wellness Matters
-                </h3>
-              </div>
-
-              <div className="rounded-2xl border border-wonderorange/20 bg-white/80 p-5 sm:p-6 md:p-7 backdrop-blur-sm">
-                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
-                  We support youth well-being through connection, movement, and purpose. Our programs help reduce isolation, encourage healthy outdoor activity, and create positive leadership and service opportunities for teens. We also increase access to enrichment experiences and hands-on STEAM learning, which is especially important for rural and online learners, so kids feel connected, confident, and supported.
-                </p>
-              </div>
             </div>
           </article>
         </div>
