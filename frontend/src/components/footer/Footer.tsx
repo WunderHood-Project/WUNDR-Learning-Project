@@ -19,10 +19,10 @@ export default function Footer() {
           <a href="/terms" className="hover:underline">Terms of Service</a>
         </div>
 
-        {/* <div className="flex flex-row justify-center gap-4 mt-4">
-         
+        <div className="flex flex-row justify-center gap-4 mt-4">
+
           <Link
-            href=''
+            href='https://www.facebook.com/p/WonderHood-Project-61578914429797/'
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -33,8 +33,8 @@ export default function Footer() {
             />
           </Link>
 
-      
-          <Link
+
+          {/* <Link
             href=''
             target="_blank"
             rel="noopener noreferrer"
@@ -44,11 +44,11 @@ export default function Footer() {
               alt="Instagram"
               className="w-6 h-6 hover:opacity-80 transition"
             />
-          </Link>
+          </Link> */}
 
-       
+
           <Link
-            href=''
+            href='https://www.linkedin.com/company/wonderhood-project/posts/?feedView=all'
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -58,7 +58,7 @@ export default function Footer() {
               className="w-6 h-6 hover:opacity-80 transition"
             />
           </Link>
-        </div> */}
+        </div>
       </div>
     </footer>
   );

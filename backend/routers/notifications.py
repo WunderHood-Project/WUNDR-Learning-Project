@@ -30,10 +30,14 @@ def send_email_one_user(
     """
     Callback function for sending an email upon enrollment
     """
+    
     yag.send(
         to=user_email,
         subject=subject,
-        contents=contents
+         contents=[
+            contents,
+            yagmail.inline("static/wonderhood_logo.png"),
+        ],
     )
 
 # =======================================================
