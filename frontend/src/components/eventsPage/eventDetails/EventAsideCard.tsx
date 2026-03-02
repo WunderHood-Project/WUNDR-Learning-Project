@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Event } from '@/types/event';
 import { formatTimeRange12h } from '../../../../utils/formatDate';
+import type { Child } from '@/types/child';
 
 type Props = {
     event: Event;
@@ -11,6 +12,13 @@ type Props = {
     onToggleForm: () => void;
     successEnroll: boolean;
     userHasChildEnrolled: boolean;
+    // ✅ admin attendees
+    isAdmin: boolean;
+    attendeesOpen: boolean;
+    attendees: Child[] | null;
+    attendeesLoading: boolean;
+    attendeesError: string | null;
+    onToggleAttendees: () => void;
 };
 
 export default function EventAsideCard({
@@ -20,6 +28,12 @@ export default function EventAsideCard({
     onToggleForm,
     successEnroll,
     userHasChildEnrolled,
+    isAdmin,
+    attendeesOpen,
+    attendees,
+    attendeesLoading,
+    attendeesError,
+    onToggleAttendees,
 }: Props) {
     const enrolled = event.participants ?? 0;
     const limit = event.limit ?? 0;
@@ -35,6 +49,14 @@ export default function EventAsideCard({
     const calMonth = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
     const calDay = d.getDate();
     const calYear = d.getFullYear();
+
+    // Tracks which attendee row is expanded (accordion behavior).
+    // Only one child is expanded at a time for readability.
+    const [expandedChildId, setExpandedChildId] = useState<string | null>(null);
+
+    const toggleExpanded = (id: string) => {
+        setExpandedChildId((prev) => (prev === id ? null : id));
+    };
 
     return (
         <aside className="lg:col-span-1">
@@ -210,6 +232,168 @@ export default function EventAsideCard({
                     >
                         Enrollment successful!
                     </div>
+                )}
+                {/* Admin-only Attendees
+                    This section is shown only to admins.
+                    Attendee details are fetched from a protected backend endpoint and include:
+                    - child list enrolled in the event
+                    - photo consent + waiver status
+                    - parent contact info
+                    - emergency contacts
+                    - medical/allergies + notes
+                */}
+                {isAdmin && (
+                <div className="mt-5 pt-5 border-t border-white/50">
+                    <div className="flex items-center justify-between">
+                    <p className="text-sm sm:text-base font-bold text-wondergreen uppercase tracking-wide">
+                        Attendees (Admin)
+                    </p>
+
+                    <button
+                        type="button"
+                        onClick={onToggleAttendees}
+                        className="text-xs font-semibold text-wondergreen underline hover:opacity-80"
+                    >
+                        {attendeesOpen ? "Hide" : "View"}
+                    </button>
+                    </div>
+
+                    {attendeesOpen && (
+                    <div className="mt-3">
+                        {attendeesLoading ? (
+                            <div className="text-xs text-gray-600">Loading attendees…</div>
+                        ) : attendeesError ? (
+                            <div className="text-xs text-red-600">{attendeesError}</div>
+                        ) : !attendees?.length ? (
+                            <div className="text-xs text-gray-600">No enrolled children yet.</div>
+                        ) : (
+                            <ul className="space-y-2">
+                                {attendees.map((c) => {
+                                    const isOpen = expandedChildId === c.id;
+
+                                    return (
+                                        <li
+                                        key={c.id}
+                                        className="rounded-xl border border-white/60 bg-white/60 px-3 py-2"
+                                        >
+                                        {/* Header row (clickable) */}
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleExpanded(c.id)}
+                                            className="w-full text-left"
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <div className="text-sm font-semibold text-gray-900">
+                                                    {c.firstName} {c.lastName}
+                                                    {c.preferredName ? (
+                                                    <span className="ml-2 text-xs text-gray-500">
+                                                        ({c.preferredName})
+                                                    </span>
+                                                    ) : null}
+                                                </div>
+
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                    className={`text-[10px] font-bold px-2 py-1 rounded-full border ${
+                                                        c.photoConsent
+                                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                                        : "bg-rose-50 text-rose-700 border-rose-200"
+                                                    }`}
+                                                    title="Photo consent"
+                                                    >
+                                                    {c.photoConsent ? "PHOTO OK" : "NO PHOTO"}
+                                                    </span>
+
+                                                    <span className="text-xs text-wondergreen underline">
+                                                        {isOpen ? "Hide details" : "View details"}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </button>
+
+                                        {/* Details (expanded) */}
+                                        {isOpen && (
+                                            <div className="mt-3 rounded-lg bg-white/70 border border-white/70 p-3 space-y-3">
+
+                                            {/* Parents */}
+                                            <div>
+                                                <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
+                                                Parents
+                                                </div>
+
+                                                {c.parents?.length ? (
+                                                <div className="space-y-2">
+                                                    {c.parents.map((p) => (
+                                                    <div key={p.id} className="text-xs text-gray-800">
+                                                        <div className="font-semibold">
+                                                        {p.firstName} {p.lastName}
+                                                        </div>
+                                                        <div className="text-gray-700">
+                                                        {p.email} • {p.phoneNumber}
+                                                        </div>
+                                                    </div>
+                                                    ))}
+                                                </div>
+                                                ) : (
+                                                <div className="text-xs text-gray-600">No parent data.</div>
+                                                )}
+                                            </div>
+
+                                            {/* Emergency contacts */}
+                                            <div>
+                                                <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
+                                                Emergency Contacts
+                                                </div>
+
+                                                {c.emergencyContacts?.length ? (
+                                                <div className="space-y-2">
+                                                    {c.emergencyContacts?.map((ec) => (
+                                                    <div key={ec.id} className="text-xs text-gray-800">
+                                                        <div className="font-semibold">
+                                                        {ec.firstName} {ec.lastName}{" "}
+                                                        <span className="font-normal text-gray-600">
+                                                            ({ec.relationship})
+                                                        </span>
+                                                        </div>
+                                                        <div className="text-gray-700">{ec.phoneNumber}</div>
+                                                    </div>
+                                                    ))}
+                                                </div>
+                                                ) : (
+                                                <div className="text-xs text-gray-600">No emergency contacts.</div>
+                                                )}
+                                            </div>
+
+                                            {/* Medical / notes */}
+                                            <div className="grid gap-2">
+                                                <div>
+                                                <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
+                                                    Allergies / Medical
+                                                </div>
+                                                <div className="text-xs text-gray-800 whitespace-pre-wrap">
+                                                    {c.allergiesMedical || "—"}
+                                                </div>
+                                                </div>
+
+                                                <div>
+                                                <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
+                                                    Notes
+                                                </div>
+                                                <div className="text-xs text-gray-800 whitespace-pre-wrap">
+                                                    {c.notes || "—"}
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                        )}
+                    </div>
+                    )}
+                </div>
                 )}
             </div>
         </aside>
