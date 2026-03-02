@@ -15,8 +15,11 @@ import LoginModal from '@/components/login/LoginModal';
 import SignupModal from '@/components/signup/SignupModal';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import type { Child } from '@/types/child';
 
 const WONDERHOOD_URL = determineEnv()
+
+type AdminAttendeesResponse = { children: Child[] };
 
 export default function EventDetails() {
     // const { eventId } = useParams()
@@ -38,7 +41,7 @@ export default function EventDetails() {
     const [attendeesOpen, setAttendeesOpen] = useState(false);
     const [attendeesLoading, setAttendeesLoading] = useState(false);
     const [attendeesError, setAttendeesError] = useState<string | null>(null);
-    const [attendees, setAttendees] = useState<any[] | null>(null);
+    const [attendees, setAttendees] = useState<Child[] | null>(null);
 
     // Read token on the client only (localStorage is not available on the server).
     // useMemo keeps the token stable so we don't re-trigger effects/render loops.
@@ -52,6 +55,7 @@ export default function EventDetails() {
 
     // Lazy-load attendees only when admin explicitly opens the section.
     // This avoids unnecessary requests and keeps sensitive data out of normal flows.
+
     const loadAttendees = async () => {
         if (!isAdmin || !token) return;
 
@@ -59,7 +63,7 @@ export default function EventDetails() {
             setAttendeesLoading(true);
             setAttendeesError(null);
             // Protected endpoint (admin-only). Requires Authorization header.
-            const res = await makeApiRequest<{ children: any[] }>(`${WONDERHOOD_URL}/event/${eventId}/attendees`,
+            const res = await makeApiRequest<AdminAttendeesResponse>(`${WONDERHOOD_URL}/event/${eventId}/attendees`,
                 {
                     method: 'GET',
                     headers: { Authorization: `Bearer ${token}` },
@@ -98,8 +102,7 @@ export default function EventDetails() {
     }, [user, eventParticipantSet]);
 
 
-
-    const handleEnroll = async (e: React.FormEvent) => {
+    const handleEnroll = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const childIds = Array.from(selected)
         if (childIds.length === 0) return
