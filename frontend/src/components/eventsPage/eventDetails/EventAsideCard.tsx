@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { Event } from '@/types/event';
 import { formatTimeRange12h } from '../../../../utils/formatDate';
+import type { Child } from '@/types/child';
 
 type Props = {
     event: Event;
@@ -14,7 +15,7 @@ type Props = {
     // ✅ admin attendees
     isAdmin: boolean;
     attendeesOpen: boolean;
-    attendees: any[] | null;
+    attendees: Child[] | null;
     attendeesLoading: boolean;
     attendeesError: string | null;
     onToggleAttendees: () => void;
@@ -267,7 +268,7 @@ export default function EventAsideCard({
                             <div className="text-xs text-gray-600">No enrolled children yet.</div>
                         ) : (
                             <ul className="space-y-2">
-                                {attendees.map((c: any) => {
+                                {attendees.map((c) => {
                                     const isOpen = expandedChildId === c.id;
 
                                     return (
@@ -322,7 +323,7 @@ export default function EventAsideCard({
 
                                                 {c.parents?.length ? (
                                                 <div className="space-y-2">
-                                                    {c.parents.map((p: any) => (
+                                                    {c.parents.map((p) => (
                                                     <div key={p.id} className="text-xs text-gray-800">
                                                         <div className="font-semibold">
                                                         {p.firstName} {p.lastName}
@@ -346,7 +347,7 @@ export default function EventAsideCard({
 
                                                 {c.emergencyContacts?.length ? (
                                                 <div className="space-y-2">
-                                                    {c.emergencyContacts.map((ec: any) => (
+                                                    {c.emergencyContacts?.map((ec) => (
                                                     <div key={ec.id} className="text-xs text-gray-800">
                                                         <div className="font-semibold">
                                                         {ec.firstName} {ec.lastName}{" "}
