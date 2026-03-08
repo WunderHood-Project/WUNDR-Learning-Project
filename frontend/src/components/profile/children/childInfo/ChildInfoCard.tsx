@@ -64,7 +64,7 @@ export default function ChildInfoCard({ child, onEdit, onDeleted }: Props) {
         </header>
 
         {/* Body */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-5 md:gap-y-6 md:gap-x-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_0.45fr_0.9fr] gap-y-5 md:gap-y-6 md:gap-x-2">
           {/* Birthday */}
           <Section title="BIRTHDAY">
             <Field>
