@@ -30,7 +30,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
     const [serverError, setServerError] = useState<string | null>(null);
     const [form, setForm] = useState<CreateChildForm>({
         firstName: "", lastName: '', preferredName: "",
-        homeschool: true, grade: null, birthday: '',
+        schoolType: "homeschool", grade: null, birthday: '',
         allergiesMedical: "", notes: "",
         photoConsent: false, waiver: false,
         emergencyContacts: []
@@ -41,7 +41,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
             firstName: currChild.firstName ?? '',
             lastName: currChild.lastName ?? "",
             preferredName: currChild.preferredName ?? "",
-            homeschool: Boolean(currChild.homeschool),
+            schoolType: currChild.schoolType ?? "homeschool",
             grade: currChild.grade ?? null,
             birthday: currChild.birthday ? currChild.birthday.split("T")[0] : "",
             allergiesMedical: currChild.allergiesMedical ?? "",
@@ -119,7 +119,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         if (notesNext !== currNotes) set("notes", notesNext === "" ? null : notesNext)
 
         if (medNext !== (curr.allergiesMedical ?? "")) set("allergiesMedical", medNext)
-        if (form.homeschool !== curr.homeschool) set("homeschool", form.homeschool)
+        if (form.schoolType !== curr.schoolType) set("schoolType", form.schoolType)
         if (form.photoConsent !== curr.photoConsent) set("photoConsent", form.photoConsent)
 
         if (form.birthday && form.birthday !== uiCurrBirthday) {

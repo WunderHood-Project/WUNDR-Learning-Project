@@ -64,7 +64,7 @@ export default function ChildInfoCard({ child, onEdit, onDeleted }: Props) {
         </header>
 
         {/* Body */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 md:gap-y-6 md:gap-x-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-5 md:gap-y-6 md:gap-x-6">
           {/* Birthday */}
           <Section title="BIRTHDAY">
             <Field>
@@ -84,6 +84,11 @@ export default function ChildInfoCard({ child, onEdit, onDeleted }: Props) {
           {/* Grade */}
           <Section title="GRADE">
             <Field>{child.grade ? displayGrade(child.grade) : "N/A"}</Field>
+          </Section>
+
+          {/* School */}
+          <Section title="SCHOOL">
+            <Field>{displaySchoolType(child.schoolType)}</Field>
           </Section>
 
           {/* Photo Consent */}
@@ -198,4 +203,17 @@ function Badge({ className = "", children }: { className?: string; children: Rea
       {children}
     </span>
   );
+}
+
+function displaySchoolType(schoolType?: Child["schoolType"]) {
+  switch (schoolType) {
+    case "homeschool":
+      return "Homeschool";
+    case "public_custer":
+      return "Public school (Custer County School District C-1)";
+    case "private_custer":
+      return "Private school (Custer County)";
+    default:
+      return "N/A";
+  }
 }

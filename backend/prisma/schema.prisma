@@ -57,12 +57,18 @@ enum Roles {
 
 // ! Children     =============================================================================
 
+enum SchoolType {
+  homeschool
+  public_custer
+  private_custer
+}
+
 model Children {
   id                    String  @id @default(auto()) @map("_id") @db.ObjectId
   firstName             String
   lastName              String
   preferredName         String?
-  homeschool            Boolean
+  schoolType            SchoolType
   grade                 Int?
   birthday              DateTime
   allergiesMedical      String?

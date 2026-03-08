@@ -2,14 +2,14 @@ import { EmergencyContact } from "./emergencyContact";
 import { User } from "./user";
 
 export type WaiverSectionsAck = string[]; 
+export type SchoolType = "homeschool" | "public_custer" | "private_custer";
 
 export type Child = {
     id: string;
     firstName: string;
     lastName: string;
     preferredName?: string | null
-    homeschool: boolean
-    // homeschoolProgram?: string | null
+    schoolType: SchoolType
     grade?: number | null
     birthday: string;
     allergiesMedical?: string | null | undefined

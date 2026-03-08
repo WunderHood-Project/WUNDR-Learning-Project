@@ -11,6 +11,19 @@ type AdminChildrenResponse = {
   children: Child[];
 };
 
+function displaySchoolType(schoolType?: Child["schoolType"]) {
+  switch (schoolType) {
+    case "homeschool":
+      return "Homeschool";
+    case "public_custer":
+      return "Public school (Custer County School District C-1)";
+    case "private_custer":
+      return "Private school (Custer County)";
+    default:
+      return "—";
+  }
+}
+
 export default function Children() {
   const [items, setItems] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +82,7 @@ export default function Children() {
               <th className="text-left p-3">Name</th>
               <th className="text-left p-3">DOB</th>
               <th className="text-left p-3">Grade</th>
-              <th className="text-left p-3">Parents</th>
+              <th className="text-left p-3">School</th>
               <th className="text-left p-3">Waiver</th>
             </tr>
           </thead>
@@ -88,9 +101,7 @@ export default function Children() {
                 {/* DOB shown as YYYY-MM-DD (simple display; can be replaced with formatter later) */}
                 <td className="p-3">{c.birthday ? String(c.birthday).slice(0, 10) : '—'}</td>
                 <td className="p-3">{c.grade ?? '—'}</td>
-                {/* Parents array is included by admin API; show count */}
-                <td className="p-3">{c.parents?.length ?? 0}</td>
-                {/* Waiver flag: quick visual indicator */}
+                <td className="p-3">{displaySchoolType(c.schoolType)}</td>
                 <td className="p-3">{c.waiver ? '✅' : '—'}</td>
               </tr>
             ))}
