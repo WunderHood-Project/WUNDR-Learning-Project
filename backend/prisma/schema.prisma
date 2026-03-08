@@ -240,6 +240,12 @@ model Activities {
 }
 
 // ! Events         =============================================================================
+enum EventSchoolAccess {
+  all
+  homeschool_only
+  public_custer_only
+  private_custer_only
+}
 
 model Events {
     id            String      @id @default(auto()) @map("_id") @db.ObjectId
@@ -251,6 +257,7 @@ model Events {
     image         String
     participants  Int @default(0)
     limit         Int @default(10)
+    schoolAccess  EventSchoolAccess @default(all)
 
     city          String
     state         String

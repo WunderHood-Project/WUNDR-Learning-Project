@@ -91,6 +91,26 @@ async def create_event(
            status_code=400,
            detail="One or more child ids are invalid."
        )
+   
+   # validate school access for pre-enrolled children
+   for child in valid_children:
+       if event_data.schoolAccess == "homeschool_only" and child.schoolType != "homeschool":
+           raise HTTPException(
+               status_code=400,
+               detail=f"{child.firstName} {child.lastName} is not eligible for this event. This event is for homeschool students only."
+           )
+
+       if event_data.schoolAccess == "public_custer_only" and child.schoolType != "public_custer":
+           raise HTTPException(
+               status_code=400,
+               detail=f"{child.firstName} {child.lastName} is not eligible for this event. This event is for public school students only."
+           )
+
+       if event_data.schoolAccess == "private_custer_only" and child.schoolType != "private_custer":
+           raise HTTPException(
+               status_code=400,
+               detail=f"{child.firstName} {child.lastName} is not eligible for this event. This event is for private school students only."
+           )
 
 
    # Create the event
@@ -104,6 +124,7 @@ async def create_event(
                "image": event_data.image,
                "participants": event_data.participants,
                "limit": event_data.limit,
+               "schoolAccess": event_data.schoolAccess,
                "city": event_data.city,
                "state": event_data.state,
                "address": event_data.address,
@@ -280,6 +301,7 @@ async def get_event_attendees_admin(
             "firstName": ch.firstName,
             "lastName": ch.lastName,
             "preferredName": ch.preferredName,
+            "schoolType": ch.schoolType,
             "grade": ch.grade,
             "birthday": ch.birthday,
             "allergiesMedical": ch.allergiesMedical,
@@ -333,6 +355,34 @@ async def update_event(
         activity = await db.activities.find_unique(where={"id": event_data.activityId})
         if not activity:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Activity Id is invalid")
+        
+    # --- validate school access against target children ---
+    target_child_ids = event_data.childIds if event_data.childIds is not None else (event.childIds or [])
+    target_school_access = event_data.schoolAccess if event_data.schoolAccess is not None else event.schoolAccess
+
+    if target_child_ids:
+        target_children = await db.children.find_many(
+            where={"id": {"in": target_child_ids}}
+        )
+
+        for child in target_children:
+            if target_school_access == "homeschool_only" and child.schoolType != "homeschool":
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{child.firstName} {child.lastName} is not eligible for this event. This event is for homeschool students only."
+                )
+
+            if target_school_access == "public_custer_only" and child.schoolType != "public_custer":
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{child.firstName} {child.lastName} is not eligible for this event. This event is for public school students only."
+                )
+
+            if target_school_access == "private_custer_only" and child.schoolType != "private_custer":
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{child.firstName} {child.lastName} is not eligible for this event. This event is for private school students only."
+                )    
 
     # --- build payload ---
     update_payload: dict = {}
@@ -343,6 +393,7 @@ async def update_event(
     if event_data.image is not None:         update_payload["image"] = event_data.image
     if event_data.participants is not None:  update_payload["participants"] = event_data.participants
     if event_data.limit is not None:         update_payload["limit"] = event_data.limit
+    if event_data.schoolAccess is not None:  update_payload["schoolAccess"] = event_data.schoolAccess
     if event_data.city is not None:          update_payload["city"] = event_data.city
     if event_data.state is not None:         update_payload["state"] = event_data.state
     if event_data.address is not None:       update_payload["address"] = event_data.address
@@ -669,6 +720,27 @@ async def add_children_to_event(
    missing = set(to_add) - found_ids
    if missing:
        raise HTTPException(status_code=404, detail=f"Child not found: {', '.join(missing)}")
+   
+
+   # validate school access
+   for c in children:
+       if event.schoolAccess == "homeschool_only" and c.schoolType != "homeschool":
+           raise HTTPException(
+               status_code=400,
+               detail=f"{c.firstName} {c.lastName} is not eligible for this event. This event is for homeschool students only."
+           )
+
+       if event.schoolAccess == "public_custer_only" and c.schoolType != "public_custer":
+           raise HTTPException(
+               status_code=400,
+               detail=f"{c.firstName} {c.lastName} is not eligible for this event. This event is for public school students only."
+           )
+
+       if event.schoolAccess == "private_custer_only" and c.schoolType != "private_custer":
+           raise HTTPException(
+               status_code=400,
+               detail=f"{c.firstName} {c.lastName} is not eligible for this event. This event is for private school students only."
+           )
 
 
    # validate parenthood
