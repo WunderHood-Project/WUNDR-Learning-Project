@@ -27,6 +27,7 @@ const toEventForm = (ev: Event): CreateEventPayload => ({
     endTime: ev.endTime ?? "",
     image: ev.image ?? "",
     limit: ev.limit ?? 0,
+    schoolAccess: ev.schoolAccess ?? "all",
     city: ev.city ?? "",
     state: ev.state ?? "CO",
     address: ev.address ?? "",
