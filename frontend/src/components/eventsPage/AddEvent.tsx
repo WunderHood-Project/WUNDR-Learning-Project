@@ -28,6 +28,7 @@ const initialEventForm = (): CreateEventPayload => ({
     endTime: "",
     image: "",
     limit: 0,
+    schoolAccess: "all",
     city: "",
     state: "CO",
     address: "",

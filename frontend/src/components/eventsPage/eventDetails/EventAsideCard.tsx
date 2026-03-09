@@ -67,9 +67,9 @@ export default function EventAsideCard({
                         Participants
                     </h3>
                     <span
-                        className="h-7 sm:h-8 inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 rounded-full
-                        text-[11px] sm:text-[12px] font-semibold
-                        bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30 flex-shrink-0"
+                        className="h-8 sm:h-9 inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 rounded-full
+                        text-xs sm:text-sm font-semibold
+                        bg-wonderleaf/15 text-wondergreen border border-wonderleaf/40 shadow-sm flex-shrink-0"
                         aria-live="polite"
                     >
                         {spotsLeft} spots left
@@ -172,6 +172,17 @@ export default function EventAsideCard({
                             {event.city}, {event.state} {event.zipCode}
                         </p>
                     </div>
+                </div>
+
+                {/* School access */}
+                <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3 flex-wrap">
+                    <p className="text-sm sm:text-base font-bold text-wondergreen uppercase tracking-wide">
+                        Who can enroll
+                    </p>
+
+                    <span className="inline-flex items-center rounded-full px-3 py-1.5 bg-wonderleaf/10 text-wondergreen border border-wonderleaf/30 font-medium text-xs sm:text-sm">
+                        {displaySchoolAccess(event.schoolAccess)}
+                    </span>
                 </div>
 
                 {/* Availability + CTA */}
@@ -364,24 +375,33 @@ export default function EventAsideCard({
                                                 )}
                                             </div>
 
-                                            {/* Medical / notes */}
+                                            {/* School / Medical / notes */}
                                             <div className="grid gap-2">
                                                 <div>
-                                                <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
-                                                    Allergies / Medical
-                                                </div>
-                                                <div className="text-xs text-gray-800 whitespace-pre-wrap">
-                                                    {c.allergiesMedical || "—"}
-                                                </div>
+                                                    <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
+                                                        School
+                                                    </div>
+                                                    <div className="text-xs text-gray-800 whitespace-pre-wrap">
+                                                        {displaySchoolType(c.schoolType)}
+                                                    </div>
                                                 </div>
 
                                                 <div>
-                                                <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
-                                                    Notes
+                                                    <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
+                                                        Allergies / Medical
+                                                    </div>
+                                                    <div className="text-xs text-gray-800 whitespace-pre-wrap">
+                                                        {c.allergiesMedical || "—"}
+                                                    </div>
                                                 </div>
-                                                <div className="text-xs text-gray-800 whitespace-pre-wrap">
-                                                    {c.notes || "—"}
-                                                </div>
+
+                                                <div>
+                                                    <div className="text-xs font-bold text-wondergreen uppercase tracking-wide mb-1">
+                                                        Notes
+                                                    </div>
+                                                    <div className="text-xs text-gray-800 whitespace-pre-wrap">
+                                                        {c.notes || "—"}
+                                                    </div>
                                                 </div>
                                             </div>
                                             </div>
@@ -398,4 +418,31 @@ export default function EventAsideCard({
             </div>
         </aside>
     );
+}
+
+function displaySchoolAccess(access?: Event["schoolAccess"]) {
+    switch (access) {
+        case "homeschool_only":
+            return "Homeschool only";
+        case "public_custer_only":
+            return "Public school only (Custer County)";
+        case "private_custer_only":
+            return "Private school only (Custer County)";
+        case "all":
+        default:
+            return "All children";
+    }
+}
+
+function displaySchoolType(schoolType?: Child["schoolType"]) {
+    switch (schoolType) {
+        case "homeschool":
+            return "Homeschool";
+        case "public_custer":
+            return "Public school (Custer County School District C-1)";
+        case "private_custer":
+            return "Private school (Custer County)";
+        default:
+            return "N/A";
+    }
 }

@@ -190,6 +190,11 @@ class PasswordResetPayload(BaseModel):
 
 
 # * Child models ====================================================
+class SchoolType(str, Enum):
+  HOMESCHOOL = "homeschool"
+  PUBLIC_CUSTER = "public_custer"
+  PRIVATE_CUSTER = "private_custer"
+    
 class Child(BaseModel):
   id: str = Field(..., min_length=1, description="Child identifier")
   firstName: str = Field(min_length=1, max_length=50)
@@ -197,7 +202,7 @@ class Child(BaseModel):
   preferredName: Optional[str] = Field(default=None, max_length=50)
   birthday: datetime = Field(description="Child's birthday")
 
-  homeschool: bool = Field(default=False)
+  schoolType: SchoolType
   grade: Optional[int] = Field(default=None, ge=-1, le=12)
 
   parents: Optional[List["User"]] = Field(default_factory=list)
@@ -234,7 +239,7 @@ class ChildCreate(BaseModel):
     default_factory=lambda: datetime.now(timezone.utc).date()
   )
 
-  homeschool: bool = False
+  schoolType: SchoolType
   grade: Optional[int] = Field(default=None, ge=-1, le=12)
 
   allergiesMedical: Optional[str] = Field(default=None, max_length=1000)
@@ -261,7 +266,7 @@ class ChildUpdate(BaseModel):
     description="Child's date of birth"
   )
 
-  homeschool: Optional[bool] = Field(default=None)
+  schoolType: Optional[SchoolType] = Field(default=None)
   grade: Optional[int] = Field(default=None, ge=-1, le=12)
 
   allergiesMedical: Optional[str] = Field(default=None, max_length=1000)
@@ -272,7 +277,8 @@ class ChildUpdate(BaseModel):
   waiverSignedByName: Optional[str] = None
   waiverSectionsAck: Optional[List[str]] = None
 
-  emergencyContacts: List["EmergencyContactCreate"] = Field(default_factory=list)
+  # emergencyContacts: List["EmergencyContactCreate"] = Field(default_factory=list)
+  emergencyContacts: Optional[List["EmergencyContactCreate"]] = None
 
 #! Emergency Contact
 class EmergencyContactCreate(BaseModel):

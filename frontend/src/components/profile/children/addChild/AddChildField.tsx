@@ -65,16 +65,51 @@ export default function ChildFields({ child, onChange, errors = {} }: Props) {
 				{errors.birthday && <p className="text-sm text-red-600 mt-1">{errors.birthday}</p>}
 			</div>
 
-			<label className="inline-flex items-center gap-2">
-				<input
-					type="checkbox"
-					name="homeschool"
-					checked={child.homeschool ?? false}
-					onChange={onChange}
-					className="h-4 w-4"
-				/>
-				<span>Homeschool</span>
-			</label>
+			<div className="mt-2">
+				<div className="font-bold mb-2">SCHOOL TYPE</div>
+
+				<div className="space-y-2">
+					<label className="flex items-start gap-2">
+						<input
+							type="radio"
+							name="schoolType"
+							value="homeschool"
+							checked={child.schoolType === "homeschool"}
+							onChange={onChange}
+							className="h-4 w-4 mt-1"
+						/>
+						<span className="text-sm md:text-base">Homeschool</span>
+					</label>
+
+					<label className="flex items-start gap-2">
+						<input
+							type="radio"
+							name="schoolType"
+							value="public_custer"
+							checked={child.schoolType === "public_custer"}
+							onChange={onChange}
+							className="h-4 w-4 mt-1"
+						/>
+						<span className="text-sm md:text-base">
+							Public school (Custer County School District C-1)
+						</span>
+					</label>
+
+					<label className="flex items-start gap-2">
+						<input
+							type="radio"
+							name="schoolType"
+							value="private_custer"
+							checked={child.schoolType === "private_custer"}
+							onChange={onChange}
+							className="h-4 w-4 mt-1"
+						/>
+						<span className="text-sm md:text-base">
+							Private school (Custer County)
+						</span>
+					</label>
+				</div>
+			</div>
 
 			<div className="font-bold mb-2">GRADE (OPTIONAL)</div>
 			<select

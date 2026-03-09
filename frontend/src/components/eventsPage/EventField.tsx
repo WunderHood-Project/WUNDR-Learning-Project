@@ -157,6 +157,25 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
             </div>
 
             <div>
+                <label className="block mb-1 font-medium">
+                    Who can enroll? <span className="text-rose-600">*</span>
+                </label>
+                <select
+                    name="schoolAccess"
+                    value={form.schoolAccess}
+                    onChange={onChange}
+                    className="w-full border rounded px-3 py-2"
+                    required
+                >
+                    <option value="all">All children</option>
+                    <option value="homeschool_only">Homeschool only</option>
+                    <option value="public_custer_only">Public school only (Custer County)</option>
+                    <option value="private_custer_only">Private school only (Custer County)</option>
+                </select>
+                {errors.schoolAccess && <p className="text-sm text-red-600">{errors.schoolAccess}</p>}
+            </div>
+
+            <div>
                 <label className="block mb-1 font-medium">City <span className="text-rose-600">*</span></label>
                 <select
                     id="City"

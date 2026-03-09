@@ -58,7 +58,7 @@ async def create_child(
                     "firstName": child_data.firstName,
                     "lastName": child_data.lastName,
                     "preferredName": child_data.preferredName,
-                    "homeschool": child_data.homeschool,
+                    "schoolType": child_data.schoolType,
                     "grade": child_data.grade,
                     "birthday": bday_dateTime,
                     "allergiesMedical": child_data.allergiesMedical,
