@@ -31,7 +31,7 @@ export default function YourEvents() {
         id: e.id, name: e.name, description: e.description,
         city: e.city, date: e.date, startTime: e.startTime, endTime: e.endTime,
         childIds: (e.childIds ?? []).filter(id => childIdSet.has(id)),
-        image: e.image,
+        image: e.image, schoolAccess: e.schoolAccess ?? "all",
       }));
   }, [events, user?.children]);
 

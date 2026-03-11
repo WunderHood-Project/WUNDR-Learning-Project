@@ -24,6 +24,11 @@ class ActivityUpdate(BaseModel):
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
 
+class EventSchoolAccess(str, Enum):
+    ALL = "all"
+    HOMESCHOOL_ONLY = "homeschool_only"
+    PUBLIC_CUSTER_ONLY = "public_custer_only"
+    PRIVATE_CUSTER_ONLY = "private_custer_only"
 
 # ! Events
 class Event(BaseModel):
@@ -37,6 +42,7 @@ class Event(BaseModel):
     image: str = Field(min_length=1)
     participants: int = Field(default=0)
     limit: int = Field(default=10)
+    schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
 
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
@@ -57,6 +63,7 @@ class EventCreate(BaseModel):
     image: str = Field(min_length=0)
     participants: int = Field(default=0)
     limit: int = Field(default=10)
+    schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
 
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
@@ -95,6 +102,7 @@ class EventUpdate(BaseModel):
     image: Optional[str] = Field(default=None)
     participants: Optional[int] = Field(default=None)
     limit: Optional[int] = Field(default=None)
+    schoolAccess: Optional[EventSchoolAccess] = Field(default=None)
     userIds: Optional[List[str]] = Field(default=None)
     childIds: Optional[List[str]] = Field(default=None)
 

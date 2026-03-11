@@ -93,7 +93,7 @@ export default function ChildDetails({ childId }: Props) {
                         {child.birthday ? formatDate(child.birthday) : "—"}
                     </div>
                     <div><span className="text-gray-500">Grade:</span> {child.grade ?? '—'}</div>
-                    <div><span className="text-gray-500">Homeschool:</span> {child.homeschool ? 'Yes' : 'No'}</div>
+                    <div><span className="text-gray-500">School:</span> {child.schoolType ?? '—'}</div>
                     <div><span className="text-gray-500">Allergies:</span> {child.allergiesMedical ?? '—'}</div>
                     <div><span className="text-gray-500">Notes:</span> {child.notes ?? '—'}</div>
                     <div><span className="text-gray-500">Photo consent:</span> {child.photoConsent ? 'Yes' : 'No'}</div>
