@@ -24,7 +24,7 @@ const initCreateForm = (): CreateChildForm => ({
 	firstName: "",
 	lastName: "",
 	preferredName: "",
-	homeschool: true,
+	schoolType: "homeschool",
 	grade: null,
 	birthday: "",
 	allergiesMedical: "",
@@ -119,7 +119,7 @@ export default function AddChild({ showForm, onSuccess }: AddChildProps) {
 
 		if (!name) return
 		if (type === "checkbox") {
-			// Generic checkbox handler (waiver/photoConsent/homeschool etc.)
+			// Generic checkbox handler (waiver/photoConsent etc.)
 			setForm(p => ({ ...p, [name]: checked }))
 			// If user toggles waiver, clear waiver error immediately (better UX)
 			if (name === 'waiver') setErrors(prev => ({ ...prev, waiver: undefined}))

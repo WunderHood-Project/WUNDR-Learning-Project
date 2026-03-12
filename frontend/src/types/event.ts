@@ -1,3 +1,10 @@
+export type EventSchoolAccess =
+  | "all"
+  | "homeschool_only"
+  | "public_custer_only"
+  | "private_custer_only";
+
+
 export type Event = {
     id?: string
     activityId: string
@@ -11,6 +18,7 @@ export type Event = {
     image: string
     participants?: number
     limit: number
+    schoolAccess: EventSchoolAccess
 
     city: string
     state: string

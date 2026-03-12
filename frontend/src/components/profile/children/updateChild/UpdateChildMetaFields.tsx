@@ -38,6 +38,59 @@ export default function UpdateChildMetaFields({ errors, form, onChange, saving }
             )}
         </div>
 
+        <div className="mb-5 sm:mb-6">
+            <span className="block text-sm sm:text-base font-semibold tracking-wide text-wondergreen mb-2">
+                SCHOOL TYPE
+            </span>
+
+            <div className="space-y-2">
+                <label className="flex items-start gap-2">
+                    <input
+                        type="radio"
+                        name="schoolType"
+                        value="homeschool"
+                        checked={form.schoolType === "homeschool"}
+                        onChange={onChange}
+                        disabled={saving}
+                        className="mt-1 h-4 w-4 accent-wondergreen"
+                    />
+                    <span className="text-sm md:text-base text-wonderforest">
+                        Homeschool
+                    </span>
+                </label>
+
+                <label className="flex items-start gap-2">
+                    <input
+                        type="radio"
+                        name="schoolType"
+                        value="public_custer"
+                        checked={form.schoolType === "public_custer"}
+                        onChange={onChange}
+                        disabled={saving}
+                        className="mt-1 h-4 w-4 accent-wondergreen"
+                    />
+                    <span className="text-sm md:text-base text-wonderforest">
+                        Public school (Custer County School District C-1)
+                    </span>
+                </label>
+
+                <label className="flex items-start gap-2">
+                    <input
+                        type="radio"
+                        name="schoolType"
+                        value="private_custer"
+                        checked={form.schoolType === "private_custer"}
+                        onChange={onChange}
+                        disabled={saving}
+                        className="mt-1 h-4 w-4 accent-wondergreen"
+                    />
+                    <span className="text-sm md:text-base text-wonderforest">
+                        Private school (Custer County)
+                    </span>
+                </label>
+            </div>
+        </div>
+
         {/* GRADE + PHOTO CONSENT */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 mb-5 sm:mb-6 items-start">
             {/* Grade */}
