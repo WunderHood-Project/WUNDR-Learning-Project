@@ -48,50 +48,50 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
             {event.name}
         </h3>
 
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-b rounded-xl from-wondergreen to-wonderleaf">
-        {(() => {
-          const p = normalizeNextImageSrc(event.image);
+        <div className="w-full overflow-hidden rounded-xl">
+          {(() => {
+            const p = normalizeNextImageSrc(event.image);
 
-          if (p) {
+            if (p) {
+              return (
+                <div className="relative w-full">
+                  <Image
+                    src={p.src}
+                    alt={`${event.name} cover`}
+                    width={1200}
+                    height={800}
+                    sizes="(max-width: 640px) 100vw, 320px"
+                    className="w-full h-auto rounded-xl block"
+                    priority={false}
+                    unoptimized={p.unoptimized}
+                  />
+
+                  <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
+                    {formatDate(event.date)}
+                  </div>
+                </div>
+              );
+            }
+
             return (
-              <>
-                <Image
-                  src={p.src}
-                  alt={`${event.name} cover`}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 320px"
-                  className="absolute inset-0 object-cover transition-transform duration-300 hover:scale-105"
-                  priority={false}
-                  unoptimized={p.unoptimized}
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-gradient-to-br from-wondergreen via-wonderleaf to-wondergreen">
+                <div className="absolute inset-0 grid place-content-center">
+                  <Image
+                    src={AppIcon}
+                    alt="WonderHood"
+                    width={96}
+                    height={96}
+                    className="opacity-40 rounded-full"
+                    priority={false}
+                  />
+                </div>
+
+                <div className="absolute bottom-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
                   {formatDate(event.date)}
                 </div>
-              </>
+              </div>
             );
-          }
-
-          return (
-            <>
-              <div className="absolute inset-0 bg-gradient-to-br from-wondergreen via-wonderleaf to-wondergreen" />
-              <div className="absolute inset-0 grid place-content-center">
-                <Image
-                  src={AppIcon}
-                  alt="WonderHood"
-                  width={96}
-                  height={96}
-                  className="opacity-40 rounded-full"
-                  priority={false}
-                />
-              </div>
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
-                {formatDate(event.date)}
-              </div>
-            </>
-          );
-        })()}
+          })()}
         </div>
 
 

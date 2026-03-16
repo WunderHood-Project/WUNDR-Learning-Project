@@ -168,7 +168,11 @@ export default function EventDetails() {
         <div className="pb-12 bg-wonderbg min-h-screen">
             {/* HERO */}
             <header className="relative">
-                <div className="relative h-56 sm:h-72 md:h-96 w-full overflow-hidden rounded-none shadow-md">
+                <div className="relative h-56 sm:h-72 md:h-96 w-full overflow-hidden rounded-none shadow-md bg-gradient-to-br from-wondergreen via-wonderleaf to-wondergreen">
+
+                {/* decorative circles */}
+                <div className="absolute -top-24 -left-24 w-72 h-72 bg-white/10 rounded-full blur-2xl"></div>
+                <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-white/10 rounded-full blur-2xl"></div>
                     {(() => {
                         const p = normalizeNextImageSrc(event.image);
                         if (!p) return null;
@@ -179,7 +183,7 @@ export default function EventDetails() {
                                 fill
                                 priority
                                 sizes="100vw"
-                                className="absolute inset-0 object-cover"
+                                className="absolute inset-0 object-contain p-2"
                                 unoptimized={p.unoptimized}
                             />
                         );
