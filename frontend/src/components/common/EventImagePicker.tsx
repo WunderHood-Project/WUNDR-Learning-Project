@@ -79,7 +79,7 @@ export default function EventImagePicker({ value, onChange }: Props) {
           src={value}
           alt="Preview"
           fill
-          className="object-cover"
+          className="object-cover p-2"
           sizes="100vw"
           unoptimized 
           priority={false}
