@@ -1,6 +1,6 @@
 import { Child } from "./child";
 
-export type Role = "parent" | "volunteer" | "admin" | "instructor"
+export type Role = "parent" | "volunteer" | "admin" | "instructor" | "partner"
 
 export interface User {
     id: string;

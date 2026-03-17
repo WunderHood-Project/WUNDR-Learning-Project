@@ -30,6 +30,11 @@ class EventSchoolAccess(str, Enum):
     PUBLIC_CUSTER_ONLY = "public_custer_only"
     PRIVATE_CUSTER_ONLY = "private_custer_only"
 
+class EventStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
 # ! Events
 class Event(BaseModel):
     id: str = Field(..., min_length=1, description="Event identifier")
@@ -106,6 +111,31 @@ class EventUpdate(BaseModel):
     userIds: Optional[List[str]] = Field(default=None)
     childIds: Optional[List[str]] = Field(default=None)
 
+
+class EventSubmit(BaseModel):
+    """DTO for POST /event/submit — used by partners to propose an event for admin approval."""
+    activityId: str = Field(min_length=1)
+    name: str = Field(min_length=1)
+    description: str = Field(min_length=1)
+    notes: str = Field(default="")
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    image: str = Field(min_length=0)
+    limit: int = Field(default=10)
+    schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
+    city: str = Field(min_length=1)
+    state: str = Field(min_length=1)
+    address: str = Field(min_length=1)
+    zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
+    latitude: Optional[float] = Field(default=None)
+    longitude: Optional[float] = Field(default=None)
+    startTime: str = Field(min_length=1)
+    endTime: str = Field(min_length=1)
+    volunteerLimit: int = Field(default=3)
+
+class EventStatusUpdate(BaseModel):
+    """DTO for PATCH /event/{id}/status — admin approves or rejects a pending event."""
+    status: EventStatus
+    adminNotes: Optional[str] = Field(default=None, max_length=500)
 
 class EnrollChildren(BaseModel):
     childIds: List[str]

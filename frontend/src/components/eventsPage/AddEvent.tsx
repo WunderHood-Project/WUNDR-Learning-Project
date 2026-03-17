@@ -7,6 +7,7 @@ import { CreateEventPayload, EventFormErrors } from '@/types/event';
 import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
 import { determineEnv } from '../../../utils/api';
+import { useUser } from '../../../hooks/useUser';
 import { parseFloatOrNull, parseIntOrZero } from '../../../utils/parseHelpers';
 import EventFields from './EventField';
 import { useActivity } from '../../../hooks/useActivity';
@@ -47,6 +48,9 @@ export default function AddEvent() {
     const { events } = useEvent(undefined)
     const router = useRouter()
     const todayYMD = useMemo(() => todayYMDUTC(), []);
+    const { user } = useUser()
+    const isPartner = user?.role === 'partner'
+    const endpoint = isPartner ? `${WONDERHOOD_URL}/event/submit` : `${WONDERHOOD_URL}/event`
 
     const handleImageChange = async (fileOrUrl: File | string | null) => {
         if (fileOrUrl instanceof File) {
@@ -133,7 +137,7 @@ export default function AddEvent() {
         };
 
         try {
-            const response = await makeApiRequest(`${WONDERHOOD_URL}/event`, {
+            const response = await makeApiRequest(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: payload
@@ -170,8 +174,7 @@ export default function AddEvent() {
                         type="submit" disabled={isSubmitting}
                         className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
                     >
-                        Add Event
-                        {/* {isSubmitting ? "Saving..." : "Add Event"} */}
+                        {isPartner ? "Submit for Approval" : "Add Event"}
                     </button>
                     <button
                         type="reset"
