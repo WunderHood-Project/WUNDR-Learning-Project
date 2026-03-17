@@ -150,11 +150,10 @@ export default function ActivityBlock({
           onClick={() => scrollBy(-1)}
           disabled={!canLeft}
           aria-label="Scroll left"
-          className={`hidden lg:flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 border-wonderleaf bg-white shadow-2xl transition-all duration-300 ${
-            canLeft
-              ? 'cursor-pointer opacity-100 hover:scale-110 hover:bg-wonderleaf hover:border-wondergreen'
-              : 'cursor-not-allowed opacity-30'
-          }`}
+          className={`hidden lg:flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 border-wonderleaf bg-white shadow-2xl transition-all duration-300 ${canLeft
+            ? 'cursor-pointer opacity-100 hover:scale-110 hover:bg-wonderleaf hover:border-wondergreen'
+            : 'cursor-not-allowed opacity-30'
+            }`}
         >
           <svg
             viewBox="0 0 24 24"
@@ -166,57 +165,57 @@ export default function ActivityBlock({
 
         {/* scroller */}
         <div
-        ref={scrollerRef}
-        className="
+          ref={scrollerRef}
+          className="
         flex flex-1 gap-4 overflow-x-auto pb-3
         snap-x snap-mandatory scroll-smooth touch-auto
         scrollbar-thin no-scrollbar
         scrollbar-track-transparent
         scrollbar-thumb-wonderleaf/40 hover:scrollbar-thumb-wonderleaf/60
         "
-        style={{ scrollbarGutter: 'stable', WebkitOverflowScrolling: 'touch' }}
-      >
-        {events.length > 0 ? (
-          events.map((event, i) => (
-            <div
-              key={event.id ?? `${event.name}-${event.date}-${event.startTime}-${i}`}
-              className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
-            >
-              <EventCard
-                event={event}
-                isAdmin={isAdmin}
-                onDelete={onDelete}
-              />
-            </div>
-          ))
-        ) : (
-          // <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
-          //   <p className="text-lg font-medium text-gray-600">No events scheduled yet</p>
-          //   <p className="mt-2 text-sm text-gray-500">
-          //     Check back soon for upcoming {activityName.toLowerCase()} events!
-          //   </p>
-          // </div>
-          <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
-            <p className="text-base md:text-lg font-semibold leading-snug text-gray-700">
-              Our Spring 2026 program schedule is being finalized.
-            </p>
-
-            <p className="mt-3 text-sm leading-relaxed text-gray-500">
-              Create an account to receive updates and early access to registration.
-            </p>
-
-            <p className="mt-5 text-sm font-medium text-gray-700">
-              Questions? Email us:{" "}
-              <a
-                href="mailto:info@whproject.org"
-                className="text-green-700 underline underline-offset-4 hover:text-green-800"
+          style={{ scrollbarGutter: 'stable', WebkitOverflowScrolling: 'touch' }}
+        >
+          {events.length > 0 ? (
+            events.map((event, i) => (
+              <div
+                key={event.id ?? `${event.name}-${event.date}-${event.startTime}-${i}`}
+                className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
               >
-                info@whproject.org
-              </a>
-            </p>
-          </div>
+                <EventCard
+                  event={event}
+                  isAdmin={isAdmin}
+                  onDelete={onDelete}
+                />
+              </div>
+            ))
+          ) : (
+            // <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
+            //   <p className="text-lg font-medium text-gray-600">No events scheduled yet</p>
+            //   <p className="mt-2 text-sm text-gray-500">
+            //     Check back soon for upcoming {activityName.toLowerCase()} events!
+            //   </p>
+            // </div>
+            <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
+              <p className="text-base md:text-lg font-semibold leading-snug text-gray-700">
+                Our Spring 2026 program schedule is being finalized.
+              </p>
 
-        )}
+              <p className="mt-3 text-sm leading-relaxed text-gray-500">
+                Create an account to receive updates and early access to registration.
+              </p>
+
+              <p className="mt-5 text-sm font-medium text-gray-700">
+                Questions? Email us:{" "}
+                <a
+                  href="mailto:info@whproject.org"
+                  className="text-green-700 underline underline-offset-4 hover:text-green-800"
+                >
+                  info@whproject.org
+                </a>
+              </p>
+            </div>
+
+          )}
         </div>
 
         {/* right arrow (desktop) */}
@@ -225,11 +224,10 @@ export default function ActivityBlock({
           onClick={() => scrollBy(1)}
           disabled={!canRight}
           aria-label="Scroll right"
-          className={`hidden lg:flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 border-wonderleaf bg-white shadow-2xl transition-all duration-300 ${
-            canRight
-              ? 'cursor-pointer opacity-100 hover:scale-110 hover:bg-wonderleaf hover:border-wondergreen'
-              : 'cursor-not-allowed opacity-30'
-          }`}
+          className={`hidden lg:flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full border-2 border-wonderleaf bg-white shadow-2xl transition-all duration-300 ${canRight
+            ? 'cursor-pointer opacity-100 hover:scale-110 hover:bg-wonderleaf hover:border-wondergreen'
+            : 'cursor-not-allowed opacity-30'
+            }`}
         >
           <svg
             viewBox="0 0 24 24"

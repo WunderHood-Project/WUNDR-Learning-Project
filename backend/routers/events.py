@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
-from models.interaction_models import EventCreate, EventUpdate, ReviewCreate, EnrollChildren, NotificationCreate
+from models.interaction_models import EventCreate, EventUpdate, EventSubmit, EventStatusUpdate, ReviewCreate, EnrollChildren, NotificationCreate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication, convert_iso_date_to_string, get_event_link, get_home_link
 from datetime import datetime, timezone, time, timedelta
@@ -181,6 +181,195 @@ async def create_event(
    return {"event": new_event, "message": "Event created successfully"}
 
 
+# =============================================================================
+# Partner event submission
+# =============================================================================
+
+@router.post("/submit", status_code=status.HTTP_201_CREATED)
+async def submit_event(
+    event_data: EventSubmit,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks
+):
+    """
+    Submit an event for admin approval.
+    Only users with the 'partner' role may call this endpoint.
+    The event is saved with status='pending' and all admins are notified.
+    """
+    enforce_authentication(current_user, "submit an event")
+    if current_user.role != "partner":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only partners can submit events for approval."
+        )
+
+    activity = await db.activities.find_unique(where={"id": event_data.activityId})
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found.")
+
+    now = datetime.now(timezone.utc)
+
+    try:
+        new_event = await db.events.create(
+            data={
+                "name": event_data.name,
+                "description": event_data.description,
+                "notes": event_data.notes,
+                "date": event_data.date,
+                "image": event_data.image,
+                "participants": 0,
+                "limit": event_data.limit,
+                "schoolAccess": event_data.schoolAccess,
+                "city": event_data.city,
+                "state": event_data.state,
+                "address": event_data.address,
+                "zipCode": event_data.zipCode,
+                "latitude": event_data.latitude,
+                "longitude": event_data.longitude,
+                "startTime": event_data.startTime,
+                "endTime": event_data.endTime,
+                "volunteerLimit": event_data.volunteerLimit,
+                "activityId": event_data.activityId,
+                "userIds": [],
+                "childIds": [],
+                "status": "pending",
+                "submittedById": current_user.id,
+                "createdAt": now,
+                "updatedAt": now,
+            }
+        )
+
+        # Notify all admins (in-app + email)
+        admins = await db.users.find_many(where={"role": "admin"})
+
+        notif_batch = [
+            {
+                "title": "New Partner Event Submission",
+                "description": (
+                    f"{current_user.firstName} {current_user.lastName} submitted "
+                    f'"{new_event.name}" — pending your approval.'
+                ),
+                "userId": admin.id,
+                "isRead": False,
+                "time": now,
+            }
+            for admin in admins
+        ]
+        if notif_batch:
+            await db.notifications.create_many(data=notif_batch)
+
+        admin_emails = [a.email for a in admins if a.emailNotificationsEnabled]
+        if admin_emails:
+            subject = f"New Partner Event Submission: {new_event.name}"
+            contents = (
+                f"Hello,\n\n"
+                f"{current_user.firstName} {current_user.lastName} has submitted a new event "
+                f"for your approval:\n\n"
+                f"Event: {new_event.name}\n"
+                f"Date: {format_us_date(new_event.date)}\n"
+                f"Location: {new_event.city}, {new_event.state}\n\n"
+                f"Please log into the admin dashboard to review and approve or reject this event.\n\n"
+                f"Best,\nWonderHood Team"
+            )
+            background_tasks.add_task(send_email_multiple_users, admin_emails, subject, contents)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to submit event: {str(e)}"
+        )
+
+    return {"event": new_event, "message": "Event submitted for approval"}
+
+
+# =============================================================================
+# Admin: view pending partner submissions
+# =============================================================================
+
+@router.get("/pending", status_code=status.HTTP_200_OK)
+async def get_pending_events(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    """
+    Return all events with status='pending'.
+    Admin only.
+    """
+    enforce_authentication(current_user, "view pending events")
+    enforce_admin(current_user, "view pending events")
+
+    events = await db.events.find_many(
+        where={"status": "pending"},
+        include={"activity": True, "submittedBy": True},
+        order={"createdAt": "desc"},
+    )
+    return {"events": events}
+
+
+# =============================================================================
+# Admin: approve or reject a pending event
+# =============================================================================
+
+@router.patch("/{event_id}/status", status_code=status.HTTP_200_OK)
+async def update_event_status(
+    event_id: str,
+    status_data: EventStatusUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks
+):
+    """
+    Approve or reject a pending partner event.
+    Admin only. Notifies the submitting partner via in-app notification and email.
+    """
+    enforce_authentication(current_user, "update event status")
+    enforce_admin(current_user, "update event status")
+
+    event = await db.events.find_unique(
+        where={"id": event_id},
+        include={"submittedBy": True}
+    )
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found.")
+    if event.status != "pending":
+        raise HTTPException(status_code=400, detail="Only pending events can be approved or rejected.")
+
+    updated_event = await db.events.update(
+        where={"id": event_id},
+        data={"status": status_data.status.value, "updatedAt": datetime.now(timezone.utc)}
+    )
+
+    # Notify the partner who submitted the event
+    if event.submittedById:
+        action = "approved" if status_data.status.value == "approved" else "rejected"
+        note_body = f'Your event "{event.name}" has been {action}.'
+        if status_data.adminNotes:
+            note_body += f" Admin notes: {status_data.adminNotes}"
+
+        await db.notifications.create(
+            data={
+                "title": f"Event {action.capitalize()}: {event.name}",
+                "description": note_body,
+                "userId": event.submittedById,
+                "isRead": False,
+                "time": datetime.now(timezone.utc),
+            }
+        )
+
+        if event.submittedBy and event.submittedBy.emailNotificationsEnabled:
+            subject = f"Your Event Submission Has Been {action.capitalize()}"
+            contents = (
+                f"Hello {event.submittedBy.firstName},\n\n"
+                f'Your event "{event.name}" has been {action}.'
+                + (f"\n\nAdmin notes: {status_data.adminNotes}" if status_data.adminNotes else "")
+                + "\n\nBest,\nWonderHood Team"
+            )
+            background_tasks.add_task(
+                send_email_one_user,
+                event.submittedBy.email,
+                subject,
+                contents
+            )
+
+    return {"event": updated_event, "message": f"Event {status_data.status.value} successfully"}
 
 
 @router.get("", status_code=status.HTTP_200_OK)
