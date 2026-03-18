@@ -13,26 +13,34 @@ import EmailNotificationsToggle from "./userInfo/EmailNotificationsToggle";
 
 
 type TabKey = 'user' | 'child' | 'events' | 'notifications';
-const idxToKey = (i: number): TabKey => (['user','child','events','notifications'] as TabKey[])[i];
-const keyToIdx: Record<TabKey, number> = { user:0, child:1, events:2, notifications:3 };
 
 export default function Profile() {
     const router = useRouter();
     const search = useSearchParams();
     const { user } = useUser();
 
+    const visibleTabs = useMemo(
+        () => DEFAULT_TABS.filter((t) => !(t.key === 'child' && user?.role === 'partner')),
+        [user?.role]
+    );
+
+    const keyToIdx = useMemo(
+        () => Object.fromEntries(visibleTabs.map((t, i) => [t.key, i])) as Record<string, number>,
+        [visibleTabs]
+    );
+
     const initial = (search.get('tab') ?? 'user') as TabKey;
     const [tabIdx, setTabIdx] = useState<number>(() => keyToIdx[initial] ?? 0);
 
     const tabFromUrl = useMemo(() => (search.get('tab') ?? 'user') as TabKey, [search]);
-    useEffect(() => setTabIdx(keyToIdx[tabFromUrl] ?? 0), [tabFromUrl]);
+    useEffect(() => setTabIdx(keyToIdx[tabFromUrl] ?? 0), [tabFromUrl, keyToIdx]);
 
-    const openTab = (idx: number) => {
-        setTabIdx(idx);
-        router.replace(`/profile?tab=${idxToKey(idx)}`);
+    const openTab = (key: string) => {
+        setTabIdx(keyToIdx[key] ?? 0);
+        router.replace(`/profile?tab=${key}`);
     };
 
-    const activeKey = idxToKey(tabIdx);
+    const activeKey = visibleTabs[tabIdx]?.key ?? 'user';
 
     const [notifUnread, setNotifUnread] = useState(0);
 
@@ -41,10 +49,10 @@ export default function Profile() {
         <div className="w-full pb-0 md:pb-2">
             <ProfileTopTabs
                 className="-mt-12 md:-mt-8"
-                tabs={DEFAULT_TABS}
+                tabs={visibleTabs}
                 activeKey={activeKey}
-                onChange={(key) => openTab(keyToIdx[key as TabKey])}
-                notificationsUnread={notifUnread} 
+                onChange={openTab}
+                notificationsUnread={notifUnread}
                 renderDelete={(closeMenu) => (
                     <>
                     <div className="w-full px-3 py-2 text-sm text-gray-800 hover:bg-gray-50 rounded-xl">
@@ -59,21 +67,18 @@ export default function Profile() {
                     }
                     className="w-full px-5 py-0 text-sm text-red-600 hover:bg-red-50 rounded-xl mb-4"
                     modalComponent={<DeleteUser currUser={user} />}
-                    // onButtonClick={closeMenu}
                     onButtonClick={() => setTimeout(closeMenu, 0)}
                     />
                     </>
-                    
+
                 )}
             />
             <div className="w-full pb-12">
-                {tabIdx === 0 && <UserInfo />}
-                {tabIdx === 1 && <ChildInfo />}
-                {tabIdx === 2 && <YourEvents />}
-                {tabIdx === 3 && (
-                <Notifications
-                    onUnreadChange={setNotifUnread} 
-                />
+                {activeKey === 'user'          && <UserInfo />}
+                {activeKey === 'child'         && <ChildInfo />}
+                {activeKey === 'events'        && <YourEvents />}
+                {activeKey === 'notifications' && (
+                    <Notifications onUnreadChange={setNotifUnread} />
                 )}
             </div>
     </div>
