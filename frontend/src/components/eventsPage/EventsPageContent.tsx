@@ -23,6 +23,7 @@ export default function EventsPageContent() {
   const [groupedEvents, setGroupedEvents] = useState<GroupedEvents[]>([]);
   const [loading, setLoading] = useState(true);
   const isAdmin: boolean = user?.role === "admin"
+  const canAddEvent: boolean = user?.role === "admin" || user?.role === "partner"
 
   useEffect(() => {
     const fetchActivitiesWithEvents = async () => {
@@ -33,7 +34,7 @@ export default function EventsPageContent() {
 
         const formatted: GroupedEvents[] = activities.map((activity) => ({
           activity: activity.name,
-          events: activity.events ?? [],
+          events: (activity.events ?? []).filter((e) => e.status === "approved"),
         }));
 
         setGroupedEvents(formatted);
@@ -68,7 +69,7 @@ export default function EventsPageContent() {
       />
       <div className="mx-auto max-w-7xl px-1.5 sm:px-6">
         <div className="text-center mb-12">
-          {isAdmin && (
+          {canAddEvent && (
             <div className="flex flex-col items-center justify-center mt-6">
               <Link href={"/events/addEvent"} className="mt-2 bg-green-700 text-white px-10 py-2 rounded text-sm font-medium hover:bg-green-800 transition-colors">
                 <strong>ADD EVENT</strong>

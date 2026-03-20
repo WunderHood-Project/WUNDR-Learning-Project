@@ -4,6 +4,8 @@ export type EventSchoolAccess =
   | "public_custer_only"
   | "private_custer_only";
 
+export type EventStatus = "pending" | "approved" | "rejected";
+
 
 export type Event = {
     id?: string
@@ -29,6 +31,7 @@ export type Event = {
 
     userId: string[]
     childIds: string[]
+    status?: EventStatus
 }
 
 type ServerManaged = "id" | "participants" | "userId" | "childIds"

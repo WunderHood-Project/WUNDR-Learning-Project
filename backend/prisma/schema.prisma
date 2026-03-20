@@ -46,6 +46,9 @@ model Users {
   // One-to-one
   volunteer Volunteers?
   waiverSignatures WaiverSignatures[]
+
+  // Partner-submitted events
+  submittedEvents Events[] @relation("SubmittedEvents")
 }
 
 enum Roles {
@@ -53,6 +56,7 @@ enum Roles {
   admin
   instructor
   volunteer
+  partner
 }
 
 // ! Children     =============================================================================
@@ -247,6 +251,12 @@ enum EventSchoolAccess {
   private_custer_only
 }
 
+enum EventStatus {
+  pending
+  approved
+  rejected
+}
+
 model Events {
     id            String      @id @default(auto()) @map("_id") @db.ObjectId
 
@@ -258,6 +268,10 @@ model Events {
     participants  Int @default(0)
     limit         Int @default(10)
     schoolAccess  EventSchoolAccess @default(all)
+
+    status        EventStatus @default(approved)
+    submittedById String?     @db.ObjectId
+    submittedBy   Users?      @relation("SubmittedEvents", fields: [submittedById], references: [id])
 
     city          String
     state         String

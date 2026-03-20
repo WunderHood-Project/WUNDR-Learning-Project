@@ -21,7 +21,7 @@ export default function AdministrationPage({ title, children }: Props) {
       </div>
       <div className="flex items-center justify-between">
         <Link href="/" className="ml-auto text-green-800 underline">
-        Back to site
+          Back to site
         </Link>
       </div>
 
@@ -35,10 +35,8 @@ export default function AdministrationPage({ title, children }: Props) {
       "
       >
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/children">Children</Link>
-        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/parents">Parents</Link>
-        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/events">Events</Link>
-        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/volunteers">Volunteers</Link>
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partners">Partners</Link>
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partner-events">Partner Events</Link>
       </nav>
 
 

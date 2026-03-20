@@ -28,7 +28,7 @@ const SignupModal = () => {
     // State for errors, step, roles, child info, etc.
     const [serverError, setServerError] = useState<string | null>(null)
     const [currentStep, setCurrentStep] = useState(1)
-    const [selectedRole, setSelectedRole] = useState<'parent' | 'instructor' | 'volunteer' | null>(null)
+    const [selectedRole, setSelectedRole] = useState<'parent' | 'instructor' | 'volunteer' | 'partner' | null>(null)
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [passwordTouched, setPasswordTouched] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -109,7 +109,7 @@ const SignupModal = () => {
             email: form1.email.trim().toLowerCase(),
             phoneNumber: phoneE164,
             password: form1.password,
-            role: selectedRole as "parent" | "instructor" | "volunteer",
+            role: selectedRole as "parent" | "instructor" | "volunteer" | "partner",
             address: form2.address,
             city: form2.city,
             state: form2.state.trim().toUpperCase(),
@@ -197,7 +197,7 @@ const SignupModal = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        if (currentStep === 3 && selectedRole === 'volunteer') {
+        if (currentStep === 3 && (selectedRole === 'volunteer' || selectedRole === 'partner')) {
             createAccount()
             return
         }
@@ -486,6 +486,26 @@ const SignupModal = () => {
                                         </div>
                                     </div>
                                 </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedRole('partner')}
+                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'partner'
+                                        ? 'border-green-500 bg-green-50 text-green-700'
+                                        : 'border-gray-300 hover:border-gray-400'
+                                        }`}
+                                >
+                                    <div className="flex items-center space-x-3">
+                                        <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'partner' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                                            }`}>
+                                            {selectedRole === 'partner' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
+                                        </div>
+                                        <div>
+                                            <div className="font-medium">I&apos;m a Partner</div>
+                                            <div className="text-sm text-gray-600">I want to host or submit events for families</div>
+                                        </div>
+                                    </div>
+                                </button>
                             </div>
 
                             {/* Email notifications opt-in */}
@@ -513,12 +533,12 @@ const SignupModal = () => {
                                     Back
                                 </button>
                                 <button
-                                    type={selectedRole === 'volunteer' ? "submit" : "button"}
-                                    onClick={selectedRole === 'volunteer' ? undefined : nextStep}
+                                    type={(selectedRole === 'volunteer' || selectedRole === 'partner') ? "submit" : "button"}
+                                    onClick={(selectedRole === 'volunteer' || selectedRole === 'partner') ? undefined : nextStep}
                                     disabled={!selectedRole || creating}
                                     className="flex-1 bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
                                 >
-                                    {selectedRole === 'volunteer' ? 'Create Account' : 'Continue'}
+                                    {(selectedRole === 'volunteer' || selectedRole === 'partner') ? 'Create Account' : 'Continue'}
                                 </button>
                             </div>
                         </div>
@@ -560,7 +580,7 @@ const SignupModal = () => {
                     <div className="flex flex-col space-x-3 pt-4">
                         <div className="flex justify-center">
                             <div className="flex space-x-2">
-                                {[1, 2, 3, 4].map((step) => (
+                                {(selectedRole === 'parent' ? [1, 2, 3, 4] : [1, 2, 3]).map((step) => (
                                     <div
                                         key={step}
                                         className={`w-3 h-3 rounded-full transition-colors ${step <= currentStep ? 'bg-green-500' : 'bg-gray-300'
