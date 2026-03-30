@@ -34,8 +34,7 @@ export default function AboutPageContent() {
                   In rural areas, it can be especially hard to meet peers regularly, and screen time can start to replace real-life connection.
                 </p>
                 <p>
-                  We create welcoming spaces where students feel supported and truly seen.
-                  Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
+                  We create welcoming spaces where students feel supported and truly seen. Through outdoor adventures, creative arts, STEAM exploration, life skills, and service projects, kids make friends, discover new interests, and grow together.
                 </p>
               </div>
             </div>
@@ -112,13 +111,24 @@ export default function AboutPageContent() {
                 </p>
               </div>
             </div>
+          </article>
 
-            <div className="flex-1 rounded-xl border border-wonderleaf/20 bg-white/60 p-4 sm:p-5 md:p-6 backdrop-blur-sm">
-              <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
-               We support child well-being through connection, movement, and purpose.
-               Our programs help reduce isolation, encourage healthy outdoor activity, and create positive teen leadership and service opportunities.
-               We also increase access to enrichment experiences and hands-on STEAM learning – especially important for rural and online-learning youth – so kids feel connected, confident, and supported.
-              </p>
+          {/* Why Youth Wellness */}
+          <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderorange/40 bg-gradient-to-br from-wonderorange/10 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute top-0 left-0 h-24 w-24 bg-gradient-to-br from-wonderorange/20 to-transparent rounded-br-full" />
+
+            <div className="relative p-6 sm:p-8 md:p-10">
+              <div className="mb-5">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-wonderorange">
+                  Why Youth Wellness Matters
+                </h3>
+              </div>
+
+              <div className="rounded-2xl border border-wonderorange/20 bg-white/80 p-5 sm:p-6 md:p-7 backdrop-blur-sm">
+                <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                  We support youth well-being through connection, movement, and purpose. Our programs help reduce isolation, encourage healthy outdoor activity, and create positive leadership and service opportunities for teens. We also increase access to enrichment experiences and hands-on STEAM learning, which is especially important for rural and online learners, so kids feel connected, confident, and supported.
+                </p>
+              </div>
             </div>
           </article>
         </div>
