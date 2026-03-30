@@ -91,7 +91,7 @@ async def create_event(
            status_code=400,
            detail="One or more child ids are invalid."
        )
-   
+
    # validate school access for pre-enrolled children
    for child in valid_children:
        if event_data.schoolAccess == "homeschool_only" and child.schoolType != "homeschool":
@@ -506,7 +506,7 @@ async def get_event_attendees_admin(
         "participants": event.participants,
         "limit": event.limit,
         "children": children_out,
-    }       
+    }
 
 
 @router.patch("/{event_id}", status_code=status.HTTP_200_OK)
@@ -544,7 +544,7 @@ async def update_event(
         activity = await db.activities.find_unique(where={"id": event_data.activityId})
         if not activity:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Activity Id is invalid")
-        
+
     # --- validate school access against target children ---
     target_child_ids = event_data.childIds if event_data.childIds is not None else (event.childIds or [])
     target_school_access = event_data.schoolAccess if event_data.schoolAccess is not None else event.schoolAccess
@@ -571,7 +571,7 @@ async def update_event(
                 raise HTTPException(
                     status_code=400,
                     detail=f"{child.firstName} {child.lastName} is not eligible for this event. This event is for private school students only."
-                )    
+                )
 
     # --- build payload ---
     update_payload: dict = {}
@@ -909,7 +909,7 @@ async def add_children_to_event(
    missing = set(to_add) - found_ids
    if missing:
        raise HTTPException(status_code=404, detail=f"Child not found: {', '.join(missing)}")
-   
+
 
    # validate school access
    for c in children:
@@ -1241,13 +1241,13 @@ async def send_event_email_survey(
             title = f'Tell us how we did at {event.name}!'
             description = f"""
                     Hello,
-                
-                    
+
+
                     Thank you for attending {event.name} on {format_us_date(event.date)}! We would like to know how we did. Please fill out the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor"> survey</a> if you would like to share your experience.
 
-                    
+
                     Best Regards,
-                    
+
 
                     WonderHood Project Team
                     info@whproject.org | whproject.org

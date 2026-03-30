@@ -18,7 +18,7 @@ export default function AboutPageContent() {
         <div className="relative z-10 rounded-3xl border-2 border-wonderleaf/40 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white shadow-2xl overflow-hidden">
           {/* Accent bar left*/}
           <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-wonderleaf via-wondergreen to-wonderorange" />
-          
+
           <div className="p-6 sm:p-8 md:p-10 pl-8 sm:pl-10 md:pl-12">
             <div className="mb-5 sm:mb-6">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent">
@@ -29,8 +29,8 @@ export default function AboutPageContent() {
             <div className="rounded-2xl border border-wonderleaf/20 bg-white/80 p-5 sm:p-6 md:p-8 backdrop-blur-sm shadow-inner">
               <div className="space-y-4 sm:space-y-5 text-base sm:text-lg leading-relaxed text-gray-700">
                 <p>
-                  WonderHood began in Westcliffe, Colorado, to support homeschool and online-learning families in rural communities. 
-                  Many homeschool and online learners love the flexibility of learning at home, but still miss steady friendships and a sense of belonging. 
+                  WonderHood began in Westcliffe, Colorado, to support homeschool and online-learning families in rural communities.
+                  Many homeschool and online learners love the flexibility of learning at home, but still miss steady friendships and a sense of belonging.
                   In rural areas, it can be especially hard to meet peers regularly, and screen time can start to replace real-life connection.
                 </p>
                 <p>
@@ -49,7 +49,7 @@ export default function AboutPageContent() {
           <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderleaf/40 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:shadow-wonderleaf/20 hover:scale-[1.02]">
             {/* Accent corner */}
             <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-br from-wonderleaf/20 to-transparent rounded-bl-full" />
-            
+
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="mb-5">
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-wondergreen to-wonderleaf bg-clip-text text-transparent">
@@ -69,7 +69,7 @@ export default function AboutPageContent() {
           <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderorange/40 bg-gradient-to-br from-wondersun/30 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:shadow-wonderorange/20 hover:scale-[1.02]">
             {/* Accent corner */}
             <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-br from-wonderorange/20 to-transparent rounded-bl-full" />
-            
+
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="mb-5">
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-wonderorange to-wondersun bg-clip-text text-transparent">
@@ -93,7 +93,7 @@ export default function AboutPageContent() {
           {/* Service Area */}
           <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderleaf/40 bg-gradient-to-br from-wonderleaf/10 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:scale-[1.02]">
             <div className="absolute top-0 left-0 h-24 w-24 bg-gradient-to-br from-wonderleaf/20 to-transparent rounded-br-full" />
-            
+
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="mb-5">
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-wondergreen ">
@@ -116,7 +116,7 @@ export default function AboutPageContent() {
           {/* Why Youth Wellness */}
           <article className="group relative overflow-hidden rounded-3xl border-2 border-wonderorange/40 bg-gradient-to-br from-wonderorange/10 via-wonderbg to-white shadow-2xl transition-all duration-300 hover:scale-[1.02]">
             <div className="absolute top-0 left-0 h-24 w-24 bg-gradient-to-br from-wonderorange/20 to-transparent rounded-br-full" />
-            
+
             <div className="relative p-6 sm:p-8 md:p-10">
               <div className="mb-5">
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-wonderorange">
@@ -148,7 +148,7 @@ export default function AboutPageContent() {
           <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wonderleaf/20 to-wondergreen/10 p-8 sm:p-10 border-2 border-wonderleaf/30 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wonderleaf/50">
             {/* Decorative circle */}
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wonderleaf/10 group-hover:scale-150 transition-transform duration-500" />
-            
+
             <div className="relative">
               <h3 className="text-2xl sm:text-3xl font-bold text-wondergreen mb-4">
                 Connection
@@ -162,7 +162,7 @@ export default function AboutPageContent() {
           {/* 2 - Skills for Life */}
           <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wonderorange/20 to-wondersun/10 p-8 sm:p-10 border-2 border-wonderorange/30 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wonderorange/50">
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wonderorange/10 group-hover:scale-150 transition-transform duration-500" />
-            
+
             <div className="relative">
               <h3 className="text-2xl sm:text-3xl font-bold text-wonderorange mb-4">
                 Skills for Life
@@ -176,7 +176,7 @@ export default function AboutPageContent() {
           {/* 3 - Real-world Confidence */}
           <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wondersun/30 to-wonderorange/15 p-8 sm:p-10 border-2 border-wondersun/40 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wondersun/60">
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wondersun/10 group-hover:scale-150 transition-transform duration-500" />
-            
+
             <div className="relative">
               <h3 className="text-2xl sm:text-3xl font-bold text-wonderorange mb-4">
                 Real-world Confidence
@@ -190,7 +190,7 @@ export default function AboutPageContent() {
           {/* 4 - Healthy Choices */}
           <article className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-wondergreen/20 to-wonderleaf/10 p-8 sm:p-10 border-2 border-wondergreen/30 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:border-wondergreen/50">
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-wondergreen/10 group-hover:scale-150 transition-transform duration-500" />
-            
+
             <div className="relative">
               <h3 className="text-2xl sm:text-3xl font-bold text-wondergreen mb-4">
                 Healthy Choices
@@ -206,8 +206,8 @@ export default function AboutPageContent() {
       <LeadershipSection />
       <ContactUsSection />
     </div>
-    
-      
+
+
     </>
   );
 }
