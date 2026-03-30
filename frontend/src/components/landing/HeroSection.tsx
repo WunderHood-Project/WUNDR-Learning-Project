@@ -52,18 +52,17 @@ export default function HeroSection() {
                                 Serving homeschool and online learners in Custer County, CO.
 
                                 </span>
-                            </p> */}
+                            </p>
 
-                            <div className="flex flex-row justify-center gap-5">
-                                <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
-                                    <div className="bg-wondergreen text-white
-                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
-                                                    rounded-lg text-sm md:text-lg lg:text-xl
-                                                    font-semibold shadow-lg
-                                                    transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
-                                        Get Involved
-                                    </div>
-                                </Link>
+                            <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
+                                <div className="bg-wondergreen text-white
+                                                px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                rounded-lg text-sm md:text-lg lg:text-xl
+                                                font-semibold shadow-lg
+                                                transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
+                                    Get Involved
+                                </div>
+                            </Link>
 
                             {/* Only for mob and tablet Events btn */}
                             <Link href="/events" className="mt-3 block md:hidden">
@@ -110,18 +109,17 @@ export default function HeroSection() {
                             <span className="hidden md:inline">
                                 For homeschoolers seeking fun, friendships, and meaningful adventures.
                             </span>
-                        </p> */}
+                        </p>
 
-                            <div className="flex flex-row justify-center gap-5">
-                                <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
-                                    <div className="bg-wondergreen text-white
-                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
-                                                    rounded-lg text-sm md:text-lg lg:text-xl
-                                                    font-semibold shadow-lg
-                                                    transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
-                                        Get Involved
-                                    </div>
-                                </Link>
+                            <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
+                                <div className="bg-wondergreen text-white
+                                                px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                rounded-lg text-sm md:text-lg lg:text-xl
+                                                font-semibold shadow-lg
+                                                transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
+                                    Get Involved
+                                </div>
+                            </Link>
 
                             {/* Only for mob and tablet Events btn */}
                             <Link href="/events" className="mt-3 block md:hidden">
@@ -169,18 +167,17 @@ export default function HeroSection() {
                                 Creative activities, new friendships, real-life experiences.
                             </span>
 
-                        </p> */}
+                        </p>
 
-                            <div className="flex flex-row justify-center gap-5">
-                                <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
-                                    <div className="bg-wondergreen text-white
-                                                    px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
-                                                    rounded-lg text-sm md:text-lg lg:text-xl
-                                                    font-semibold shadow-lg
-                                                    transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
-                                        Get Involved
-                                    </div>
-                                </Link>
+                            <Link href="/get-involved" className="mt-4 md:mt-8 inline-block">
+                                <div className="bg-wondergreen text-white
+                                                px-3 py-2 md:px-5 md:py-2 lg:px-7 lg:py-2.5
+                                                rounded-lg text-sm md:text-lg lg:text-xl
+                                                font-semibold shadow-lg
+                                                transition-all duration-300 hover:scale-105 hover:bg-wonderleaf">
+                                    Get Involved
+                                </div>
+                            </Link>
 
                             {/* Only for mob and tablet Events btn */}
                             <Link href="/events" className="mt-3 block md:hidden">
