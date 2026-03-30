@@ -35,7 +35,7 @@ export default function Story_Mission() {
               Learning outside traditional classrooms can be empowering, but it can also feel isolating, especially in rural communities where it can be harder to meet peers regularly.
             </p>
             <p className="leading-relaxed text-base sm:text-lg md:text-[17px] lg:text-[20px] xl:text-xl">
-              Our events give learners a place to belong. Families can choose the opportunities that excite them most. Through outdoor adventures, creative arts, STEAM exploration, and community projects, students build friendships, explore interests, and grow in confidence.
+              Our events give learners a place to belong. Families can choose the opportunities that excite them most. Through outdoor adventures, creative arts, STEM exploration, and community projects, students build friendships, explore interests, and grow in confidence.
             </p>
           </div>
         </div>
