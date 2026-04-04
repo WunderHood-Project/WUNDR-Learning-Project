@@ -1,23 +1,30 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useAuth } from "@/context/auth";
 import { isTokenExpired } from "../../../utils/auth";
 
 export default function AuthGuard() {
-  const router = useRouter();
+  const { logout } = useAuth();
+  const logoutRef = useRef(logout);
+
+  // Keep ref up to date with the latest logout function without re-running the interval effect
+  useEffect(() => {
+    logoutRef.current = logout;
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    // if (!token) return;
-
-    if (token && isTokenExpired(token)) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      router.push("/");
+    function checkToken() {
+      const token = localStorage.getItem("token");
+      if (token && isTokenExpired(token)) {
+        logoutRef.current();
+      }
     }
-  }, [router]);
+
+    checkToken();
+    const interval = setInterval(checkToken, 60 * 1000); // check every 60 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   return null;
 }

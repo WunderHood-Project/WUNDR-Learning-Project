@@ -37,7 +37,7 @@ export default function PasswordField({ label, error, ...rest }: Props) {
                     border ${error ? 'border-red-500' : 'border-gray-300'}
                     outline-none focus:outline-none focus-visible:outline-none
                     ring-0 focus:ring-2 focus:ring-green-600 focus:border-transparent
-                    transition-colors
+                    transition-colors rounded-full
                 `}
                 />
                 <button

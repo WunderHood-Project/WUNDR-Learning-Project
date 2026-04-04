@@ -47,7 +47,8 @@ export function ModalProvider({ children }: ModalProviderProps) {
         modalRef: { current: modalNode}, //reference to modal div
         modalContent,
         setModalContent, //function to set the modal contnet
-        setOnModalClose,
+        // Wrap in an arrow function so React doesn't invoke the callback as a state updater
+        setOnModalClose: (cb) => setOnModalClose(() => cb),
         closeModal
     }
 
