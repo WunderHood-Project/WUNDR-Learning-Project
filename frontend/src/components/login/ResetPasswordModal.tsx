@@ -86,108 +86,105 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-200/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      {/* Modal background */}
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            {/* Modal header and close button */}
-            <h2 className="text-2xl font-bold text-green-600 w-full text-center">
-              Reset Password
-            </h2>
-            {onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
-                tabIndex={-1}
-              >
-                ×
-              </button>
-            )}
-          </div>
-
-          {/* Show message if exists (success or error) */}
-          {message && (
-            <div
-              className={`p-3 mb-4 rounded-lg text-sm ${message.includes("✅")
-                ? "bg-green-50 border border-green-200 text-green-700"
-                : "bg-red-50 border border-red-200 text-red-700"
-                }`}
+    <div className="bg-white rounded-2xl shadow-2xl max-w-md">
+      <form onSubmit={handleSubmit} className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          {/* Modal header and close button */}
+          <h2 className="text-2xl font-bold text-green-600 w-full text-center">
+            Reset Password
+          </h2>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 text-2xl"
+              tabIndex={-1}
             >
-              {message}
+              ×
+            </button>
+          )}
+        </div>
+
+        {/* Show message if exists (success or error) */}
+        {message && (
+          <div
+            className={`p-3 mb-4 rounded-lg text-sm ${message.includes("✅")
+              ? "bg-green-50 border border-green-200 text-green-700"
+              : "bg-red-50 border border-red-200 text-red-700"
+              }`}
+          >
+            {message}
+          </div>
+        )}
+
+        {/* Only show form if password is NOT successfully reset */}
+        {!message?.includes("reset") && (
+          <>
+            <div className="mb-4">
+              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                New Password
+              </label>
+              <div className="relative mb-4">
+                <input
+                  id="newPassword"
+                  name="newPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  minLength={6}
+                  className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
+                  required
+                  placeholder="Enter new password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(v => !v)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+
             </div>
-          )}
 
-          {/* Only show form if password is NOT successfully reset */}
-          {!message?.includes("reset") && (
-            <>
-              <div className="mb-4">
-                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
-                </label>
-                <div className="relative mb-4">
-                  <input
-                    id="newPassword"
-                    name="newPassword"
-                    type={showPassword ? "text" : "password"}
-                    value={newPassword}
-                    onChange={e => setNewPassword(e.target.value)}
-                    minLength={6}
-                    className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
-                    required
-                    placeholder="Enter new password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                  </button>
-                </div>
-
+            <div className="mb-4">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                Confirm New Password
+              </label>
+              <div className="relative mb-4">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  minLength={6}
+                  className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
+                  required
+                  placeholder="Repeat new password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(v => !v)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
               </div>
+            </div>
 
-              <div className="mb-4">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm New Password
-                </label>
-                <div className="relative mb-4">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={e => setConfirmPassword(e.target.value)}
-                    minLength={6}
-                    className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
-                    required
-                    placeholder="Repeat new password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(v => !v)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    tabIndex={-1}
-                  >
-                    {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                {isLoading ? "Resetting..." : "Reset Password"}
-              </button>
-            </>
-          )}
-        </form>
-      </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 disabled:opacity-50"
+            >
+              {isLoading ? "Resetting..." : "Reset Password"}
+            </button>
+          </>
+        )}
+      </form>
     </div>
   );
 };
