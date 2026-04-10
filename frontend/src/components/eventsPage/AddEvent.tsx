@@ -34,6 +34,7 @@ const initialEventForm = (): CreateEventPayload => ({
     state: "CO",
     address: "",
     zipCode: "",
+    label: "wonderhood",
     latitude: null,
     longitude: null
 })

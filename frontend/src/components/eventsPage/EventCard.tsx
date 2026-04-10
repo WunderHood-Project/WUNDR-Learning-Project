@@ -9,9 +9,9 @@ import DeleteEventModal from './DeleteEventModal';
 import { NotificationModal } from '../notifications/NotificationModal';
 import { determineEnv } from '../../../utils/api';
 import { formatDate, formatTimeRange12h } from '../../../utils/formatDate';
-import type { Event } from '@/types/event';
+import type { Event, EventLabel } from '@/types/event';
 import Image from "next/image";
-import AppIcon from "@/app/icon.png"; 
+import AppIcon from "@/app/icon.png";
 import { normalizeNextImageSrc } from "../../../utils/image/normalizeNextImageSrc";
 
 const WONDERHOOD_URL = determineEnv();
@@ -47,7 +47,7 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
       <div className="flex-1 p-4 sm:p-6 flex flex-col gap-3">
         {/* Title (fixed height to keep cards aligned) */}
         <h3 className="text-center text-wondergreen font-bold text-lg sm:text-xl leading-snug line-clamp-2 min-h-[2rem]">
-            {event.name}
+          {event.name}
         </h3>
 
         <div className="w-full overflow-hidden rounded-xl">
@@ -68,6 +68,9 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
                     unoptimized={p.unoptimized}
                   />
 
+                  <div className="absolute top-3 left-3">
+                    <EventLabelBadge label={event.label} />
+                  </div>
                   <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
                     {formatDate(event.date)}
                   </div>
@@ -88,6 +91,9 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
                   />
                 </div>
 
+                <div className="absolute top-3 left-3">
+                  <EventLabelBadge label={event.label} />
+                </div>
                 <div className="absolute bottom-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
                   {formatDate(event.date)}
                 </div>
@@ -191,5 +197,19 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
         )}
       </div>
     </article>
+  );
+}
+
+function EventLabelBadge({ label }: { label: EventLabel }) {
+  const isPartner = label === "partner";
+  return (
+    <span
+      className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold shadow-md ${isPartner
+          ? "bg-wonderorange text-white"
+          : "bg-wondergreen text-white"
+        }`}
+    >
+      {isPartner ? "Partner" : "WonderHood"}
+    </span>
   );
 }

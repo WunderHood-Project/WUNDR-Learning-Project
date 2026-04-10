@@ -57,10 +57,9 @@ const getTheme = (name: string): Theme => {
 /** Lucide icon per activity (fallback = emoji) */
 const HeaderIcon = ({ name }: { name: string }) => {
   const n = name.toLowerCase();
+  console.log('HeaderIcon', name);
   const common = 'h-6 w-6 text-wondergreen';
-  if (n === 'outdoor') return <Mountain className={common} strokeWidth={2} />;
-  if (n === 'indoor') return <Landmark className={common} strokeWidth={2} />;
-  if (n === 'stem') return <FlaskConical className={common} strokeWidth={2} />;
+  if (n === 'enrichment programs') return <Landmark className={common} strokeWidth={2} />;
   return <span className="text-[18px] leading-none">📅</span>;
 };
 

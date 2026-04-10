@@ -244,6 +244,11 @@ model Activities {
 }
 
 // ! Events         =============================================================================
+enum EventLabel {
+  wonderhood
+  partner
+}
+
 enum EventSchoolAccess {
   all
   homeschool_only
@@ -268,6 +273,7 @@ model Events {
     participants  Int @default(0)
     limit         Int?
     schoolAccess  EventSchoolAccess @default(all)
+    label         EventLabel        @default(wonderhood)
 
     status        EventStatus @default(approved)
     submittedById String?     @db.ObjectId

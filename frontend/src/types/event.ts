@@ -4,6 +4,8 @@ export type EventSchoolAccess =
   | "public_custer_only"
   | "private_custer_only";
 
+export type EventLabel = "wonderhood" | "partner";
+
 export type EventStatus = "pending" | "approved" | "rejected";
 
 
@@ -21,6 +23,7 @@ export type Event = {
     participants?: number
     limit: number | null
     schoolAccess: EventSchoolAccess
+    label: EventLabel
 
     city: string
     state: string

@@ -62,6 +62,19 @@ export default function EventAsideCard({
     return (
         <aside className="lg:col-span-1">
             <div className="sticky top-4 sm:lg:sticky sm:lg:top-6 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 shadow-md p-4 sm:p-6">
+                {/* Label badge */}
+                <div className="flex items-center justify-between mb-3">
+                    <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                            event.label === "partner"
+                                ? "bg-wonderorange text-white"
+                                : "bg-wondergreen text-white"
+                        }`}
+                    >
+                        {event.label === "partner" ? "Partner Event" : "WonderHood Event"}
+                    </span>
+                </div>
+
                 {/* Header with spots left */}
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold text-sm sm:text-base text-wondergreen uppercase tracking-widest">
@@ -185,6 +198,18 @@ export default function EventAsideCard({
                         {displaySchoolAccess(event.schoolAccess)}
                     </span>
                 </div>
+
+                {/* Partner disclaimer */}
+                {event.label === "partner" && (
+                    <div className="mb-4 sm:mb-5 rounded-xl border border-wonderorange/30 bg-wonderorange/5 px-4 py-3">
+                        <p className="text-xs font-bold text-wonderorange uppercase tracking-wide mb-1">
+                            Third-Party Event
+                        </p>
+                        <p className="text-xs text-gray-600 leading-relaxed">
+                            This event is organized by an independent partner. WonderHood is not liable or responsible for the content, safety, or conduct of partner-hosted events. Please contact the organizer directly with any questions or concerns.
+                        </p>
+                    </div>
+                )}
 
                 {/* Availability + CTA */}
                 {hasCapacity ? (

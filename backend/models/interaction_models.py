@@ -30,6 +30,10 @@ class EventSchoolAccess(str, Enum):
     PUBLIC_CUSTER_ONLY = "public_custer_only"
     PRIVATE_CUSTER_ONLY = "private_custer_only"
 
+class EventLabel(str, Enum):
+    WONDERHOOD = "wonderhood"
+    PARTNER = "partner"
+
 class EventStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
@@ -48,6 +52,7 @@ class Event(BaseModel):
     participants: int = Field(default=0)
     limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
+    label: EventLabel = EventLabel.WONDERHOOD
 
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
@@ -69,6 +74,7 @@ class EventCreate(BaseModel):
     participants: int = Field(default=0)
     limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
+    label: EventLabel = EventLabel.WONDERHOOD
 
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
@@ -108,6 +114,7 @@ class EventUpdate(BaseModel):
     participants: Optional[int] = Field(default=None)
     limit: Optional[int] = Field(default=None)
     schoolAccess: Optional[EventSchoolAccess] = Field(default=None)
+    label: Optional[EventLabel] = Field(default=None)
     userIds: Optional[List[str]] = Field(default=None)
     childIds: Optional[List[str]] = Field(default=None)
 
@@ -122,6 +129,7 @@ class EventSubmit(BaseModel):
     image: str = Field(min_length=0)
     limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
+    label: EventLabel = EventLabel.PARTNER
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
     address: str = Field(min_length=1)
