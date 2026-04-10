@@ -19,6 +19,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 yagmail_app_password = os.getenv("YAGMAIL_APP_PASSWORD")
 yagmail_email = os.getenv("YAGMAIL_EMAIL")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
@@ -54,9 +55,8 @@ async def forgot_password(
         ALGORITHM
     )
 
-    print("THIS IS THE EMAIL:", user.email)
-    print("THIS IS THE TOKEN:", reset_token)
-    link = f"https://whproject.org/reset-password/{reset_token}"
+    print("Reset", reset_token)
+    link = f"{FRONTEND_URL}/reset-password/{reset_token}"
 
     subject = f'WonderHood Password Reset'
     contents = f"""
@@ -84,20 +84,6 @@ async def forgot_password(
         return {
             "message": "Password reset email sent successfully"
         }
-
-
-        # yag = yagmail.SMTP(yagmail_email, yagmail_app_password)
-        # link = f"https://whproject.org/reset-password/{reset_token}"
-        # contents = (
-        #     "To reset your password, please click the link below:\n\n"
-        #     f"{link}"
-        # )
-
-        # yag.send(
-        #     to=user.email,
-        #     subject="Password reset",
-        #     contents=contents,
-        # )
 
     except Exception as e:
         print("Error sending email:", e)
