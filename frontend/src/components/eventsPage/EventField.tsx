@@ -103,27 +103,31 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block mb-1 font-medium">Start Time <span className="text-rose-600">*</span></label>
+                    <label className="block mb-1 font-medium">
+                        Start Time{" "}
+                        <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                    </label>
                     <input
                         type='time'
                         name="startTime"
                         placeholder="Start Time"
-                        value={form.startTime}
+                        value={form.startTime ?? ""}
                         onChange={onChange}
-                        required
                         className="w-full border rounded px-3 py-2"
                     />
                     {errors.startTime && <p className="text-sm text-red-600">{errors.startTime}</p>}
                 </div>
                 <div>
-                    <label className="block mb-1 font-medium">End Time <span className="text-rose-600">*</span></label>
+                    <label className="block mb-1 font-medium">
+                        End Time{" "}
+                        <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                    </label>
                     <input
                         type='time'
                         name="endTime"
                         placeholder="End Time"
-                        value={form.endTime}
+                        value={form.endTime ?? ""}
                         onChange={onChange}
-                        required
                         className="w-full border rounded px-3 py-2"
                     />
                     {errors.endTime && <p className="text-sm text-red-600">{errors.endTime}</p>}
@@ -141,16 +145,18 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
             </div>
 
             <div>
-                <label className="block mb-1 font-medium">Participants Limit <span className="text-rose-600">*</span></label>
+                <label className="block mb-1 font-medium">
+                    Participants Limit{" "}
+                    <span className="text-xs text-gray-500 font-normal">(leave blank for no limit)</span>
+                </label>
                 <input
                     type="number"
                     name="limit"
                     min={0}
                     max={100}
                     inputMode="numeric"
-                    value={form.limit}
+                    value={form.limit ?? ""}
                     onChange={onChange}
-                    required
                     className="w-full border rounded px-3 py-2"
                 />
                 {errors.limit && <p className="text-sm text-red-600">{errors.limit}</p>}

@@ -25,15 +25,17 @@ type Props = {
 export default function EventCard({ event, isAdmin, onDelete }: Props) {
   // Derived numbers/labels for capacity
   const enrolled = event.participants ?? 0;
-  const spotsLeft = Math.max(0, (event.limit ?? 0) - enrolled);
-  const spotsLabel = spotsLeft === 0 ? 'No spots left' : `${spotsLeft} spots left`;
+  const unlimited = event.limit == null;
+  const spotsLeft = unlimited ? null : Math.max(0, event.limit! - enrolled);
+  const spotsLabel = unlimited ? 'Unlimited' : spotsLeft === 0 ? 'No spots left' : `${spotsLeft} spots left`;
 
-  const spotsClass =
-    spotsLeft === 0
+  const spotsClass = unlimited
+    ? 'bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30'
+    : spotsLeft === 0
       ? 'bg-gray-100 text-gray-700 border border-gray-200'
-      : spotsLeft <= 3
+      : spotsLeft! <= 3
         ? 'bg-red-50 text-red-700 border border-red-200'
-        : spotsLeft <= 7
+        : spotsLeft! <= 7
           ? 'bg-yellow-50 text-yellow-800 border border-yellow-200'
           : 'bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30';
 
@@ -129,14 +131,14 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
           <div className="flex items-center gap-2">
             <FaUser className="w-4 h-4 text-wonderorange shrink-0" />
             <span className="text-sm font-semibold text-wondergreen">
-              Max Participants:&nbsp;{event.limit}
+              Max Participants:&nbsp;{unlimited ? "Unlimited" : event.limit}
             </span>
           </div>
 
           {/* Row 2: enrolled left + spots badge right (fixed width) */}
           <div className="mt-2 flex items-center">
             <p className="text-xs text-gray-600">
-              {enrolled} of {event.limit} enrolled
+              {unlimited ? `${enrolled} enrolled` : `${enrolled} of ${event.limit} enrolled`}
             </p>
 
             <span

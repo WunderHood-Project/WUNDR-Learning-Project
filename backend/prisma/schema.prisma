@@ -266,7 +266,7 @@ model Events {
     date          DateTime
     image         String
     participants  Int @default(0)
-    limit         Int @default(10)
+    limit         Int?
     schoolAccess  EventSchoolAccess @default(all)
 
     status        EventStatus @default(approved)
@@ -279,8 +279,8 @@ model Events {
     zipCode       String
     latitude      Float?
     longitude     Float?
-    startTime     String
-    endTime       String
+    startTime     String?
+    endTime       String?
     volunteerLimit     Int @default(3)
     createdAt         DateTime @default(now())
     updatedAt         DateTime? @default(now())

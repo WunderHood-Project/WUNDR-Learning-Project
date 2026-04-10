@@ -15,11 +15,11 @@ export type Event = {
     description: string
     notes?: string | null
     date: string
-    startTime: string
-    endTime: string
+    startTime: string | null
+    endTime: string | null
     image: string
     participants?: number
-    limit: number
+    limit: number | null
     schoolAccess: EventSchoolAccess
 
     city: string

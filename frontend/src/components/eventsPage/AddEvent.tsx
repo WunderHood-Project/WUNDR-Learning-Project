@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEvent } from '../../../hooks/useEvent';
 import { determineEnv } from '../../../utils/api';
 import { useUser } from '../../../hooks/useUser';
-import { parseFloatOrNull, parseIntOrZero } from '../../../utils/parseHelpers';
+import { parseFloatOrNull } from '../../../utils/parseHelpers';
 import EventFields from './EventField';
 import { useActivity } from '../../../hooks/useActivity';
 // import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
@@ -28,7 +28,7 @@ const initialEventForm = (): CreateEventPayload => ({
     startTime: "",
     endTime: "",
     image: "",
-    limit: 0,
+    limit: null,
     schoolAccess: "all",
     city: "",
     state: "CO",
@@ -77,7 +77,12 @@ export default function AddEvent() {
         }
 
         if (name === "limit") {
-            setForm(prev => ({ ...prev, [name]: parseIntOrZero(value) }))
+            setForm(prev => ({ ...prev, [name]: value === "" ? null : parseInt(value, 10) }))
+            return
+        }
+
+        if (name === "startTime" || name === "endTime") {
+            setForm(prev => ({ ...prev, [name]: value === "" ? null : value }))
             return
         }
 
@@ -109,13 +114,13 @@ export default function AddEvent() {
         // Validate date format:
         if (!dateYMD.test(form.date)) newErrors.date = "Please pick a valid date"
 
-        // Validate time formats:
-        if (!timeRegex.test(form.startTime)) newErrors.startTime = "Please provide HH:mm"
-        if (!timeRegex.test(form.endTime)) newErrors.endTime = "Please provide HH:mm"
+        // Validate time formats (only if provided):
+        if (form.startTime != null && !timeRegex.test(form.startTime)) newErrors.startTime = "Please provide HH:mm"
+        if (form.endTime != null && !timeRegex.test(form.endTime)) newErrors.endTime = "Please provide HH:mm"
 
         // Validate participant LIMIT:
-        if (form.limit > 100) newErrors.limit = "There must be less than 100 participants"
-        if (form.limit < 0) newErrors.limit = "There must be at least 0 participants"
+        if (form.limit != null && form.limit > 100) newErrors.limit = "There must be less than 100 participants"
+        if (form.limit != null && form.limit < 0) newErrors.limit = "There must be at least 0 participants"
 
         // Validate the address:
         //  ! Add more robust validation

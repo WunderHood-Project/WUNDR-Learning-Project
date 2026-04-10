@@ -144,7 +144,7 @@ export default function EventDetails() {
         }
     }
 
-    const hasCapacity = typeof event?.participants === 'number' && (event?.participants ?? 0) < (event?.limit ?? 0);
+    const hasCapacity = event?.limit == null || (typeof event?.participants === 'number' && event.participants < event.limit);
 
     const next = eventId ? `/events/${eventId}` : "/events";
     const addChildHref = `/profile?tab=child&mode=add&next=${encodeURIComponent(next)}&openEnroll=1`;
@@ -349,8 +349,8 @@ export default function EventDetails() {
                                         <button
                                             type="submit"
                                             className="rounded-lg bg-wondergreen px-6 py-3 text-white font-bold uppercase tracking-wide text-sm hover:bg-wonderleaf transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            disabled={selected.size === 0 || Number(event.participants) + selected.size > event.limit}
-                                            aria-disabled={selected.size === 0 || Number(event.participants) + selected.size > event.limit}
+                                            disabled={selected.size === 0 || (event.limit != null && Number(event.participants) + selected.size > event.limit)}
+                                            aria-disabled={selected.size === 0 || (event.limit != null && Number(event.participants) + selected.size > event.limit)}
                                         >
                                             Enroll
                                         </button>

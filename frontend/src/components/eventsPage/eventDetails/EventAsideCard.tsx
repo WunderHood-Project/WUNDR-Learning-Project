@@ -36,14 +36,15 @@ export default function EventAsideCard({
     onToggleAttendees,
 }: Props) {
     const enrolled = event.participants ?? 0;
-    const limit = event.limit ?? 0;
-    const spotsLeft = Math.max(0, limit - enrolled);
+    const limit = event.limit;
+    const unlimited = limit == null;
+    const spotsLeft = unlimited ? null : Math.max(0, limit - enrolled);
     const timeLabel = formatTimeRange12h(event.date, event.startTime, event.endTime);
 
     const progressPct = useMemo(() => {
-        if (!limit) return 0;
+        if (unlimited || !limit) return 0;
         return Math.min(100, Math.max(0, (enrolled / limit) * 100));
-    }, [enrolled, limit]);
+    }, [enrolled, limit, unlimited]);
 
     const d = useMemo(() => new Date(event.date), [event.date]);
     const calMonth = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
@@ -72,7 +73,7 @@ export default function EventAsideCard({
                         bg-wonderleaf/15 text-wondergreen border border-wonderleaf/40 shadow-sm flex-shrink-0"
                         aria-live="polite"
                     >
-                        {spotsLeft} spots left
+                        {unlimited ? "Unlimited spots" : `${spotsLeft} spots left`}
                     </span>
                 </div>
 
@@ -92,7 +93,7 @@ export default function EventAsideCard({
                         />
                     </div>
                     <p className="text-xs text-gray-700 font-medium mt-1.5 sm:mt-2">
-                        {enrolled} of {limit} enrolled
+                        {unlimited ? `${enrolled} enrolled (no limit)` : `${enrolled} of ${limit} enrolled`}
                     </p>
                 </div>
 

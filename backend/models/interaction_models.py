@@ -46,7 +46,7 @@ class Event(BaseModel):
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=1)
     participants: int = Field(default=0)
-    limit: int = Field(default=10)
+    limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
 
     city: str = Field(min_length=1)
@@ -55,8 +55,8 @@ class Event(BaseModel):
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
     latitude: Optional[float] = Field(default=None)
     longitude: Optional[float] = Field(default=None)
-    startTime: str = Field(min_length=1)
-    endTime: str = Field(min_length=1)
+    startTime: Optional[str] = Field(min_length=None)
+    endTime: Optional[str] = Field(min_length=None)
 
 class EventCreate(BaseModel):
     activityId: str = Field(min_length=1)
@@ -67,7 +67,7 @@ class EventCreate(BaseModel):
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=0)
     participants: int = Field(default=0)
-    limit: int = Field(default=10)
+    limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
 
     city: str = Field(min_length=1)
@@ -76,8 +76,8 @@ class EventCreate(BaseModel):
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
     latitude: Optional[float] = Field(default=None)
     longitude: Optional[float] = Field(default=None)
-    startTime: str = Field(min_length=1)
-    endTime: str = Field(min_length=1)
+    startTime: Optional[str] = Field(min_length=None)
+    endTime: Optional[str] = Field(min_length=None)
     volunteerLimit: int = Field(default=3)
 
     userIds: List[str] = Field(default_factory=list)
@@ -120,7 +120,7 @@ class EventSubmit(BaseModel):
     notes: str = Field(default="")
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=0)
-    limit: int = Field(default=10)
+    limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
@@ -128,8 +128,8 @@ class EventSubmit(BaseModel):
     zipCode: str = Field(pattern=r'^\d{5}(-\d{4})?$')
     latitude: Optional[float] = Field(default=None)
     longitude: Optional[float] = Field(default=None)
-    startTime: str = Field(min_length=1)
-    endTime: str = Field(min_length=1)
+    startTime: Optional[str] = Field(min_length=None)
+    endTime: Optional[str] = Field(min_length=None)
     volunteerLimit: int = Field(default=3)
 
 class EventStatusUpdate(BaseModel):
