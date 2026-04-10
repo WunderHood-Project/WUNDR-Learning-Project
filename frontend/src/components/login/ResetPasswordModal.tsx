@@ -86,7 +86,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl max-w-md">
+    <div className="bg-white rounded-2xl shadow-2xl w-[calc(100vw-2rem)] max-w-[512px]">
       <form onSubmit={handleSubmit} className="p-6">
         <div className="flex justify-between items-center mb-6">
           {/* Modal header and close button */}

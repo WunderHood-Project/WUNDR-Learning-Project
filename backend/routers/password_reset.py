@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, BackgroundTasks
 from db.prisma_client import db
 from models.user_models import PasswordResetRequest, PasswordResetPayload
 from routers.auth.utils import hash_password
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import jwt
 from dotenv import load_dotenv
 import os
+from .notifications import send_email_one_user
 import yagmail
 
 
@@ -18,10 +19,14 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 yagmail_app_password = os.getenv("YAGMAIL_APP_PASSWORD")
 yagmail_email = os.getenv("YAGMAIL_EMAIL")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
-async def forgot_password(request: PasswordResetRequest):
+async def forgot_password(
+    request: PasswordResetRequest,
+    background_tasks: BackgroundTasks
+):
 
     """
     Initiates password reset process
@@ -39,7 +44,6 @@ async def forgot_password(request: PasswordResetRequest):
         raise HTTPException(status_code=404, detail="User not found")
 
     # Generate the JWT with timezone-aware UTC datetime
-    from datetime import timezone
     expiration = datetime.now(timezone.utc) + timedelta(minutes=30)
 
     reset_token = jwt.encode(
@@ -51,23 +55,35 @@ async def forgot_password(request: PasswordResetRequest):
         ALGORITHM
     )
 
-    print("THIS IS THE EMAIL:", user.email)
-    print("THIS IS THE TOKEN:", reset_token)
+    print("Reset", reset_token)
+    link = f"{FRONTEND_URL}/reset-password/{reset_token}"
+
+    subject = f'WonderHood Password Reset'
+    contents = f"""
+            Hello,
+
+
+            To reset your password, please click the <a href="{link}">link</a>.
+
+            Best Regards,
+
+
+            WonderHood Project Team
+            info@whproject.org | whproject.org
+        """
 
     # Send the email
     try:
-        yag = yagmail.SMTP(yagmail_email, yagmail_app_password)
-        link = f"http://localhost:3000/reset-password/{reset_token}"
-        contents = (
-            "To reset your password, please click the link below:\n\n"
-            f"{link}"
+        background_tasks.add_task(
+            send_email_one_user,
+            user.email,
+            subject,
+            contents
         )
 
-        yag.send(
-            to=user.email,
-            subject="Password reset",
-            contents=contents,
-        )
+        return {
+            "message": "Password reset email sent successfully"
+        }
 
     except Exception as e:
         print("Error sending email:", e)

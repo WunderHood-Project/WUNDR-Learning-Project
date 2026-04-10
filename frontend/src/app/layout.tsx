@@ -6,7 +6,6 @@ import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/footer/Footer";
 import { Modal, ModalProvider } from "../context/modal";
 import { AuthProvider } from "@/context/auth";
-import ResetPasswordWrapper from "@/components/login/ResetPasswordWrapper";
 import AuthGuard from "@/components/auth/AuthGuard";
 import DonateFloating from "@/components/donate/DonateFloating";
 import CookieConsentBanner from "@/components/cookieConsent/CookieConsentBanner";
@@ -91,7 +90,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <DonateFloating />
               <main className="flex-grow flex flex-col">
                 {children}
-                <ResetPasswordWrapper />
               </main>
               <Footer />
               <Modal />
