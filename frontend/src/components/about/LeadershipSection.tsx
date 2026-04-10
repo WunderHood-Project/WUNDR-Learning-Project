@@ -95,7 +95,7 @@ export default function LeadershipSection() {
                         Governance &amp; Leadership
                     </h2>
                     <p className="mt-2 text-sm sm:text-base md:text-lg text-gray-700 max-w-3xl mx-auto">
-                        WonderHood Project is led by a volunteer Board of Directors and a
+                        WonderHood Project is led by a volunteer board of directors and a
                         small founding team who care deeply about youth and community. Together, we ensure every program is
                         safe, supportive, and true to our mission.
                     </p>

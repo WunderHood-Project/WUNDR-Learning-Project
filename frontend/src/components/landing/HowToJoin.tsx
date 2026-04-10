@@ -6,7 +6,7 @@ import SignupModal from "@/components/signup/SignupModal";
 
 export default function HowToJoin() {
   return (
-    <section className="w-full py-4 md:py-6">
+    <section className="w-full py-4 md:py-7">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10 sm:mb-12 flex flex-col items-center xl:items-start">
@@ -92,9 +92,9 @@ export default function HowToJoin() {
           {/* Free banner */}
           <div className="bg-wondersun/40 border-2 border-wonderorange/30 rounded-2xl p-4  lg:p-4">
             <p className="text-base md:text-[16px] lg:text-[18px] text-gray-800 text-center">
-              WonderHood events are free for families, made possible through 
+              WonderHood events are free for families, made possible through
               <span className="font-bold text-wondergreen"> grants, donations, </span>
-              and 
+              and
               <span className="font-bold text-wondergreen"> community partners.</span>
             </p>
           </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PrivacyPolicy from "@/components/footer/PrivacyPolicy";
+import PrivacyPolicy from "@/components/policies/PrivacyPolicy";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — WonderHood",

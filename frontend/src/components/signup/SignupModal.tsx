@@ -119,13 +119,13 @@ const SignupModal = () => {
 
         try {
             const response = await handleSignup(userInfo)
-            if(!response.user){
+            if (!response.user) {
                 throw new Error("Signup fail");
             }
             const loginResp = await handleLogin(userInfo.email, userInfo.password);
             const token = loginResp?.access_token || localStorage.getItem("token");
-            if(!token) throw new Error("Missing token on Signup")
-                
+            if (!token) throw new Error("Missing token on Signup")
+
             loginWithToken(token, response.user as User);
 
             let redirectTo = safeNext;
@@ -164,16 +164,16 @@ const SignupModal = () => {
                 const email = form1.email.trim().toLocaleLowerCase();
 
                 const res = await fetch(`${API}/auth/check-email?email=${encodeURIComponent(email)}`,
-                    {method: "GET" }
+                    { method: "GET" }
                 );
-                if(!res.ok){
+                if (!res.ok) {
                     setServerError("We could't verify your email. Please try again.");
                     return;
                 }
 
-                const data = await res.json() as {available: boolean};
+                const data = await res.json() as { available: boolean };
 
-                if(!data.available) {
+                if (!data.available) {
                     setServerError("An account with this email already exists. Please log in instead.");
                     return;
                 }
@@ -225,374 +225,372 @@ const SignupModal = () => {
     );
 
     return (
-        <div className="fixed inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-                <form onSubmit={handleSubmit} className="p-6">
-                    {/* Header */}
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800 text-green-600 w-full text-center">Join WonderHood</h2>
-                        <button
-                            type="button"
-                            onClick={closeModal}
-                            className="text-gray-400 hover:text-gray-600 text-2xl"
-                        >
-                            ×
-                        </button>
+        <div className="bg-white rounded-2xl shadow-2xl w-[510px] max-w-md max-h-[90vh] overflow-y-auto">
+            <form onSubmit={handleSubmit} className="p-6">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 text-green-600 w-full text-center">Join WonderHood</h2>
+                    <button
+                        type="button"
+                        onClick={closeModal}
+                        className="text-gray-400 hover:text-gray-600 text-2xl"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                {/* Error Message */}
+                {serverError && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                        {serverError}
                     </div>
+                )}
 
-                    {/* Error Message */}
-                    {serverError && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                            {serverError}
-                        </div>
-                    )}
+                {/* Step 1: Basic Info */}
+                {currentStep === 1 && (
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Tell us about yourself</h3>
 
-                    {/* Step 1: Basic Info */}
-                    {currentStep === 1 && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">Tell us about yourself</h3>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    autoComplete="given-name"
-                                    placeholder="First Name"
-                                    value={form1.firstName}
-                                    onChange={handleChange}
-                                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    required
-                                    maxLength={50}
-                                />
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    autoComplete="family-name"
-                                    placeholder="Last Name"
-                                    value={form1.lastName}
-                                    onChange={handleChange}
-                                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    required
-                                    maxLength={50}
-                                />
-                            </div>
-
+                        <div className="grid grid-cols-2 gap-4">
                             <input
-                                type="email"
-                                name="email"
+                                type="text"
+                                name="firstName"
+                                autoComplete="given-name"
+                                placeholder="First Name"
+                                value={form1.firstName}
+                                onChange={handleChange}
+                                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                required
+                                maxLength={50}
+                            />
+                            <input
+                                type="text"
+                                name="lastName"
+                                autoComplete="family-name"
+                                placeholder="Last Name"
+                                value={form1.lastName}
+                                onChange={handleChange}
+                                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                required
+                                maxLength={50}
+                            />
+                        </div>
+
+                        <input
+                            type="email"
+                            name="email"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            autoComplete="email"
+                            placeholder="Email Address"
+                            value={form1.email}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            required
+                            maxLength={100}
+                        />
+
+                        <input
+                            type="tel"
+                            name="phoneNumber"
+                            inputMode="tel"
+                            autoComplete="tel"
+                            // maxLength={12}
+                            placeholder="Phone Number"
+                            value={form1.phoneNumber}
+                            onChange={handlePhoneChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
+
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
                                 autoCapitalize="none"
                                 autoCorrect="off"
-                                autoComplete="email"
-                                placeholder="Email Address"
-                                value={form1.email}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                autoComplete="new-password"
+                                placeholder="Password"
+                                value={form1.password}
+                                onChange={handlePasswordChange}
+                                onBlur={() => setPasswordTouched(true)}
+                                className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 required
-                                maxLength={100}
+                                minLength={6}
+                                maxLength={32}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                            </button>
+                        </div>
 
+                        <div className="relative">
                             <input
-                                type="tel"
-                                name="phoneNumber"
-                                inputMode="tel"
-                                autoComplete="tel"
-                                // maxLength={12}
-                                placeholder="Phone Number"
-                                value={form1.phoneNumber}
-                                onChange={handlePhoneChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                type={showConfirmPassword ? "text" : "password"}
+                                name="confirmPassword"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                autoComplete="new-password"
+                                placeholder="Confirm Password"
+                                value={form1.confirmPassword}
+                                onChange={handleChange}
+                                className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                required
+                                minLength={6}
+                                maxLength={32}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                            </button>
+                        </div>
 
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    autoCapitalize="none"
-                                    autoCorrect="off"
-                                    autoComplete="new-password"
-                                    placeholder="Password"
-                                    value={form1.password}
-                                    onChange={handlePasswordChange}
-                                    onBlur={() => setPasswordTouched(true)}
-                                    className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    required
-                                    minLength={6}
-                                    maxLength={32}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                                >
-                                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                                </button>
-                            </div>
+                        {passwordError && passwordTouched && (<div className="text-red-500 text-sm mt-1">{passwordError}</div>)}
 
-                            <div className="relative">
-                                <input
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    name="confirmPassword"
-                                    autoCapitalize="none"
-                                    autoCorrect="off"
-                                    autoComplete="new-password"
-                                    placeholder="Confirm Password"
-                                    value={form1.confirmPassword}
-                                    onChange={handleChange}
-                                    className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    required
-                                    minLength={6}
-                                    maxLength={32}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                                >
-                                    {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
-                                </button>
-                            </div>
+                        <button
+                            type="button"
+                            onClick={() => nextStep()}
+                            disabled={checkingEmail}
+                            className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                        >
+                            {checkingEmail ? "Checking email..." : "Continue"}
+                        </button>
+                    </div>
+                )}
 
-                            {passwordError && passwordTouched && (<div className="text-red-500 text-sm mt-1">{passwordError}</div>)}
+                {/* Step 2: Location */}
+                {currentStep === 2 && (
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Where are you located?</h3>
+                        <p className="text-sm text-gray-600 mb-4">This program is currently available in the state of Colorado.</p>
+
+                        <input
+                            type="text"
+                            name="address"
+                            autoComplete="address-line1"
+                            placeholder="Address"
+                            value={form2.address}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            required
+                            maxLength={50}
+                        />
+
+                        <input
+                            type="text"
+                            name="city"
+                            autoComplete="address-level2"
+                            placeholder="City"
+                            value={form2.city}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            required
+                            maxLength={50}
+                        />
+
+                        <input
+                            type="text"
+                            name="state"
+                            autoComplete="address-level1"
+                            autoCapitalize="characters"
+                            placeholder="State"
+                            value={form2.state}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            required
+                            maxLength={2}
+                        />
+
+                        <input
+                            type="text"
+                            autoComplete="postal-code"
+                            inputMode="numeric"
+                            pattern="[0-9]{5}"
+                            name="zipcode"
+                            placeholder="ZIP Code"
+                            value={form2.zipcode}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            required
+                            maxLength={5}
+                        />
+
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                type="button"
+                                onClick={prevStep}
+                                className="flex-1 bg-gray-200 text-gray-700 p-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            >
+                                Back
+                            </button>
+                            <button
+                                type="button"
+                                onClick={nextStep}
+                                className="flex-1 bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50"
+                            >
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Step 3: Role Selection */}
+                {currentStep === 3 && (
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4">What brings you to WonderHood?</h3>
+
+                        <div className="space-y-3">
+                            <button
+                                type="button"
+                                onClick={() => setSelectedRole('parent')}
+                                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'parent'
+                                    ? 'border-green-500 bg-green-50 text-green-700'
+                                    : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                            >
+                                <div className="flex items-center space-x-3">
+                                    <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'parent' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                                        }`}>
+                                        {selectedRole === 'parent' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
+                                    </div>
+                                    <div>
+                                        <div className="font-medium">I&apos;m a Parent</div>
+                                        <div className="text-sm text-gray-600">Looking for activities for my child</div>
+                                    </div>
+                                </div>
+                            </button>
 
                             <button
                                 type="button"
-                                onClick={() => nextStep()}
-                                disabled={checkingEmail}
-                                className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                                onClick={() => setSelectedRole('volunteer')}
+                                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'volunteer'
+                                    ? 'border-green-500 bg-green-50 text-green-700'
+                                    : 'border-gray-300 hover:border-gray-400'
+                                    }`}
                             >
-                                {checkingEmail ? "Checking email..." : "Continue"}
+                                <div className="flex items-center space-x-3">
+                                    <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'volunteer' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                                        }`}>
+                                        {selectedRole === 'volunteer' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
+                                    </div>
+                                    <div>
+                                        <div className="font-medium">I&apos;m a Volunteer</div>
+                                        <div className="text-sm text-gray-600">Want to help or earn service hours</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setSelectedRole('partner')}
+                                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'partner'
+                                    ? 'border-green-500 bg-green-50 text-green-700'
+                                    : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                            >
+                                <div className="flex items-center space-x-3">
+                                    <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'partner' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                                        }`}>
+                                        {selectedRole === 'partner' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
+                                    </div>
+                                    <div>
+                                        <div className="font-medium">I&apos;m a Partner</div>
+                                        <div className="text-sm text-gray-600">I want to host or submit events for families</div>
+                                    </div>
+                                </div>
                             </button>
                         </div>
-                    )}
 
-                    {/* Step 2: Location */}
-                    {currentStep === 2 && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">Where are you located?</h3>
-                            <p className="text-sm text-gray-600 mb-4">This program is currently available in the state of Colorado.</p>
-
+                        {/* Email notifications opt-in */}
+                        <label className="flex items-start gap-2 text-sm text-gray-700">
                             <input
-                                type="text"
-                                name="address"
-                                autoComplete="address-line1"
-                                placeholder="Address"
-                                value={form2.address}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                required
-                                maxLength={50}
+                                type="checkbox"
+                                checked={emailNotificationsEnabled}
+                                onChange={(e) => setEmailNotificationsEnabled(e.target.checked)}
+                                className="mt-1 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                             />
-
-                            <input
-                                type="text"
-                                name="city"
-                                autoComplete="address-level2"
-                                placeholder="City"
-                                value={form2.city}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                required
-                                maxLength={50}
-                            />
-
-                            <input
-                                type="text"
-                                name="state"
-                                autoComplete="address-level1"
-                                autoCapitalize="characters"
-                                placeholder="State"
-                                value={form2.state}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                required
-                                maxLength={2}
-                            />
-
-                            <input
-                                type="text"
-                                autoComplete="postal-code"
-                                inputMode="numeric"
-                                pattern="[0-9]{5}"
-                                name="zipcode"
-                                placeholder="ZIP Code"
-                                value={form2.zipcode}
-                                onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                required
-                                maxLength={5}
-                            />
-
-                            <div className="flex space-x-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={prevStep}
-                                    className="flex-1 bg-gray-200 text-gray-700 p-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-                                >
-                                    Back
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={nextStep}
-                                    className="flex-1 bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium disabled:opacity-50"
-                                >
-                                    Continue
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Step 3: Role Selection */}
-                    {currentStep === 3 && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-700 mb-4">What brings you to WonderHood?</h3>
-
-                            <div className="space-y-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedRole('parent')}
-                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'parent'
-                                        ? 'border-green-500 bg-green-50 text-green-700'
-                                        : 'border-gray-300 hover:border-gray-400'
-                                        }`}
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'parent' ? 'border-green-500 bg-green-500' : 'border-gray-300'
-                                            }`}>
-                                            {selectedRole === 'parent' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium">I&apos;m a Parent</div>
-                                            <div className="text-sm text-gray-600">Looking for activities for my child</div>
-                                        </div>
-                                    </div>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedRole('volunteer')}
-                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'volunteer'
-                                        ? 'border-green-500 bg-green-50 text-green-700'
-                                        : 'border-gray-300 hover:border-gray-400'
-                                        }`}
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'volunteer' ? 'border-green-500 bg-green-500' : 'border-gray-300'
-                                            }`}>
-                                            {selectedRole === 'volunteer' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium">I&apos;m a Volunteer</div>
-                                            <div className="text-sm text-gray-600">Want to help or earn service hours</div>
-                                        </div>
-                                    </div>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedRole('partner')}
-                                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${selectedRole === 'partner'
-                                        ? 'border-green-500 bg-green-50 text-green-700'
-                                        : 'border-gray-300 hover:border-gray-400'
-                                        }`}
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <div className={`w-4 h-4 rounded-full border-2 ${selectedRole === 'partner' ? 'border-green-500 bg-green-500' : 'border-gray-300'
-                                            }`}>
-                                            {selectedRole === 'partner' && <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium">I&apos;m a Partner</div>
-                                            <div className="text-sm text-gray-600">I want to host or submit events for families</div>
-                                        </div>
-                                    </div>
-                                </button>
-                            </div>
-
-                            {/* Email notifications opt-in */}
-                            <label className="flex items-start gap-2 text-sm text-gray-700">
-                                <input
-                                    type="checkbox"
-                                    checked={emailNotificationsEnabled}
-                                    onChange={(e) => setEmailNotificationsEnabled(e.target.checked)}
-                                    className="mt-1 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                                />
-                                <span>
-                                    Email me updates about WonderHood events, activities, and important reminders.
-                                    <span className="block text-xs text-gray-500">
-                                        You can change this anytime in your profile.
-                                    </span>
+                            <span>
+                                Email me updates about WonderHood events, activities, and important reminders.
+                                <span className="block text-xs text-gray-500">
+                                    You can change this anytime in your profile.
                                 </span>
-                            </label>
+                            </span>
+                        </label>
 
-                            <div className="flex space-x-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={prevStep}
-                                    className="flex-1 bg-gray-200 text-gray-700 p-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-                                >
-                                    Back
-                                </button>
-                                <button
-                                    type={(selectedRole === 'volunteer' || selectedRole === 'partner') ? "submit" : "button"}
-                                    onClick={(selectedRole === 'volunteer' || selectedRole === 'partner') ? undefined : nextStep}
-                                    disabled={!selectedRole || creating}
-                                    className="flex-1 bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                                >
-                                    {(selectedRole === 'volunteer' || selectedRole === 'partner') ? 'Create Account' : 'Continue'}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {currentStep === 4 && selectedRole === 'parent' && (
-                        <div className="space-y-5">
-                            <h3 className="text-lg font-semibold text-gray-800">Almost there!</h3>
-                            <p className="text-sm text-gray-600">
-                                You can add your child&apos;s details now (about 2-3 minutes), or skip and do it later from your profile.
-                                You&apos;ll need a child on file to join events.
-                            </p>
-
-                            <div className="space-y-3">
-                                <button
-                                    type="button"
-                                    onClick={() => createAccount("now")}
-                                    disabled={creating}
-                                    className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                                >
-                                    Add a Child Now
-                                    <div className="text-xs font-normal text-green-100">We&apos;ll create your account first.</div>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => createAccount("later")}
-                                    disabled={creating}
-                                    className="w-full bg-gray-100 text-gray-800 p-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                                >
-                                    Do This Later
-                                    <div className="text-xs font-normal text-gray-500">Find it under Profile → Children.</div>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Progress indicator */}
-                    <div className="flex flex-col space-x-3 pt-4">
-                        <div className="flex justify-center">
-                            <div className="flex space-x-2">
-                                {(selectedRole === 'parent' ? [1, 2, 3, 4] : [1, 2, 3]).map((step) => (
-                                    <div
-                                        key={step}
-                                        className={`w-3 h-3 rounded-full transition-colors ${step <= currentStep ? 'bg-green-500' : 'bg-gray-300'
-                                            }`}
-                                    />
-                                ))}
-                            </div>
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                type="button"
+                                onClick={prevStep}
+                                className="flex-1 bg-gray-200 text-gray-700 p-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            >
+                                Back
+                            </button>
+                            <button
+                                type={(selectedRole === 'volunteer' || selectedRole === 'partner') ? "submit" : "button"}
+                                onClick={(selectedRole === 'volunteer' || selectedRole === 'partner') ? undefined : nextStep}
+                                disabled={!selectedRole || creating}
+                                className="flex-1 bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                            >
+                                {(selectedRole === 'volunteer' || selectedRole === 'partner') ? 'Create Account' : 'Continue'}
+                            </button>
                         </div>
                     </div>
+                )}
 
-                </form>
-            </div>
+                {currentStep === 4 && selectedRole === 'parent' && (
+                    <div className="space-y-5">
+                        <h3 className="text-lg font-semibold text-gray-800">Almost there!</h3>
+                        <p className="text-sm text-gray-600">
+                            You can add your child&apos;s details now (about 2-3 minutes), or skip and do it later from your profile.
+                            You&apos;ll need a child on file to join events.
+                        </p>
+
+                        <div className="space-y-3">
+                            <button
+                                type="button"
+                                onClick={() => createAccount("now")}
+                                disabled={creating}
+                                className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                            >
+                                Add a Child Now
+                                <div className="text-xs font-normal text-green-100">We&apos;ll create your account first.</div>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => createAccount("later")}
+                                disabled={creating}
+                                className="w-full bg-gray-100 text-gray-800 p-3 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                            >
+                                Do This Later
+                                <div className="text-xs font-normal text-gray-500">Find it under Profile → Children.</div>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Progress indicator */}
+                <div className="flex flex-col space-x-3 pt-4">
+                    <div className="flex justify-center">
+                        <div className="flex space-x-2">
+                            {(selectedRole === 'parent' ? [1, 2, 3, 4] : [1, 2, 3]).map((step) => (
+                                <div
+                                    key={step}
+                                    className={`w-3 h-3 rounded-full transition-colors ${step <= currentStep ? 'bg-green-500' : 'bg-gray-300'
+                                        }`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+            </form>
         </div>
     )
 }

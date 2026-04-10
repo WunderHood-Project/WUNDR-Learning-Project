@@ -24,6 +24,31 @@ const howToSignUp = () => {
     )
 }
 
+const policiesContent = () => (
+  <>
+    <p className="text-gray-700 leading-relaxed">
+        Read our policies below:
+    </p>
+
+    <ul className="px-4 mt-1 space-y-2">
+        <li>
+            <a href="/privacy-policy"
+                className="text-wonderleaf font-semibold underline hover:text-wonderleaf/80 transition"
+            >
+                Privacy Policy →
+            </a>
+        </li>
+        <li>
+            <a href="/child-protection-policy"
+                className="text-wonderleaf font-semibold underline hover:text-wonderleaf/80 transition"
+            >
+                Child Protection Policy →
+            </a>
+        </li>
+    </ul>
+  </>
+)
+
 export const FAQ = [
     {
         title: "I'm interested in an event! How do I enroll?",
@@ -55,13 +80,8 @@ export const FAQ = [
         content: "Yes. We are committed to being transparent and accountable with all donations. We will post our annual report and IRS Form 990 here as soon as they become available.",
     },
     {
-        title: "What is WonderHood Project's privacy policy?",
-        content: {
-            text: "You can read our full privacy policy ",
-            // link: `${homeLink}privacy-policy`,
-            link: "/privacy-policy",
-            label: "here →"
-        }
+        title: "What policies does WonderHood Project follow?",
+        content: policiesContent
     },
     {
         title: "How can I get in touch with someone at WonderHood Project?",
