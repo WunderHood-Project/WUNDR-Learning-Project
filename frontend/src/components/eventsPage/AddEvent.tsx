@@ -14,7 +14,7 @@ import { useActivity } from '../../../hooks/useActivity';
 // import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
 import { compressImage } from '../../../utils/image/compressImage';
 import { ymdToIsoNoShift, todayYMDUTC } from '../../../utils/formatDate';
-
+import AddProgramForm from "../Programs/AddProgramForm";
 
 
 const WONDERHOOD_URL = determineEnv()
@@ -25,8 +25,8 @@ const initialEventForm = (): CreateEventPayload => ({
     description: "",
     notes: "",
     date: "",
-    startTime: "",
-    endTime: "",
+    startTime: null,
+    endTime: null,
     image: "",
     limit: null,
     schoolAccess: "all",
@@ -45,7 +45,12 @@ export default function AddEvent() {
     const [form, setForm] = useState<CreateEventPayload>(() => initialEventForm())
     const [errors, setErrors] = useState<EventFormErrors>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
+    // const { activities } = useActivity()
+    // const selectedActivity = activities.find((a) => a.id === form.activityId)
+    // const isProgramSelected = selectedActivity?.name === "Enrichment Programs"
     const { activities } = useActivity()
+    const [createType, setCreateType] = useState<'event' | 'program' | null>(null)
+    const eventActivity = activities.find((a) => a.name === 'Events')
     const { events } = useEvent(undefined)
     const router = useRouter()
     const todayYMD = useMemo(() => todayYMDUTC(), []);
@@ -53,6 +58,20 @@ export default function AddEvent() {
     const isPartner = user?.role === 'partner'
     const endpoint = isPartner ? `${WONDERHOOD_URL}/event/submit` : `${WONDERHOOD_URL}/event`
 
+    // Sets which creation flow the user wants to use.
+    // For events, we auto-fill the default Events activityId so the event payload
+    // remains compatible with the existing backend expectations.
+    const handleSelectType = (type: 'event' | 'program') => {
+        setCreateType(type)
+
+        if (type === 'event') {
+            setForm(prev => ({
+            ...prev,
+            activityId: eventActivity?.id ?? ''
+            }))
+        }
+    }
+    
     const handleImageChange = async (fileOrUrl: File | string | null) => {
         if (fileOrUrl instanceof File) {
             // Compress file to ±1600×1200, WebP/0.8
@@ -90,7 +109,7 @@ export default function AddEvent() {
         setForm(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleDiscard = () => setForm(initialEventForm())
+    const handleDiscard = () => router.push('/events')
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -162,10 +181,78 @@ export default function AddEvent() {
 
 
     return (
-        <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold text-center mb-4">Add an Event Below</h1>
+        <div className="relative max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+            {createType === null && (
+                <div className="space-y-8">
+                    <div className="text-center pt-2">
+                        <h1 className="text-3xl font-bold text-wondergreen">What would you like to create?</h1>
+                    </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button
+                            type="button"
+                            onClick={() => handleSelectType('event')}
+                            className="group rounded-2xl border border-gray-200 p-6 text-left hover:border-wondergreen hover:bg-wondergreen/5 transition-all duration-200"
+                        >
+                            <div className="w-10 h-10 rounded-xl bg-wondergreen/10 flex items-center justify-center mb-4 group-hover:bg-wondergreen/20 transition-colors">
+                                <svg className="w-5 h-5 text-wondergreen" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-base font-semibold text-wondergreen mb-1">Event</h2>
+                            <p className="text-sm text-gray-500 leading-relaxed">
+                                A one-time activity — workshop, outing, outdoor adventure, or class.
+                            </p>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => handleSelectType('program')}
+                            className="group rounded-2xl border border-gray-200 p-6 text-left hover:border-wondergreen hover:bg-wondergreen/5 transition-all duration-200"
+                        >
+                            <div className="w-10 h-10 rounded-xl bg-wondergreen/10 flex items-center justify-center mb-4 group-hover:bg-wondergreen/20 transition-colors">
+                                <svg className="w-5 h-5 text-wondergreen" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <h2 className="text-base font-semibold text-wondergreen mb-1">Enrichment Program</h2>
+                            <p className="text-sm text-gray-500 leading-relaxed">
+                                A multi-week program with recurring sessions.
+                            </p>
+                        </button>
+                    </div>
+
+                    <div className="flex justify-center pt-2">
+                        <button
+                            type="button"
+                            onClick={() => router.push('/events')}
+                            className="px-6 py-2.5 rounded-xl text-sm text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-all duration-200"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {createType === 'event' && (
+            <>
+                <div className="mb-4">
+                <button
+                    type="button"
+                    onClick={() => {
+                    setCreateType(null)
+                    setForm(initialEventForm())
+                    setErrors({})
+                    }}
+                    className="text-sm text-gray-600 hover:text-gray-900 underline mb-2"
+                >
+                    ← Back
+                </button>
+
+                <h1 className="text-2xl font-bold text-center">Add an Event</h1>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
                 <EventFields
                     form={form}
                     errors={errors}
@@ -177,20 +264,39 @@ export default function AddEvent() {
 
                 <div className="flex justify-end gap-4">
                     <button
-                        type="submit" disabled={isSubmitting}
-                        className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
                     >
-                        {isPartner ? "Submit for Approval" : "Add Event"}
+                    {isPartner ? "Submit for Approval" : "Add Event"}
                     </button>
                     <button
-                        type="reset"
-                        onClick={handleDiscard}
-                        className="bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-md"
+                    type="reset"
+                    onClick={handleDiscard}
+                    className="bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-md"
                     >
-                        Cancel
+                    Cancel
                     </button>
                 </div>
-            </form>
+                </form>
+            </>
+            )}
+
+            {createType === 'program' && (
+            <>
+                <div className="mb-4">
+                <button
+                    type="button"
+                    onClick={() => setCreateType(null)}
+                    className="text-sm text-gray-600 hover:text-gray-900 underline mb-2"
+                >
+                    ← Back
+                </button>
+                </div>
+
+                <AddProgramForm />
+            </>
+            )}
         </div>
-    );
+    )
 }

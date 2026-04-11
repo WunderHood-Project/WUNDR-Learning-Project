@@ -7,7 +7,7 @@ import { useActivity } from '../../../hooks/useActivity';
 import { useProgram } from '../../../hooks/useProgram';
 import { ymdToIsoNoShift, isoToYMD } from '../../../utils/formatDate';
 import { compressImage } from '../../../utils/image/compressImage';
-import type { UpdateProgramPayload, ProgramFormErrors, ProgramPhase } from '@/types/program';
+import type { UpdateProgramPayload, ProgramFormErrors } from '@/types/program';
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -18,7 +18,7 @@ export default function UpdateProgram() {
   const { activities } = useActivity();
 
   const [form, setForm] = useState<UpdateProgramPayload>({});
-  const [phases, setPhases] = useState<ProgramPhase[]>([]);
+  // const [phases, setPhases] = useState<ProgramPhase[]>([]);
   const [errors, setErrors] = useState<ProgramFormErrors>({});
   const [outcomeInput, setOutcomeInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,7 +50,7 @@ export default function UpdateProgram() {
       address: program.address ?? '',
       zipCode: program.zipCode ?? '',
     });
-    setPhases(program.phases ?? []);
+    // setPhases(program.phases ?? []);
   }, [program]);
 
   const handleChange = (
@@ -98,13 +98,13 @@ export default function UpdateProgram() {
     }));
   };
 
-  const addPhase = () => setPhases((prev) => [...prev, { season: '', title: '' }]);
+  // const addPhase = () => setPhases((prev) => [...prev, { season: '', title: '' }]);
 
-  const updatePhase = (i: number, field: keyof ProgramPhase, value: string) =>
-    setPhases((prev) => prev.map((p, idx) => (idx === i ? { ...p, [field]: value } : p)));
+  // const updatePhase = (i: number, field: keyof ProgramPhase, value: string) =>
+  //   setPhases((prev) => prev.map((p, idx) => (idx === i ? { ...p, [field]: value } : p)));
 
-  const removePhase = (i: number) =>
-    setPhases((prev) => prev.filter((_, idx) => idx !== i));
+  // const removePhase = (i: number) =>
+  //   setPhases((prev) => prev.filter((_, idx) => idx !== i));
 
   const validate = (): boolean => {
     const errs: ProgramFormErrors = {};
@@ -126,13 +126,13 @@ export default function UpdateProgram() {
     setServerError(null);
     setSuccessMsg(null);
 
-    const validPhases = phases.filter((p) => p.season.trim() && p.title.trim());
+    // const validPhases = phases.filter((p) => p.season.trim() && p.title.trim());
 
     const payload: UpdateProgramPayload = {
       ...form,
       startDate: form.startDate ? ymdToIsoNoShift(form.startDate as string) : undefined,
       endDate: form.endDate ? ymdToIsoNoShift(form.endDate as string) : undefined,
-      phases: validPhases.length > 0 ? validPhases : undefined,
+      // phases: validPhases.length > 0 ? validPhases : undefined,
       sessionSchedule: form.sessionSchedule || undefined,
       directorName: form.directorName || undefined,
       directorTitle: form.directorTitle || undefined,
@@ -345,7 +345,7 @@ export default function UpdateProgram() {
           </section>
 
           {/* Phases */}
-          <section className="space-y-3">
+          {/* <section className="space-y-3">
             <h2 className="text-base font-bold text-wondergreen uppercase tracking-wide border-b border-gray-200 pb-2">
               Program Phases
             </h2>
@@ -381,17 +381,17 @@ export default function UpdateProgram() {
             >
               + Add phase
             </button>
-          </section>
+          </section> */}
 
           {/* Director */}
           <section className="space-y-4">
             <h2 className="text-base font-bold text-wondergreen uppercase tracking-wide border-b border-gray-200 pb-2">
-              Program Director
+              Program Lead
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={labelCls}>Director Name</label>
+                <label className={labelCls}>Program Lead Name</label>
                 <input
                   name="directorName"
                   value={form.directorName ?? ''}
@@ -400,7 +400,7 @@ export default function UpdateProgram() {
                 />
               </div>
               <div>
-                <label className={labelCls}>Director Title</label>
+                <label className={labelCls}>Role (optional)</label>
                 <input
                   name="directorTitle"
                   value={form.directorTitle ?? ''}
@@ -411,7 +411,7 @@ export default function UpdateProgram() {
             </div>
 
             <div>
-              <label className={labelCls}>Director Photo URL</label>
+              <label className={labelCls}>Program Lead Photo URL (optional)</label>
               <input
                 name="directorImage"
                 value={form.directorImage ?? ''}

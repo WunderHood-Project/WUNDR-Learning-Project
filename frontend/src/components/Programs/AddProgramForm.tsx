@@ -1,13 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { makeApiRequest, determineEnv } from '../../../utils/api';
 import { useActivity } from '../../../hooks/useActivity';
 import { useUser } from '../../../hooks/useUser';
 import { ymdToIsoNoShift, todayYMDUTC } from '../../../utils/formatDate';
 import { compressImage } from '../../../utils/image/compressImage';
-import type { CreateProgramPayload, ProgramFormErrors, ProgramPhase } from '@/types/program';
+import type { CreateProgramPayload, ProgramFormErrors} from '@/types/program';
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -23,7 +23,7 @@ const initialForm = (): CreateProgramPayload => ({
   image: '',
   outcomes: [],
   label: 'wonderhood',
-  phases: [],
+  // phases: [],
   directorName: '',
   directorTitle: '',
   directorImage: '',
@@ -35,9 +35,13 @@ const initialForm = (): CreateProgramPayload => ({
   zipCode: '',
 });
 
+
 export default function AddProgramForm() {
   const router = useRouter();
   const { activities } = useActivity();
+  const defaultProgramActivity = activities.find(
+  (a) => a.name === 'Enrichment Programs'
+);
   const { user } = useUser();
   const todayYMD = useMemo(() => todayYMDUTC(), []);
 
@@ -51,9 +55,19 @@ export default function AddProgramForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
+  // Set default activity to "Enrichment Programs" on load (required by backend)
+  useEffect(() => {
+    if (defaultProgramActivity?.id && !form.activityId) {
+      setForm((prev) => ({
+        ...prev,
+        activityId: defaultProgramActivity.id,
+      }));
+    }
+  }, [defaultProgramActivity, form.activityId]);
+
   // Dynamic lists
   const [outcomeInput, setOutcomeInput] = useState('');
-  const [phases, setPhases] = useState<ProgramPhase[]>([]);
+  // const [phases, setPhases] = useState<ProgramPhase[]>([]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -70,6 +84,20 @@ export default function AddProgramForm() {
     }
 
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDirectorImageChange = async (fileOrUrl: File | string | null) => {
+    if (fileOrUrl instanceof File) {
+      const dataUrl = await compressImage(fileOrUrl, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.8,
+        type: 'image/webp',
+      });
+      setForm((prev) => ({ ...prev, directorImage: dataUrl }));
+    } else {
+      setForm((prev) => ({ ...prev, directorImage: fileOrUrl ?? '' }));
+    }
   };
 
   const handleImageChange = async (fileOrUrl: File | string | null) => {
@@ -100,17 +128,17 @@ export default function AddProgramForm() {
     }));
   };
 
-  const addPhase = () => {
-    setPhases((prev) => [...prev, { season: '', title: '' }]);
-  };
+  // const addPhase = () => {
+  //   setPhases((prev) => [...prev, { season: '', title: '' }]);
+  // };
 
-  const updatePhase = (i: number, field: keyof ProgramPhase, value: string) => {
-    setPhases((prev) => prev.map((p, idx) => (idx === i ? { ...p, [field]: value } : p)));
-  };
+  // const updatePhase = (i: number, field: keyof ProgramPhase, value: string) => {
+  //   setPhases((prev) => prev.map((p, idx) => (idx === i ? { ...p, [field]: value } : p)));
+  // };
 
-  const removePhase = (i: number) => {
-    setPhases((prev) => prev.filter((_, idx) => idx !== i));
-  };
+  // const removePhase = (i: number) => {
+  //   setPhases((prev) => prev.filter((_, idx) => idx !== i));
+  // };
 
   const validate = (): boolean => {
     const errs: ProgramFormErrors = {};
@@ -134,13 +162,16 @@ export default function AddProgramForm() {
     setIsSubmitting(true);
     setServerError(null);
 
-    const validPhases = phases.filter((p) => p.season.trim() && p.title.trim());
+    // const validPhases = phases.filter((p) => p.season.trim() && p.title.trim());
+
+    const { activityId, ...reset } = form;
 
     const payload = {
-      ...form,
+      ...reset,
+      activityId,
       startDate: ymdToIsoNoShift(form.startDate as string),
       endDate: ymdToIsoNoShift(form.endDate as string),
-      phases: validPhases.length > 0 ? validPhases : undefined,
+      // phases: validPhases.length > 0 ? validPhases : undefined,
       sessionSchedule: form.sessionSchedule || undefined,
       directorName: form.directorName || undefined,
       directorTitle: form.directorTitle || undefined,
@@ -173,8 +204,7 @@ export default function AddProgramForm() {
   const errorCls = 'text-xs text-red-600 mt-1';
 
   return (
-    <div className="bg-wonderbg min-h-screen py-10 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-3xl">
         <h1 className="text-2xl sm:text-3xl font-bold text-wondergreen mb-2">
           {isPartner ? 'Submit an Enrichment Program' : 'Add Enrichment Program'}
         </h1>
@@ -190,23 +220,11 @@ export default function AddProgramForm() {
         >
           {/* Basic info */}
           <section className="space-y-4">
-            <h2 className="text-base font-bold text-wondergreen uppercase tracking-wide border-b border-gray-200 pb-2">
+            {/* <h2 className="text-base font-bold text-wondergreen uppercase tracking-wide border-b border-gray-200 pb-2">
               Basic Information
-            </h2>
+            </h2> */}
 
-            <div>
-              <label className={labelCls}>Program Name *</label>
-              <input
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                className={inputCls}
-                placeholder="e.g. Creative Kids Enrichment Program"
-              />
-              {errors.name && <p className={errorCls}>{errors.name}</p>}
-            </div>
-
-            <div>
+             <div>
               <label className={labelCls}>Activity *</label>
               <select
                 name="activityId"
@@ -222,6 +240,18 @@ export default function AddProgramForm() {
                 ))}
               </select>
               {errors.activityId && <p className={errorCls}>{errors.activityId}</p>}
+            </div>
+
+            <div>
+              <label className={labelCls}>Program Name *</label>
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className={inputCls}
+                placeholder="e.g. Creative Kids Enrichment Program"
+              />
+              {errors.name && <p className={errorCls}>{errors.name}</p>}
             </div>
 
             <div>
@@ -359,7 +389,7 @@ export default function AddProgramForm() {
           </section>
 
           {/* Phases */}
-          <section className="space-y-3">
+          {/* <section className="space-y-3">
             <h2 className="text-base font-bold text-wondergreen uppercase tracking-wide border-b border-gray-200 pb-2">
               Program Phases (optional)
             </h2>
@@ -395,17 +425,17 @@ export default function AddProgramForm() {
             >
               + Add phase
             </button>
-          </section>
+          </section> */}
 
           {/* Director */}
           <section className="space-y-4">
             <h2 className="text-base font-bold text-wondergreen uppercase tracking-wide border-b border-gray-200 pb-2">
-              Program Director (optional)
+              Program Lead (optional)
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={labelCls}>Director Name</label>
+                <label className={labelCls}>Program Lead Name</label>
                 <input
                   name="directorName"
                   value={form.directorName ?? ''}
@@ -415,7 +445,7 @@ export default function AddProgramForm() {
                 />
               </div>
               <div>
-                <label className={labelCls}>Director Title</label>
+                <label className={labelCls}>Role (optional)</label>
                 <input
                   name="directorTitle"
                   value={form.directorTitle ?? ''}
@@ -427,15 +457,25 @@ export default function AddProgramForm() {
             </div>
 
             <div>
-              <label className={labelCls}>Director Photo URL (optional)</label>
-              <input
-                name="directorImage"
-                value={form.directorImage ?? ''}
-                onChange={handleChange}
-                className={inputCls}
-                placeholder="https://…"
-              />
-            </div>
+            <label className={labelCls}>Program Lead Photo (optional)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleDirectorImageChange(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm text-gray-700"
+            />
+          </div>
+
+          <div>
+            <label className={labelCls}>— or paste a photo URL</label>
+            <input
+              name="directorImage"
+              value={form.directorImage ?? ''}
+              onChange={handleChange}
+              className={inputCls}
+              placeholder="https://…"
+            />
+          </div>
           </section>
 
           {/* Venue & location */}
@@ -582,14 +622,13 @@ export default function AddProgramForm() {
 
             <button
               type="button"
-              onClick={() => router.back()}
+              onClick={() => router.push('/events')}
               className="text-gray-600 font-medium hover:text-gray-900 underline"
             >
               Cancel
             </button>
           </div>
         </form>
-      </div>
     </div>
   );
 }
