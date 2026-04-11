@@ -201,6 +201,84 @@ async def get_pending_programs(
 
 
 # ---------------------------------------------------------------------------
+# GET /program/{program_id}/attendees  (admin — enrolled children details)
+# ---------------------------------------------------------------------------
+
+@router.get("/{program_id}/attendees", status_code=status.HTTP_200_OK)
+async def get_program_attendees(
+    program_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    """
+    Return enrolled children with parent and emergency contact details (admin only).
+    """
+    enforce_authentication(current_user, "view program attendees")
+    enforce_admin(current_user, "view program attendees")
+
+    program = await db.enrichmentprograms.find_unique(
+        where={"id": program_id},
+        include={
+            "children": {
+                "include": {
+                    "parents": True,
+                    "emergencyContacts": True,
+                }
+            }
+        },
+    )
+
+    if not program:
+        raise HTTPException(status_code=404, detail="Enrichment program not found.")
+
+    children_out = []
+    for ch in program.children:
+        parents_out = [
+            {
+                "id": p.id,
+                "firstName": p.firstName,
+                "lastName": p.lastName,
+                "email": p.email,
+                "phoneNumber": p.phoneNumber,
+            }
+            for p in (ch.parents or [])
+        ]
+
+        emergency_out = [
+            {
+                "id": ec.id,
+                "firstName": ec.firstName,
+                "lastName": ec.lastName,
+                "phoneNumber": ec.phoneNumber,
+                "relationship": ec.relationship,
+            }
+            for ec in (ch.emergencyContacts or [])
+        ]
+
+        children_out.append({
+            "id": ch.id,
+            "firstName": ch.firstName,
+            "lastName": ch.lastName,
+            "preferredName": ch.preferredName,
+            "schoolType": ch.schoolType,
+            "grade": ch.grade,
+            "birthday": ch.birthday,
+            "allergiesMedical": ch.allergiesMedical,
+            "notes": ch.notes,
+            "photoConsent": ch.photoConsent,
+            "waiver": ch.waiver,
+            "parents": parents_out,
+            "emergencyContacts": emergency_out,
+        })
+
+    return {
+        "programId": program.id,
+        "participants": program.participants,
+        "limit": program.limit,
+        "children": children_out,
+    }
+
+
+# ---------------------------------------------------------------------------
 # GET /program/{program_id}  (public)
 # ---------------------------------------------------------------------------
 
