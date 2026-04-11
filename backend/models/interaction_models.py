@@ -148,6 +148,133 @@ class EventStatusUpdate(BaseModel):
 class EnrollChildren(BaseModel):
     childIds: List[str]
 
+
+# ! Enrichment Programs
+class ProgramStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+class ProgramVenue(str, Enum):
+    IN_PERSON = "in_person"
+    ONLINE = "online"
+    HYBRID = "hybrid"
+
+class ProgramLabel(str, Enum):
+    WONDERHOOD = "wonderhood"
+    PARTNER = "partner"
+
+class ProgramStatusUpdate(BaseModel):
+    """DTO for PATCH /program/{id}/status — admin approves or rejects a pending program."""
+    status: ProgramStatus
+    adminNotes: Optional[str] = Field(default=None, max_length=500)
+
+class ProgramPhase(BaseModel):
+    """A single phase entry, e.g. {season: 'Fall', title: 'Foundations & Exploration'}"""
+    season: str = Field(min_length=1, max_length=50)
+    title: str = Field(min_length=1, max_length=100)
+
+class EnrichmentProgram(BaseModel):
+    id: str = Field(..., min_length=1)
+    activity: "Activity"
+    name: str
+    description: str
+    ageMin: int = Field(ge=0)
+    ageMax: int = Field(ge=0)
+    startDate: datetime
+    endDate: datetime
+    sessionSchedule: Optional[str] = None
+    image: Optional[str] = None
+    outcomes: List[str] = Field(default_factory=list)
+    label: ProgramLabel = ProgramLabel.WONDERHOOD
+    phases: Optional[List[ProgramPhase]] = None
+    directorName: Optional[str] = None
+    directorTitle: Optional[str] = None
+    directorImage: Optional[str] = None
+    participants: int = Field(default=0)
+    limit: Optional[int] = None
+    venue: ProgramVenue = ProgramVenue.IN_PERSON
+    city: Optional[str] = None
+    state: Optional[str] = None
+    address: Optional[str] = None
+    zipCode: Optional[str] = Field(default=None, pattern=r'^\d{5}(-\d{4})?$')
+    status: ProgramStatus = ProgramStatus.PENDING
+    childIds: List[str] = Field(default_factory=list)
+    userIds: List[str] = Field(default_factory=list)
+    createdAt: datetime
+    updatedAt: Optional[datetime] = None
+
+class EnrichmentProgramCreate(BaseModel):
+    activityId: Optional[str] = Field(default=None)
+    name: str = Field(min_length=1)
+    description: str = Field(min_length=1)
+    ageMin: int = Field(ge=0)
+    ageMax: int = Field(ge=0)
+    startDate: datetime
+    endDate: datetime
+    sessionSchedule: Optional[str] = None
+    image: Optional[str] = None
+    outcomes: List[str] = Field(default_factory=list)
+    label: ProgramLabel = ProgramLabel.WONDERHOOD
+    phases: Optional[List[ProgramPhase]] = None
+    directorName: Optional[str] = None
+    directorTitle: Optional[str] = None
+    directorImage: Optional[str] = None
+    limit: Optional[int] = None
+    venue: ProgramVenue = ProgramVenue.IN_PERSON
+    city: Optional[str] = None
+    state: Optional[str] = None
+    address: Optional[str] = None
+    zipCode: Optional[str] = Field(default=None, pattern=r'^\d{5}(-\d{4})?$')
+    childIds: List[str] = Field(default_factory=list)
+    userIds: List[str] = Field(default_factory=list)
+
+class EnrichmentProgramUpdate(BaseModel):
+    activityId: Optional[str] = Field(default=None)
+    name: Optional[str] = None
+    description: Optional[str] = None
+    ageMin: Optional[int] = Field(default=None, ge=0)
+    ageMax: Optional[int] = Field(default=None, ge=0)
+    startDate: Optional[datetime] = None
+    endDate: Optional[datetime] = None
+    sessionSchedule: Optional[str] = None
+    image: Optional[str] = None
+    outcomes: Optional[List[str]] = None
+    label: Optional[ProgramLabel] = None
+    phases: Optional[List[ProgramPhase]] = None
+    directorName: Optional[str] = None
+    directorTitle: Optional[str] = None
+    directorImage: Optional[str] = None
+    limit: Optional[int] = None
+    venue: Optional[ProgramVenue] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    address: Optional[str] = None
+    zipCode: Optional[str] = Field(default=None, pattern=r'^\d{5}(-\d{4})?$')
+
+class EnrichmentProgramSubmit(BaseModel):
+    """DTO for POST /program/submit — used by partners to propose a program for admin approval."""
+    activityId: Optional[str] = Field(default=None)
+    name: str = Field(min_length=1)
+    description: str = Field(min_length=1)
+    ageMin: int = Field(ge=0)
+    ageMax: int = Field(ge=0)
+    startDate: datetime
+    endDate: datetime
+    sessionSchedule: Optional[str] = None
+    image: Optional[str] = None
+    outcomes: List[str] = Field(default_factory=list)
+    phases: Optional[List[ProgramPhase]] = None
+    directorName: Optional[str] = None
+    directorTitle: Optional[str] = None
+    directorImage: Optional[str] = None
+    limit: Optional[int] = None
+    venue: ProgramVenue = ProgramVenue.IN_PERSON
+    city: Optional[str] = None
+    state: Optional[str] = None
+    address: Optional[str] = None
+    zipCode: Optional[str] = Field(default=None, pattern=r'^\d{5}(-\d{4})?$')
+
 # ! Reviews
 class Review(BaseModel):
     id: str = Field(..., min_length=1, description="Review identifier")

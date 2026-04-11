@@ -5,57 +5,71 @@ import ActivityBlock from "@/components/eventsPage/ActivityBlock";
 import { determineEnv, makeApiRequest } from "../../../utils/api";
 import { Activity } from "@/types/activity";
 import { Event } from "@/types/event";
+import type { EnrichmentProgram } from "@/types/program";
 import Link from "next/link";
-// import { determineEnv } from "../../../utils/api";
 import { useUser } from "../../../hooks/useUser";
 import GradientBanner from '@/components/ui/GradientBanner';
 import { BeatLoader } from "react-spinners"
 
 const WONDERHOOD_URL = determineEnv()
 
-interface GroupedEvents {
-  activity: string;
+interface GroupedActivity {
+  activityId: string;
+  activityName: string;
   events: Event[];
+  programs: EnrichmentProgram[];
 }
 
 export default function EventsPageContent() {
   const { user } = useUser()
-  const [groupedEvents, setGroupedEvents] = useState<GroupedEvents[]>([]);
+  const [grouped, setGrouped] = useState<GroupedActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const isAdmin: boolean = user?.role === "admin"
   const canAddEvent: boolean = user?.role === "admin" || user?.role === "partner"
 
   useEffect(() => {
-    const fetchActivitiesWithEvents = async () => {
+    const fetchAll = async () => {
       try {
-        const { activities } = await makeApiRequest<{ activities: Activity[] }>(
-          `${WONDERHOOD_URL}/activity/with-events`
-        );
+        const [{ activities }, { programs }] = await Promise.all([
+          makeApiRequest<{ activities: Activity[] }>(`${WONDERHOOD_URL}/activity/with-events`),
+          makeApiRequest<{ programs: EnrichmentProgram[] }>(`${WONDERHOOD_URL}/program`),
+        ]);
 
-        const formatted: GroupedEvents[] = activities.map((activity) => ({
-          activity: activity.name,
+        const formatted: GroupedActivity[] = activities.map((activity) => ({
+          activityId: activity.id,
+          activityName: activity.name,
           events: (activity.events ?? []).filter((e) => e.status === "approved"),
+          programs: programs.filter((p) => p.activityId === activity.id),
         }));
 
-        setGroupedEvents(formatted);
+        setGrouped(formatted);
       } catch (err) {
-        console.error("Failed to fetch activities with events:", err);
+        console.error("Failed to fetch activities / programs:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchActivitiesWithEvents();
+    fetchAll();
   }, []);
 
-  const handleDelete = (deletedId: string) => {
-    setGroupedEvents(prev =>
+  const handleDeleteEvent = (deletedId: string) => {
+    setGrouped(prev =>
       prev.map((group) => ({
         ...group,
-        events: group.events.filter(e => e.id !== deletedId)
+        events: group.events.filter(e => e.id !== deletedId),
       }))
-    )
-  }
+    );
+  };
+
+  const handleDeleteProgram = (deletedId: string) => {
+    setGrouped(prev =>
+      prev.map((group) => ({
+        ...group,
+        programs: group.programs.filter(p => p.id !== deletedId),
+      }))
+    );
+  };
 
   if (loading) return <div className="text-center py-20 text-green-700"><BeatLoader color="#90b35c" size={15} /></div>
 
@@ -78,13 +92,15 @@ export default function EventsPageContent() {
           )}
         </div>
 
-        {groupedEvents.map(({ activity, events }) => (
+        {grouped.map(({ activityId, activityName, events, programs }) => (
           <ActivityBlock
-            key={activity}
-            activityName={activity}
+            key={activityId}
+            activityName={activityName}
             events={events}
+            programs={programs}
             isAdmin={isAdmin}
-            onDelete={handleDelete}
+            onDeleteEvent={handleDeleteEvent}
+            onDeleteProgram={handleDeleteProgram}
           />
         ))}
       </div>

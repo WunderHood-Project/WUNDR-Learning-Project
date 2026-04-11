@@ -34,6 +34,7 @@ const toEventForm = (ev: Event): CreateEventPayload => ({
     zipCode: String(ev.zipCode ?? ""),
     latitude: ev.latitude ?? null,
     longitude: ev.longitude ?? null,
+    label: ev.label ?? "wonderhood"
 })
 
 export default function UpdateEvent() {

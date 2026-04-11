@@ -2,14 +2,18 @@
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Event } from '@/types/event';
+import type { EnrichmentProgram } from '@/types/program';
 import EventCard from './EventCard';
+import ProgramCard from '@/components/Programs/ProgramCard';
 import { Mountain, Landmark, FlaskConical } from 'lucide-react';
 
 interface Props {
   activityName: string;
   events: Event[];
+  programs: EnrichmentProgram[];
   isAdmin: boolean;
-  onDelete: (id: string) => void;
+  onDeleteEvent: (id: string) => void;
+  onDeleteProgram: (id: string) => void;
 }
 
 /** Theme per activity (bar, title, chip colors) */
@@ -66,8 +70,10 @@ const HeaderIcon = ({ name }: { name: string }) => {
 export default function ActivityBlock({
   activityName,
   events,
+  programs,
   isAdmin,
-  onDelete,
+  onDeleteEvent,
+  onDeleteProgram,
 }: Props) {
   const theme = getTheme(activityName);
 
@@ -110,7 +116,7 @@ export default function ActivityBlock({
       window.removeEventListener('resize', onResize);
       ro?.disconnect();
     };
-  }, [updateArrows, events.length]);
+  }, [updateArrows, events.length, programs.length]);
 
   /** smooth scroll by step (90% of viewport or ≥320px) */
   const scrollBy = (dir: 1 | -1) => {
@@ -174,19 +180,33 @@ export default function ActivityBlock({
         "
           style={{ scrollbarGutter: 'stable', WebkitOverflowScrolling: 'touch' }}
         >
-          {events.length > 0 ? (
-            events.map((event, i) => (
-              <div
-                key={event.id ?? `${event.name}-${event.date}-${event.startTime}-${i}`}
-                className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
-              >
-                <EventCard
-                  event={event}
-                  isAdmin={isAdmin}
-                  onDelete={onDelete}
-                />
-              </div>
-            ))
+          {events.length > 0 || programs.length > 0 ? (
+            <>
+              {events.map((event, i) => (
+                <div
+                  key={event.id ?? `${event.name}-${event.date}-${event.startTime}-${i}`}
+                  className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
+                >
+                  <EventCard
+                    event={event}
+                    isAdmin={isAdmin}
+                    onDelete={onDeleteEvent}
+                  />
+                </div>
+              ))}
+              {programs.map((program) => (
+                <div
+                  key={program.id}
+                  className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
+                >
+                  <ProgramCard
+                    program={program}
+                    isAdmin={isAdmin}
+                    onDelete={onDeleteProgram}
+                  />
+                </div>
+              ))}
+            </>
           ) : (
             // <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
             //   <p className="text-lg font-medium text-gray-600">No events scheduled yet</p>
@@ -237,7 +257,7 @@ export default function ActivityBlock({
         </button>
 
         {/* mobile hint */}
-        {events.length > 1 && (
+        {(events.length + programs.length) > 1 && (
           <p className="absolute -bottom-6 left-0 right-0 text-center text-xs text-gray-500 animate-pulse lg:hidden">
             👉 Swipe to see more
           </p>
