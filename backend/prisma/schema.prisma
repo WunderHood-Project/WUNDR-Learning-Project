@@ -48,7 +48,12 @@ model Users {
   waiverSignatures WaiverSignatures[]
 
   // Partner-submitted events
-  submittedEvents Events[] @relation("SubmittedEvents")
+  submittedEvents   Events[]             @relation("SubmittedEvents")
+
+  // Partner-submitted enrichment programs
+  programIds        String[]             @db.ObjectId
+  programs          EnrichmentPrograms[] @relation(fields: [programIds], references: [id])
+  submittedPrograms EnrichmentPrograms[] @relation("SubmittedPrograms")
 }
 
 enum Roles {
@@ -88,6 +93,9 @@ model Children {
 
   eventIds              String[] @db.ObjectId
   events                Events[] @relation(fields: [eventIds], references: [id])
+
+  programIds            String[]             @db.ObjectId
+  programs              EnrichmentPrograms[] @relation(fields: [programIds], references: [id])
 
   emergencyContactIds   String[] @db.ObjectId
   emergencyContacts     EmergencyContact[]    @relation(name: "ChildToEmergencyContacts", fields: [emergencyContactIds], references: [id])
@@ -241,9 +249,15 @@ model Activities {
   description   String
 
   events        Events[]
+  programs      EnrichmentPrograms[]
 }
 
 // ! Events         =============================================================================
+enum EventLabel {
+  wonderhood
+  partner
+}
+
 enum EventSchoolAccess {
   all
   homeschool_only
@@ -266,8 +280,9 @@ model Events {
     date          DateTime
     image         String
     participants  Int @default(0)
-    limit         Int @default(10)
+    limit         Int?
     schoolAccess  EventSchoolAccess @default(all)
+    label         EventLabel        @default(wonderhood)
 
     status        EventStatus @default(approved)
     submittedById String?     @db.ObjectId
@@ -279,8 +294,8 @@ model Events {
     zipCode       String
     latitude      Float?
     longitude     Float?
-    startTime     String
-    endTime       String
+    startTime     String?
+    endTime       String?
     volunteerLimit     Int @default(3)
     createdAt         DateTime @default(now())
     updatedAt         DateTime? @default(now())
@@ -302,6 +317,87 @@ model Events {
     reviews     Reviews[]
 
     jobs        Jobs[]
+}
+
+// ! Enrichment Programs =============================================================================
+
+enum ProgramStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ProgramVenue {
+  in_person
+  online
+  hybrid
+}
+
+enum ProgramLabel {
+  wonderhood
+  partner
+}
+
+model EnrichmentPrograms {
+  id               String        @id @default(auto()) @map("_id") @db.ObjectId
+  name             String        @unique
+  description      String
+  ageMin           Int
+  ageMax           Int
+
+  // Date range (e.g. Sep 2026 – May 2027)
+  startDate        DateTime
+  endDate          DateTime
+
+  // Session info (e.g. "Weekly, Tuesdays 4–5pm")
+  sessionSchedule  String?
+
+  image            String?
+
+  // Outcomes / "What Your Child Will Gain" bullets
+  outcomes         String[]
+
+  // Partner or Wonderhood
+  label            ProgramLabel @default(wonderhood)
+
+  // Phases / program structure (e.g. [{season:"Fall", title:"Foundations & Exploration"}])
+  // phases           Json?
+
+  // Program director
+  directorName     String?
+  directorTitle    String?
+  directorImage    String?
+
+  // Enrollment
+  participants     Int           @default(0)
+  limit            Int?
+
+  // Location
+  venue            ProgramVenue  @default(in_person)
+  city             String?
+  state            String?
+  address          String?
+  zipCode          String?
+
+  // Submission / approval flow (mirrors Events)
+  status           ProgramStatus @default(pending)
+  submittedById    String?       @db.ObjectId
+  submittedBy      Users?        @relation("SubmittedPrograms", fields: [submittedById], references: [id])
+
+  // m-to-n: enrolled children
+  childIds         String[]      @db.ObjectId
+  children         Children[]    @relation(fields: [childIds], references: [id])
+
+  // m-to-n: enrolled parents/users
+  userIds          String[]      @db.ObjectId
+  users            Users[]       @relation(fields: [userIds], references: [id])
+    
+  // One-to-m relationship
+  activity    Activities   @relation(fields: [activityId], references: [id])
+  activityId  String      @db.ObjectId
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime?     @updatedAt
 }
 
 // ! reviews        =============================================================================

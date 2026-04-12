@@ -232,6 +232,7 @@ async def submit_event(
                 "activityId": event_data.activityId,
                 "userIds": [],
                 "childIds": [],
+                "label": "partner",
                 "status": "pending",
                 "submittedById": current_user.id,
                 "createdAt": now,
