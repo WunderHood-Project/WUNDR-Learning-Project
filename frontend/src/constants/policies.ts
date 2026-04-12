@@ -1,5 +1,5 @@
 // export const WAIVER_VERSION = "1.0";
-export const PHOTO_CONSENT_VERSION = "1.0";
+export const PHOTO_CONSENT_VERSION = "1.0"; 
 
 // export const WAIVER_FULL_TEXT_EN = `
 // Assumption of Risk.
