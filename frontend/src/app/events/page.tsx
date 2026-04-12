@@ -1,7 +1,10 @@
-"use client";
-
+import { Suspense } from "react";
 import EventsPageContent from "@/components/eventsPage/EventsPageContent";
 
 export default function EventsPage() {
-  return <EventsPageContent />;
+  return (
+    <Suspense>
+      <EventsPageContent />
+    </Suspense>
+  );
 }

@@ -37,7 +37,7 @@ export default function EventCalendarIOS({ events, onPick }: Props) {
         const map = new Map<string, { id: string; title: string; start: Date }[]>();
         for (const e of events ?? []) {
             if (!e?.id || !e?.name || !e?.date) continue;
-            const start = combineLocal(e.date, e.startTime);
+            const start = combineLocal(e.date, e.startTime ?? undefined);
             const key = format(start, "yyyy-MM-dd");
             const arr = map.get(key) ?? [];
             arr.push({ id: String(e.id), title: e.name, start });
