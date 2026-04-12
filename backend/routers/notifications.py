@@ -33,10 +33,10 @@ def send_email_one_user(
 
     <br><br>
 
-    Best Regards,<br>
-    WonderHood Project Team<br>
-    📧 <a href=\"mailto:info@whproject.org\">info@whproject.org</a><br>
-    🌐 <a href=\"https://whproject.org\">whproject.org</a>
+    Best Regards,
+    WonderHood Project Team
+    <a href=\"mailto:info@whproject.org\">info@whproject.org</a>
+    <a href=\"https://whproject.org\">whproject.org</a>
     """
 
     yag.send(
