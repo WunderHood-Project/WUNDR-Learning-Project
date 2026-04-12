@@ -9,7 +9,6 @@ import { makeApiRequest } from "../../../utils/api"
 import { determineEnv } from "../../../utils/api"
 import { parseFloatOrNull } from "../../../utils/parseHelpers"
 import EventFields from "./EventField"
-import { useActivity } from "../../../hooks/useActivity"
 // import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
 import { compressImage } from '../../../utils/image/compressImage';
 import { ymdToIsoNoShift, isoToYMD } from '../../../utils/formatDate';
@@ -41,7 +40,7 @@ export default function UpdateEvent() {
     const { eventId } = useParams()
     const { event: singleEvent, loading: singleLoading, error: singleError } = useEvent(eventId)
     const { events: allEvents } = useEvent(undefined)
-    const { activities } = useActivity()
+
     const [formEvent, setFormEvent] = useState<CreateEventPayload | null>(null)
     const [errors, setErrors] = useState<EventFormErrors>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -179,7 +178,6 @@ export default function UpdateEvent() {
                 <EventFields
                     form={formEvent}
                     errors={errors}
-                    activities={activities}
                     onChange={handleChange}
                     onImageChange={handleImageChange}
                 />

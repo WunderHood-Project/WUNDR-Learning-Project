@@ -58,15 +58,17 @@ export default function AddEvent() {
     const isPartner = user?.role === 'partner'
     const endpoint = isPartner ? `${WONDERHOOD_URL}/event/submit` : `${WONDERHOOD_URL}/event`
 
+    // Reactively set activityId for events once activities have loaded,
+    // in case the user clicked "Event" before the activities fetch resolved.
     useEffect(() => {
-        if (user?.role === 'partner' && form.label !== 'partner') {
-            setForm((prev) => ({
-            ...prev,
-            label: 'partner',
+        if (createType === 'event' && eventActivity?.id && !form.activityId) {
+            setForm(prev => ({
+                ...prev,
+                activityId: eventActivity.id
             }))
         }
-    }, [user?.role, form.label])
-    
+    }, [createType, eventActivity])
+
 
     // Sets which creation flow the user wants to use.
     // For events, we auto-fill the default Events activityId so the event payload
@@ -76,12 +78,12 @@ export default function AddEvent() {
 
         if (type === 'event') {
             setForm(prev => ({
-            ...prev,
-            activityId: eventActivity?.id ?? ''
+                ...prev,
+                activityId: eventActivity?.id ?? ''
             }))
         }
     }
-    
+
     const handleImageChange = async (fileOrUrl: File | string | null) => {
         if (fileOrUrl instanceof File) {
             // Compress file to ±1600×1200, WebP/0.8
@@ -169,7 +171,10 @@ export default function AddEvent() {
         const payload: CreateEventPayload = {
             ...form,
             date: ymdToIsoNoShift(form.date),
+            label: isPartner ? 'partner' : form.label,
         };
+
+        console.log("Submitting event with payload:", payload) // Debug log to check payload before submission
 
         try {
             const response = await makeApiRequest(endpoint, {
@@ -180,7 +185,7 @@ export default function AddEvent() {
 
             if (response) {
                 setForm(initialEventForm())
-                router.replace("/events")
+                router.replace(isPartner ? "/events?success=event" : "/events")
             }
         } catch (e) {
             throw new Error(`Unable to add event: ${e}`)
@@ -245,67 +250,66 @@ export default function AddEvent() {
             )}
 
             {createType === 'event' && (
-            <>
-                <div className="mb-4">
-                <button
-                    type="button"
-                    onClick={() => {
-                    setCreateType(null)
-                    setForm(initialEventForm())
-                    setErrors({})
-                    }}
-                    className="text-sm text-gray-600 hover:text-gray-900 underline mb-2"
-                >
-                    ← Back
-                </button>
+                <>
+                    <div className="mb-4">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setCreateType(null)
+                                setForm(initialEventForm())
+                                setErrors({})
+                            }}
+                            className="text-sm text-gray-600 hover:text-gray-900 underline mb-2"
+                        >
+                            ← Back
+                        </button>
 
-                <h1 className="text-2xl font-bold text-center">Add an Event</h1>
-                </div>
+                        <h1 className="text-2xl font-bold text-center">Add an Event</h1>
+                    </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                <EventFields
-                    form={form}
-                    errors={errors}
-                    activities={activities}
-                    minDate={todayYMD}
-                    onChange={handleChange}
-                    onImageChange={handleImageChange}
-                />
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <EventFields
+                            form={form}
+                            errors={errors}
+                            minDate={todayYMD}
+                            onChange={handleChange}
+                            onImageChange={handleImageChange}
+                        />
 
-                <div className="flex justify-end gap-4">
-                    <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
-                    >
-                    {isPartner ? "Submit for Approval" : "Add Event"}
-                    </button>
-                    <button
-                    type="reset"
-                    onClick={handleDiscard}
-                    className="bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-md"
-                    >
-                    Cancel
-                    </button>
-                </div>
-                </form>
-            </>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="bg-wondergreen hover:bg-wonderleaf text-white px-4 py-2 rounded-md"
+                            >
+                                {isPartner ? "Submit for Approval" : "Add Event"}
+                            </button>
+                            <button
+                                type="reset"
+                                onClick={handleDiscard}
+                                className="bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-md"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </>
             )}
 
             {createType === 'program' && (
-            <>
-                <div className="mb-4">
-                <button
-                    type="button"
-                    onClick={() => setCreateType(null)}
-                    className="text-sm text-gray-600 hover:text-gray-900 underline mb-2"
-                >
-                    ← Back
-                </button>
-                </div>
+                <>
+                    <div className="mb-4">
+                        <button
+                            type="button"
+                            onClick={() => setCreateType(null)}
+                            className="text-sm text-gray-600 hover:text-gray-900 underline mb-2"
+                        >
+                            ← Back
+                        </button>
+                    </div>
 
-                <AddProgramForm />
-            </>
+                    <AddProgramForm />
+                </>
             )}
         </div>
     )

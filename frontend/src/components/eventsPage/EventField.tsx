@@ -2,7 +2,6 @@
 
 import React from "react"
 import { CITIES_CO } from "@/data/citiesCO"
-import type { Activity } from "@/types/activity"
 import type { CreateEventPayload, EventFormErrors } from '@/types/event'
 import EventImagePicker from "@/components/common/EventImagePicker";
 import { useUser } from "../../../hooks/useUser";
@@ -11,53 +10,46 @@ import { useUser } from "../../../hooks/useUser";
 type Props = {
     form: CreateEventPayload
     errors: EventFormErrors
-    activities: Activity[]
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void
     minDate?: string
     onImageChange?: (fileOrUrl: File | string | null) => void;
 }
 
-const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onChange, onImageChange, }) => {
-    const handleImageChange = onImageChange ?? (() => {});
+const EventFields: React.FC<Props> = ({ form, errors, minDate, onChange, onImageChange, }) => {
+    const handleImageChange = onImageChange ?? (() => { });
     const { user } = useUser();
     const isPartner = user?.role === 'partner';
 
     return (
         <fieldset className="space-y-4">
+            {/* {!isPartner && ( */}
             <div>
-                <label className="block mb-1 font-medium">Activity <span className="text-rose-600">*</span></label>
-                <select
-                    name="activityId"
-                    value={form.activityId}
-                    onChange={onChange}
-                    className="w-full border rounded px-3 py-2"
-                    required
-                >
-                    <option value="">Select an Activity</option>
-                    {activities.map((activity) => (
-                        <option key={activity.id} value={activity.id}>
-                            {activity.name}
-                        </option>
-                    ))}
-                </select>
-                {errors.activityId && <p className="text-sm text-red-600">{errors.activityId}</p>}
-            </div>
-            {!isPartner && (
-                <div>
-                    <label className="block mb-1 font-medium">
-                        Label <span className="text-rose-600">*</span>
-                    </label>
+                <label className="block mb-1 font-medium">
+                    Label <span className="text-rose-600">*</span>
+                </label>
+                {isPartner ?
                     <select
-                    name="label"
-                    value={form.label}
-                    onChange={onChange}
-                    className="w-full border rounded px-3 py-2"
+                        name="label"
+                        value={form.label}
+                        onChange={onChange}
+                        className="w-full border rounded px-3 py-2 bg-gray-50 cursor-not-allowed text-gray-500"
+                        disabled
                     >
-                    <option value="wonderhood">WonderHood</option>
-                    <option value="partner">Partner</option>
+                        <option value="partner">Partner</option>
                     </select>
-                </div>
-            )}
+                    :
+                    <select
+                        name="label"
+                        value={form.label}
+                        onChange={onChange}
+                        className="w-full border rounded px-3 py-2"
+                    >
+                        <option value="wonderhood">WonderHood</option>
+                        <option value="partner">Partner</option>
+                    </select>
+                }
+            </div>
+            {/* )} */}
 
             <div>
                 <label className="block mb-1 font-medium">Name <span className="text-rose-600">*</span></label>
@@ -88,21 +80,21 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
 
             {/* Notes (optional) */}
             <div>
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                Notes (optional)
-            </label>
-            <textarea
-                id="notes"
-                name="notes"
-                value={form.notes ?? ""}
-                onChange={onChange}
-                rows={3}
-                placeholder="What to bring, attire, special instructions..."
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wondergreen focus:ring-wondergreen"
-            />
-            {errors.notes && (
-                <p className="mt-1 text-sm text-red-600">{errors.notes}</p>
-            )}
+                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+                    Notes (optional)
+                </label>
+                <textarea
+                    id="notes"
+                    name="notes"
+                    value={form.notes ?? ""}
+                    onChange={onChange}
+                    rows={3}
+                    placeholder="What to bring, attire, special instructions..."
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wondergreen focus:ring-wondergreen"
+                />
+                {errors.notes && (
+                    <p className="mt-1 text-sm text-red-600">{errors.notes}</p>
+                )}
             </div>
 
 
@@ -156,8 +148,8 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
             <div>
                 <label className="block mb-1 font-medium">Image</label>
                 <EventImagePicker
-                value={form.image || null}
-                onChange={handleImageChange}
+                    value={form.image || null}
+                    onChange={handleImageChange}
                 />
                 {errors.image && <p className="text-sm text-red-600">{errors.image}</p>}
 
