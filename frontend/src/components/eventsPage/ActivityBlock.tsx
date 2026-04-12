@@ -5,7 +5,7 @@ import { Event } from '@/types/event';
 import type { EnrichmentProgram } from '@/types/program';
 import EventCard from './EventCard';
 import ProgramCard from '@/components/Programs/ProgramCard';
-import { Mountain, Landmark, FlaskConical, CalendarCheck } from 'lucide-react';
+import { Landmark, CalendarCheck } from 'lucide-react';
 
 
 interface Props {

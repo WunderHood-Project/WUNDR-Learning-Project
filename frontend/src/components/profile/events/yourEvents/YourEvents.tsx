@@ -31,18 +31,24 @@ export default function YourEvents() {
         id: e.id, name: e.name, description: e.description,
         city: e.city, date: e.date, startTime: e.startTime, endTime: e.endTime,
         childIds: (e.childIds ?? []).filter(id => childIdSet.has(id)),
-        image: e.image, schoolAccess: e.schoolAccess ?? "all",
+        image: e.image, schoolAccess: e.schoolAccess ?? "all", label: e.label,
       }));
   }, [events, user?.children]);
 
   // only future ones
   const visiblePool = useMemo(() => {
     const today = new Date(); today.setHours(0,0,0,0);
-    return usersEvents.filter(e => {
-      const m = String(e.date).match(/^\d{4}-\d{2}-\d{2}/);
-      const eventDay = m ? combineLocal(m[0], "00:00") : new Date(e.date);
-      return !Number.isNaN(eventDay.getTime()) && eventDay >= today;
-    });
+    return usersEvents
+      .filter(e => {
+        const m = String(e.date).match(/^\d{4}-\d{2}-\d{2}/);
+        const eventDay = m ? combineLocal(m[0], "00:00") : new Date(e.date);
+        return !Number.isNaN(eventDay.getTime()) && eventDay >= today;
+      })
+      .map(e => ({
+        ...e,
+        startTime: e.startTime ?? undefined,
+        endTime: e.endTime ?? undefined,
+      }));
   }, [usersEvents]);
 
   useEffect(() => { if (visiblePool.length && currEventIdx >= visiblePool.length) setCurrEventIdx(0); },
