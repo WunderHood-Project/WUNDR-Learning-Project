@@ -5,6 +5,7 @@ import { CITIES_CO } from "@/data/citiesCO"
 import type { Activity } from "@/types/activity"
 import type { CreateEventPayload, EventFormErrors } from '@/types/event'
 import EventImagePicker from "@/components/common/EventImagePicker";
+import { useUser } from "../../../hooks/useUser";
 
 
 type Props = {
@@ -18,6 +19,8 @@ type Props = {
 
 const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onChange, onImageChange, }) => {
     const handleImageChange = onImageChange ?? (() => {});
+    const { user } = useUser();
+    const isPartner = user?.role === 'partner';
 
     return (
         <fieldset className="space-y-4">
@@ -39,6 +42,22 @@ const EventFields: React.FC<Props> = ({ form, errors, activities, minDate, onCha
                 </select>
                 {errors.activityId && <p className="text-sm text-red-600">{errors.activityId}</p>}
             </div>
+            {!isPartner && (
+                <div>
+                    <label className="block mb-1 font-medium">
+                        Label <span className="text-rose-600">*</span>
+                    </label>
+                    <select
+                    name="label"
+                    value={form.label}
+                    onChange={onChange}
+                    className="w-full border rounded px-3 py-2"
+                    >
+                    <option value="wonderhood">WonderHood</option>
+                    <option value="partner">Partner</option>
+                    </select>
+                </div>
+            )}
 
             <div>
                 <label className="block mb-1 font-medium">Name <span className="text-rose-600">*</span></label>

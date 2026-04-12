@@ -55,6 +55,15 @@ export default function AddProgramForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (user?.role === 'partner' && form.label !== 'partner') {
+      setForm((prev) => ({
+        ...prev,
+        label: 'partner',
+      }));
+    }
+  }, [user?.role, form.label]);
+
   // Set default activity to "Enrichment Programs" on load (required by backend)
   useEffect(() => {
     if (defaultProgramActivity?.id && !form.activityId) {
@@ -225,7 +234,9 @@ export default function AddProgramForm() {
             </h2> */}
 
              <div>
-              <label className={labelCls}>Activity *</label>
+              <label className={labelCls}>
+                Activity <span className="text-rose-600">*</span>
+              </label>
               <select
                 name="activityId"
                 value={form.activityId ?? ''}
@@ -242,8 +253,29 @@ export default function AddProgramForm() {
               {errors.activityId && <p className={errorCls}>{errors.activityId}</p>}
             </div>
 
+            {/* Admin-only: label */}
+            {!isPartner && (
+              <div>
+                <label className="block mb-1 font-medium">
+                  Label <span className="text-rose-600">*</span>
+                </label>
+                <select
+                  name="label"
+                  value={form.label}
+                  onChange={handleChange}
+                  className={inputCls}
+                  required
+                >
+                  <option value="wonderhood">WonderHood</option>
+                  <option value="partner">Partner</option>
+                </select>
+              </div>
+            )}
+
             <div>
-              <label className={labelCls}>Program Name *</label>
+              <label className={labelCls}>
+                Program Name <span className="text-rose-600">*</span>
+              </label>
               <input
                 name="name"
                 value={form.name}
@@ -255,7 +287,9 @@ export default function AddProgramForm() {
             </div>
 
             <div>
-              <label className={labelCls}>Description *</label>
+              <label className={labelCls}>
+                Description <span className="text-rose-600">*</span>
+              </label>
               <textarea
                 name="description"
                 value={form.description}
@@ -276,7 +310,9 @@ export default function AddProgramForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={labelCls}>Start Date *</label>
+                <label className={labelCls}>
+                  Start Date <span className="text-rose-600">*</span>
+                </label>
                 <input
                   type="date"
                   name="startDate"
@@ -288,7 +324,9 @@ export default function AddProgramForm() {
                 {errors.startDate && <p className={errorCls}>{errors.startDate}</p>}
               </div>
               <div>
-                <label className={labelCls}>End Date *</label>
+                <label className={labelCls}>
+                  End Date <span className="text-rose-600">*</span>
+                </label>
                 <input
                   type="date"
                   name="endDate"
@@ -314,7 +352,9 @@ export default function AddProgramForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={labelCls}>Min Age *</label>
+                <label className={labelCls}>
+                  Min Age <span className="text-rose-600">*</span>
+                </label>
                 <input
                   type="number"
                   name="ageMin"
@@ -327,7 +367,9 @@ export default function AddProgramForm() {
                 {errors.ageMin && <p className={errorCls}>{errors.ageMin}</p>}
               </div>
               <div>
-                <label className={labelCls}>Max Age *</label>
+                <label className={labelCls}>
+                  Max Age <span className="text-rose-600">*</span>
+                </label>
                 <input
                   type="number"
                   name="ageMax"
@@ -587,23 +629,6 @@ export default function AddProgramForm() {
               />
             </div>
           </section>
-
-          {/* Admin-only: label */}
-          {!isPartner && (
-            <div>
-              <label className={labelCls}>Label</label>
-              <select name="label" value={form.label} onChange={handleChange} className={inputCls}>
-                <option value="wonderhood">WonderHood</option>
-                <option value="partner">Partner</option>
-              </select>
-            </div>
-          )}
-
-          {serverError && (
-            <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">
-              {serverError}
-            </div>
-          )}
 
           <div className="flex items-center gap-4 pt-2">
             <button

@@ -3,38 +3,38 @@ import {Mountain, Paintbrush, Atom, HeartPulse, UsersRound } from "lucide-react"
 
 type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
-type Club = { Icon: IconType; title: string; desc: string };
+type Experience = { Icon: IconType; title: string; desc: string };
 
-const clubs: Club[] = [
+const experiences: Experience[] = [
   {
     Icon: Mountain,
-    title: "Adventure & Outdoor Club",
+    title: "Adventure & Outdoor",
     desc:
-      "Builds confidence, teamwork, and a healthy love for nature. Our favorites are hiking, climbing, camping, and seasonal sports.",
+      "Builds confidence, teamwork, and a healthy love for nature through hiking, climbing, camping, and seasonal outdoor activities.",
   },
   {
     Icon: Paintbrush,
-    title: "Arts & Expression Club",
+    title: "Arts & Expression",
     desc:
-      "Encourages imagination, self-expression, and collaboration. We love creative writing, design, and hands-on workshops.",
+      "Encourages imagination, self-expression, and collaboration through creative writing, design, and hands-on workshops.",
   },
   {
     Icon: Atom,
-    title: "STEM & Innovation Club",
+    title: "STEM & Innovation",
     desc:
-      "Where curiosity meets creativity, from coding to hands-on science experiments.",
+      "Where curiosity meets creativity, from coding to hands-on science experiments and problem-solving challenges.",
   },
   {
     Icon: HeartPulse,
-    title: "Life Skills & Wellness Club",
+    title: "Life Skills & Wellness",
     desc:
-      "Promotes independence, resilience, and lifelong healthy habits. Practical skill development in nutrition, mindfulness, and healthy living.",
+      "Supports independence, resilience, and healthy habits through practical skills, mindfulness, and everyday life learning.",
   },
   {
     Icon: UsersRound,
-    title: "Leadership & Community Building Club",
+    title: "Leadership & Community",
     desc:
-      "Teens learn how to mentor and contribute through community service projects.",
+      "Teens build leadership skills by mentoring others and contributing through community-based projects.",
   },
 ];
 
@@ -51,11 +51,10 @@ export default function OurPrograms() {
                         text-3xl sm:text-4xl md:text-[34px] lg:text-[36px] xl:text-[40px]
                         font-bold text-center xl:text-left"
             >
-              WonderHood Signature Clubs
+              WonderHood Learning Experiences
             </h2>
 
-            <span
-            // -mt-8 xl:mt-0
+            {/* <span
               className="order-2 xl:order-2
                         text-[11px] sm:text-xs md:text-sm
                         px-3 py-2 mt-1 xl:mt-0 rounded-full
@@ -65,21 +64,21 @@ export default function OurPrograms() {
                         "
             >
               COMING SOON
-            </span>
+            </span> */}
           </div>
 
           {/* underline */}
           <div className="h-1 w-3/4 sm:w-2/3 bg-gradient-to-r from-wonderleaf to-wondergreen rounded-full shadow-md mb-4 mt-2" />
 
           <p className="text-base sm:text-lg lg:text-[20px] text-gray-600 max-w-5xl text-center sm:text-left mb-8 sm:mb-10 mt-2">
-            Get ready for something new! Our upcoming WonderClubs will be <span className="font-bold">ongoing, weekly programs</span> designed to give homeschool and online learners
-            a consistent space to learn, create, and connect. These year-round communities will offer deeper friendships, meaningful projects, and exciting opportunities to grow together.
+            Get ready for something new! WonderHood is building a range of <span className="font-bold">learning experiences</span>, including <span className="font-bold">one-time events, enrichment programs, and future weekly communities</span>. 
+            These are designed to give homeschool and online learners a consistent space to learn, create, and connect. Together, these experiences will support deeper friendships, meaningful projects, and exciting opportunities to grow.
           </p>
         </div>
 
         {/* Grid */}
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {clubs.map(({ Icon, title, desc }) => {
+          {experiences.map(({ Icon, title, desc }) => {
             const id = title.toLowerCase().replace(/\s+/g, "-");
             return (
               <li
@@ -124,7 +123,7 @@ export default function OurPrograms() {
         {/* Bottom of the section */}
         <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <p className="text-sm text-gray-500">
-            Programs may vary by season as new local partnerships launch.
+            Experiences may vary by season as new local partnerships launch.
           </p>
           {/* <a href="/interest" className="text-sm font-semibold text-wondergreen underline underline-offset-4 hover:opacity-80">
             Join the interest list →

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { makeApiRequest } from '../../../utils/api';
 import { CreateEventPayload, EventFormErrors } from '@/types/event';
 // import { convertStringToIsoFormat, toYMDLocal } from '../../../utils/formatDate';
@@ -57,6 +57,16 @@ export default function AddEvent() {
     const { user } = useUser()
     const isPartner = user?.role === 'partner'
     const endpoint = isPartner ? `${WONDERHOOD_URL}/event/submit` : `${WONDERHOOD_URL}/event`
+
+    useEffect(() => {
+        if (user?.role === 'partner' && form.label !== 'partner') {
+            setForm((prev) => ({
+            ...prev,
+            label: 'partner',
+            }))
+        }
+    }, [user?.role, form.label])
+    
 
     // Sets which creation flow the user wants to use.
     // For events, we auto-fill the default Events activityId so the event payload

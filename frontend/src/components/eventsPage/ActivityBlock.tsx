@@ -5,7 +5,8 @@ import { Event } from '@/types/event';
 import type { EnrichmentProgram } from '@/types/program';
 import EventCard from './EventCard';
 import ProgramCard from '@/components/Programs/ProgramCard';
-import { Mountain, Landmark, FlaskConical } from 'lucide-react';
+import { Mountain, Landmark, FlaskConical, CalendarCheck } from 'lucide-react';
+
 
 interface Props {
   activityName: string;
@@ -61,10 +62,17 @@ const getTheme = (name: string): Theme => {
 /** Lucide icon per activity (fallback = emoji) */
 const HeaderIcon = ({ name }: { name: string }) => {
   const n = name.toLowerCase();
-  console.log('HeaderIcon', name);
-  const common = 'h-6 w-6 text-wondergreen';
-  if (n === 'enrichment programs') return <Landmark className={common} strokeWidth={2} />;
-  return <span className="text-[18px] leading-none">📅</span>;
+  const common = 'h-7 w-7 text-wondergreen';
+
+  if (n === 'enrichment programs') {
+    return <Landmark className={common} strokeWidth={2} />;
+  }
+
+  if (n.includes('event')) {
+    return <CalendarCheck className={common} strokeWidth={2} />;
+  }
+
+  return <CalendarCheck className={common} strokeWidth={2} />;
 };
 
 export default function ActivityBlock({
@@ -139,7 +147,7 @@ export default function ActivityBlock({
           </span>
 
           <h2 className={`text-2xl md:text-3xl font-bold ${theme.title}`}>
-            {activityName}
+            {activityName === 'Enrichment Programs' ? 'Programs' : activityName}
           </h2>
         </div>
 

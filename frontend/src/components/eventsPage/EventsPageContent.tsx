@@ -42,6 +42,20 @@ export default function EventsPageContent() {
           programs: programs.filter((p) => p.activityId === activity.id),
         }));
 
+        // Ensure Events section appears first, Programs second
+        formatted.sort((a, b) => {
+          const nameA = a.activityName.toLowerCase();
+          const nameB = b.activityName.toLowerCase();
+
+          if (nameA.includes("event")) return -1;
+          if (nameB.includes("event")) return 1;
+
+          if (nameA.includes("program")) return 1;
+          if (nameB.includes("program")) return -1;
+
+          return 0;
+        });
+
         setGrouped(formatted);
       } catch (err) {
         console.error("Failed to fetch activities / programs:", err);
