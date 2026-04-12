@@ -7,9 +7,8 @@ import { useEffect, useState } from "react"
 import { makeApiRequest } from "../../../utils/api"
 // import { convertStringToIsoFormat, toYMDForInput } from "../../../utils/formatDate"
 import { determineEnv } from "../../../utils/api"
-import { parseFloatOrNull, parseIntOrZero } from "../../../utils/parseHelpers"
+import { parseFloatOrNull } from "../../../utils/parseHelpers"
 import EventFields from "./EventField"
-import { useActivity } from "../../../hooks/useActivity"
 // import { fileToDataUrl } from '../../../utils/image/fileToDataUrl';
 import { compressImage } from '../../../utils/image/compressImage';
 import { ymdToIsoNoShift, isoToYMD } from '../../../utils/formatDate';
@@ -23,10 +22,10 @@ const toEventForm = (ev: Event): CreateEventPayload => ({
     notes: ev.notes ?? "",
     description: ev.description ?? "",
     date: isoToYMD(ev.date ?? ''),
-    startTime: ev.startTime ?? "",
-    endTime: ev.endTime ?? "",
+    startTime: ev.startTime ?? null,
+    endTime: ev.endTime ?? null,
     image: ev.image ?? "",
-    limit: ev.limit ?? 0,
+    limit: ev.limit ?? null,
     schoolAccess: ev.schoolAccess ?? "all",
     city: ev.city ?? "",
     state: ev.state ?? "CO",
@@ -34,13 +33,14 @@ const toEventForm = (ev: Event): CreateEventPayload => ({
     zipCode: String(ev.zipCode ?? ""),
     latitude: ev.latitude ?? null,
     longitude: ev.longitude ?? null,
+    label: ev.label ?? "wonderhood"
 })
 
 export default function UpdateEvent() {
     const { eventId } = useParams()
     const { event: singleEvent, loading: singleLoading, error: singleError } = useEvent(eventId)
     const { events: allEvents } = useEvent(undefined)
-    const { activities } = useActivity()
+
     const [formEvent, setFormEvent] = useState<CreateEventPayload | null>(null)
     const [errors, setErrors] = useState<EventFormErrors>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -68,7 +68,11 @@ export default function UpdateEvent() {
             }
 
             if (name === "limit") {
-                return { ...prev, [name]: parseIntOrZero(value) }
+                return { ...prev, [name]: value === "" ? null : parseInt(value, 10) }
+            }
+
+            if (name === "startTime" || name === "endTime") {
+                return { ...prev, [name]: value === "" ? null : value }
             }
 
             return { ...prev, [name]: value }
@@ -104,13 +108,13 @@ export default function UpdateEvent() {
         // Validate date format:
         if (!dateRegex.test(formEvent.date)) newErrors.date = "Please provide MM/DD/YYYY format"
 
-        // Validate time formats:
-        if (!timeRegex.test(formEvent.startTime)) newErrors.startTime = "Please provide hh:mm format"
-        if (!timeRegex.test(formEvent.endTime)) newErrors.endTime = "Please provide hh:mm format"
+        // Validate time formats (only if provided):
+        if (formEvent.startTime != null && !timeRegex.test(formEvent.startTime)) newErrors.startTime = "Please provide hh:mm format"
+        if (formEvent.endTime != null && !timeRegex.test(formEvent.endTime)) newErrors.endTime = "Please provide hh:mm format"
 
         // Validate participant LIMIT:
-        if (formEvent.limit > 100) newErrors.limit = "There must be less than 100 participants"
-        if (formEvent.limit < 0) newErrors.limit = "There must be at least 0 participants"
+        if (formEvent.limit != null && formEvent.limit > 100) newErrors.limit = "There must be less than 100 participants"
+        if (formEvent.limit != null && formEvent.limit < 0) newErrors.limit = "There must be at least 0 participants"
 
         // Validate the address:
         //  ! Add more robust validation
@@ -174,7 +178,6 @@ export default function UpdateEvent() {
                 <EventFields
                     form={formEvent}
                     errors={errors}
-                    activities={activities}
                     onChange={handleChange}
                     onImageChange={handleImageChange}
                 />
