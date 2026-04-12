@@ -9,9 +9,9 @@ import DeleteEventModal from './DeleteEventModal';
 import { NotificationModal } from '../notifications/NotificationModal';
 import { determineEnv } from '../../../utils/api';
 import { formatDate, formatTimeRange12h } from '../../../utils/formatDate';
-import type { Event } from '@/types/event';
+import type { Event, EventLabel } from '@/types/event';
 import Image from "next/image";
-import AppIcon from "@/app/icon.png"; 
+import AppIcon from "@/app/icon.png";
 import { normalizeNextImageSrc } from "../../../utils/image/normalizeNextImageSrc";
 
 const WONDERHOOD_URL = determineEnv();
@@ -25,15 +25,17 @@ type Props = {
 export default function EventCard({ event, isAdmin, onDelete }: Props) {
   // Derived numbers/labels for capacity
   const enrolled = event.participants ?? 0;
-  const spotsLeft = Math.max(0, (event.limit ?? 0) - enrolled);
-  const spotsLabel = spotsLeft === 0 ? 'No spots left' : `${spotsLeft} spots left`;
+  const unlimited = event.limit == null;
+  const spotsLeft = unlimited ? null : Math.max(0, event.limit! - enrolled);
+  const spotsLabel = unlimited ? 'Unlimited' : spotsLeft === 0 ? 'No spots left' : `${spotsLeft} spots left`;
 
-  const spotsClass =
-    spotsLeft === 0
+  const spotsClass = unlimited
+    ? 'bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30'
+    : spotsLeft === 0
       ? 'bg-gray-100 text-gray-700 border border-gray-200'
-      : spotsLeft <= 3
+      : spotsLeft! <= 3
         ? 'bg-red-50 text-red-700 border border-red-200'
-        : spotsLeft <= 7
+        : spotsLeft! <= 7
           ? 'bg-yellow-50 text-yellow-800 border border-yellow-200'
           : 'bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30';
 
@@ -45,7 +47,7 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
       <div className="flex-1 p-4 sm:p-6 flex flex-col gap-3">
         {/* Title (fixed height to keep cards aligned) */}
         <h3 className="text-center text-wondergreen font-bold text-lg sm:text-xl leading-snug line-clamp-2 min-h-[2rem]">
-            {event.name}
+          {event.name}
         </h3>
 
         <div className="w-full overflow-hidden rounded-xl">
@@ -66,6 +68,9 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
                     unoptimized={p.unoptimized}
                   />
 
+                  <div className="absolute top-3 left-3">
+                    <EventLabelBadge label={event.label} />
+                  </div>
                   <div className="absolute top-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
                     {formatDate(event.date)}
                   </div>
@@ -86,6 +91,9 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
                   />
                 </div>
 
+                <div className="absolute top-3 left-3">
+                  <EventLabelBadge label={event.label} />
+                </div>
                 <div className="absolute bottom-3 right-3 inline-flex px-3 py-1.5 rounded-full bg-wondersun text-gray-900 text-xs font-bold shadow-md">
                   {formatDate(event.date)}
                 </div>
@@ -129,14 +137,14 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
           <div className="flex items-center gap-2">
             <FaUser className="w-4 h-4 text-wonderorange shrink-0" />
             <span className="text-sm font-semibold text-wondergreen">
-              Max Participants:&nbsp;{event.limit}
+              Max Participants:&nbsp;{unlimited ? "Unlimited" : event.limit}
             </span>
           </div>
 
           {/* Row 2: enrolled left + spots badge right (fixed width) */}
           <div className="mt-2 flex items-center">
             <p className="text-xs text-gray-600">
-              {enrolled} of {event.limit} enrolled
+              {unlimited ? `${enrolled} enrolled` : `${enrolled} of ${event.limit} enrolled`}
             </p>
 
             <span
@@ -189,5 +197,19 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
         )}
       </div>
     </article>
+  );
+}
+
+function EventLabelBadge({ label }: { label: EventLabel }) {
+  const isPartner = label === "partner";
+  return (
+    <span
+      className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold shadow-md ${isPartner
+          ? "bg-wonderorange text-white"
+          : "bg-wondergreen text-white"
+        }`}
+    >
+      {isPartner ? "Partner" : "WonderHood"}
+    </span>
   );
 }
