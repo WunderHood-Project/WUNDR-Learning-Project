@@ -25,17 +25,25 @@ def send_email_one_user(
         subject: str,
         contents: str
 ):
-
-    
     """
     Callback function for sending an email upon enrollment
     """
-    
+    full_contents = f"""
+    {contents}
+
+    <br><br>
+
+    Best Regards,
+    WonderHood Project Team
+    <a href=\"mailto:info@whproject.org\">info@whproject.org</a>
+    <a href=\"https://whproject.org\">whproject.org</a>
+    """
+
     yag.send(
         to=user_email,
         subject=subject,
-         contents=[
-            contents,
+        contents=[
+            full_contents,
             yagmail.inline("static/wonderhood_logo.png"),
         ],
     )
