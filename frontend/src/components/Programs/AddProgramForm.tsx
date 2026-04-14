@@ -490,15 +490,25 @@ export default function AddProgramForm() {
                     </div>
 
                     <div>
-                        <label className={labelCls}>Program Lead Photo (optional)</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleDirectorImageChange(e.target.files?.[0] ?? null)}
-                            className="block w-full text-sm text-gray-700"
-                        />
-                    </div>
+                      <label className={labelCls}>Program Lead Photo (optional)</label>
 
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleDirectorImageChange(e.target.files?.[0] ?? null)}
+                        className="block w-full text-sm text-gray-700"
+                      />
+
+                      {form.directorImage && (
+                        <div className="mt-3">
+                          <img
+                            src={form.directorImage}
+                            alt="Program Lead"
+                            className="h-20 w-20 rounded-full object-cover border border-gray-200"
+                          />
+                        </div>
+                      )}
+                    </div>
                     <div>
                         <label className={labelCls}>— or paste a photo URL</label>
                         <input
