@@ -9,6 +9,7 @@ import AppIcon from '@/app/icon.png';
 import { normalizeNextImageSrc } from '../../../utils/image/normalizeNextImageSrc';
 import { formatDate } from '../../../utils/formatDate';
 import type { EnrichmentProgram, ProgramLabel, ProgramVenue } from '@/types/program';
+import { FaLocationDot } from 'react-icons/fa6';
 
 type Props = {
   program: EnrichmentProgram;
@@ -89,17 +90,35 @@ export default function ProgramCard({ program, isAdmin, onDelete }: Props) {
           })()}
         </div>
 
-        {/* Date range + venue */}
-        <div className="flex flex-wrap items-center gap-2 justify-center mt-2 mb-1">
-          <span className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-full bg-gray-50 text-gray-700 border border-gray-200">
-            <FaCalendarAlt className="w-3.5 h-3.5 text-wonderorange" />
-            <span className="font-medium">
-              {formatDate(program.startDate)} – {formatDate(program.endDate)}
+        {/* City + date */}
+        <div className="flex justify-center">
+          <div className="flex items-center gap-2 whitespace-nowrap overflow-hidden mt-2 mb-1">
+            {(program.city || program.state) && (
+              <span
+                className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-full bg-gray-50 text-gray-700 border border-gray-200"
+                title={`${program.city ?? ''}${program.city && program.state ? ', ' : ''}${program.state ?? ''}`}
+              >
+                <FaLocationDot className="w-3.5 h-3.5 text-wonderorange" />
+                <span className="font-medium">
+                  {program.city}
+                  {program.city && program.state ? ', ' : ''}
+                  {program.state}
+                </span>
+              </span>
+            )}
+
+            <span className="h-4 w-px bg-gray-200" />
+
+            <span
+              className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-full bg-gray-50 text-gray-700 border border-gray-200"
+              title={`${formatDate(program.startDate)} – ${formatDate(program.endDate)}`}
+            >
+              <FaCalendarAlt className="w-3.5 h-3.5 text-wonderleaf" />
+              <span className="font-medium">
+                {formatDate(program.startDate)} – {formatDate(program.endDate)}
+              </span>
             </span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-full bg-gray-50 text-gray-700 border border-gray-200 font-medium">
-            {displayVenue(program.venue)}
-          </span>
+          </div>
         </div>
 
         {/* Age + capacity */}

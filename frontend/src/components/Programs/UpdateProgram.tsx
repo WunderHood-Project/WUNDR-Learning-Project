@@ -84,6 +84,20 @@ export default function UpdateProgram() {
     }
   };
 
+  const handleDirectorImageChange = async (fileOrUrl: File | string | null) => {
+    if (fileOrUrl instanceof File) {
+      const dataUrl = await compressImage(fileOrUrl, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.8,
+        type: 'image/webp',
+      });
+      setForm((prev) => ({ ...prev, directorImage: dataUrl }));
+    } else {
+      setForm((prev) => ({ ...prev, directorImage: fileOrUrl ?? '' }));
+    }
+  };
+
   const addOutcome = () => {
     const trimmed = outcomeInput.trim();
     if (!trimmed) return;
@@ -135,7 +149,7 @@ export default function UpdateProgram() {
       // phases: validPhases.length > 0 ? validPhases : undefined,
       sessionSchedule: form.sessionSchedule || undefined,
       directorName: form.directorName || undefined,
-      directorTitle: form.directorTitle || undefined,
+      directorTitle: form.directorTitle,
       directorImage: form.directorImage || undefined,
       image: form.image || undefined,
       limit: form.limit ?? undefined,
@@ -411,15 +425,36 @@ export default function UpdateProgram() {
             </div>
 
             <div>
-              <label className={labelCls}>Program Lead Photo URL (optional)</label>
-              <input
-                name="directorImage"
-                value={form.directorImage ?? ''}
-                onChange={handleChange}
-                className={inputCls}
-                placeholder="https://…"
-              />
-            </div>
+            <label className={labelCls}>Program Lead Photo (optional)</label>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleDirectorImageChange(e.target.files?.[0] ?? null)}
+              className="block w-full text-sm text-gray-700"
+            />
+
+            {form.directorImage && (
+              <div className="mt-3">
+                <img
+                  src={form.directorImage}
+                  alt="Program Lead"
+                  className="h-20 w-20 rounded-full object-cover border border-gray-200"
+                />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className={labelCls}>— or paste a photo URL</label>
+            <input
+              name="directorImage"
+              value={form.directorImage ?? ''}
+              onChange={handleChange}
+              className={inputCls}
+              placeholder="https://…"
+            />
+          </div>
           </section>
 
           {/* Venue & location */}
