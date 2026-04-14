@@ -37,6 +37,7 @@ export default function AdministrationPage({ title, children }: Props) {
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/children">Children</Link>
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partners">Partners</Link>
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partner-events">Partner Events</Link>
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partner-programs">Partner Programs</Link>
       </nav>
 
 

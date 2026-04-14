@@ -24,6 +24,19 @@ export interface ApiRequestOptions {
     token?: string;
 }
 
+/** Thrown by makeApiRequest on non-2xx responses.
+ *  `fields` is populated when the server returns Pydantic / FastAPI field validation errors. */
+export class ApiError extends Error {
+    status: number;
+    fields: Record<string, string>;
+
+    constructor(status: number, message: string, fields: Record<string, string> = {}) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+        this.fields = fields;
+    }
+}
 
 export async function makeApiRequest<T>(
     endpoint: string,
@@ -57,11 +70,28 @@ export async function makeApiRequest<T>(
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('erika look here', errorData)
 
-        throw new Error(
-            `API Error ${response.status}: ${errorData.detail || response.statusText}`
-        );
+        if (Array.isArray(errorData.detail)) {
+            // FastAPI / Pydantic validation errors — build both a readable message and a field map
+            const fields: Record<string, string> = {};
+            const parts: string[] = [];
+
+            for (const e of errorData.detail as { loc?: (string | number)[]; msg?: string }[]) {
+                const fieldPath = e.loc
+                    ? e.loc.filter((s) => s !== 'body').join('.')
+                    : '';
+                const msg = e.msg ?? 'Invalid value';
+                // Use only the last segment as the field key so it matches form field names
+                const fieldKey = fieldPath.split('.').pop() ?? fieldPath;
+                if (fieldKey && !fields[fieldKey]) fields[fieldKey] = msg;
+                parts.push(fieldPath ? `${fieldPath}: ${msg}` : msg);
+            }
+
+            throw new ApiError(response.status, parts.join('; '), fields);
+        }
+
+        const detail = errorData.detail || response.statusText;
+        throw new ApiError(response.status, detail);
     }
 
     return response.json();
