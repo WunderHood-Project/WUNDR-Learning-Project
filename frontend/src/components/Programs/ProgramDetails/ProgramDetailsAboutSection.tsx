@@ -63,39 +63,49 @@ export default function ProgramDetailsAboutSection({ program }: { program: Enric
         </div>
       )}
 
-      {/* Director / Instructor */}
+      {/* Program Lead */}
       {program.directorName && (
         <div className="bg-white/50 rounded-2xl p-5 sm:p-6 lg:p-8 backdrop-blur-sm border border-white/60">
-          <h3 className="text-lg sm:text-xl font-bold text-wondergreen mb-4">
-            Program Director
-          </h3>
-          <div className="flex items-center gap-4">
-            {(() => {
-              const img = normalizeNextImageSrc(program.directorImage ?? null);
-              if (img) {
+          
+          <div className="flex items-center gap-4 sm:gap-6">
+            
+            {/* LEFT — IMAGE */}
+            <div className="shrink-0">
+              {(() => {
+                const img = normalizeNextImageSrc(program.directorImage ?? null);
+
+                if (img) {
+                  return (
+                    <Image
+                      src={img.src}
+                      alt={program.directorName}
+                      width={96}
+                      height={96}
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover ring-2 ring-wonderleaf/30"
+                      unoptimized={img.unoptimized}
+                    />
+                  );
+                }
+
                 return (
-                  <Image
-                    src={img.src}
-                    alt={program.directorName}
-                    width={64}
-                    height={64}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-wonderleaf/30"
-                    unoptimized={img.unoptimized}
-                  />
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-wondergreen/10 ring-2 ring-wonderleaf/30 flex items-center justify-center text-wondergreen font-bold text-xl sm:text-2xl">
+                    {program.directorName.charAt(0).toUpperCase()}
+                  </div>
                 );
-              }
-              return (
-                <div className="w-16 h-16 rounded-full bg-wondergreen/10 border-2 border-wonderleaf/30 flex items-center justify-center text-wondergreen font-bold text-xl">
-                  {program.directorName.charAt(0).toUpperCase()}
-                </div>
-              );
-            })()}
-            <div>
-              <p className="font-bold text-gray-900">{program.directorName}</p>
-              {program.directorTitle && (
-                <p className="text-sm text-gray-600">{program.directorTitle}</p>
-              )}
+              })()}
             </div>
+
+            {/* RIGHT — TEXT */}
+            <div>
+              <p className="text-xs sm:text-sm uppercase tracking-widest text-wondergreen font-semibold">
+                Program Lead
+              </p>
+
+              <p className="mt-1 text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+                {program.directorName}
+              </p>
+            </div>
+
           </div>
         </div>
       )}
