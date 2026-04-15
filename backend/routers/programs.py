@@ -109,6 +109,7 @@ async def create_program(
 async def submit_program(
     program_data: EnrichmentProgramSubmit,
     current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
 ):
     """
     Submit Enrichment Program for approval (partner only).
@@ -141,6 +142,32 @@ async def submit_program(
 
     try:
         program = await db.enrichmentprograms.create(data=data)
+
+        await db.notifications.create(
+            data={
+                "title": "New Enrichment Program Submission",
+                "description": f"Thank you for submitting '{program.name}.' The program will be reviewed by one of our team members. Please check the notifications page or email notifications (if enabled) for updates on the review status.",
+                "userId": current_user.id,  # Global notification for all admins
+                "isRead": False,
+            }
+        )
+
+        if current_user.emailNotificationsEnabled:
+            subject = f"Your Program Submission Is Under Review"
+            contents = (
+                f"Hello {current_user.firstName},\n\n"
+                f'Your program "{program.name}" has been submitted and will be reviewed.'
+                + f" You will receive another notification by email once the review is complete and the program is either approved or rejected."
+                + "\n\nBest,\nWonderHood Team\ninfo@whproject.org\nwhproject.org"
+            )
+
+            background_tasks.add_task(
+                send_email_one_user,
+                current_user.email,
+                subject,
+                contents,
+            )
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -358,6 +385,7 @@ async def update_program_status(
     program_id: str,
     status_data: ProgramStatusUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
 ):
     """
     Approve or reject a pending enrichment program (admin only).
@@ -365,7 +393,10 @@ async def update_program_status(
     enforce_authentication(current_user, "update program status")
     enforce_admin(current_user, "update program status")
 
-    existing = await db.enrichmentprograms.find_unique(where={"id": program_id})
+    existing = await db.enrichmentprograms.find_unique(
+        where={"id": program_id},
+        include={"submittedBy": True},
+    )
     if not existing:
         raise HTTPException(status_code=404, detail="Enrichment program not found.")
 
@@ -374,6 +405,33 @@ async def update_program_status(
             where={"id": program_id},
             data={"status": status_data.status},
         )
+
+        if existing.submittedById:
+            await db.notifications.create(
+                data={
+                    "title": "Enrichment Program Submission Update",
+                    "description": f"Thank you for submitting '{existing.name}.' The program has been {status_data.status}. Please contact our team at info@whproject.org with any questions.",
+                    "userId": existing.submittedById,
+                    "isRead": False,
+                }
+            )
+
+        submitter = existing.submittedBy
+        if submitter and submitter.emailNotificationsEnabled:
+            subject = f"Your Program Submission Has Been {status_data.status.capitalize()}"
+            contents = (
+                f"Hello {submitter.firstName},\n\n"
+                f'Your program "{existing.name}" has been {status_data.status}. Please contact our team at info@whproject.org with any questions.'
+                + "\n\nBest,\n\nWonderHood Team\ninfo@whproject.org\nwhproject.org"
+            )
+
+            background_tasks.add_task(
+                send_email_one_user,
+                submitter.email,
+                subject,
+                contents,
+            )
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

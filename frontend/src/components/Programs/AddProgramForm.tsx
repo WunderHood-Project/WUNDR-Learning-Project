@@ -28,6 +28,7 @@ const initialForm = (): CreateProgramPayload => ({
     directorName: '',
     directorTitle: '',
     directorImage: '',
+    directorBio: '',
     limit: null,
     venue: 'in_person',
     city: '',
@@ -75,6 +76,10 @@ export default function AddProgramForm() {
         }
     }, [defaultProgramActivity, form.activityId]);
 
+    // Raw string display values for number inputs that should be clearable
+    const [ageMinInput, setAgeMinInput] = useState('0');
+    const [ageMaxInput, setAgeMaxInput] = useState('18');
+
     // Dynamic lists
     const [outcomeInput, setOutcomeInput] = useState('');
     // const [phases, setPhases] = useState<ProgramPhase[]>([]);
@@ -88,8 +93,14 @@ export default function AddProgramForm() {
             setForm((prev) => ({ ...prev, limit: value === '' ? null : parseInt(value, 10) }));
             return;
         }
-        if (name === 'ageMin' || name === 'ageMax') {
-            setForm((prev) => ({ ...prev, [name]: parseInt(value, 10) || 0 }));
+        if (name === 'ageMin') {
+            setAgeMinInput(value);
+            setForm((prev) => ({ ...prev, ageMin: parseInt(value, 10) || 0 }));
+            return;
+        }
+        if (name === 'ageMax') {
+            setAgeMaxInput(value);
+            setForm((prev) => ({ ...prev, ageMax: parseInt(value, 10) || 0 }));
             return;
         }
 
@@ -426,7 +437,7 @@ export default function AddProgramForm() {
                             <input
                                 type="number"
                                 name="ageMin"
-                                value={form.ageMin}
+                                value={ageMinInput}
                                 min={0}
                                 max={18}
                                 onChange={handleChange}
@@ -441,7 +452,7 @@ export default function AddProgramForm() {
                             <input
                                 type="number"
                                 name="ageMax"
-                                value={form.ageMax}
+                                value={ageMaxInput}
                                 min={0}
                                 max={18}
                                 onChange={handleChange}
@@ -567,24 +578,36 @@ export default function AddProgramForm() {
                     </div>
 
                     <div>
-                      <label className={labelCls}>Program Lead Photo (optional)</label>
+                        <label className={labelCls}>Bio (optional)</label>
+                        <textarea
+                            name="directorBio"
+                            value={form.directorBio ?? ''}
+                            onChange={handleChange}
+                            rows={3}
+                            className={inputCls}
+                            placeholder="A short bio about the program lead…"
+                        />
+                    </div>
 
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleDirectorImageChange(e.target.files?.[0] ?? null)}
-                        className="block w-full text-sm text-gray-700"
-                      />
+                    <div>
+                        <label className={labelCls}>Program Lead Photo (optional)</label>
 
-                      {form.directorImage && (
-                        <div className="mt-3">
-                          <img
-                            src={form.directorImage}
-                            alt="Program Lead"
-                            className="h-20 w-20 rounded-full object-cover border border-gray-200"
-                          />
-                        </div>
-                      )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleDirectorImageChange(e.target.files?.[0] ?? null)}
+                            className="block w-full text-sm text-gray-700"
+                        />
+
+                        {form.directorImage && (
+                            <div className="mt-3">
+                                <img
+                                    src={form.directorImage}
+                                    alt="Program Lead"
+                                    className="h-20 w-20 rounded-full object-cover border border-gray-200"
+                                />
+                            </div>
+                        )}
                     </div>
                     <div>
                         <label className={labelCls}>— or paste a photo URL</label>

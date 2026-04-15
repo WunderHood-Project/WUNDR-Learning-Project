@@ -191,6 +191,7 @@ class EnrichmentProgram(BaseModel):
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
     directorImage: Optional[str] = None
+    directorBio: Optional[str] = None
     participants: int = Field(default=0)
     limit: Optional[int] = None
     venue: ProgramVenue = ProgramVenue.IN_PERSON
@@ -220,6 +221,7 @@ class EnrichmentProgramCreate(BaseModel):
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
     directorImage: Optional[str] = None
+    directorBio: Optional[str] = None
     limit: Optional[int] = None
     venue: ProgramVenue = ProgramVenue.IN_PERSON
     city: Optional[str] = None
@@ -245,6 +247,7 @@ class EnrichmentProgramUpdate(BaseModel):
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
     directorImage: Optional[str] = None
+    directorBio: Optional[str] = None
     limit: Optional[int] = None
     venue: Optional[ProgramVenue] = None
     city: Optional[str] = None
@@ -268,6 +271,7 @@ class EnrichmentProgramSubmit(BaseModel):
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
     directorImage: Optional[str] = None
+    directorBio: Optional[str] = None
     limit: Optional[int] = None
     venue: ProgramVenue = ProgramVenue.IN_PERSON
     city: Optional[str] = None
