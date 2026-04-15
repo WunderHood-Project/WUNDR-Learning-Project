@@ -29,6 +29,7 @@ export type EnrichmentProgram = {
   directorName?: string | null;
   directorTitle?: string | null;
   directorImage?: string | null;
+  directorBio?: string | null;
 
   participants: number;
   limit?: number | null;

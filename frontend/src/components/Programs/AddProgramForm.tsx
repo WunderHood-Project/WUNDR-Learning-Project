@@ -28,6 +28,7 @@ const initialForm = (): CreateProgramPayload => ({
     directorName: '',
     directorTitle: '',
     directorImage: '',
+    directorBio: '',
     limit: null,
     venue: 'in_person',
     city: '',
@@ -574,6 +575,18 @@ export default function AddProgramForm() {
                                 placeholder="e.g. Lead Instructor"
                             />
                         </div>
+                    </div>
+
+                    <div>
+                        <label className={labelCls}>Bio (optional)</label>
+                        <textarea
+                            name="directorBio"
+                            value={form.directorBio ?? ''}
+                            onChange={handleChange}
+                            rows={3}
+                            className={inputCls}
+                            placeholder="A short bio about the program lead…"
+                        />
                     </div>
 
                     <div>

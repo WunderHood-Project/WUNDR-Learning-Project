@@ -104,6 +104,18 @@ export default function ProgramDetailsAboutSection({ program }: { program: Enric
               <p className="mt-1 text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
                 {program.directorName}
               </p>
+
+              {program.directorTitle && (
+                <p className="mt-0.5 text-sm text-wondergreen font-medium">
+                  {program.directorTitle}
+                </p>
+              )}
+
+              {program.directorBio && (
+                <p className="mt-2 text-sm text-gray-700 leading-relaxed">
+                  {program.directorBio}
+                </p>
+              )}
             </div>
 
           </div>
