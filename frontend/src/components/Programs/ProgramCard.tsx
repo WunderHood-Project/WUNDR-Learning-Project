@@ -5,11 +5,15 @@ import Image from 'next/image';
 import { FaUser, FaCalendarAlt } from 'react-icons/fa';
 import OpenModalButton from '@/context/openModalButton';
 import DeleteProgramModal from './DeleteProgramModal';
+import { NotificationModal } from '../notifications/NotificationModal';
+import { determineEnv } from '../../../utils/api';
 import AppIcon from '@/app/icon.png';
 import { normalizeNextImageSrc } from '../../../utils/image/normalizeNextImageSrc';
 import { formatDate } from '../../../utils/formatDate';
 import type { EnrichmentProgram, ProgramLabel, ProgramVenue } from '@/types/program';
 import { FaLocationDot } from 'react-icons/fa6';
+
+const WONDERHOOD_URL = determineEnv();
 
 type Props = {
   program: EnrichmentProgram;
@@ -169,6 +173,16 @@ export default function ProgramCard({ program, isAdmin, onDelete }: Props) {
             >
               Edit
             </Link>
+
+            <OpenModalButton
+              className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-wonderleaf text-white font-semibold text-sm hover:bg-wonderleaf/90 transition-colors"
+              buttonText="Notify Users"
+              modalComponent={
+                <NotificationModal
+                  url={`${WONDERHOOD_URL}/program/${program.id}/notification/enrolled_users_child`}
+                />
+              }
+            />
 
             <OpenModalButton
               className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors"
