@@ -8,6 +8,7 @@ import { useUser } from '../../../hooks/useUser';
 import { ymdToIsoNoShift, todayYMDUTC } from '../../../utils/formatDate';
 import { compressImage } from '../../../utils/image/compressImage';
 import type { CreateProgramPayload, ProgramFormErrors } from '@/types/program';
+import { ApiError } from '../../../utils/api';
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -149,24 +150,92 @@ export default function AddProgramForm() {
     //   setPhases((prev) => prev.filter((_, idx) => idx !== i));
     // };
 
-    const validate = (): boolean => {
+    const scrollToFirstError = (errs: ProgramFormErrors) => {
+        const firstKey = Object.keys(errs)[0];
+        if (!firstKey) return;
+        // Find the input/select/textarea with a matching name attribute and scroll to it
+        setTimeout(() => {
+            const el = document.querySelector<HTMLElement>(`[name="${firstKey}"]`);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el?.focus({ preventScroll: true });
+        }, 0);
+    };
+
+    const validate = (): ProgramFormErrors => {
         const errs: ProgramFormErrors = {};
-        if (!form.name.trim()) errs.name = 'Name is required.';
-        if (!form.description.trim()) errs.description = 'Description is required.';
+
+        // Name
+        if (!form.name.trim()) {
+            errs.name = 'Program name is required.';
+        } else if (form.name.trim().length < 3) {
+            errs.name = 'Program name must be at least 3 characters.';
+        } else if (form.name.trim().length > 100) {
+            errs.name = 'Program name must be 100 characters or fewer.';
+        }
+
+        // Description
+        if (!form.description.trim()) {
+            errs.description = 'Description is required.';
+        } else if (form.description.trim().length < 10) {
+            errs.description = 'Description must be at least 10 characters.';
+        }
+
+        // Activity
         if (!form.activityId) errs.activityId = 'Activity is required.';
-        if (!form.startDate) errs.startDate = 'Start date is required.';
-        if (!form.endDate) errs.endDate = 'End date is required.';
-        if (form.startDate && form.endDate && form.startDate > form.endDate)
-            errs.endDate = 'End date must be after start date.';
-        if (form.ageMin < 0) errs.ageMin = 'Min age cannot be negative.';
-        if (form.ageMax < form.ageMin) errs.ageMax = 'Max age must be ≥ min age.';
+
+        // Dates
+        if (!form.startDate) {
+            errs.startDate = 'Start date is required.';
+        }
+        if (!form.endDate) {
+            errs.endDate = 'End date is required.';
+        }
+        if (form.startDate && form.endDate && form.startDate > form.endDate) {
+            errs.endDate = 'End date must be on or after the start date.';
+        }
+
+        // Ages
+        if (form.ageMin < 4) {
+            errs.ageMin = 'Min age cannot be less than four.';
+        } else if (form.ageMin > 18) {
+            errs.ageMin = 'Min age cannot exceed 18.';
+        }
+        if (form.ageMax < 0) {
+            errs.ageMax = 'Max age cannot be negative.';
+        } else if (form.ageMax > 18) {
+            errs.ageMax = 'Max age cannot exceed 18.';
+        } else if (form.ageMax < form.ageMin) {
+            errs.ageMax = 'Max age must be greater than or equal to min age.';
+        }
+
+        // Capacity
+        if (form.limit !== null && form.limit !== undefined) {
+            if (!Number.isInteger(form.limit) || form.limit < 1) {
+                errs.limit = 'Capacity must be a whole number of at least 1.';
+            }
+        }
+
+        // Location — only for in-person / hybrid
+        if (form.venue !== 'online') {
+            if (form.state && form.state.trim().length !== 2) {
+                errs.state = 'State must be a 2-letter abbreviation (e.g. CO).';
+            }
+            if (form.zipCode && form.zipCode.trim() && !/^\d{5}$/.test(form.zipCode.trim())) {
+                errs.zipCode = 'Zip code must be exactly 5 digits.';
+            }
+        }
+
         setErrors(errs);
-        return Object.keys(errs).length === 0;
+        return errs;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validate()) return;
+        const errs = validate();
+        if (Object.keys(errs).length > 0) {
+            scrollToFirstError(errs);
+            return;
+        }
 
         setIsSubmitting(true);
         setServerError(null);
@@ -201,7 +270,15 @@ export default function AddProgramForm() {
             });
             router.push(isPartner ? '/events?success=program' : '/events');
         } catch (err) {
-            setServerError(err instanceof Error ? err.message : 'Failed to create program.');
+            if (err instanceof ApiError && Object.keys(err.fields).length > 0) {
+                // Map server-side field errors into inline form errors and scroll to the first one
+                setErrors((prev) => ({ ...prev, ...err.fields }));
+                scrollToFirstError(err.fields);
+            } else {
+                setServerError(
+                    err instanceof Error ? err.message.replace(/^API Error \d+:\s*/, '') : 'Failed to create program.'
+                );
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -568,6 +645,7 @@ export default function AddProgramForm() {
                                     placeholder="CO"
                                     maxLength={2}
                                 />
+                                {errors.state && <p className={errorCls}>{errors.state}</p>}
                             </div>
                             <div>
                                 <label className={labelCls}>Zip Code</label>
@@ -578,6 +656,7 @@ export default function AddProgramForm() {
                                     className={inputCls}
                                     placeholder="81252"
                                 />
+                                {errors.zipCode && <p className={errorCls}>{errors.zipCode}</p>}
                             </div>
                         </div>
                     )}
@@ -600,6 +679,7 @@ export default function AddProgramForm() {
                             className={inputCls}
                             placeholder="No limit"
                         />
+                        {errors.limit && <p className={errorCls}>{errors.limit}</p>}
                     </div>
                 </section>
 

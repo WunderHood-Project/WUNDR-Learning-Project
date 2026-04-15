@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User
@@ -8,9 +8,11 @@ from models.interaction_models import (
     EnrichmentProgramSubmit,
     ProgramStatusUpdate,
     EnrollChildren,
+    NotificationCreate,
 )
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
+from .notifications import send_email_one_user
 
 
 router = APIRouter()
@@ -497,3 +499,86 @@ async def delete_program(
         )
 
     return {"message": "Enrichment program deleted successfully."}
+
+
+# ---------------------------------------------------------------------------
+# POST /program/{program_id}/notification/enrolled_users_child  (admin)
+# ---------------------------------------------------------------------------
+
+@router.post("/{program_id}/notification/enrolled_users_child", status_code=status.HTTP_200_OK)
+async def send_message_to_users_of_enrolled_child_program(
+    program_id: str,
+    notification: NotificationCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
+):
+    """
+    Send a notification to all parents/guardians of children enrolled in a program.
+    Admin only.
+    """
+    enforce_authentication(current_user, "send notification")
+    enforce_admin(current_user, "send notification")
+
+    # Fetch program with enrolled children and their parents
+    program = await db.enrichmentprograms.find_unique(
+        where={"id": program_id},
+        include={
+            "children": {
+                "include": {
+                    "parents": True,
+                }
+            }
+        },
+    )
+
+    if not program:
+        raise HTTPException(status_code=404, detail="Enrichment program not found.")
+
+    # Collect unique parent IDs
+    parent_ids = set()
+    for child in program.children:
+        parent_ids.update(child.parentIds)
+
+    if not parent_ids:
+        raise HTTPException(status_code=404, detail="No enrolled children or parents found.")
+
+    # Collect parent emails
+    parent_emails = []
+    for parent_id in parent_ids:
+        user = await db.users.find_unique(where={"id": parent_id})
+        if user:
+            parent_emails.append(user.email)
+
+    # Create in-app notifications for each parent
+    notification_data = [
+        {
+            "title": notification.title,
+            "description": notification.description,
+            "userId": parent_id,
+            "isRead": False,
+        }
+        for parent_id in parent_ids
+    ]
+
+    new_notifications = await db.notifications.create_many(data=notification_data)
+
+    # Send emails to parents who have email notifications enabled
+    for email in parent_emails:
+        user_with_notifications = await db.users.find_unique(
+            where={
+                "email": email,
+                "emailNotificationsEnabled": True,
+            }
+        )
+        if user_with_notifications:
+            background_tasks.add_task(
+                send_email_one_user,
+                user_with_notifications.email,
+                notification.title,
+                notification.description,
+            )
+
+    return {
+        "message": "Notification successfully sent to all parents.",
+        "notification": new_notifications,
+    }

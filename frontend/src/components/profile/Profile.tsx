@@ -20,8 +20,8 @@ export default function Profile() {
     const { user } = useUser();
 
     const visibleTabs = useMemo(
-        () => DEFAULT_TABS.filter((t) => !(t.key === 'child' && user?.role === 'partner')),
-        [user?.role]
+        () => DEFAULT_TABS,
+        []
     );
 
     const keyToIdx = useMemo(
@@ -55,32 +55,32 @@ export default function Profile() {
                 notificationsUnread={notifUnread}
                 renderDelete={(closeMenu) => (
                     <>
-                    <div className="w-full px-3 py-2 text-sm text-gray-800 hover:bg-gray-50 rounded-xl">
-                        <EmailNotificationsToggle />
-                    </div>
-                    <OpenModalButton
-                    buttonText={
-                        <span className="flex items-center gap-2">
-                        <FaTrash className="h-4 w-4" />
-                            Delete Account
-                        </span>
-                    }
-                    className="w-full px-5 py-0 text-sm text-red-600 hover:bg-red-50 rounded-xl mb-4"
-                    modalComponent={<DeleteUser currUser={user} />}
-                    onButtonClick={() => setTimeout(closeMenu, 0)}
-                    />
+                        <div className="w-full px-3 py-2 text-sm text-gray-800 hover:bg-gray-50 rounded-xl">
+                            <EmailNotificationsToggle />
+                        </div>
+                        <OpenModalButton
+                            buttonText={
+                                <span className="flex items-center gap-2">
+                                    <FaTrash className="h-4 w-4" />
+                                    Delete Account
+                                </span>
+                            }
+                            className="w-full px-5 py-0 text-sm text-red-600 hover:bg-red-50 rounded-xl mb-4"
+                            modalComponent={<DeleteUser currUser={user} />}
+                            onButtonClick={() => setTimeout(closeMenu, 0)}
+                        />
                     </>
 
                 )}
             />
             <div className="w-full pb-12">
-                {activeKey === 'user'          && <UserInfo />}
-                {activeKey === 'child'         && <ChildInfo />}
-                {activeKey === 'events'        && <YourEvents />}
+                {activeKey === 'user' && <UserInfo />}
+                {activeKey === 'child' && <ChildInfo />}
+                {activeKey === 'events' && <YourEvents />}
                 {activeKey === 'notifications' && (
                     <Notifications onUnreadChange={setNotifUnread} />
                 )}
             </div>
-    </div>
+        </div>
     );
 }
