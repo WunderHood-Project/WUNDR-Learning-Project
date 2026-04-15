@@ -367,6 +367,7 @@ model EnrichmentPrograms {
   directorName     String?
   directorTitle    String?
   directorImage    String?
+  directorBio      String?
 
   // Enrollment
   participants     Int           @default(0)
