@@ -179,8 +179,8 @@ class EnrichmentProgram(BaseModel):
     activity: "Activity"
     name: str
     description: str
-    ageMin: int = Field(ge=0)
-    ageMax: int = Field(ge=0)
+    ageMin: int = Field(ge=4)
+    ageMax: int = Field(ge=4)
     startDate: datetime
     endDate: datetime
     sessionSchedule: Optional[str] = None
@@ -208,8 +208,8 @@ class EnrichmentProgramCreate(BaseModel):
     activityId: Optional[str] = Field(default=None)
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
-    ageMin: int = Field(ge=0)
-    ageMax: int = Field(ge=0)
+    ageMin: int = Field(ge=4)
+    ageMax: int = Field(ge=4)
     startDate: datetime
     endDate: datetime
     sessionSchedule: Optional[str] = None
@@ -233,8 +233,8 @@ class EnrichmentProgramUpdate(BaseModel):
     activityId: Optional[str] = Field(default=None)
     name: Optional[str] = None
     description: Optional[str] = None
-    ageMin: Optional[int] = Field(default=None, ge=0)
-    ageMax: Optional[int] = Field(default=None, ge=0)
+    ageMin: Optional[int] = Field(default=None, ge=4)
+    ageMax: Optional[int] = Field(default=None, ge=4)
     startDate: Optional[datetime] = None
     endDate: Optional[datetime] = None
     sessionSchedule: Optional[str] = None
@@ -257,8 +257,8 @@ class EnrichmentProgramSubmit(BaseModel):
     activityId: Optional[str] = Field(default=None)
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
-    ageMin: int = Field(ge=0)
-    ageMax: int = Field(ge=0)
+    ageMin: int = Field(ge=4)
+    ageMax: int = Field(ge=4)
     startDate: datetime
     endDate: datetime
     sessionSchedule: Optional[str] = None
