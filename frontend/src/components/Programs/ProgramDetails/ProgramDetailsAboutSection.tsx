@@ -4,6 +4,17 @@ import Image from 'next/image';
 import { normalizeNextImageSrc } from '../../../../utils/image/normalizeNextImageSrc';
 import type { EnrichmentProgram } from '@/types/program';
 
+function SentenceText({ text, className }: { text: string; className?: string }) {
+  const sentences = text.match(/[^.!?]+[.!?]+["']?/g)?.map((s) => s.trim()).filter(Boolean) ?? [text];
+  return (
+    <div className={`space-y-5 ${className ?? ''}`}>
+      {sentences.map((sentence, i) => (
+        <p key={i} className="m-0">{sentence}</p>
+      ))}
+    </div>
+  );
+}
+
 export default function ProgramDetailsAboutSection({ program }: { program: EnrichmentProgram }) {
   return (
     <section className="lg:col-span-2 space-y-6">
@@ -12,9 +23,7 @@ export default function ProgramDetailsAboutSection({ program }: { program: Enric
         <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-wondergreen mb-3 sm:mb-4">
           About This Program
         </h2>
-        <p className="text-sm sm:text-base text-gray-800 leading-relaxed">
-          {program.description}
-        </p>
+        <SentenceText text={program.description} className="text-sm sm:text-base text-gray-800 leading-relaxed" />
       </div>
 
       {/* What Your Child Will Gain */}
@@ -66,9 +75,9 @@ export default function ProgramDetailsAboutSection({ program }: { program: Enric
       {/* Program Lead */}
       {program.directorName && (
         <div className="bg-white/50 rounded-2xl p-5 sm:p-6 lg:p-8 backdrop-blur-sm border border-white/60">
-          
-          <div className="flex items-center gap-4 sm:gap-6">
-            
+
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
+
             {/* LEFT — IMAGE */}
             <div className="shrink-0">
               {(() => {
@@ -112,9 +121,7 @@ export default function ProgramDetailsAboutSection({ program }: { program: Enric
               )}
 
               {program.directorBio && (
-                <p className="mt-2 text-sm text-gray-700 leading-relaxed">
-                  {program.directorBio}
-                </p>
+                <SentenceText text={program.directorBio} className="mt-2 text-sm text-gray-700 leading-relaxed" />
               )}
             </div>
 
