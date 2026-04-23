@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
+from datetime import datetime
 from models.user_models import User
 from models.interaction_models import (
     EnrichmentProgramCreate,
@@ -21,6 +22,16 @@ router = APIRouter()
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def _age_on_date(birthday: datetime, reference_date: datetime) -> int:
+    """Return how old a person will be on reference_date given their birthday."""
+    b = birthday.date()
+    r = reference_date.date()
+    age = r.year - b.year
+    if (r.month, r.day) < (b.month, b.day):
+        age -= 1
+    return age
+
 
 def _phases_to_json(phases):
     """Convert a list of ProgramPhase models to a plain list of dicts for Prisma."""
@@ -474,6 +485,30 @@ async def enroll_in_program(
                 status_code=400,
                 detail=f"Not enough spots. Only {spots_remaining} spot(s) remaining.",
             )
+
+    # Age validation: child must be within [ageMin, ageMax] on the program start date.
+    # A child who will turn ageMin before or on startDate is eligible.
+    children_to_enroll = await db.children.find_many(where={"id": {"in": enroll_data.childIds}})
+    start = f"{program.startDate.strftime('%B')} {program.startDate.day}, {program.startDate.year}"
+    for child in children_to_enroll:
+        if child.birthday is not None:
+            age_at_start = _age_on_date(child.birthday, program.startDate)
+            if age_at_start < program.ageMin:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"{child.firstName} {child.lastName} does not meet the minimum age requirement. "
+                        f"They must be at least {program.ageMin} years old by {start}."
+                    ),
+                )
+            if age_at_start > program.ageMax:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"{child.firstName} {child.lastName} exceeds the maximum age for this program. "
+                        f"This program is for children up to {program.ageMax} years old."
+                    ),
+                )
 
     try:
         updated = await db.enrichmentprograms.update(

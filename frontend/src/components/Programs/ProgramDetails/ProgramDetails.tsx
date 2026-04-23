@@ -16,6 +16,7 @@ import SignupModal from '@/components/signup/SignupModal';
 import ProgramDetailsAboutSection from './ProgramDetailsAboutSection';
 import ProgramDetailsAsideCard from './ProgramDetailsAsideCard';
 import type { Child } from '@/types/child';
+import { ageOnDate } from '../../../../utils/calculateAge';
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -250,6 +251,10 @@ export default function ProgramDetails() {
                       const childId = `child-${child.id}`;
                       const isChecked = selected.has(child.id);
                       const alreadyEnrolled = programParticipantSet.has(child.id);
+                      const ageAtStart = child.birthday ? ageOnDate(child.birthday, program.startDate) : null;
+                      const tooYoung = ageAtStart !== null && ageAtStart < program.ageMin;
+                      const tooOld = ageAtStart !== null && ageAtStart > program.ageMax;
+                      const ageIneligible = tooYoung || tooOld;
 
                       if (alreadyEnrolled) {
                         return (
@@ -273,6 +278,23 @@ export default function ProgramDetails() {
                                 {unenrollId === child.id ? 'Unenrolling…' : 'Unenroll'}
                               </button>
                             </div>
+                          </div>
+                        );
+                      }
+
+                      if (ageIneligible) {
+                        const reason = tooYoung
+                          ? `Must be at least ${program.ageMin} by program start (will be ${ageAtStart})`
+                          : `Must be no older than ${program.ageMax} by program start (will be ${ageAtStart})`;
+                        return (
+                          <div
+                            key={child.id}
+                            className="flex items-center justify-between p-3 rounded-lg border-2 border-gray-200 bg-gray-50 opacity-60"
+                          >
+                            <span className="font-semibold text-gray-500">
+                              {child.firstName} {child.lastName}
+                            </span>
+                            <span className="text-xs text-gray-500 italic">{reason}</span>
                           </div>
                         );
                       }
