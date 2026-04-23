@@ -9,11 +9,12 @@ import UserInfo from "./userInfo/UserInfo";
 import ChildInfo from "./children/childInfo/ChildInfo";
 import YourEvents from "./events/yourEvents/YourEvents";
 import YourPrograms from "./programs/yourPrograms/YourPrograms";
+import YourCalendar from "./yourCalendar/YourCalendar";
 import Notifications from "./notifications/Notifications";
 import EmailNotificationsToggle from "./userInfo/EmailNotificationsToggle";
 
 
-type TabKey = 'user' | 'child' | 'events' | 'programs' | 'notifications';
+type TabKey = 'user' | 'child' | 'events' | 'programs' | 'calendar' | 'notifications';
 
 export default function Profile() {
     const router = useRouter();
@@ -79,6 +80,7 @@ export default function Profile() {
                 {activeKey === 'child' && <ChildInfo />}
                 {activeKey === 'events' && <YourEvents />}
                 {activeKey === 'programs' && <YourPrograms />}
+                {activeKey === 'calendar' && <YourCalendar />}
                 {activeKey === 'notifications' && (
                     <Notifications onUnreadChange={setNotifUnread} />
                 )}

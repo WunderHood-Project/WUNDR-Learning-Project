@@ -4,24 +4,16 @@ import { useRouter } from 'next/navigation';
 
 type Props = {
     hasPrograms: boolean;
-    viewMode: "cards" | "calendar";
-    onChangeView: (m: "cards" | "calendar") => void;
 };
 
-export default function Header({ hasPrograms, viewMode, onChangeView }: Props) {
+export default function Header({ hasPrograms }: Props) {
     const router = useRouter();
 
-    const title =
-        viewMode === "calendar"
-            ? "Your Calendar"
-            : hasPrograms
-                ? "Enrolled Programs"
-                : "No Enrollments Yet";
+    const title = hasPrograms ? "Enrolled Programs" : "No Enrollments Yet";
 
     return (
         <div className="mb-4">
-            {/* Title and segmented control on one line */}
-            <div className="flex items-center justify-between gap-3 flex-wrap ml-2 md:ml-14">
+            <div className="flex items-center gap-3 flex-wrap ml-2 md:ml-14">
                 <h1
                     className="
                         text-2xl sm:text-2xl md:text-4xl
@@ -33,56 +25,18 @@ export default function Header({ hasPrograms, viewMode, onChangeView }: Props) {
                 >
                     {title}
                 </h1>
-
-                {/* Segmented control */}
-                <div className="inline-flex shrink-0 items-center rounded-2xl bg-white/80 p-1 shadow-sm ring-1 ring-wondergreen/15 lg:mr-20 md:mr-16 sm:mr-2">
-                    <button
-                        type="button"
-                        onClick={() => onChangeView("cards")}
-                        aria-pressed={viewMode === "cards"}
-                        className={`
-                            px-2 sm:px-2 md:px-4 py-1 sm:py-2
-                            rounded-xl
-                            text-[12px] sm:text-[12px] md:text-sm font-medium
-                            transition
-                            ${viewMode === "cards"
-                                ? "bg-wondergreen text-white shadow"
-                                : "text-wondergreen hover:bg-wonderleaf/10"}
-                        `}
-                    >
-                        Enrolled
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => onChangeView("calendar")}
-                        aria-pressed={viewMode === "calendar"}
-                        className={`
-                            px-2 sm:px-2 md:px-4 py-1 sm:py-2
-                            rounded-xl
-                            text-[12px] sm:text-[12px] md:text-sm font-medium
-                            transition
-                            ${viewMode === "calendar"
-                                ? "bg-wondergreen text-white shadow"
-                                : "text-wondergreen hover:bg-wonderleaf/10"}
-                        `}
-                    >
-                        Calendar
-                    </button>
-                </div>
             </div>
 
-            {/* Thin gradient line */}
             <div className="h-1 mt-3 rounded-full bg-gradient-to-r from-wondersun to-wonderorange w-24 sm:w-28 md:w-36 ml-2 md:ml-14" />
 
-            {/* Empty state */}
-            {!hasPrograms && viewMode === "cards" && (
+            {!hasPrograms && (
                 <div className="mt-4 ml-2 md:ml-14">
                     <p className="text-sm text-wondergreen/80 mb-2">
                         You don&apos;t have any program enrollments yet.
                     </p>
                     <button
                         type="button"
-                        onClick={() => router.push("/events")}
+                        onClick={() => router.push("/programs")}
                         className="inline-flex items-center px-4 py-2 rounded-lg bg-wondergreen text-white text-sm font-medium shadow-sm hover:bg-wondergreen/90"
                     >
                         Browse Programs

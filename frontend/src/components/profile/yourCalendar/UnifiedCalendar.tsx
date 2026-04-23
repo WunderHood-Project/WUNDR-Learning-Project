@@ -3,11 +3,19 @@
 import { useMemo, useState } from "react";
 import {
     addDays, addMonths, endOfMonth, endOfWeek, format, isSameMonth, isToday,
-    startOfMonth, startOfWeek, startOfDay,
+    startOfMonth, startOfWeek, startOfDay, compareAsc,
 } from "date-fns";
-import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { combineLocal } from "../../../../utils/formatDate";
 
-export type ProgramForCalendar = {
+type EventItem = {
+    id: string;
+    name: string;
+    date: string;
+    startTime?: string | null;
+};
+
+type ProgramItem = {
     id: string;
     name: string;
     startDate: string;
@@ -15,7 +23,12 @@ export type ProgramForCalendar = {
     sessionSchedule?: string | null;
 };
 
-type Props = { programs: ProgramForCalendar[]; onPick: (programId: string) => void };
+type Props = {
+    events: EventItem[];
+    programs: ProgramItem[];
+    onPickEvent: (id: string) => void;
+    onPickProgram: (id: string) => void;
+};
 
 type DayCell = { date: Date; inMonth: boolean };
 
@@ -24,7 +37,7 @@ const MONTH = [
     "July","August","September","October","November","December",
 ];
 
-export default function ProgramCalendar({ programs, onPick }: Props) {
+export default function UnifiedCalendar({ events, programs, onPickEvent, onPickProgram }: Props) {
     const [cursor, setCursor] = useState(new Date());
     const monthStart = startOfMonth(cursor);
     const monthEnd   = endOfMonth(cursor);
@@ -39,10 +52,22 @@ export default function ProgramCalendar({ programs, onPick }: Props) {
         return out;
     }, [gridStart, gridEnd, monthStart]);
 
-    // Build a map: "yyyy-MM-dd" → programs active on that day.
-    // Weekly sessions appear every 7 days from startDate;
-    // monthly sessions appear on the same day-of-month each month;
-    // everything else fills every day of the range.
+    // Events: one entry on their specific date, sorted by start time
+    const eventsByDay = useMemo(() => {
+        const map = new Map<string, { id: string; title: string; start: Date }[]>();
+        for (const e of events ?? []) {
+            if (!e?.id || !e?.name || !e?.date) continue;
+            const start = combineLocal(e.date, e.startTime ?? undefined);
+            const key = format(start, "yyyy-MM-dd");
+            const arr = map.get(key) ?? [];
+            arr.push({ id: String(e.id), title: e.name, start });
+            arr.sort((a, b) => compareAsc(a.start, b.start));
+            map.set(key, arr);
+        }
+        return map;
+    }, [events]);
+
+    // Programs: entries on every session day (weekly / monthly / every day)
     const programsByDay = useMemo(() => {
         const map = new Map<string, { id: string; title: string }[]>();
         for (const p of programs ?? []) {
@@ -82,11 +107,11 @@ export default function ProgramCalendar({ programs, onPick }: Props) {
     return (
         <section className="w-full">
             <div className="bg-white rounded-2xl shadow-lg border border-wondergreen/10 overflow-hidden">
-                <div className="h-1.5 bg-gradient-to-r from-wondersun via-wonderorange to-wondergreen" />
+                <div className="h-1.5 bg-gradient-to-r from-wondersun via-wonderleaf to-wondergreen" />
 
                 {/* Header */}
                 <div className="bg-gradient-to-r from-wonderbg/50 to-white border-b border-wondergreen/10 px-3 sm:px-6 py-3 md:py-4">
-                    {/* md+ (tablet/desktop): Back | Month/Year + Today | Next */}
+                    {/* md+: Back | Month/Year + Today | Next */}
                     <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] md:items-center">
                         <div className="justify-self-start">
                             <button
@@ -121,7 +146,7 @@ export default function ProgramCalendar({ programs, onPick }: Props) {
                         </div>
                     </div>
 
-                    {/* Mobile (< md): Month/Year + ◀ Today ▶ */}
+                    {/* Mobile: Month/Year + ◀ Today ▶ */}
                     <div className="md:hidden">
                         <h2 className="text-center font-extrabold text-wondergreen text-lg sm:text-2xl mb-2.5">
                             {MONTH[cursor.getMonth()]} {cursor.getFullYear()}
@@ -154,6 +179,18 @@ export default function ProgramCalendar({ programs, onPick }: Props) {
                     </div>
                 </div>
 
+                {/* Legend */}
+                <div className="flex items-center gap-4 px-4 py-2 bg-wonderbg/30 border-b border-wondergreen/10 text-xs font-semibold text-wondergreen/70">
+                    <span className="flex items-center gap-1.5">
+                        <span className="inline-block w-3 h-3 rounded-sm bg-wonderleaf/85" />
+                        Events
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <span className="inline-block w-3 h-3 rounded-sm bg-wonderorange/80" />
+                        Programs
+                    </span>
+                </div>
+
                 {/* Weekday header */}
                 <div className="grid grid-cols-7 text-center text-xs sm:text-sm font-semibold text-wondergreen/80 bg-wonderbg/40">
                     {weekday.map((w) => (
@@ -165,13 +202,18 @@ export default function ProgramCalendar({ programs, onPick }: Props) {
                 <div className="rounded-b-2xl overflow-hidden">
                     <div className="grid grid-cols-7 gap-px bg-wondergreen/10 p-px">
                         {days.map(({ date, inMonth }) => {
-                            const key   = format(date, "yyyy-MM-dd");
-                            const list  = programsByDay.get(key) ?? [];
-                            const shown = list.slice(0, 2);
-                            const more  = list.length - shown.length;
+                            const key        = format(date, "yyyy-MM-dd");
+                            const dayEvents  = (eventsByDay.get(key) ?? []).map(e => ({ ...e, kind: "event" as const }));
+                            const dayPrograms = (programsByDay.get(key) ?? []).map(p => ({ ...p, kind: "program" as const }));
+                            const combined   = [...dayEvents, ...dayPrograms];
+                            const shown      = combined.slice(0, 2);
+                            const more       = combined.length - shown.length;
 
                             const handleDayClick = () => {
-                                if (list.length === 1) onPick(list[0].id);
+                                if (combined.length !== 1) return;
+                                const item = combined[0];
+                                if (item.kind === "event") onPickEvent(item.id);
+                                else onPickProgram(item.id);
                             };
 
                             return (
@@ -179,12 +221,11 @@ export default function ProgramCalendar({ programs, onPick }: Props) {
                                     key={key}
                                     onClick={handleDayClick}
                                     className={[
-                                        "relative",
-                                        "bg-white p-1 xs:p-1.5 sm:p-2.5 md:p-3",
+                                        "relative bg-white p-1 xs:p-1.5 sm:p-2.5 md:p-3",
                                         "flex flex-col border border-wondergreen/10",
                                         "min-h-[72px] xs:min-h-[40px] sm:min-h-[60px] md:min-h-[110px]",
                                         inMonth ? "" : "opacity-50 bg-wonderbg/20",
-                                        list.length ? "bg-wondersun/5 cursor-pointer hover:bg-wondersun/10" : "",
+                                        combined.length ? "cursor-pointer hover:bg-wonderleaf/5" : "",
                                     ].join(" ")}
                                 >
                                     {/* Day number */}
@@ -200,29 +241,35 @@ export default function ProgramCalendar({ programs, onPick }: Props) {
                                         </span>
                                     </div>
 
-                                    {/* Program chips */}
-                                    <div className="flex-1 space-y-1 xs:space-y-1.5 overflow-hidden flex flex-wrap content-start gap-0.5 xs:gap-1">
-                                        {shown.map((prog) => (
+                                    {/* Chips */}
+                                    <div className="flex-1 overflow-hidden flex flex-wrap content-start gap-0.5 xs:gap-1">
+                                        {shown.map((item) => (
                                             <button
-                                                key={prog.id}
-                                                onClick={(e) => { e.stopPropagation(); onPick(prog.id); }}
-                                                title={prog.title}
+                                                key={`${item.kind}-${item.id}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (item.kind === "event") onPickEvent(item.id);
+                                                    else onPickProgram(item.id);
+                                                }}
+                                                title={item.title}
                                                 className="group inline-flex max-w-full"
                                             >
                                                 <div
-                                                    className="
-                                                        bg-wonderorange/80 group-hover:bg-wonderorange text-white rounded
-                                                        px-1 py-0.5 xs:px-1 xs:py-1 sm:px-2 sm:py-1.5 md:px-2.5 md:py-1.5
-                                                        shadow-sm hover:shadow transition-all
-                                                        flex items-center gap-1 md:gap-1.5 max-w-full
-                                                    "
+                                                    className={[
+                                                        "text-white rounded shadow-sm hover:shadow transition-all",
+                                                        "px-1 py-0.5 xs:px-1 xs:py-1 sm:px-2 sm:py-1.5 md:px-2.5 md:py-1.5",
+                                                        "flex items-center gap-1 md:gap-1.5 max-w-full",
+                                                        item.kind === "event"
+                                                            ? "bg-wonderleaf/85 group-hover:bg-wonderleaf"
+                                                            : "bg-wonderorange/80 group-hover:bg-wonderorange",
+                                                    ].join(" ")}
                                                 >
-                                                    {/* Mobile/Tablet: icon only */}
-                                                    <BookOpen className="md:hidden opacity-90 shrink-0" size={12} />
-
-                                                    {/* Desktop: program name */}
+                                                    {item.kind === "event"
+                                                        ? <Clock className="md:hidden opacity-90 shrink-0" size={12} />
+                                                        : <BookOpen className="md:hidden opacity-90 shrink-0" size={12} />
+                                                    }
                                                     <span className="hidden md:inline truncate max-w-[12rem]">
-                                                        {prog.title}
+                                                        {item.title}
                                                     </span>
                                                 </div>
                                             </button>

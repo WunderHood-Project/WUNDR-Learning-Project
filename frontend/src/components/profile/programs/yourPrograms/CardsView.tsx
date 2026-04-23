@@ -19,7 +19,7 @@ type ProgramLite = {
 };
 
 type Props = {
-    refEl: React.Ref<HTMLDivElement>;
+    refEl?: React.Ref<HTMLDivElement>;
     pool: ProgramLite[];
     currIndex: number;
     setCurrIndex: (i: number) => void;
