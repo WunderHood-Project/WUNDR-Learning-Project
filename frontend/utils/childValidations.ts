@@ -11,8 +11,8 @@ export const validateChildBasics = (child: {
   if (!child.allergiesMedical) errors.allergiesMedical = "Required"
 
   const age = child.birthday ? calculateAge(child.birthday) : NaN
-  if (Number.isNaN(age) || age < 10 || age > 18) {
-    errors.birthday = "Child's age must be between 10 and 18 years old."
+  if (Number.isNaN(age) || age < 0 || age > 18) {
+    errors.birthday = "Child's age must be between 0 and 18 years old."
   }
   return errors
 }

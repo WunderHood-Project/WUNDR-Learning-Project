@@ -1,28 +1,22 @@
 "use client";
 
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import Header from "./Header";
 import CardsView from "./CardsView";
-import EventCalendar from "../calendar";
 import type { Child } from "@/types/child";
 import {useEvent} from "../../../../../hooks/useEvent";
 import {useUser} from "../../../../../hooks/useUser";
 import {combineLocal} from "../../../../../utils/formatDate";
-
-type ViewMode = "cards" | "calendar";
 
 export default function YourEvents() {
   const router = useRouter();
   const { events, loading, refetch } = useEvent(undefined);
   const { user } = useUser();
 
-  const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [currEventIdx, setCurrEventIdx] = useState(0);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
 
-  // events only for the user's children
   const usersEvents = useMemo(() => {
     const childIdSet = new Set((user?.children ?? []).map(c => c.id));
     return (events ?? [])
@@ -35,7 +29,6 @@ export default function YourEvents() {
       }));
   }, [events, user?.children]);
 
-  // only future ones
   const visiblePool = useMemo(() => {
     const today = new Date(); today.setHours(0,0,0,0);
     return usersEvents
@@ -54,20 +47,11 @@ export default function YourEvents() {
   useEffect(() => { if (visiblePool.length && currEventIdx >= visiblePool.length) setCurrEventIdx(0); },
     [visiblePool.length, currEventIdx]);
 
-  // Quick child name by ID
   const childById = useMemo(() => {
     const map = new Map<string, Child>();
     for (const child of (user?.children ?? [])) map.set(child.id, child);
     return map;
   }, [user?.children]);
-
-  const handlePickFromCalendar = (eventId: string) => {
-    const idx = visiblePool.findIndex(e => e.id === eventId);
-    if (idx < 0) return;
-    setCurrEventIdx(idx);
-    setViewMode("cards");
-    setTimeout(() => cardsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
-  };
 
   const handleViewDetails = (eventId?: string) => {
     if (eventId) router.push(`/events/${eventId}`);
@@ -86,30 +70,18 @@ export default function YourEvents() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <Header
-        hasEvents={visiblePool.length > 0}
-        viewMode={viewMode}
-        onChangeView={setViewMode}
-      />
+      <Header hasEvents={visiblePool.length > 0} />
 
-      {viewMode === "cards" ? (
-        <CardsView
-          refEl={cardsRef}
-          pool={visiblePool}
-          currIndex={currEventIdx}
-          setCurrIndex={setCurrEventIdx}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          childById={childById}
-          onViewDetails={handleViewDetails}
-          onAfterUnenroll={refetch}
-        />
-      ) : (
-        <div className="mt-2">
-          <EventCalendar events={usersEvents} onPick={handlePickFromCalendar} />
-        </div>
-      )}
+      <CardsView
+        pool={visiblePool}
+        currIndex={currEventIdx}
+        setCurrIndex={setCurrEventIdx}
+        editingId={editingId}
+        setEditingId={setEditingId}
+        childById={childById}
+        onViewDetails={handleViewDetails}
+        onAfterUnenroll={refetch}
+      />
     </div>
   );
 }
-

@@ -10,7 +10,7 @@ type EventLite = {
 };
 
 type Props = {
-    refEl: React.Ref<HTMLDivElement>;
+    refEl?: React.Ref<HTMLDivElement>;
     pool: EventLite[];
     currIndex: number;
     setCurrIndex: (i: number) => void;

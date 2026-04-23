@@ -3,13 +3,13 @@
 import { useRouter } from 'next/navigation';
 
 type Props = {
-    hasEvents: boolean;
+    hasPrograms: boolean;
 };
 
-export default function Header({ hasEvents }: Props) {
+export default function Header({ hasPrograms }: Props) {
     const router = useRouter();
 
-    const title = hasEvents ? "Enrolled Events" : "No Enrollments Yet";
+    const title = hasPrograms ? "Enrolled Programs" : "No Enrollments Yet";
 
     return (
         <div className="mb-4">
@@ -29,17 +29,17 @@ export default function Header({ hasEvents }: Props) {
 
             <div className="h-1 mt-3 rounded-full bg-gradient-to-r from-wondersun to-wonderorange w-24 sm:w-28 md:w-36 ml-2 md:ml-14" />
 
-            {!hasEvents && (
+            {!hasPrograms && (
                 <div className="mt-4 ml-2 md:ml-14">
                     <p className="text-sm text-wondergreen/80 mb-2">
-                        You don&apos;t have any event enrollments yet.
+                        You don&apos;t have any program enrollments yet.
                     </p>
                     <button
                         type="button"
-                        onClick={() => router.push("/events")}
+                        onClick={() => router.push("/programs")}
                         className="inline-flex items-center px-4 py-2 rounded-lg bg-wondergreen text-white text-sm font-medium shadow-sm hover:bg-wondergreen/90"
                     >
-                        Browse Events
+                        Browse Programs
                     </button>
                 </div>
             )}
