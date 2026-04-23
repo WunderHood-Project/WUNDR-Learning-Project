@@ -279,6 +279,28 @@ class EnrichmentProgramSubmit(BaseModel):
     address: Optional[str] = None
     zipCode: Optional[str] = Field(default=None, pattern=r'^\d{5}(-\d{4})?$')
 
+# EVENT/PROGRAM FEEDBACK
+class FeedbackVisibility(str, Enum):
+    COMMUNITY = "COMMUNITY" # visible to enrolled families of event
+    STAFF_ONLY = "STAFF_ONLY" # visible only to admin/partners + author
+
+class FeedbackStatus(str, Enum):
+    OPEN = "OPEN"
+    RESOLVED = "RESOLVED"
+
+class EventFeedback(BaseModel):
+    id: str = Field(..., min_length=1)
+    userId: str
+    eventId: Optional[str] = None
+    programId: Optional[str] = None
+    content: str = Field(min_length=1)
+    status: FeedbackStatus = FeedbackStatus.OPEN
+    visibility: FeedbackVisibility = FeedbackVisibility.COMMUNITY
+    createdAt: datetime
+    updatedAt: Optional[datetime] = None
+    notifiedAt: Optional[datetime] = None
+
+
 # ! Reviews
 class Review(BaseModel):
     id: str = Field(..., min_length=1, description="Review identifier")
@@ -351,7 +373,7 @@ class NotificationUpdate(BaseModel):
     isRead: Optional[bool] = Field(default=None)
     time: Optional[datetime] = None
     userId: Optional[str] = None
-    
+
 #! Jobs
 class Jobs(BaseModel):
     id: str
@@ -516,7 +538,7 @@ class PartnerApplicationResponse(BaseModel):
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Config:
-        from_attributes = True 
+        from_attributes = True
     userId: Optional[str] = None
 
 # ! Donations

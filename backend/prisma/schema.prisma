@@ -84,7 +84,7 @@ model Children {
   notes                 String?
   photoConsent          Boolean
   waiver                Boolean
-  
+
   photoConsentVer       String?
   photoConsentAt        DateTime?
 
@@ -392,7 +392,7 @@ model EnrichmentPrograms {
   // m-to-n: enrolled parents/users
   userIds          String[]      @db.ObjectId
   users            Users[]       @relation(fields: [userIds], references: [id])
-    
+
   // One-to-m relationship
   activity    Activities   @relation(fields: [activityId], references: [id])
   activityId  String      @db.ObjectId
@@ -400,6 +400,11 @@ model EnrichmentPrograms {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime?     @updatedAt
 }
+
+
+// ! eventFeedback        =============================================================================
+
+
 
 // ! reviews        =============================================================================
 
@@ -553,7 +558,7 @@ model TaxReturnCredentials {
   city                     String
   state                    String
   zipCode                  String
-	phoneNumber              String?  
+	phoneNumber              String?
   email                    String
   requestSent              Boolean
   createdAt                DateTime  @default(now())
