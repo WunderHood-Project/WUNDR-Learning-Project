@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {FaUser, FaChild, FaCalendarCheck, FaBell, FaEllipsisV, FaTrash} from 'react-icons/fa';
+import {FaUser, FaChild, FaCalendarCheck, FaBell, FaEllipsisV, FaTrash, FaGraduationCap, FaCalendarAlt} from 'react-icons/fa';
 import type { IconType } from 'react-icons';
 
 type Tab = { key: string; label: string; icon: IconType };
@@ -10,6 +10,8 @@ export const DEFAULT_TABS: Tab[] = [
     { key: 'user',          label: 'User Information',    icon: FaUser },
     { key: 'child',         label: "Child's Information", icon: FaChild },
     { key: 'events',        label: 'Your Events',         icon: FaCalendarCheck },
+    { key: 'programs',      label: 'Your Programs',       icon: FaGraduationCap },
+    { key: 'calendar',      label: 'Your Calendar',       icon: FaCalendarAlt },
     { key: 'notifications', label: 'Notifications',       icon: FaBell },
 ];
 
