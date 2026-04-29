@@ -36,7 +36,9 @@ const initialEventForm = (): CreateEventPayload => ({
     zipCode: "",
     label: "wonderhood",
     latitude: null,
-    longitude: null
+    longitude: null,
+    ageMin: null,
+    ageMax: null,
 })
 
 export default function AddEvent() {
@@ -108,7 +110,7 @@ export default function AddEvent() {
             return
         }
 
-        if (name === "limit") {
+        if (name === "limit" || name === "ageMin" || name === "ageMax") {
             setForm(prev => ({ ...prev, [name]: value === "" ? null : parseInt(value, 10) }))
             return
         }
