@@ -555,7 +555,7 @@ async def update_child(
                     include={"emergencyContacts": True, "parents": True},
                 )
 
-        return {"child": updated_child, "message": "Child updated successfully"}
+        return JSONResponse(content=jsonable_encoder({"child": updated_child, "message": "Child updated successfully"}))
 
     except HTTPException:
         raise
