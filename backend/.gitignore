@@ -51,6 +51,11 @@ prisma/generated/
 
 # Local environment variables (if you're using dotenv)
 .env
+.env.*
+
+# Database dumps
+dump/
+*.bson
 
 # __init__.py backup files
 *~
