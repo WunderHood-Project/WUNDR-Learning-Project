@@ -25,10 +25,12 @@
         prisma db push
         Clear PyCache using: find . -name "*.pyc" -delete
 
-3. Run the development server from the BACKEND directory using:
+3. Run the server from the BACKEND directory using:
 
-    NEW  ->  1) python -m pip install uvicorn
-    NEW  ->  2) python -m uvicorn main:app --reload
+             1) python -m pip install uvicorn
+    PROD  ->  2) python -m uvicorn main:app --reload
+
+    STAGING -> 3) APP_ENV=staging uvicorn main:app --reload
 
     OLD    uvicorn backend.main:app --reload 
 
