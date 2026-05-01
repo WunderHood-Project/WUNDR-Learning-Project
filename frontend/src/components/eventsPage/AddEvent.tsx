@@ -167,6 +167,7 @@ export default function AddEvent() {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
+            setIsSubmitting(false)
             return
         }
 

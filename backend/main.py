@@ -1,3 +1,9 @@
+import os
+from dotenv import load_dotenv
+
+_env = os.getenv("APP_ENV", "production")
+load_dotenv(".env.staging" if _env == "staging" else ".env", override=True)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers.auth.routes import router as auth_router
