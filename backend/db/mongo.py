@@ -3,15 +3,14 @@ from pymongo.server_api import ServerApi
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-uri = os.getenv('DATABASE_URL')
+env = os.getenv("APP_ENV", "production")
+load_dotenv(".env.staging" if env == "staging" else ".env")
 
-# Create a new client and connect to the server
+uri = os.getenv("DATABASE_URL")
 client = MongoClient(uri, server_api=ServerApi('1'))
 
-# Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
+    print(f"Connected to MongoDB ({env})")
 except Exception as e:
-    print(e)
+    print(f"Failed to connect to MongoDB ({env}): {e}")
