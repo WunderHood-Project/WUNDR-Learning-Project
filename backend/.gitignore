@@ -53,3 +53,8 @@ prisma/generated/
 
 # __init__.py backup files
 *~
+
+# Additional env variants and database dumps
+.env.*
+dump/
+*.bson
