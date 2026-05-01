@@ -33,6 +33,8 @@ const toEventForm = (ev: Event): CreateEventPayload => ({
     zipCode: String(ev.zipCode ?? ""),
     latitude: ev.latitude ?? null,
     longitude: ev.longitude ?? null,
+    ageMin: ev.ageMin ?? null,
+    ageMax: ev.ageMax ?? null,
     label: ev.label ?? "wonderhood"
 })
 
@@ -67,7 +69,7 @@ export default function UpdateEvent() {
                 return { ...prev, [name]: parseFloatOrNull(value) }
             }
 
-            if (name === "limit") {
+            if (name === "limit" || name === "ageMin" || name === "ageMax") {
                 return { ...prev, [name]: value === "" ? null : parseInt(value, 10) }
             }
 

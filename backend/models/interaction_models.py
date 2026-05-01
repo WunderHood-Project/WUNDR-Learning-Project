@@ -62,6 +62,8 @@ class Event(BaseModel):
     longitude: Optional[float] = Field(default=None)
     startTime: Optional[str] = Field(min_length=None)
     endTime: Optional[str] = Field(min_length=None)
+    ageMin: Optional[int] = Field(default=None)
+    ageMax: Optional[int] = Field(default=None)
 
 class EventCreate(BaseModel):
     activityId: str = Field(min_length=1)
@@ -84,6 +86,8 @@ class EventCreate(BaseModel):
     longitude: Optional[float] = Field(default=None)
     startTime: Optional[str] = Field(min_length=None)
     endTime: Optional[str] = Field(min_length=None)
+    ageMin: Optional[int] = Field(default=None)
+    ageMax: Optional[int] = Field(default=None)
     volunteerLimit: int = Field(default=3)
 
     userIds: List[str] = Field(default_factory=list)
@@ -108,6 +112,8 @@ class EventUpdate(BaseModel):
     longitude: Optional[float] = Field(default=None)
     startTime: Optional[str] = Field(default=None)
     endTime: Optional[str] = Field(default=None)
+    ageMin: Optional[int] = Field(default=None)
+    ageMax: Optional[int] = Field(default=None)
     volunteerLimit: Optional[int] = Field(default=None)
 
     image: Optional[str] = Field(default=None)
@@ -138,6 +144,8 @@ class EventSubmit(BaseModel):
     longitude: Optional[float] = Field(default=None)
     startTime: Optional[str] = Field(min_length=None)
     endTime: Optional[str] = Field(min_length=None)
+    ageMin: Optional[int] = Field(default=None)
+    ageMax: Optional[int] = Field(default=None)
     volunteerLimit: int = Field(default=3)
 
 class EventStatusUpdate(BaseModel):

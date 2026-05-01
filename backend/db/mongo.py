@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 env = os.getenv("APP_ENV", "production")
-load_dotenv(".env.staging" if env == "staging" else ".env")
+load_dotenv(".env.staging" if env == "staging" else ".env", override=True)
 
 uri = os.getenv("DATABASE_URL")
 client = MongoClient(uri, server_api=ServerApi('1'))

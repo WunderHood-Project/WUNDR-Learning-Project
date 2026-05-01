@@ -133,6 +133,8 @@ async def create_event(
                "longitude": event_data.longitude,
                "startTime": event_data.startTime,
                "endTime": event_data.endTime,
+               "ageMin": event_data.ageMin,
+               "ageMax": event_data.ageMax,
                "volunteerLimit": event_data.volunteerLimit,
                "activityId": event_data.activityId,
                "userIds": event_data.userIds,
@@ -228,6 +230,8 @@ async def submit_event(
                 "longitude": event_data.longitude,
                 "startTime": event_data.startTime,
                 "endTime": event_data.endTime,
+                "ageMin": event_data.ageMin,
+                "ageMax": event_data.ageMax,
                 "volunteerLimit": event_data.volunteerLimit,
                 "activityId": event_data.activityId,
                 "userIds": [],
@@ -592,6 +596,8 @@ async def update_event(
     if event_data.longitude is not None:     update_payload["longitude"] = event_data.longitude
     if event_data.startTime is not None:     update_payload["startTime"] = event_data.startTime
     if event_data.endTime is not None:       update_payload["endTime"] = event_data.endTime
+    if event_data.ageMin is not None:        update_payload["ageMin"] = event_data.ageMin
+    if event_data.ageMax is not None:        update_payload["ageMax"] = event_data.ageMax
     if event_data.volunteerLimit is not None:update_payload["volunteerLimit"] = event_data.volunteerLimit
     if event_data.activityId is not None:    update_payload["activityId"] = event_data.activityId
     if event_data.userIds is not None:       update_payload["userIds"] = event_data.userIds
