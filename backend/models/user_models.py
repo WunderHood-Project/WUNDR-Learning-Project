@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict, mo
 # from models.interaction_models import Review, Notification, Activity, Event
 from typing import List, Optional, TYPE_CHECKING, Any
 from enum import Enum
-from datetime import datetime, timedelta, timezone, date
+from datetime import datetime, timedelta, timezone
 
 if TYPE_CHECKING:
     from models.interaction_models import Notification, Event, Review
@@ -229,15 +229,11 @@ class ChildCreate(BaseModel):
   firstName: str = Field(min_length=1, max_length=50)
   lastName: str = Field(min_length=1, max_length=50)
   preferredName: Optional[str] = Field(default=None, max_length=50)
-  # birthday: datetime = Field(
-  #     description="Child's date of birth",
-  #     default_factory=lambda: datetime.now(timezone.utc).replace(
-  #       hour=0, minute=0, second=0, microsecond=0
-  #     )
-  #   )
-  birthday: date = Field(
+  birthday: datetime = Field(
     description="Child's date of birth",
-    default_factory=lambda: datetime.now(timezone.utc).date()
+    default_factory=lambda: datetime.now(timezone.utc).replace(
+      hour=0, minute=0, second=0, microsecond=0
+    )
   )
 
   schoolType: SchoolType
@@ -262,7 +258,7 @@ class ChildUpdate(BaseModel):
   firstName: Optional[str] = Field(default=None)
   lastName: Optional[str] = Field(default=None)
   preferredName: Optional[str] = Field(default=None, max_length=50)
-  birthday: Optional[date] = Field(
+  birthday: Optional[datetime] = Field(
     default=None,
     description="Child's date of birth"
   )

@@ -64,8 +64,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         setErrors(initialErrs);
         setEcErrors([]);
         setEcErrorMap({});
-        // currChild (and/or hydrateKey)me: hydrated.firstName,
-    }, [currChild, hydrateKey, setEcErrors, setEcErrorMap]); 
+    }, [currChild, hydrateKey, setEcErrors, setEcErrorMap]);
 
     const isValid = Object.keys(errors).length === 0
 
@@ -104,13 +103,13 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         const payload: UpdateChildForm = {}
         const set = <K extends keyof UpdateChildForm>(k: K, v: UpdateChildForm[K]) => { payload[k] = v }
 
-        const prefNext  = (form.preferredName ?? "").trim()
-        const medNext   = (form.allergiesMedical ?? "").trim()
+        const prefNext = (form.preferredName ?? "").trim()
+        const medNext = (form.allergiesMedical ?? "").trim()
         const notesNext = (form.notes ?? "").trim()
         const uiCurrBirthday = curr.birthday ? curr.birthday.split("T")[0] : ""
 
         if (form.firstName.trim() !== curr.firstName) set("firstName", form.firstName.trim())
-        if (form.lastName.trim()  !== curr.lastName)  set("lastName",  form.lastName.trim())
+        if (form.lastName.trim() !== curr.lastName) set("lastName", form.lastName.trim())
 
         const currPref = curr.preferredName ?? ""
         if (prefNext !== currPref) set("preferredName", prefNext === "" ? null : prefNext)
@@ -123,7 +122,7 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
         if (form.photoConsent !== curr.photoConsent) set("photoConsent", form.photoConsent)
 
         if (form.birthday && form.birthday !== uiCurrBirthday) {
-            set("birthday", new Date(form.birthday).toISOString())
+            set("birthday", `${form.birthday}T00:00:00Z`)
         }
 
         if ((form.grade ?? null) !== (curr.grade ?? null)) {
@@ -204,70 +203,69 @@ const UpdateChildForm: React.FC<Props> = ({ currChild, setEditingChildId, onPatc
     }
 
     return (
-      <div className="bg-white rounded-2xl ring-1 ring-black/5 shadow-sm p-3 sm:p-6 max-w-7xl mx-auto pb-4">
-        {serverError && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
-            {serverError}
-          </div>
-        )}
+        <div className="bg-white rounded-2xl ring-1 ring-black/5 shadow-sm p-3 sm:p-6 max-w-7xl mx-auto pb-4">
+            {serverError && (
+                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
+                    {serverError}
+                </div>
+            )}
 
-        <form onSubmit={handleUpdate} className="space-y-4 sm:space-y-6 md:space-y-8 mt-4">
-          {/* Section Form */}
-          <UpdateChildHeaderFields
-            form={form}
-            errors={errors}
-            onChange={handleChange}
-            saving={saving}
-            onSubmitClick={submitUpdate}
-            onCancel={() => setEditingChildId(null)}
-            isValid={isValid}
-          />
+            <form onSubmit={handleUpdate} className="space-y-4 sm:space-y-6 md:space-y-8 mt-4">
+                {/* Section Form */}
+                <UpdateChildHeaderFields
+                    form={form}
+                    errors={errors}
+                    onChange={handleChange}
+                    saving={saving}
+                    onSubmitClick={submitUpdate}
+                    onCancel={() => setEditingChildId(null)}
+                    isValid={isValid}
+                />
 
-          <hr className="my-3 sm:my-4 border-wondergreen/10" />
-          <UpdateChildMetaFields form={form} errors={errors} onChange={handleChange} saving={saving} />
+                <hr className="my-3 sm:my-4 border-wondergreen/10" />
+                <UpdateChildMetaFields form={form} errors={errors} onChange={handleChange} saving={saving} />
 
-          <hr className="border-wondergreen/10" />
-          <EmergencyContactsList
-            ecs={ecs}
-            ecErrors={ecErrors}
-            ecErrorMap={ecErrorMap}
-            rowKeys={rowKeys}
-            addEC={addEC}
-            removeEC={removeEC}
-            changeEC={changeEC}
-            changePhone={changePhone}
-          />
+                <hr className="border-wondergreen/10" />
+                <EmergencyContactsList
+                    ecs={ecs}
+                    ecErrors={ecErrors}
+                    ecErrorMap={ecErrorMap}
+                    rowKeys={rowKeys}
+                    addEC={addEC}
+                    removeEC={removeEC}
+                    changeEC={changeEC}
+                    changePhone={changePhone}
+                />
 
-          <hr className="border-wondergreen/10" />
-          <UpdateChildNotes form={form} errors={errors} onChange={handleChange} saving={saving} />
+                <hr className="border-wondergreen/10" />
+                <UpdateChildNotes form={form} errors={errors} onChange={handleChange} saving={saving} />
 
-          {/* Actions bar  */}
-          <div className="sticky sm:static bottom-0 left-0 right-0 -mx-4 sm:mx-0 mt-2 px-4 py-3
+                {/* Actions bar  */}
+                <div className="sticky sm:static bottom-0 left-0 right-0 -mx-4 sm:mx-0 mt-2 px-4 py-3
                 bg-white/95 sm:bg-transparent backdrop-blur sm:backdrop-blur-0
                 border-t border-wondergreen/10 sm:border-0">
-            <div className="flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => setEditingChildId(null)}
-                className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium
+                    <div className="flex items-center justify-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setEditingChildId(null)}
+                            className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium
                           bg-white text-wonderforest ring-1 ring-wonderforest/20 hover:bg-wonderleaf/10 transition"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                onClick={submitUpdate}
-                disabled={saving || !isValid}
-                className="inline-flex items-center justify-center rounded-lg px-5 py-2 text-sm font-medium
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={saving || !isValid}
+                            className="inline-flex items-center justify-center rounded-lg px-5 py-2 text-sm font-medium
                           bg-wondergreen text-white hover:bg-wonderforest shadow
                           disabled:opacity-60 disabled:cursor-not-allowed transition"
-              >
-                {saving ? "Saving…" : "Save changes"}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+                        >
+                            {saving ? "Saving…" : "Save changes"}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     );
 
 }
