@@ -173,6 +173,41 @@ const EventFields: React.FC<Props> = ({ form, errors, minDate, onChange, onImage
                 {errors.limit && <p className="text-sm text-red-600">{errors.limit}</p>}
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="block mb-1 font-medium">
+                        Min Age{" "}
+                        <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                    </label>
+                    <input
+                        type="number"
+                        name="ageMin"
+                        min={0}
+                        max={18}
+                        inputMode="numeric"
+                        value={form.ageMin ?? ""}
+                        onChange={onChange}
+                        className="w-full border rounded px-3 py-2"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-1 font-medium">
+                        Max Age{" "}
+                        <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                    </label>
+                    <input
+                        type="number"
+                        name="ageMax"
+                        min={0}
+                        max={18}
+                        inputMode="numeric"
+                        value={form.ageMax ?? ""}
+                        onChange={onChange}
+                        className="w-full border rounded px-3 py-2"
+                    />
+                </div>
+            </div>
+
             <div>
                 <label className="block mb-1 font-medium">
                     Who can enroll? <span className="text-rose-600">*</span>

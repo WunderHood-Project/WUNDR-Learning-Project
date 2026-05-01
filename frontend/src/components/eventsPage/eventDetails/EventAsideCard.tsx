@@ -199,6 +199,22 @@ export default function EventAsideCard({
                     </span>
                 </div>
 
+                {/* Age range */}
+                {(event.ageMin != null || event.ageMax != null) && (
+                    <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3 flex-wrap">
+                        <p className="text-sm sm:text-base font-bold text-wondergreen uppercase tracking-wide">
+                            Age Range
+                        </p>
+                        <span className="inline-flex items-center rounded-full px-3 py-1.5 bg-wonderleaf/10 text-wondergreen border border-wonderleaf/30 font-medium text-xs sm:text-sm">
+                            {event.ageMin != null && event.ageMax != null
+                                ? `${event.ageMin}–${event.ageMax} yrs`
+                                : event.ageMin != null
+                                    ? `${event.ageMin}+ yrs`
+                                    : `Up to ${event.ageMax} yrs`}
+                        </span>
+                    </div>
+                )}
+
                 {/* Partner disclaimer */}
                 {event.label === "partner" && (
                     <div className="mb-4 sm:mb-5 rounded-xl border border-wonderorange/30 bg-wonderorange/5 px-4 py-3">

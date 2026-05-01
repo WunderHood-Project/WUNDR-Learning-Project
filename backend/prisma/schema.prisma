@@ -296,6 +296,8 @@ model Events {
     longitude     Float?
     startTime     String?
     endTime       String?
+    ageMin        Int?
+    ageMax        Int?
     volunteerLimit     Int @default(3)
     createdAt         DateTime @default(now())
     updatedAt         DateTime? @default(now())
