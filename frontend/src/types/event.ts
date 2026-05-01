@@ -31,6 +31,8 @@ export type Event = {
     zipCode: string
     latitude: number | null
     longitude: number | null
+    ageMin: number | null
+    ageMax: number | null
 
     userId: string[]
     childIds: string[]
