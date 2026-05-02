@@ -1,10 +1,32 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { EnrichmentProgram } from '@/types/program';
 import type { Child } from '@/types/child';
 import { formatDate } from '../../../../utils/formatDate';
 import { displayVenue } from '../ProgramCard';
+
+type WaitListParent = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+};
+
+type WaitListChild = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  parents?: WaitListParent[];
+};
+
+type ProgramWaitListEntry = {
+  id: string;
+  position: number;
+  status: string;
+  child?: WaitListChild;
+};
 
 type Props = {
   program: EnrichmentProgram;
@@ -13,12 +35,19 @@ type Props = {
   onToggleForm: () => void;
   successEnroll: boolean;
   userHasChildEnrolled: boolean;
+  userHasChildInWaitList: boolean;
   isAdmin: boolean;
   attendeesOpen: boolean;
   attendees: Child[] | null;
   attendeesLoading: boolean;
   attendeesError: string | null;
   onToggleAttendees: () => void;
+  enrollmentContent?: ReactNode;
+  waitListOpen: boolean;
+  waitList: ProgramWaitListEntry[] | null;
+  waitListLoading: boolean;
+  waitListError: string | null;
+  onToggleWaitList: () => void;
 };
 
 export default function ProgramDetailsAsideCard({
@@ -34,6 +63,13 @@ export default function ProgramDetailsAsideCard({
   attendeesLoading,
   attendeesError,
   onToggleAttendees,
+  enrollmentContent,
+  waitListOpen,
+  waitList,
+  waitListLoading,
+  waitListError,
+  onToggleWaitList,
+  userHasChildInWaitList,
 }: Props) {
   const enrolled = program.participants ?? 0;
   const limit = program.limit;
@@ -160,45 +196,105 @@ export default function ProgramDetailsAsideCard({
             >
               ✓ Spots Available
             </button>
+
             <button
               onClick={onToggleForm}
               className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
             >
-              {showForm ? 'Complete Below' : 'Enroll in Program'}
+              {showForm ? 'Choose Child' : 'Enroll in Program'}
             </button>
+
+            {showForm && enrollmentContent && (
+              <div className="mt-4">{enrollmentContent}</div>
+            )}
           </>
         ) : userHasChildEnrolled ? (
           <>
             <button
               disabled
-              className="w-full rounded-full bg-gray-400 text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
+              className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
             >
               Full Capacity
             </button>
+
             <button
               onClick={onToggleForm}
               className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
             >
               Manage Enrollment
             </button>
+
             <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
-              Your child is enrolled. You can unenroll them below.
+              Your child is enrolled. You can update enrollment or unenroll.
             </div>
+
+            <button
+              onClick={onToggleForm}
+              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
+            >
+              {userHasChildInWaitList ? 'Manage Waitlist' : 'Join Waitlist for Another Child'}
+            </button>
+
+            <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
+              {userHasChildInWaitList
+                ? 'Another child is on the waitlist. You can remove them or add another child.'
+                : 'Program is full. You can add another child to the waitlist.'}
+            </div>
+
+            {showForm && enrollmentContent && (
+              <div className="mt-4">{enrollmentContent}</div>
+            )}
+          </>
+        ) : userHasChildInWaitList ? (
+          <>
+            <button
+              disabled
+              className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
+            >
+              Full Capacity
+            </button>
+
+            <button
+              onClick={onToggleForm}
+              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
+            >
+              Manage Waitlist
+            </button>
+
+            <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
+              Your child is on the waitlist. You can remove them or add another child.
+            </div>
+
+            {showForm && enrollmentContent && (
+              <div className="mt-4">{enrollmentContent}</div>
+            )}
           </>
         ) : (
           <>
             <button
               disabled
-              className="w-full rounded-full bg-gray-400 text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
+              className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
             >
               Full Capacity
             </button>
+
+            <button
+              onClick={onToggleForm}
+              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
+            >
+              {showForm ? 'Choose Child' : 'Join Waitlist'}
+            </button>
+
             <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
-              Sorry, all spots are taken.
+              This program is full. Join the waitlist to be contacted if a spot opens.
             </div>
+
+            {showForm && enrollmentContent && (
+              <div className="mt-4">{enrollmentContent}</div>
+            )}
           </>
         )}
-
+        
         {successEnroll && (
           <div
             className="text-center text-green-800 bg-green-50/80 border border-green-200 rounded-lg px-4 py-3 font-semibold text-xs"
@@ -301,6 +397,77 @@ export default function ProgramDetailsAsideCard({
                         </li>
                       );
                     })}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Admin waiting list */}
+        {isAdmin && (
+          <div className="pt-5 border-t border-white/50">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-bold text-wondergreen uppercase tracking-wide">
+                Waitlist (Admin)
+              </p>
+
+              <button
+                type="button"
+                onClick={onToggleWaitList}
+                className="text-xs font-semibold text-wondergreen underline hover:opacity-80"
+              >
+                {waitListOpen ? 'Hide' : 'View'}
+              </button>
+            </div>
+
+            {waitListOpen && (
+              <div className="mt-3">
+                {waitListLoading ? (
+                  <p className="text-xs text-gray-600">Loading waitlist…</p>
+                ) : waitListError ? (
+                  <p className="text-xs text-red-600">{waitListError}</p>
+                ) : !waitList?.length ? (
+                  <p className="text-xs text-gray-600">No children on the waitlist yet.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {waitList.map((entry) => (
+                      <li
+                        key={entry.id}
+                        className="rounded-xl border border-white/60 bg-white/60 px-3 py-2"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">
+                              #{entry.position} {entry.child?.firstName} {entry.child?.lastName}
+                            </p>
+
+                            {entry.child?.parents?.length ? (
+                              <div className="mt-1 text-xs text-gray-700 space-y-1">
+                                {entry.child.parents.map((parent) => (
+                                  <div key={parent.id}>
+                                    <p className="font-semibold">
+                                      {parent.firstName} {parent.lastName}
+                                    </p>
+                                    <p>
+                                      {parent.email} • {parent.phoneNumber}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-gray-600 mt-1">
+                                No parent info available.
+                              </p>
+                            )}
+                          </div>
+
+                          <span className="text-[10px] font-bold px-2 py-1 rounded-full border bg-amber-50 text-amber-700 border-amber-200 uppercase">
+                            {entry.status}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                 )}
               </div>

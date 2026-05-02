@@ -567,3 +567,17 @@ class TaxReturnCredentialsUpdate(BaseModel):
 
     class Config:
         extra = "forbid"
+
+
+# ! ProgramWaitingList
+
+class ProgramWaitlistStatus(str, Enum):
+    WAITING = "waiting"
+    REMOVED = "removed"
+    CONTACTED = "contacted"
+    ENROLLED = "enrolled"
+    DECLINED = "declined"
+
+
+class ProgramWaitlistChildren(BaseModel):
+    childIds: List[str]

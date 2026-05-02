@@ -675,3 +675,263 @@ async def send_message_to_users_of_enrolled_child_program(
         "message": "Notification successfully sent to all parents.",
         "notification": new_notifications,
     }
+
+# ---------------------------------------------------------------------------
+# GET /program/{program_id}/waitlist
+# (admin only — view full waitlist)
+# ---------------------------------------------------------------------------
+
+@router.get("/{program_id}/waitlist", status_code=status.HTTP_200_OK)
+async def get_program_waitlist(
+    program_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    """
+    Get full waitlist for a program (admin only).
+    """
+
+    enforce_authentication(current_user, "view program waitlist")
+
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Only admins can view the waitlist.",
+        )
+
+    program = await db.enrichmentprograms.find_unique(where={"id": program_id})
+    if not program:
+        raise HTTPException(status_code=404, detail="Program not found.")
+
+    # get a waitlist with child + parent
+    waitlist = await db.programwaitlist.find_many(
+        where={
+            "programId": program_id,
+            "status": "waiting",  # show only active ones
+        },
+        order={"position": "asc"},
+        include={
+            "child": {
+                "include": {
+                    "parents": True
+                }
+            }
+        }
+    )
+
+    return {
+        "count": len(waitlist),
+        "waitlist": waitlist,
+    }
+
+# ---------------------------------------------------------------------------
+# GET /program/{program_id}/waitlist/me
+# (authenticated — view current user's waitlist children)
+# ---------------------------------------------------------------------------
+
+@router.get("/{program_id}/waitlist/me", status_code=status.HTTP_200_OK)
+async def get_my_program_waitlist(
+    program_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    """
+    Get current user's own children on this program waitlist.
+    """
+
+    enforce_authentication(current_user, "view your program waitlist")
+
+    program = await db.enrichmentprograms.find_unique(where={"id": program_id})
+    if not program:
+        raise HTTPException(status_code=404, detail="Program not found.")
+
+    waitlist = await db.programwaitlist.find_many(
+        where={
+            "programId": program_id,
+            "userId": current_user.id,
+            "status": "waiting",
+        },
+        order={"position": "asc"},
+        include={"child": True},
+    )
+
+    return {
+        "count": len(waitlist),
+        "waitlist": waitlist,
+    }
+
+
+# ---------------------------------------------------------------------------
+# PATCH /program/{program_id}/waitlist  (authenticated — join waitlist)
+# ---------------------------------------------------------------------------
+
+@router.patch("/{program_id}/waitlist", status_code=status.HTTP_200_OK)
+async def join_program_waitlist(
+    program_id: str,
+    waitlist_data: EnrollChildren,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_authentication(current_user, "join program waitlist")
+
+    program = await db.enrichmentprograms.find_unique(where={"id": program_id})
+    if not program:
+        raise HTTPException(status_code=404, detail="Enrichment program not found.")
+
+    if program.status != "approved":
+        raise HTTPException(status_code=400, detail="Program is not available.")
+
+    # Waitlist should only be used when program is full
+    if program.limit is None or program.participants < program.limit:
+        raise HTTPException(
+            status_code=400,
+            detail="This program still has available spots. Please enroll instead.",
+        )
+
+    user_children = await db.children.find_many(
+        where={"parentIds": {"has": current_user.id}}
+    )
+    user_child_ids = {c.id for c in user_children}
+
+    for cid in waitlist_data.childIds:
+        if cid not in user_child_ids:
+            raise HTTPException(
+                status_code=403,
+                detail="You can only add your own children to the waitlist.",
+            )
+
+    already_enrolled = set(program.childIds or [])
+    for cid in waitlist_data.childIds:
+        if cid in already_enrolled:
+            raise HTTPException(
+                status_code=400,
+                detail="Child is already enrolled in this program.",
+            )
+
+    last_entry = await db.programwaitlist.find_first(
+        where={"programId": program_id},
+        order={"position": "desc"},
+    )
+    next_position = last_entry.position + 1 if last_entry else 1
+
+    results = []
+
+    for cid in waitlist_data.childIds:
+        existing = await db.programwaitlist.find_unique(
+            where={
+                "programId_childId": {
+                    "programId": program_id,
+                    "childId": cid,
+                }
+            }
+        )
+
+        if existing and existing.status == "waiting":
+            raise HTTPException(
+                status_code=400,
+                detail="One or more children are already on the waitlist.",
+            )
+
+        if existing:
+            updated = await db.programwaitlist.update(
+                where={
+                    "programId_childId": {
+                        "programId": program_id,
+                        "childId": cid,
+                    }
+                },
+                data={
+                    "status": "waiting",
+                    "position": next_position,
+                },
+            )
+            results.append(updated)
+        else:
+            created = await db.programwaitlist.create(
+                data={
+                    "programId": program_id,
+                    "childId": cid,
+                    "userId": current_user.id,
+                    "position": next_position,
+                    "status": "waiting",
+                }
+            )
+            results.append(created)
+
+        next_position += 1
+
+    return {
+        "message": "Added to waitlist successfully.",
+        "waitlist": results,
+    }
+
+# ---------------------------------------------------------------------------
+# DELETE /program/{program_id}/waitlist/{child_id}
+# (authenticated — remove own child from waitlist)
+# ---------------------------------------------------------------------------
+
+@router.delete("/{program_id}/waitlist/{child_id}", status_code=status.HTTP_200_OK)
+async def remove_child_from_program_waitlist(
+    program_id: str,
+    child_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    """
+    Remove one of the current user's children from a program waitlist.
+    We keep the record for history by setting status='removed'.
+    """
+
+    enforce_authentication(current_user, "remove child from program waitlist")
+
+    program = await db.enrichmentprograms.find_unique(where={"id": program_id})
+    if not program:
+        raise HTTPException(status_code=404, detail="Enrichment program not found.")
+
+    child = await db.children.find_unique(where={"id": child_id})
+    if not child:
+        raise HTTPException(status_code=404, detail="Child not found.")
+
+    if current_user.id not in (child.parentIds or []):
+        raise HTTPException(
+            status_code=403,
+            detail="You can only remove your own child from the waitlist.",
+        )
+
+    waitlist_entry = await db.programwaitlist.find_unique(
+        where={
+            "programId_childId": {
+                "programId": program_id,
+                "childId": child_id,
+            }
+        }
+    )
+
+    if not waitlist_entry:
+        raise HTTPException(
+            status_code=404,
+            detail="This child is not on the waitlist for this program.",
+        )
+
+    if waitlist_entry.status == "removed":
+        raise HTTPException(
+            status_code=400,
+            detail="This child has already been removed from the waitlist.",
+        )
+
+    try:
+        updated = await db.programwaitlist.update(
+            where={
+                "programId_childId": {
+                    "programId": program_id,
+                    "childId": child_id,
+                }
+            },
+            data={"status": "removed"},
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to remove child from waitlist: {str(e)}",
+        )
+
+    return {
+        "waitlist": updated,
+        "message": "Child removed from waitlist successfully.",
+    }
