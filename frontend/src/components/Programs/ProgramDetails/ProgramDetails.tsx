@@ -4,7 +4,7 @@ import AppIcon from '@/app/icon.png';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useProgram } from '../../../../hooks/useProgram';
 import { useUser } from '../../../../hooks/useUser';
@@ -22,6 +22,21 @@ const WONDERHOOD_URL = determineEnv();
 
 type AdminAttendeesResponse = { children: Child[] };
 
+type ProgramWaitListEntry = {
+  id: string;
+  childId: string;
+  userId: string;
+  programId: string;
+  position: number;
+  status: string;
+  child?: Child;
+};
+
+type ProgramWaitListResponse = {
+  count: number;
+  waitlist: ProgramWaitListEntry[];
+};
+
 export default function ProgramDetails() {
   const { programId } = useParams() as { programId: string };
 
@@ -38,6 +53,13 @@ export default function ProgramDetails() {
   const [attendeesLoading, setAttendeesLoading] = useState(false);
   const [attendeesError, setAttendeesError] = useState<string | null>(null);
   const [attendees, setAttendees] = useState<Child[] | null>(null);
+
+  const [waitListOpen, setWaitListOpen] = useState(false);
+  const [waitListLoading, setWaitListLoading] = useState(false);
+  const [waitListError, setWaitListError] = useState<string | null>(null);
+  const [waitList, setWaitList] = useState<ProgramWaitListEntry[] | null>(null);
+  const [myWaitList, setMyWaitList] = useState<ProgramWaitListEntry[]>([]);
+  const [removeWaitListId, setRemoveWaitListId] = useState<string | null>(null);
 
   const token = useMemo(() => {
     if (typeof window === 'undefined') return null;
@@ -63,6 +85,48 @@ export default function ProgramDetails() {
     }
   };
 
+  // Admin vew wating list
+  const loadWaitlist = async () => {
+    if (!isAdmin || !token) return;
+
+    try {
+      setWaitListLoading(true);
+      setWaitListError(null);
+
+      const res = await makeApiRequest<ProgramWaitListResponse>(
+        `${WONDERHOOD_URL}/program/${programId}/waitlist`,
+        { method: 'GET', headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setWaitList(res.waitlist ?? []);
+    } catch (e) {
+      setWaitListError(e instanceof Error ? e.message : 'Failed to load waitlist');
+    } finally {
+      setWaitListLoading(false);
+    }
+  };
+
+  const loadMyWaitList = async () => {
+    if (!token) return;
+
+    try {
+      const res = await makeApiRequest<{ count: number; waitlist: ProgramWaitListEntry[] }>(
+        `${WONDERHOOD_URL}/program/${programId}/waitlist/me`,
+        { method: 'GET', headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setMyWaitList(res.waitlist ?? []);
+    } catch (e) {
+      console.error('Failed to load my waitlist', e);
+    }
+  };
+
+  useEffect(() => {
+    if (!user || !token || !programId) return;
+
+    loadMyWaitList();
+  }, [user, token, programId]);
+
   const toggleChild = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -77,10 +141,43 @@ export default function ProgramDetails() {
     [program?.childIds]
   );
 
+  const waitListChildSet = useMemo(
+    () => new Set(myWaitList.map((entry) => entry.childId)),
+    [myWaitList]
+  );
+
   const userHasChildEnrolled = useMemo(() => {
     if (!user?.children?.length) return false;
     return user.children.some((child) => programParticipantSet.has(child.id));
   }, [user, programParticipantSet]);
+
+  const userHasChildInWaitList = useMemo(() => {
+    if (!user?.children?.length) return false;
+    return user.children.some((child) => waitListChildSet.has(child.id));
+  }, [user, waitListChildSet]);
+
+  // Waitlist
+  const handleJoinWaitlist = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const childIds = Array.from(selected);
+    if (childIds.length === 0) return;
+
+    try {
+      await makeApiRequest(`${WONDERHOOD_URL}/program/${programId}/waitlist`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: { childIds },
+      });
+
+      setShowForm(false);
+      setSuccessEnroll(true);
+      setSelected(new Set());
+      refetch();
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : 'Failed to join waitlist.');
+    }
+  };
 
   const handleEnroll = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -99,6 +196,23 @@ export default function ProgramDetails() {
       refetch();
     } catch (err) {
       setServerError(err instanceof Error ? err.message : 'A network error occurred.');
+    }
+  };
+
+  const handleRemoveFromWaitList = async (childId: string) => {
+    setRemoveWaitListId(childId);
+
+    try {
+      await makeApiRequest(`${WONDERHOOD_URL}/program/${programId}/waitlist/${childId}`, {
+        method: 'DELETE',
+      });
+
+      await loadMyWaitList();
+      refetch();
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : 'Failed to remove from waitlist.');
+    } finally {
+      setRemoveWaitListId(null);
     }
   };
 
@@ -145,6 +259,203 @@ export default function ProgramDetails() {
     );
   if (!program)
     return <div className="min-h-[60vh] grid place-items-center">Program not found</div>;
+
+  // Enroll / Unenroll form 
+  const enrollmentContent = (
+    <>
+      {user ? (
+        user.children?.length ? (
+          <form
+            onSubmit={hasCapacity ? handleEnroll : handleJoinWaitlist}
+            className="bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 p-6 sm:p-8 shadow-md"
+          >
+            <h3 className="text-lg font-bold text-wondergreen mb-1">
+              {hasCapacity ? 'Select your child(ren) to enroll' : 'Select your child(ren) to join the waitlist'}
+            </h3>
+            {hasCapacity ? (
+              <p className="mb-5 text-sm text-gray-600">
+                Children marked <span className="font-semibold">ENROLLED</span> are already
+                signed up. Click{' '}
+                <span className="font-semibold text-red-600">Unenroll</span> to remove them.
+              </p>
+            ) : (
+              <p className="mb-5 text-sm text-gray-600">
+                Select the child you want to add to the waitlist. We’ll contact families in order if a spot opens.
+              </p>
+            )}
+
+            <fieldset className="space-y-3 mb-6">
+              {user.children.map((child) => {
+                const childId = `child-${child.id}`;
+                const isChecked = selected.has(child.id);
+                const alreadyEnrolled = programParticipantSet.has(child.id);
+                const alreadyWaitListed = waitListChildSet.has(child.id);
+                const ageAtStart = child.birthday ? ageOnDate(child.birthday, program.startDate) : null;
+                const tooYoung = ageAtStart !== null && ageAtStart < program.ageMin;
+                const tooOld = ageAtStart !== null && ageAtStart > program.ageMax;
+                const ageIneligible = tooYoung || tooOld;
+
+                if (alreadyEnrolled) {
+                  return (
+                    <div
+                      key={child.id}
+                      className="p-4 rounded-xl border border-wondergreen/30 bg-wondergreen/5 space-y-3"
+                    >
+                      <p className="text-base font-semibold text-gray-900">
+                        {child.firstName} {child.lastName}
+                      </p>
+
+                      <div className="flex items-center justify-start gap-3">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-wondergreen bg-wondergreen/10 border border-wondergreen/30 rounded-full px-3 py-1">
+                          Enrolled
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => handleUnenrollOne(child.id)}
+                          disabled={unenrollId === child.id}
+                          className="px-3 py-1 text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
+                        >
+                          {unenrollId === child.id ? 'Unenrolling…' : 'Unenroll'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (alreadyWaitListed) {
+                  return (
+                    <div key={child.id} className="p-4 rounded-xl border border-wonderorange/30 bg-wonderorange/5 space-y-3">
+
+                      {/* Name */}
+                      <p className="text-base font-semibold text-gray-900">
+                        {child.firstName} {child.lastName}
+                      </p>
+                      {/* Bottom row */}
+                      <div className="flex items-center justify-start gap-3">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-wonderorange bg-wonderorange/10 border border-wonderorange/30 rounded-full px-3 py-1">
+                          Waitlisted
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFromWaitList(child.id)}
+                          disabled={removeWaitListId === child.id}
+                          className="px-3 py-1 text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
+                        >
+                          {removeWaitListId === child.id ? 'Removing…' : 'Remove'}
+                        </button>
+                      </div>
+                  </div>
+                  );
+                }
+
+                if (ageIneligible) {
+                  const reason = tooYoung
+                    ? `Must be at least ${program.ageMin} by program start (will be ${ageAtStart})`
+                    : `Must be no older than ${program.ageMax} by program start (will be ${ageAtStart})`;
+                  return (
+                    <div
+                      key={child.id}
+                      className="flex items-center justify-between p-3 rounded-lg border-2 border-gray-200 bg-gray-50 opacity-60"
+                    >
+                      <span className="font-semibold text-gray-500">
+                        {child.firstName} {child.lastName}
+                      </span>
+                      <span className="text-xs text-gray-500 italic">{reason}</span>
+                    </div>
+                  );
+                }
+
+                return (
+                  <label
+                    key={child.id}
+                    htmlFor={childId}
+                    className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      isChecked
+                        ? 'border-wondergreen bg-wondergreen/5'
+                        : 'border-gray-200 bg-gray-50'
+                    }`}
+                  >
+                    <input
+                      id={childId}
+                      type="checkbox"
+                      name="children"
+                      value={child.id}
+                      checked={isChecked}
+                      onChange={() => toggleChild(child.id)}
+                      className="h-5 w-5 rounded border-gray-300 accent-wondergreen cursor-pointer"
+                    />
+                    <span className="font-semibold text-gray-900">
+                      {child.firstName} {child.lastName}
+                    </span>
+                  </label>
+                );
+              })}
+            </fieldset>
+
+            {serverError && (
+              <div className="mb-4 rounded-lg bg-red-50 text-red-700 border border-red-200 p-4 text-sm">
+                {serverError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className={`rounded-lg px-6 py-3 text-white font-bold uppercase tracking-wide text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                hasCapacity
+                  ? 'bg-wondergreen hover:bg-wonderleaf'
+                  : 'bg-wonderorange hover:bg-wonderorange/90'
+              }`}
+              disabled={selected.size === 0}
+            >
+              {hasCapacity ? 'Enroll' : 'Join Waitlist'}
+            </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setServerError(null);
+                }}
+                className="ml-4 text-gray-600 font-medium hover:text-gray-900 underline"
+              >
+                Cancel
+              </button>
+          </form>
+        ) : (
+          <div className="rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
+            You don&apos;t have any children in your account. Please{' '}
+            <Link
+              href={addChildHref}
+              className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
+            >
+              add a child
+            </Link>{' '}
+            to enroll in programs.
+          </div>
+        )
+      ) : (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+          <p className="font-medium">
+            Please log in or create an account to enroll in programs.
+          </p>
+          <div className="mt-2 flex gap-3">
+            <OpenModalButton
+              className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
+              buttonText="Log in"
+              modalComponent={<LoginModal />}
+            />
+            <OpenModalButton
+              className="rounded-lg border border-emerald-600 px-4 py-2 text-emerald-700 hover:bg-emerald-50"
+              buttonText="Sign up"
+              modalComponent={<SignupModal />}
+            />
+          </div>
+        </div>
+      )}
+    </>
+  )
 
   return (
     <div className="pb-12 bg-wonderbg min-h-screen">
@@ -212,184 +523,40 @@ export default function ProgramDetails() {
             program={program}
             hasCapacity={hasCapacity}
             showForm={showForm}
-            onToggleForm={() => setShowForm((v) => !v)}
+            onToggleForm={async () => {
+              const next = !showForm;
+              setShowForm(next);
+              setServerError(null);
+
+              if (next && !hasCapacity) {
+                await loadMyWaitList();
+              }
+            }}
             successEnroll={successEnroll}
             userHasChildEnrolled={userHasChildEnrolled}
+            enrollmentContent={enrollmentContent}
             isAdmin={!!isAdmin}
             attendeesOpen={attendeesOpen}
             attendees={attendees}
             attendeesLoading={attendeesLoading}
             attendeesError={attendeesError}
+            waitListOpen={waitListOpen}
+            waitList={waitList}
+            waitListLoading={waitListLoading}
+            waitListError={waitListError}
+            onToggleWaitList={async () => {
+              const next = !waitListOpen;
+              setWaitListOpen(next);
+              if (next && waitList === null) await loadWaitlist();
+            }}
             onToggleAttendees={async () => {
               const next = !attendeesOpen;
               setAttendeesOpen(next);
               if (next && attendees === null) await loadAttendees();
             }}
+            userHasChildInWaitList={userHasChildInWaitList}
           />
         </div>
-
-        {/* Enroll / Unenroll form */}
-        {showForm && (
-          <>
-            {user ? (
-              user.children?.length ? (
-                <form
-                  onSubmit={handleEnroll}
-                  className="mt-8 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 p-6 sm:p-8 shadow-md"
-                >
-                  <h3 className="text-lg font-bold text-wondergreen mb-1">
-                    Select your child(ren) to enroll
-                  </h3>
-                  <p className="mb-5 text-sm text-gray-600">
-                    Children marked <span className="font-semibold">ENROLLED</span> are already
-                    signed up. Click{' '}
-                    <span className="font-semibold text-red-600">Unenroll</span> to remove them.
-                  </p>
-
-                  <fieldset className="space-y-3 mb-6">
-                    {user.children.map((child) => {
-                      const childId = `child-${child.id}`;
-                      const isChecked = selected.has(child.id);
-                      const alreadyEnrolled = programParticipantSet.has(child.id);
-                      const ageAtStart = child.birthday ? ageOnDate(child.birthday, program.startDate) : null;
-                      const tooYoung = ageAtStart !== null && ageAtStart < program.ageMin;
-                      const tooOld = ageAtStart !== null && ageAtStart > program.ageMax;
-                      const ageIneligible = tooYoung || tooOld;
-
-                      if (alreadyEnrolled) {
-                        return (
-                          <div
-                            key={child.id}
-                            className="flex items-center justify-between p-3 rounded-lg border-2 border-gray-200 bg-gray-50"
-                          >
-                            <span className="font-semibold text-gray-900">
-                              {child.firstName} {child.lastName}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                                Enrolled
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => handleUnenrollOne(child.id)}
-                                disabled={unenrollId === child.id}
-                                className="px-3 py-1 text-xs font-semibold text-red-700 border border-red-200 rounded-full hover:bg-red-50 disabled:opacity-50"
-                              >
-                                {unenrollId === child.id ? 'Unenrolling…' : 'Unenroll'}
-                              </button>
-                            </div>
-                          </div>
-                        );
-                      }
-
-                      if (ageIneligible) {
-                        const reason = tooYoung
-                          ? `Must be at least ${program.ageMin} by program start (will be ${ageAtStart})`
-                          : `Must be no older than ${program.ageMax} by program start (will be ${ageAtStart})`;
-                        return (
-                          <div
-                            key={child.id}
-                            className="flex items-center justify-between p-3 rounded-lg border-2 border-gray-200 bg-gray-50 opacity-60"
-                          >
-                            <span className="font-semibold text-gray-500">
-                              {child.firstName} {child.lastName}
-                            </span>
-                            <span className="text-xs text-gray-500 italic">{reason}</span>
-                          </div>
-                        );
-                      }
-
-                      return (
-                        <label
-                          key={child.id}
-                          htmlFor={childId}
-                          className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                            isChecked
-                              ? 'border-wondergreen bg-wondergreen/5'
-                              : 'border-gray-200 bg-gray-50'
-                          }`}
-                        >
-                          <input
-                            id={childId}
-                            type="checkbox"
-                            name="children"
-                            value={child.id}
-                            checked={isChecked}
-                            onChange={() => toggleChild(child.id)}
-                            className="h-5 w-5 rounded border-gray-300 accent-wondergreen cursor-pointer"
-                          />
-                          <span className="font-semibold text-gray-900">
-                            {child.firstName} {child.lastName}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </fieldset>
-
-                  {serverError && (
-                    <div className="mb-4 rounded-lg bg-red-50 text-red-700 border border-red-200 p-4 text-sm">
-                      {serverError}
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="submit"
-                      className="rounded-lg bg-wondergreen px-6 py-3 text-white font-bold uppercase tracking-wide text-sm hover:bg-wonderleaf transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={
-                        selected.size === 0 ||
-                        (program.limit != null &&
-                          Number(program.participants) + selected.size > program.limit)
-                      }
-                    >
-                      Enroll
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowForm(false);
-                        setServerError(null);
-                      }}
-                      className="text-gray-600 font-medium hover:text-gray-900 underline"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
-                  You don&apos;t have any children in your account. Please{' '}
-                  <Link
-                    href={addChildHref}
-                    className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
-                  >
-                    add a child
-                  </Link>{' '}
-                  to enroll in programs.
-                </div>
-              )
-            ) : (
-              <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
-                <p className="font-medium">
-                  Please log in or create an account to enroll in programs.
-                </p>
-                <div className="mt-2 flex gap-3">
-                  <OpenModalButton
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
-                    buttonText="Log in"
-                    modalComponent={<LoginModal />}
-                  />
-                  <OpenModalButton
-                    className="rounded-lg border border-emerald-600 px-4 py-2 text-emerald-700 hover:bg-emerald-50"
-                    buttonText="Sign up"
-                    modalComponent={<SignupModal />}
-                  />
-                </div>
-              </div>
-            )}
-          </>
-        )}
       </main>
     </div>
   );

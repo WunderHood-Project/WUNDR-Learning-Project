@@ -163,6 +163,153 @@ export default function EventDetails() {
     }
     if (!event) return <div className="min-h-[60vh] grid place-items-center">Event not found</div>;
 
+    // ENROLL / UNENROLL FORM 
+    const enrollmentContent = (    
+        <>
+            {user ? (
+                user.children?.length ? (
+                    <form
+                        onSubmit={handleEnroll}
+                        className="bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 p-6 sm:p-8 shadow-md"
+                    >
+                        <h3 className="text-lg font-bold text-wondergreen mb-1">
+                            Select your child(ren) to enroll
+                        </h3>
+                        <p className="mb-5 text-sm text-gray-600">
+                            Children marked <span className="font-semibold">ENROLLED</span> are already signed up.
+                            Click <span className="font-semibold text-red-600">Unenroll</span> to remove them from
+                            this event.
+                        </p>
+
+                        <fieldset className="space-y-3 mb-6">
+                            {user.children.map((child) => {
+                                const childId = `child-${child.id}`;
+                                const isChecked = selected.has(child.id);
+                                const alreadyEnrolled = eventParticipantSet.has(child.id);
+
+                                // The child is ALREADY registered → name + ENROLLED + Unenroll button
+                                if (alreadyEnrolled) {
+                                    return (
+                                        <div
+                                        key={child.id}
+                                        className="p-4 rounded-xl border border-wondergreen/30 bg-wondergreen/5 space-y-3"
+                                        >
+                                        <p className="text-base font-semibold text-gray-900">
+                                            {child.firstName} {child.lastName}
+                                        </p>
+
+                                        <div className="flex items-center justify-start gap-3">
+                                            <span
+                                            id={`${childId}-hint`}
+                                            className="text-[11px] font-bold uppercase tracking-wide text-wondergreen bg-wondergreen/10 border border-wondergreen/30 rounded-full px-3 py-1"
+                                            >
+                                            Enrolled
+                                            </span>
+
+                                            <button
+                                            type="button"
+                                            onClick={() => handleUnenrollOne(child.id)}
+                                            disabled={unenrollId === child.id}
+                                            className="px-3 py-1 text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
+                                            >
+                                            {unenrollId === child.id ? 'Unenrolling…' : 'Unenroll'}
+                                            </button>
+                                        </div>
+                                        </div>
+                                    );
+                                }
+
+                                // The child is NOT registered yet → checkbox + name
+                                return (
+                                    <label
+                                        key={child.id}
+                                        htmlFor={childId}
+                                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isChecked
+                                                ? "border-wondergreen bg-wondergreen/5"
+                                                : "border-gray-200 bg-gray-50"
+                                            }`}
+                                    >
+                                        <input
+                                            id={childId}
+                                            type="checkbox"
+                                            name="children"
+                                            value={child.id}
+                                            checked={isChecked}
+                                            onChange={() => toggleChild(child.id)}
+                                            className="h-5 w-5 rounded border-gray-300 accent-wondergreen cursor-pointer"
+                                        />
+                                        <span className="font-semibold text-gray-900">
+                                            {child.firstName} {child.lastName}
+                                        </span>
+                                    </label>
+                                );
+                            })}
+                        </fieldset>
+
+                        {/* Errors */}
+                        {(serverError || unenrollError) && (
+                            <div className="mb-4 rounded-lg bg-red-50 text-red-700 border border-red-200 p-4 text-sm">
+                                {serverError || unenrollError}
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-4">
+                            <button
+                                type="submit"
+                                className="rounded-lg bg-wondergreen px-6 py-3 text-white font-bold uppercase tracking-wide text-sm hover:bg-wonderleaf transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={selected.size === 0 || (event.limit != null && Number(event.participants) + selected.size > event.limit)}
+                                aria-disabled={selected.size === 0 || (event.limit != null && Number(event.participants) + selected.size > event.limit)}
+                            >
+                                Enroll
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowForm(false);
+                                    setServerError(null);
+                                }}
+                                className="text-gray-600 font-medium hover:text-gray-900 underline"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                ) : (
+                    <div className="rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
+                        You don&apos;t have any children in your account. Please{" "}
+                        <Link
+                        href={addChildHref}
+                        className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
+                        >
+                            add a child
+                        </Link>{" "}
+                            to enroll in events.
+
+                    </div>
+
+                )
+            ) : (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+                    <p className="font-medium">Please log in or create an account to enroll in events.</p>
+                    <div className="mt-2 flex gap-3">
+                        <OpenModalButton
+                            className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
+                            buttonText="Log in"
+                            modalComponent={<LoginModal />}
+                        />
+
+                        <OpenModalButton
+                            className="rounded-lg border border-emerald-600 px-4 py-2 text-emerald-700 hover:bg-emerald-50"
+                            buttonText="Sign up"
+                            modalComponent={<SignupModal />}
+                        />
+                    </div>
+                </div>
+            )}
+        </>
+    )
+
 
     return (
         <div className="pb-12 bg-wonderbg min-h-screen">
@@ -251,156 +398,11 @@ export default function EventDetails() {
                             await loadAttendees();
                             }
                         }}
+                        enrollmentContent={enrollmentContent}
                     />
                 </div>
 
-                {/* ENROLL / UNENROLL FORM */}
-                {showForm && (
-                    <>
-                        {user ? (
-                            user.children?.length ? (
-                                <form
-                                    onSubmit={handleEnroll}
-                                    className="mt-8 bg-white/50 rounded-2xl backdrop-blur-sm border border-white/60 p-6 sm:p-8 shadow-md"
-                                >
-                                    <h3 className="text-lg font-bold text-wondergreen mb-1">
-                                        Select your child(ren) to enroll
-                                    </h3>
-                                    <p className="mb-5 text-sm text-gray-600">
-                                        Children marked <span className="font-semibold">ENROLLED</span> are already signed up.
-                                        Click <span className="font-semibold text-red-600">Unenroll</span> to remove them from
-                                        this event.
-                                    </p>
-
-                                    <fieldset className="space-y-3 mb-6">
-                                        {user.children.map((child) => {
-                                            const childId = `child-${child.id}`;
-                                            const isChecked = selected.has(child.id);
-                                            const alreadyEnrolled = eventParticipantSet.has(child.id);
-
-                                            // The child is ALREADY registered → name + ENROLLED + Unenroll button
-                                            if (alreadyEnrolled) {
-                                                return (
-                                                    <div
-                                                        key={child.id}
-                                                        className="flex items-center justify-between p-3 rounded-lg border-2 border-gray-200 bg-gray-50"
-                                                    >
-                                                        <span className="font-semibold text-gray-900">
-                                                            {child.firstName} {child.lastName}
-                                                        </span>
-
-                                                        <div className="flex items-center gap-2">
-                                                            <span
-                                                                id={`${childId}-hint`}
-                                                                className="ml-2 text-xs font-medium text-gray-500 uppercase tracking-wide"
-                                                            >
-                                                                Enrolled
-                                                            </span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleUnenrollOne(child.id)}
-                                                                disabled={unenrollId === child.id}
-                                                                className="px-3 py-1 text-xs font-semibold text-red-700 border border-red-200 rounded-full hover:bg-red-50 disabled:opacity-50"
-                                                            >
-                                                                {unenrollId === child.id
-                                                                    ? "Unenrolling..."
-                                                                    : "Unenroll"}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            }
-
-                                            // The child is NOT registered yet → checkbox + name
-                                            return (
-                                                <label
-                                                    key={child.id}
-                                                    htmlFor={childId}
-                                                    className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isChecked
-                                                            ? "border-wondergreen bg-wondergreen/5"
-                                                            : "border-gray-200 bg-gray-50"
-                                                        }`}
-                                                >
-                                                    <input
-                                                        id={childId}
-                                                        type="checkbox"
-                                                        name="children"
-                                                        value={child.id}
-                                                        checked={isChecked}
-                                                        onChange={() => toggleChild(child.id)}
-                                                        className="h-5 w-5 rounded border-gray-300 accent-wondergreen cursor-pointer"
-                                                    />
-                                                    <span className="font-semibold text-gray-900">
-                                                        {child.firstName} {child.lastName}
-                                                    </span>
-                                                </label>
-                                            );
-                                        })}
-                                    </fieldset>
-
-                                    {/* Errors */}
-                                    {(serverError || unenrollError) && (
-                                        <div className="mb-4 rounded-lg bg-red-50 text-red-700 border border-red-200 p-4 text-sm">
-                                            {serverError || unenrollError}
-                                        </div>
-                                    )}
-
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            type="submit"
-                                            className="rounded-lg bg-wondergreen px-6 py-3 text-white font-bold uppercase tracking-wide text-sm hover:bg-wonderleaf transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            disabled={selected.size === 0 || (event.limit != null && Number(event.participants) + selected.size > event.limit)}
-                                            aria-disabled={selected.size === 0 || (event.limit != null && Number(event.participants) + selected.size > event.limit)}
-                                        >
-                                            Enroll
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setShowForm(false);
-                                                setServerError(null);
-                                            }}
-                                            className="text-gray-600 font-medium hover:text-gray-900 underline"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            ) : (
-                                <div className="mt-8 rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
-                                    You don&apos;t have any children in your account. Please{" "}
-                                    <Link
-                                    href={addChildHref}
-                                    className="underline underline-offset-4 text-wondergreen font-bold hover:opacity-80"
-                                    >
-                                        add a child
-                                    </Link>{" "}
-                                        to enroll in events.
-
-                                </div>
-
-                            )
-                        ) : (
-                            <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
-                                <p className="font-medium">Please log in or create an account to enroll in events.</p>
-                                <div className="mt-2 flex gap-3">
-                                    <OpenModalButton
-                                        className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
-                                        buttonText="Log in"
-                                        modalComponent={<LoginModal />}
-                                    />
-
-                                    <OpenModalButton
-                                        className="rounded-lg border border-emerald-600 px-4 py-2 text-emerald-700 hover:bg-emerald-50"
-                                        buttonText="Sign up"
-                                        modalComponent={<SignupModal />}
-                                    />
-                                </div>
-                            </div>
-                        )}
-                    </>
-                )}
+                
             </main>
         </div>
     );
