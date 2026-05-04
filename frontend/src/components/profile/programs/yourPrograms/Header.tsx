@@ -9,7 +9,7 @@ type Props = {
 export default function Header({ hasPrograms }: Props) {
     const router = useRouter();
 
-    const title = hasPrograms ? "Your Enrolled Programs" : "You’re Not Enrolled Yet";
+    const title = hasPrograms ? "Enrolled Programs" : "No Enrollments Yet";
 
     return (
         <div className="mb-4">
@@ -32,14 +32,14 @@ export default function Header({ hasPrograms }: Props) {
             {!hasPrograms && (
                 <div className="mt-4 ml-2 md:ml-14">
                     <p className="text-sm text-wondergreen/80 mb-2">
-                        Join your first program and start building friendships, skills, and consistency.
+                        You don&apos;t have any program enrollments yet.
                     </p>
                     <button
                         type="button"
                         onClick={() => router.push("/programs")}
                         className="inline-flex items-center px-4 py-2 rounded-lg bg-wondergreen text-white text-sm font-medium shadow-sm hover:bg-wondergreen/90"
                     >
-                        View Programs →
+                        Browse Programs
                     </button>
                 </div>
             )}
