@@ -62,6 +62,16 @@ export function Row({ n, busy, onMarkRead, onDelete }: {
                     {n.description}
                     </p>
                 )}
+                {!!n.link && (
+                    <a
+                      href={n.link}
+                      className="text-xs text-wonderleaf hover:underline mt-1 inline-block"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {n.link.includes('/programs/') ? 'View Program' : 'View Event'}
+                    </a>
+                )}
                 <div className="mt-1.5 md:mt-2 text-[11px] md:text-xs text-gray-500">
                     {formatWhen(n.createdAt ?? n.eventDate ?? new Date().toISOString())}
                 </div>
