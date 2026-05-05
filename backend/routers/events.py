@@ -519,7 +519,7 @@ async def update_event(
     event_id: str,
     event_data: EventUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
-    background_tasks: BackgroundTasks,
+    # background_tasks: BackgroundTasks,
 ):
     """
     Update Event and notify enrolled users/parents if date/time changed.
@@ -715,7 +715,7 @@ async def update_event(
 async def delete_event_by_id(
    event_id: str,
    current_user: Annotated[User, Depends(get_current_user)],
-   background_tasks: BackgroundTasks
+#    background_tasks: BackgroundTasks
 ):
 
 
@@ -1485,71 +1485,51 @@ async def send_message_to_users_of_enrolled_child(
                 }
    )
 
-
    if not event:
        raise HTTPException(status_code=404, detail="Unable to obtain event")
 
 
-   # Add the parent IDs to a set
-   parent_ids = set()
+   parents: dict = {}
    for child in event.children:
-       parent_ids.update(child.parentIds)
+       for parent in (child.parents or []):
+           parents[parent.id] = parent
 
-
-   if not parent_ids:
+   if not parents:
        raise HTTPException(status_code=404, detail="Unable to obtain parent ids")
 
 
-   # Query for the parents' email(s)
-   parent_emails = list()
-   for id in parent_ids:
-       users = await db.users.find_unique(
-           where={
-               "id": id
-               }
-       )
-       if users:
-        parent_emails.append(users.email)
-
    # Create the notifications for the UI
-   notification_data = [
-       {
-       "title": notification.title,
-       "description": notification.description,
-       "userId": id,
-       "isRead": False,
-       "time": event.date,
-       }
-       for id in parent_ids
-   ]
+#    notification_data = [
+#        {
+#        "title": notification.title,
+#        "description": notification.description,
+#        "userId": id,
+#        "isRead": False,
+#        "link": get_event_link(event_id),
+#        "time": event.date,
+#        }
+#        for pid in parents
+#    ]
 
 
-   new_notification = await db.notifications.create_many(
-       data=notification_data
-   )
+#    new_notification = await db.notifications.create_many(
+#        data=notification_data
+#    )
 
    # Send the email -> not optimized because we are iterating/querying over parent_emails
-   for email in parent_emails:
-    user_enabled_notifications = await db.users.find_unique(
-        where={
-            "email": email,
-            "emailNotificationsEnabled": True
-        }
-    )
-
-    if user_enabled_notifications:
+   for parent in parents.values():
+     if parent.emailNotificationsEnabled == True:
         background_tasks.add_task(
-               send_email_one_user,
-               user_enabled_notifications.email,
-               notification.title,
-               notification.description
+            send_email_one_user,
+            parent.email,
+            notification.title,
+            notification.description
         )
-
 
 
    return {
        "message": "Notification successfully sent to all parents",
-       "notification": new_notification
+    #    "notification": new_notification
            }
 
 
