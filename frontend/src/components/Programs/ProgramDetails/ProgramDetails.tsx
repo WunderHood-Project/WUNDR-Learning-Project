@@ -20,6 +20,7 @@ import { ageOnDate } from '../../../../utils/calculateAge';
 
 const WONDERHOOD_URL = determineEnv();
 
+// --- API types ---
 type AdminAttendeesResponse = { children: Child[] };
 
 type ProgramWaitListEntry = {
@@ -38,22 +39,31 @@ type ProgramWaitListResponse = {
 };
 
 export default function ProgramDetails() {
+  // get program id from route
   const { programId } = useParams() as { programId: string };
 
+   // program data + current user
   const { program, loading, error, refetch } = useProgram(programId);
   const { user } = useUser();
 
+  // --- UI state ---
   const [serverError, setServerError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  // selected children for actions (enroll / waitlist)
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [successEnroll, setSuccessEnroll] = useState(false);
+
+  // child currently being removed (used for loader)
   const [unenrollId, setUnenrollId] = useState<string | null>(null);
 
+  // --- admin: attendees ---
   const [attendeesOpen, setAttendeesOpen] = useState(false);
   const [attendeesLoading, setAttendeesLoading] = useState(false);
   const [attendeesError, setAttendeesError] = useState<string | null>(null);
   const [attendees, setAttendees] = useState<Child[] | null>(null);
 
+  // --- waitlist ---
   const [waitListOpen, setWaitListOpen] = useState(false);
   const [waitListLoading, setWaitListLoading] = useState(false);
   const [waitListError, setWaitListError] = useState<string | null>(null);
@@ -61,13 +71,16 @@ export default function ProgramDetails() {
   const [myWaitList, setMyWaitList] = useState<ProgramWaitListEntry[]>([]);
   const [removeWaitListId, setRemoveWaitListId] = useState<string | null>(null);
 
+  // token from localStorage (client-side only)
   const token = useMemo(() => {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('token');
   }, []);
 
+  // role check
   const isAdmin = user?.role === 'admin';
 
+  // --- load attendees (admin only) ---
   const loadAttendees = async () => {
     if (!isAdmin || !token) return;
     try {
@@ -85,7 +98,7 @@ export default function ProgramDetails() {
     }
   };
 
-  // Admin vew wating list
+  // --- load full waitlist (admin) ---
   const loadWaitlist = async () => {
     if (!isAdmin || !token) return;
 
@@ -106,6 +119,7 @@ export default function ProgramDetails() {
     }
   };
 
+  // --- load current user's waitlist ---
   const loadMyWaitList = async () => {
     if (!token) return;
 
@@ -121,12 +135,14 @@ export default function ProgramDetails() {
     }
   };
 
+  // fetch user waitlist when dependencies change
   useEffect(() => {
     if (!user || !token || !programId) return;
 
     loadMyWaitList();
   }, [user, token, programId]);
 
+  // --- toggle child selection ---
   const toggleChild = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -136,27 +152,31 @@ export default function ProgramDetails() {
     });
   };
 
+  // children already enrolled in program
   const programParticipantSet = useMemo(
     () => new Set(program?.childIds ?? []),
     [program?.childIds]
   );
 
+  // children already in waitlist
   const waitListChildSet = useMemo(
     () => new Set(myWaitList.map((entry) => entry.childId)),
     [myWaitList]
   );
 
+  // check if user has any enrolled child
   const userHasChildEnrolled = useMemo(() => {
     if (!user?.children?.length) return false;
     return user.children.some((child) => programParticipantSet.has(child.id));
   }, [user, programParticipantSet]);
 
+  // check if user has child in waitlist
   const userHasChildInWaitList = useMemo(() => {
     if (!user?.children?.length) return false;
     return user.children.some((child) => waitListChildSet.has(child.id));
   }, [user, waitListChildSet]);
 
-  // Waitlist
+  // --- join waitlist ---
   const handleJoinWaitlist = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -170,6 +190,7 @@ export default function ProgramDetails() {
         body: { childIds },
       });
 
+      // reset UI after success
       setShowForm(false);
       setSuccessEnroll(true);
       setSelected(new Set());
@@ -179,6 +200,7 @@ export default function ProgramDetails() {
     }
   };
 
+  // --- enroll children ---
   const handleEnroll = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const childIds = Array.from(selected);
@@ -199,6 +221,7 @@ export default function ProgramDetails() {
     }
   };
 
+  // --- remove child from waitlist ---
   const handleRemoveFromWaitList = async (childId: string) => {
     setRemoveWaitListId(childId);
 
@@ -216,6 +239,7 @@ export default function ProgramDetails() {
     }
   };
 
+  // --- unenroll child ---
   const handleUnenrollOne = async (childId: string) => {
     if (!programId) return;
     setUnenrollId(childId);
@@ -234,6 +258,7 @@ export default function ProgramDetails() {
     }
   };
 
+  // check if program still has available spots
   const hasCapacity =
     program?.limit == null ||
     (typeof program?.participants === 'number' && program.participants < program.limit);
