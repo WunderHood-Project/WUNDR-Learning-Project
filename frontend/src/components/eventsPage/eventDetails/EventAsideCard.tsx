@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { Event } from '@/types/event';
 import { formatTimeRange12h } from '../../../../utils/formatDate';
 import type { Child } from '@/types/child';
@@ -19,6 +19,7 @@ type Props = {
     attendeesLoading: boolean;
     attendeesError: string | null;
     onToggleAttendees: () => void;
+    enrollmentContent?: ReactNode;
 };
 
 export default function EventAsideCard({
@@ -34,6 +35,7 @@ export default function EventAsideCard({
     attendeesLoading,
     attendeesError,
     onToggleAttendees,
+    enrollmentContent,
 }: Props) {
     const enrolled = event.participants ?? 0;
     const limit = event.limit;
@@ -228,7 +230,27 @@ export default function EventAsideCard({
                 )}
 
                 {/* Availability + CTA */}
-                {hasCapacity ? (
+                {userHasChildEnrolled ? (
+                    <>
+                        <button
+                            disabled
+                            className="w-full rounded-full bg-wonderleaf text-white px-4 sm:px-5 py-2 sm:py-2.5 font-bold uppercase tracking-wide text-xs sm:text-sm mb-2.5 sm:mb-3 cursor-default"
+                        >
+                            ✓ Enrolled
+                        </button>
+
+                        <button
+                            onClick={onToggleForm}
+                            className="w-full rounded-full bg-wondergreen px-4 sm:px-5 py-2.5 sm:py-3 text-white font-bold uppercase tracking-wide text-xs sm:text-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                        >
+                            Manage Enrollment
+                        </button>
+
+                        <div className="mt-2 text-center text-gray-700 bg-white/40 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 sm:py-3 font-semibold text-xs sm:text-sm">
+                            Your child is enrolled. Manage or update enrollment here.
+                        </div>
+                    </>
+                ) : hasCapacity ? (
                     <>
                         <button
                             disabled
@@ -236,14 +258,15 @@ export default function EventAsideCard({
                         >
                             ✓ Spots Available
                         </button>
+
                         <button
                             onClick={onToggleForm}
                             className="w-full rounded-full bg-wondergreen px-4 sm:px-5 py-2.5 sm:py-3 text-white font-bold uppercase tracking-wide text-xs sm:text-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                         >
-                            {showForm ? "Complete Below" : "Enroll in Event"}
+                            {showForm ? "Choose Child" : "Enroll in Event"}
                         </button>
                     </>
-                ) : userHasChildEnrolled ? (
+                ) : (
                     <>
                         <button
                             disabled
@@ -252,29 +275,16 @@ export default function EventAsideCard({
                             Full Capacity
                         </button>
 
-                        <button
-                            onClick={onToggleForm}
-                            className="w-full rounded-full bg-wondergreen px-4 sm:px-5 py-2.5 sm:py-3 text-white font-bold uppercase tracking-wide text-xs sm:text-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
-                        >
-                            Manage enrollment
-                        </button>
-
-                        <div className="mt-2 text-center text-gray-700 bg-white/40 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 sm:py-3 font-semibold text-xs sm:text-sm">
-                            Your child is enrolled. You can unenroll them below if your plans change.
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <button
-                        disabled
-                        className="w-full rounded-full bg-gray-400 text-white px-4 sm:px-5 py-2 sm:py-2.5 font-bold uppercase tracking-wide text-xs sm:text-sm mb-2.5 sm:mb-3 cursor-default"
-                        >
-                            Full Capacity
-                        </button>
                         <div className="text-center text-gray-700 bg-white/40 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 sm:py-3 font-semibold text-xs sm:text-sm">
                             Sorry, all spots are taken
                         </div>
                     </>
+                )}
+
+                {showForm && enrollmentContent && (
+                    <div className="mt-4">
+                        {enrollmentContent}
+                    </div>
                 )}
 
                 {successEnroll && (
