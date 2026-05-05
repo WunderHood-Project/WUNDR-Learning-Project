@@ -55,7 +55,10 @@ def send_email_multiple_users(
         yag.send(
             to=email,
             subject=subject,
-            contents=contents
+            contents=[
+            contents,
+            yagmail.inline("static/wonderhood_logo.png"),
+        ],
         )
 
 # =======================================================

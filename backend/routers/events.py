@@ -611,86 +611,87 @@ async def update_event(
     )
 
     # --- notification recipients: participants of the event + parents of the children ---
-    # user_ids: set[str] = set(event.userIds or [])
-    # if updated_event.childIds:
-    #     kids = await db.children.find_many(where={"id": {"in": updated_event.childIds}})
-    #     for ch in kids:
-    #         # Will support different fields for communication with the parent.
-    #         pid = getattr(ch, "userId", None) or getattr(ch, "parentId", None)
-    #         # or list parentIds
-    #         if not pid and getattr(ch, "parentIds", None):
-    #             for p in ch.parentIds:
-    #                 user_ids.add(p)
-    #         if pid:
-    #             user_ids.add(pid)
-    # user_ids = list(user_ids)
+    user_ids: set[str] = set(event.userIds or [])
+    if updated_event.childIds:
+        kids = await db.children.find_many(where={"id": {"in": updated_event.childIds}})
+        for ch in kids:
+            # Will support different fields for communication with the parent.
+            pid = getattr(ch, "userId", None) or getattr(ch, "parentId", None)
+            # or list parentIds
+            if not pid and getattr(ch, "parentIds", None):
+                for p in ch.parentIds:
+                    user_ids.add(p)
+            if pid:
+                user_ids.add(pid)
+    user_ids = list(user_ids)
 
     # --- determine actual time/date changes ---
-    # date_changed  = ("date"      in update_payload) and (event.date      != updated_event.date)
-    # start_changed = ("startTime" in update_payload) and (event.startTime != updated_event.startTime)
-    # end_changed   = ("endTime"   in update_payload) and (event.endTime   != updated_event.endTime)
+    date_changed  = ("date"      in update_payload) and (event.date      != updated_event.date)
+    start_changed = ("startTime" in update_payload) and (event.startTime != updated_event.startTime)
+    end_changed   = ("endTime"   in update_payload) and (event.endTime   != updated_event.endTime)
 
 
     # --- text for UI notifications ---
-    # changed_parts = []
-    # desc_lines = dict()
+    changed_parts = []
+    desc_lines = dict()
 
-    # if date_changed and (start_changed or end_changed):
-    #     changed_parts.append("date")
-    #     desc_lines["Date"] = format_us_date(updated_event.date)
-    #     if start_changed:
-    #         changed_parts.append("start time")
-    #         desc_lines["start_time"] = format_us_time(updated_event.startTime)
-    #     if end_changed:
-    #         changed_parts.append("end time")
-    #         desc_lines["end_time"] = format_us_time(updated_event.endTime)
+    if date_changed:
+        changed_parts.append("date")
+        desc_lines["Date"] = format_us_date(updated_event.date)
+    if start_changed:
+        changed_parts.append("start time")
+        desc_lines["startTime"] = format_us_time(updated_event.startTime)
+    if end_changed:
+        changed_parts.append("end time")
+        desc_lines["endTime"] = format_us_time(updated_event.endTime)
 
-    # title = f"Event updated: {updated_event.name}"
-    # event_link = get_event_link(event.id)
+    title = f"Event updated: {updated_event.name}"
+    event_link = get_event_link(event.id)
 
-    # if start_changed and not end_changed:
-    #     description = f'The time of the event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
-    # elif end_changed and not start_changed:
-    #     description = f'The time of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]}.  You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
-    # elif date_changed and start_changed:
-    #     description = f'The time and date of this event has been updated {format_us_time(event.startTime)} → {desc_lines["start_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
-    # elif date_changed and end_changed:
-    #     description = f'The time and date of this event has been updated {format_us_time(event.endTime)} → {desc_lines["end_time"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
-    # elif date_changed and start_changed and end_changed:
-    #     description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["start_time"]}. The end time has changed to {desc_lines["end_time"]}. The date has changed to {desc_lines["Date"]}. You can see all updates here {event_link}. If you have any questions, please reply to info@whproject.org.'
-    # else:
-    #     description = f'The event details have been updated. Please review the updated information in your WonderHood account. If you have any questions, please reply to info@whproject.org.'
+    if start_changed and not end_changed:
+        description = f'The time of the event has been updated {format_us_time(event.startTime)} → {desc_lines["startTime"]}. If you have any questions, please reply to info@whproject.org.'
+    elif end_changed and not start_changed:
+        description = f'The time of this event has been updated {format_us_time(event.endTime)} → {desc_lines["endTime"]}. If you have any questions, please reply to info@whproject.org.'
+    elif date_changed and start_changed:
+        description = f'The time and date of this event has been updated {format_us_time(event.startTime)} → {desc_lines["startTime"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. If you have any questions, please reply to info@whproject.org.'
+    elif date_changed and end_changed:
+        description = f'The time and date of this event has been updated {format_us_time(event.endTime)} → {desc_lines["endTime"]} and the date of this event has been updated {format_us_date(event.date)} → {desc_lines["Date"]}. If you have any questions, please reply to info@whproject.org.'
+    elif date_changed and start_changed and end_changed:
+        description = f'The time and date of this event has been updated. The start time has changed to {desc_lines["startTime"]}. The end time has changed to {desc_lines["endTime"]}. The date has changed to {desc_lines["Date"]}. If you have any questions, please reply to info@whproject.org.'
+    else:
+        description = f'The event details have been updated. Please review the updated information here, {get_event_link(event.id)}. And if you have any questions, please reply to info@whproject.org.'
 
     # --- create notifications in DB---
-    # now_utc = datetime.now(timezone.utc)
-    # try:
-    #     await db.notifications.create_many(
-    #         data=[
-    #             {
-    #                 "title": title,
-    #                 "description": description,
-    #                 "userId": uid,
-    #                 "isRead": False,
-    #                 "time": now_utc,
-    #             }
-    #             for uid in user_ids
-    #         ]
-    #     )
-    # except Exception:
-    #     # fallback — one by one, so as not to drop the entire request
-    #     for uid in user_ids:
-    #         try:
-    #             await db.notifications.create(
-    #                 data={
-    #                     "title": title,
-    #                     "description": description,
-    #                     "userId": uid,
-    #                     "isRead": False,
-    #                     "time": now_utc,
-    #                 }
-    #             )
-    #         except Exception:
-    #             pass
+    now_utc = datetime.now(timezone.utc)
+    try:
+        await db.notifications.create_many(
+            data=[
+                {
+                    "title": title,
+                    "link": event_link,
+                    "description": description,
+                    "userId": uid,
+                    "isRead": False,
+                    "time": now_utc,
+                }
+                for uid in user_ids
+            ]
+        )
+    except Exception:
+        # fallback — one by one, so as not to drop the entire request
+        for uid in user_ids:
+            try:
+                await db.notifications.create(
+                    data={
+                        "title": title,
+                        "description": description,
+                        "userId": uid,
+                        "isRead": False,
+                        "time": now_utc,
+                    }
+                )
+            except Exception:
+                pass
 
     # # # --- mailing to the same users ---
     # users_for_email = await db.users.find_many(where={
