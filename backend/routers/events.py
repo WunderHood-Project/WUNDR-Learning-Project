@@ -948,7 +948,7 @@ async def add_children_to_event(
            )
 
    # validate that the limit is not exceeded
-   if (len(existing_ids) + len(incoming_ids)) > event.limit:
+   if event.limit is not None and (len(existing_ids) + len(incoming_ids)) > event.limit:
         raise HTTPException(
             status_code=400,
             detail="Number of participants exceeds limitation"
