@@ -166,7 +166,7 @@ async def create_event(
             await db.notifications.create_many(data=notif_batch)
 
        subject = f'New WonderHood Event Available!'
-       contents = f'Hello,\n\n A new event has just been published on WonderHood.\n\n{new_event.name}\n{new_event.description}\n{f'{new_event.image if new_event.image else ""}'}\n\nView details and sign up here {get_event_link(new_event.id)}.\n\nWe hope to see you there!!'
+       contents = f'Hello,<br><br>A new event has just been published on WonderHood.<br><br>Title: {new_event.name}<br>Description: {new_event.description}<br><br><a href="{get_event_link(new_event.id)}">View Event</a><br><br>We hope to see you there!!'
 
        background_tasks.add_task(
            send_email_multiple_users,
