@@ -966,7 +966,7 @@ async def add_children_to_event(
 
    # Create notification
    subject = f'Enrollment Confirmation: {event.name}'
-   content = f'Hello,\n\nThis email confirms that your child has been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}. Please review the event description to ensure that you and your child are prepared for the event. We look forward to seeing you there!'
+   content = f'Hello,\n\nThis email confirms that your {"child" if len(found_ids) < 2 else "children"} {"has" if len(found_ids) < 2 else "have"} been enrolled for the {event.name} event at Wonderhood for {convert_iso_date_to_string(event.date)}.\n\nPlease review the event description to ensure that you and your {"child" if len(found_ids) < 2 else "children"} are prepared for the event. We look forward to seeing you there!'
 
    await db.notifications.create(
             data= {
@@ -1172,13 +1172,13 @@ async def remove_child_from_event(
 
    # Notification to user for unenrolling child
    subject = f'Unenrollment Confirmation: {event.name}'
-   content = f'Hello,\n\nThis email confirms that your child has been unenrolled from the {event.name} on {convert_iso_date_to_string(event.date)}. Please find more events on our website.\n\nBest,\n\nWonderHood Team'
+   content = f'Hello,\n\nThis email confirms that your {"child" if len(found_ids) < 2 else "children"} {"has" if len(found_ids) < 2 else "have"} been unenrolled from the {event.name} on {convert_iso_date_to_string(event.date)}. Please find more events on our website.'
 
    await db.notifications.create(
         data={
             "title": subject,
             "link": get_event_link(event.id),
-            "description": f"Your child has been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
+            "description": f"Your {"child" if len(found_ids) < 2 else "children"} {"has" if len(found_ids) < 2 else "have"} been unenrolled from {event.name} on {convert_iso_date_to_string(event.date)}.",
             "userId": current_user.id,
             "isRead": False,
             "time": event.date,
