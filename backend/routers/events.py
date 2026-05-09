@@ -1227,7 +1227,7 @@ async def send_event_email_survey(
         now = datetime.now(timezone.utc)
         event_passed_date = event.date + timedelta(days=1)
 
-        if now is event_passed_date:
+        if now >= event_passed_date:
             #* Query users where ANY child have at least one event to event_id
             users = await db.users.find_many(
                 where={
@@ -1247,7 +1247,11 @@ async def send_event_email_survey(
                     Hello,
 
 
-                    Thank you for attending {event.name} on {format_us_date(event.date)}! We would like to know how we did. Please fill out the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor"> survey</a> if you would like to share your experience.
+                    Thank you for attending {event.name} on {format_us_date(event.date)}! 
+                    
+                    We would like to know how we did. Please fill out the <a href="https://docs.google.com/forms/d/e/1FAIpQLSfykTnOCUMtMJLvLE2EqbPeQmE2oH-J9qM5eSSkQ9Urfc_z6w/viewform?usp=publish-editor"> survey</a> if you would like to share your experience.
+
+                    We appreciate your feedback and look forward to seeing you at future events!
                 """
 
 
@@ -1285,6 +1289,8 @@ async def send_event_email_survey(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Event has not passed yet"
             )
+    except HTTPException:
+        raise
     except Exception as e:
         return {"Error": f'Unable to send email survey: {e}'}
 
