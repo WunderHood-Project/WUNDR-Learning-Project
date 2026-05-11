@@ -1649,7 +1649,7 @@ async def volunteer_signup_for_event(
            )
 
        title = f"Volunteer Enrollment Confirmation: {event.name}"
-       description = f'This email confirms that you are enrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}. If you are no longer available to volunteer at the event, please contact us at info@whproject.org.'
+       description = f'This email confirms that you are enrolled as a volunteer for the {event.name} event on {convert_iso_date_to_string(event.date)}.\n\nIf you are no longer available to volunteer at the event, please contact us at info@whproject.org.\n\nWe look forward to seeing you there!'
 
        notification_data =  {
                "title": title,

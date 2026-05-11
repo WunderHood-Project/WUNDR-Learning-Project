@@ -8,11 +8,9 @@ import { useModal } from '@/context/modal';
 import LoginModal from '@/components/login/LoginModal';
 import SignupModal from '@/components/signup/SignupModal';
 import { API, makeApiRequest } from '../../../utils/api';
-import { isGeneralSubmitted, markGeneralSubmitted, isOppSubmitted, markOppSubmitted } from './volunteerHelpers';
 import VolunteerFormContent from './VolunteerFormContent';
 import SuccessPopup from '@/components/feedback/SuccessPopup';
 
-// Initial client-side form state
 const initial: VolunteerCreate = {
   firstName: '',
   lastName: '',
@@ -38,38 +36,58 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
   const [ok, setOk] = useState(false);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
-  // client-only flags
+  // client-only flag to prevent SSR mismatch
   const [client, setClient] = useState(false);
   useEffect(() => setClient(true), []);
   const logged = client && isLoggedIn();
 
-  // general one-time lock
-  const [lockedGeneral, setLockedGeneral] = useState(false);
+  // backend-driven application status
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [appliedOppIds, setAppliedOppIds] = useState<string[]>([]);
+  const [hasGeneral, setHasGeneral] = useState(false);
+  const [volunteerStatus, setVolunteerStatus] = useState<string | null>(null);
+
   useEffect(() => {
-    if (client && logged) setLockedGeneral(isGeneralSubmitted());
+    if (!client || !logged) return;
+    let cancelled = false;
+    setStatusLoading(true);
+    (async () => {
+      try {
+        const res = await makeApiRequest<{ opportunityIds: string[]; hasGeneral: boolean; status: string | null }>(
+          `${API}/volunteer/my-opportunities`
+        );
+        if (cancelled) return;
+        setAppliedOppIds(res.opportunityIds ?? []);
+        setHasGeneral(res.hasGeneral ?? false);
+        setVolunteerStatus(res.status ?? null);
+      } catch {
+        // default to unlocked on error — backend will enforce on submit
+      } finally {
+        if (!cancelled) setStatusLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, [client, logged]);
 
-  // already applied to this specific opp?
-  const oppLocked = client && !!opportunityId && isOppSubmitted(opportunityId);
+  // general form is locked if already submitted and not yet approved
+  const lockedGeneral = hasGeneral && volunteerStatus !== 'Approved';
+  // opp form is locked if already applied to this specific opportunity
+  const oppLocked = !!opportunityId && appliedOppIds.includes(opportunityId);
 
   const disabled =
-    !logged || submitting || (!opportunityId && lockedGeneral) || (Boolean(opportunityId) && oppLocked);
+    !logged || submitting || statusLoading || (!opportunityId && lockedGeneral) || (Boolean(opportunityId) && oppLocked);
 
   const { setModalContent } = useModal();
 
-  // helpers to patch state
   const onChange = (patch: Partial<VolunteerCreate>) =>
     setForm(prev => ({ ...prev, ...patch }));
 
-
-  // submit
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setOk(false);
     setOkMsg(null);
 
-    // validation
     if (!form.firstName.trim() || !form.lastName.trim())
       return setError('Please provide first and last name.');
     if (!form.email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
@@ -102,10 +120,10 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
       });
 
       if (isRole) {
-        if (opportunityId) markOppSubmitted(opportunityId);
-        const msg = `Thank you! Your application for “${roleTitle ?? 'this role'}” was submitted. We will contact you within 2-3 business days.`;
+        if (opportunityId) setAppliedOppIds(prev => [...prev, opportunityId]);
+        const msg = `Thank you! Your application for "${roleTitle ?? 'this role'}" was submitted. We will contact you within 2-3 business days.`;
         setOk(true);
-        setOkMsg(`Thank you! Your application for “${roleTitle ?? 'this role'}” was submitted. We will contact you within 2-3 business days.`);
+        setOkMsg(msg);
         setError(null);
         setModalContent(
           <SuccessPopup
@@ -115,14 +133,13 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
             ctaHref="#opportunities"
             onClose={() => setModalContent(null)}
           />
-    );
+        );
         onDone?.();
       } else {
-        markGeneralSubmitted();
-        setLockedGeneral(true);
+        setHasGeneral(true);
         const msg = 'Thank you! Your volunteer application was submitted. We will contact you within 2-3 business days.';
         setOk(true);
-        setOkMsg('Thank you! Your volunteer application was submitted. We will contact you within 2-3 business days.');
+        setOkMsg(msg);
         setError(null);
         setModalContent(
           <SuccessPopup
@@ -174,10 +191,10 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
 
       if (opportunityId) {
         if (code === '409' || /already applied to this opportunity/i.test(detail)) {
-          if (opportunityId) markOppSubmitted(opportunityId);
+          setAppliedOppIds(prev => [...new Set([...prev, opportunityId])]);
           setOk(true);
           setError(null);
-          setOkMsg(`You already applied to “${roleTitle ?? 'this role'}”.`);
+          setOkMsg(`You already applied to "${roleTitle ?? 'this role'}".`);
           onDone?.();
           return;
         }
@@ -187,8 +204,7 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
         }
       } else {
         if (/already registered as a volunteer/i.test(detail)) {
-          markGeneralSubmitted();
-          setLockedGeneral(true);
+          setHasGeneral(true);
           setOk(true);
           setOkMsg('You have already submitted a volunteer application. Thank you!');
           setError(null);
@@ -202,11 +218,8 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
     }
   };
 
-  const oppLockedBanner = client && opportunityId && isOppSubmitted(opportunityId);
-
   return (
     <div id="volunteer" className="mx-auto max-w-3xl scroll-mt-24">
-      {/* Header */}
       {opportunityId ? (
         <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-emerald-900">
           Applying for: <span className="font-medium">{roleTitle ?? 'Selected role'}</span>
@@ -259,28 +272,35 @@ export default function VolunteerForm({ opportunityId, roleTitle, onDone }: {
         </div>
       )}
 
-      {/* Locks banners */}
-      {!opportunityId && logged && lockedGeneral && !ok && (
+      {/* Lock banners */}
+      {client && !opportunityId && logged && lockedGeneral && !ok && (
         <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-emerald-900">
           You have already submitted a volunteer application. Thank you!
         </div>
       )}
-      {opportunityId && logged && oppLockedBanner && !ok && (
+      {client && opportunityId && logged && oppLocked && !ok && (
         <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-emerald-900">
           You already applied to this role.
         </div>
       )}
 
-      <VolunteerFormContent
-        form={form}
-        disabled={disabled}
-        opportunityId={opportunityId}
-        ok={ok}
-        okMsg={okMsg}
-        error={error}
-        onChange={onChange}
-        onSubmit={onSubmit}
-      />
+      {/* Loading indicator while checking application status */}
+      {client && logged && statusLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
+        </div>
+      ) : (
+        <VolunteerFormContent
+          form={form}
+          disabled={disabled}
+          opportunityId={opportunityId}
+          ok={ok}
+          okMsg={okMsg}
+          error={error}
+          onChange={onChange}
+          onSubmit={onSubmit}
+        />
+      )}
     </div>
   );
 }

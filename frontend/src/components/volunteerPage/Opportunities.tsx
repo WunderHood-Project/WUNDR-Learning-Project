@@ -5,7 +5,6 @@ import LoginModal from '@/components/login/LoginModal';
 import VolunteerForm from './VolunteerForm';
 import { useEffect, useRef, useState } from 'react';
 import { API, makeApiRequest } from '../../../utils/api';
-import { markOppSubmitted, isOppSubmitted } from './volunteerHelpers';
 import type { Opp, Venue } from '../../types/opportunity';
 import { useAuth } from '@/context/auth';
 // import { useUser } from '../../../hooks/useUser';
@@ -22,6 +21,7 @@ export default function Opportunities({
 
   const [items, setItems] = useState<Opp[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [appliedOppIds, setAppliedOppIds] = useState<string[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -44,7 +44,7 @@ export default function Opportunities({
         // if (user) {
         const res = await makeApiRequest<{ opportunityIds?: string[] }>(`${API}/volunteer/my-opportunities`, { token });
         if (cancelled) return;
-        (res.opportunityIds ?? []).forEach(id => markOppSubmitted(id));
+        setAppliedOppIds(res.opportunityIds ?? []);
         fetched.current = true;
         // }
       } catch {
@@ -73,7 +73,15 @@ export default function Opportunities({
     if (!isLoggedIn) return setModalContent(<LoginModal />);
     setModalContent(
       <div className="max-w-3xl">
-        <VolunteerForm key={oppId} opportunityId={oppId} roleTitle={title} onDone={closeModal} />
+        <VolunteerForm
+          key={oppId}
+          opportunityId={oppId}
+          roleTitle={title}
+          onDone={() => {
+            setAppliedOppIds(prev => [...new Set([...prev, oppId])]);
+            closeModal();
+          }}
+        />
       </div>
     );
   };
@@ -136,7 +144,7 @@ export default function Opportunities({
           </div>
         ) : (
           items.map(r => {
-            const applied = isLoggedIn && isOppSubmitted(r.id);
+            const applied = isLoggedIn && appliedOppIds.includes(r.id);
             return (
               <article
                 key={r.id}
