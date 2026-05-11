@@ -47,6 +47,13 @@ def get_event_link(event_id):
         return f"http://staging.whproject.org/events/{event_id}"
     return f"http://whproject.org/events/{event_id}"
 
+def get_program_link(program_id):
+    if ENV == "development":
+        return f"http://localhost:3000/programs/{program_id}"
+    elif ENV == "staging":
+        return f"http://staging.whproject.org/programs/{program_id}"
+    return f"http://whproject.org/programs/{program_id}"
+
 def get_home_link():
     if ENV == "development":
         return ""
