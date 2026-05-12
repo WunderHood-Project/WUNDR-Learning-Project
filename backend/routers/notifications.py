@@ -19,23 +19,22 @@ router = APIRouter()
 yagmail_app_password = os.getenv("YAGMAIL_APP_PASSWORD")
 yagmail_email = os.getenv("YAGMAIL_EMAIL")
 yag = yagmail.SMTP(yagmail_email, yagmail_app_password)
+signature_text = "<br><br>Best,<br><br>WonderHood Team<br>info@whproject.org"
 
 def send_email_one_user(
         user_email: str,
         subject: str,
         contents: str
 ):
-
-    
     """
     Callback function for sending an email upon enrollment
     """
-    
+    body = contents + signature_text
     yag.send(
         to=user_email,
         subject=subject,
-         contents=[
-            contents,
+        contents=[
+            body,
             yagmail.inline("static/wonderhood_logo.png"),
         ],
     )
@@ -50,12 +49,15 @@ def send_email_multiple_users(
     """
         Call back function for sending an email to all enrolled users
     """
-
+    body = contents + signature_text
     for email in user_emails:
         yag.send(
             to=email,
             subject=subject,
-            contents=contents
+            contents=[
+                body,
+                yagmail.inline("static/wonderhood_logo.png"),
+            ],
         )
 
 # =======================================================
@@ -220,7 +222,7 @@ async def blast_notification(
     user_emails = [user.email for user in users]
 
     # Add notification here
-    content = f'Hello,\n\n {notification.description}\n\nBest,\n\nWonderHood Team'
+    content = f'Hello,\n\n {notification.description}'
 
     if user_emails:
         notification_data = [

@@ -86,6 +86,16 @@ export default function NotificationDropdown({ onClose }: Props) {
                 <div className="flex-1">
                   <div className="font-medium text-sm text-gray-900">{notification?.title}</div>
                   <div className="text-xs text-gray-600 mt-1">{notification?.description}</div>
+                  {notification?.link && (
+                    <a
+                      href={notification.link}
+                      className="text-xs text-wonderleaf hover:underline mt-1 inline-block"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {notification.link.includes('/programs/') ? 'View Program' : 'View Event'}
+                    </a>
+                  )}
                   <div className="text-xs text-gray-400 mt-1">{formatNotificationTime(displayTime(notification))}</div>
                 </div>
               </div>

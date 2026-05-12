@@ -12,8 +12,8 @@ from models.interaction_models import (
     NotificationCreate,
 )
 from .auth.login import get_current_user
-from .auth.utils import enforce_admin, enforce_authentication
-from .notifications import send_email_one_user
+from .auth.utils import enforce_admin, enforce_authentication, get_program_link, convert_iso_date_to_string
+from .notifications import send_email_one_user, send_email_multiple_users
 
 
 router = APIRouter()
@@ -64,6 +64,7 @@ def _build_scalar_data(program_data, overrides: dict) -> dict:
 async def create_program(
     program_data: EnrichmentProgramCreate,
     current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
 ):
     """
     Create Enrichment Program (admin only).
@@ -103,6 +104,37 @@ async def create_program(
 
     try:
         program = await db.enrichmentprograms.create(data=data)
+
+        # Send the email notification to all users where emailNotificationsEnabled = True upon event creation
+        users = await db.users.find_many(
+           where={"emailNotificationsEnabled": True}
+        )
+
+        user_emails = [user.email for user in users]
+
+        notif_batch = [
+         {
+            "title": f"New Event: {program.name}",
+            "description": f"Check out our new event: {program.name}",
+            "userId": u.id,
+            "isRead": False,
+            "link": get_program_link(program.id),
+            "time": program.startDate,
+         }
+        for u in users
+     ]
+        if notif_batch:
+            await db.notifications.create_many(data=notif_batch)
+
+        subject = f'New WonderHood Program Available!'
+        contents = f'Hello,<br><br>A new program has just been published on WonderHood.<br><br>Title: {program.name}<br>Description: {program.description}<br><br><a href="{get_program_link(program.id)}">View Program</a><br><br>We hope to see you there!!'
+
+        background_tasks.add_task(
+           send_email_multiple_users,
+           user_emails,
+           subject,
+           contents
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -167,9 +199,7 @@ async def submit_program(
             subject = f"Your Program Submission Is Under Review"
             contents = (
                 f"Hello {current_user.firstName},\n\n"
-                f'Your program "{program.name}" has been submitted and will be reviewed.'
-                + f" You will receive another notification by email once the review is complete and the program is either approved or rejected."
-                + "\n\nBest,\nWonderHood Team\ninfo@whproject.org\nwhproject.org"
+                f'Your program "{program.name}" has been submitted and will be reviewed.\n\nYou will receive another notification in your WonderHood profile or by email once the review is complete and the program is either approved or rejected.'
             )
 
             background_tasks.add_task(
@@ -421,7 +451,7 @@ async def update_program_status(
             await db.notifications.create(
                 data={
                     "title": "Enrichment Program Submission Update",
-                    "description": f"Thank you for submitting '{existing.name}.' The program has been {status_data.status}. Please contact our team at info@whproject.org with any questions.",
+                    "description": f"Thank you for submitting '{existing.name}.' The program has been {updated.status}. Please contact our team at info@whproject.org with any questions.",
                     "userId": existing.submittedById,
                     "isRead": False,
                 }
@@ -432,8 +462,7 @@ async def update_program_status(
             subject = f"Your Program Submission Has Been {status_data.status.capitalize()}"
             contents = (
                 f"Hello {submitter.firstName},\n\n"
-                f'Your program "{existing.name}" has been {status_data.status}. Please contact our team at info@whproject.org with any questions.'
-                + "\n\nBest,\n\nWonderHood Team\ninfo@whproject.org\nwhproject.org"
+                f'Your program "{existing.name}" has been {updated.status}.\n\nPlease contact our team at info@whproject.org with any questions.'
             )
 
             background_tasks.add_task(
@@ -461,6 +490,7 @@ async def enroll_in_program(
     program_id: str,
     enroll_data: EnrollChildren,
     current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
 ):
     """
     Enroll children in an enrichment program.
@@ -519,6 +549,25 @@ async def enroll_in_program(
                 "users": {"connect": [{"id": current_user.id}]},
             },
         )
+
+        await db.notifications.create(
+            {
+                "title": f"Enrolled in {program.name}",
+                "link": get_program_link(program.id),
+                "description": f"Hello\n\nThis notification confirms that you have successfully enrolled your {"child" if len(children_to_enroll) < 2 else "children"} in '{program.name} at WonderHood starting on {convert_iso_date_to_string(program.startDate)}'. Please review the event description to ensure that you and your {"child" if len(children_to_enroll) < 2 else "children"} are prepared for the program. We look forward to seeing you there.",
+                "userId": current_user.id,
+                "isRead": False,
+                "time": program.startDate
+            }
+        )
+        
+        background_tasks.add_task(
+            send_email_one_user,
+            current_user.email,
+            subject= f"Enrolled in {program.name}",
+            contents=f"Hello\n\nThis email confirms that you have successfully enrolled your {"child" if len(children_to_enroll) < 2 else "children"} in '{program.name} at WonderHood starting on {convert_iso_date_to_string(program.startDate)}'.\n\nPlease review the event description to ensure that you and your {"child" if len(children_to_enroll) < 2 else "children"} are prepared for the program.\n\nWe look forward to seeing you there!",
+        )
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -537,6 +586,7 @@ async def unenroll_from_program(
     program_id: str,
     enroll_data: EnrollChildren,
     current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
 ):
     """
     Unenroll children from an enrichment program.
@@ -555,6 +605,25 @@ async def unenroll_from_program(
                 "children": {"disconnect": [{"id": cid} for cid in enroll_data.childIds]},
             },
         )
+
+        await db.notifications.create(
+            {
+                "title": f"Unenrolled from {program.name}",
+                "link": get_program_link(program.id),
+                "description": f"You have successfully unenrolled your {"child" if len(enroll_data.childIds) < 2 else "children"} from '{program.name}'.\n\nWe're sorry to see you go and hope to see you at another program soon!",
+                "userId": current_user.id,
+                "isRead": False,
+                "time": updated.startDate
+            }
+        )
+
+        background_tasks.add_task(
+            send_email_one_user,
+            current_user.email,
+            subject= f"Unenrolled from {program.name}",
+            contents=f"Hello,\n\nYou have successfully unenrolled your{"child" if len(enroll_data.childIds) < 2 else "children"} from '{program.name}'.\n\nWe're sorry to see you go and hope to see you at another program soon!",
+        )
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

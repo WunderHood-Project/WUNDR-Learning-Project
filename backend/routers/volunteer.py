@@ -1,10 +1,12 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
 from models.user_models import User, VolunteerCreate, VolunteerUpdate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
 from datetime import datetime, timezone
+from .notifications import send_email_one_user, send_email_multiple_users
+
 
 router = APIRouter()
 
@@ -18,10 +20,10 @@ async def my_opportunities(current_user: Annotated[User, Depends(get_current_use
 
     vol = await db.volunteers.find_unique(where={"userId": current_user.id})
     ids = vol.volunteerOpportunityIds if vol and vol.volunteerOpportunityIds else []
-    # `hasGeneral` is true only if a volunteer record exists AND it has the general timestamp
     has_general = bool(vol and getattr(vol, "generalAppliedAt", None))
+    vol_status = vol.status if vol else None
 
-    return {"opportunityIds": ids, "hasGeneral": has_general}
+    return {"opportunityIds": ids, "hasGeneral": has_general, "status": vol_status}
 
 
 @router.get("/applications", status_code=200)
@@ -54,7 +56,8 @@ async def list_all_applications(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def volunteer_sign_up_general(
     current_user: Annotated[User, Depends(get_current_user)],
-    volunteer_data: VolunteerCreate
+    volunteer_data: VolunteerCreate,
+    background_tasks: BackgroundTasks
 ):
     """
     Create a *general* volunteer application for the current user.
@@ -67,6 +70,7 @@ async def volunteer_sign_up_general(
     if existing:
         raise HTTPException(status_code=400, detail="User is already registered as a volunteer")
 
+    admins = await db.users.find_many(where={"role": "admin"})
     try:
         data = volunteer_data.model_dump()
 
@@ -79,6 +83,31 @@ async def volunteer_sign_up_general(
                 "user": {"connect": {"id": current_user.id}},
             }
         )
+
+        await db.notifications.create(
+            {
+                "title": "Volunteer Application Submitted!",
+                "description": "Thank you for enrolling to become a volunteer at WonderHood! We will review your application and get back to you within 5-7 business days. In the meantime, feel free to explore our website and learn more about our mission and programs.",
+                "userId": current_user.id,
+                "isRead": False,
+                "time": datetime.now(timezone.utc)
+            }
+        )
+        
+        background_tasks.add_task(
+            send_email_one_user,
+            user_email=current_user.email,
+            subject="Volunteer Application Submitted!",
+            contents="Thank you for enrolling to become a volunteer at WonderHood!\n\nWe will review your application and get back to you within 5-7 business days.\n\nIn the meantime, feel free to explore our website and learn more about our mission and programs."
+        )
+
+        background_tasks.add_task(
+            send_email_multiple_users,
+            user_emails=[admin.email for admin in admins],
+            subject="New Volunteer Application Submitted",
+            contents=f"{current_user.firstName} {current_user.lastName} has submitted a new volunteer application.\n\nPlease review the application in the admin dashboard."
+        )
+        
         return {"volunteer": volunteer}
 
     except Exception as e:

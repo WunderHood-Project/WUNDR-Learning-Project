@@ -3,8 +3,9 @@ export type Notification = {
     title: string;
     description: string;
     isRead: boolean;
-    createdAt: string;      
+    createdAt: string;
     eventDate?: string | null;
+    link?: string | null;
 }
 
 export type NotificationsResponse = {
