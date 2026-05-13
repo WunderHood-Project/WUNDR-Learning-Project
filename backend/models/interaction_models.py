@@ -324,6 +324,7 @@ class Notification(BaseModel):
         min_length = 1,
         max_length = 500,
     )
+    link: Optional[str] = Field(default=None, max_length=300)
     title: str = Field(
         min_length = 1,
         max_length=80,
@@ -342,6 +343,7 @@ class NotificationCreate(BaseModel):
         min_length = 1,
         max_length = 500,
     )
+    link: Optional[str] = Field(default=None, max_length=300)
     title: str = Field(
         min_length = 1,
         max_length=80,
@@ -355,6 +357,7 @@ class NotificationCreate(BaseModel):
 
 class NotificationUpdate(BaseModel):
     description: Optional[str] = Field(default=None)
+    link: Optional[str] = Field(default=None, max_length=300)
     title: Optional[str] = Field(default=None)
     isRead: Optional[bool] = Field(default=None)
     time: Optional[datetime] = None

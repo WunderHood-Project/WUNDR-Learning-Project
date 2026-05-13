@@ -65,8 +65,8 @@ export function NotificationModal({ url }: NotificationModalProps) {
 
     return (
         <div
-        className="rounded-lg p-6 w-full max-w-md mx-auto bg-white shadow-md"
-        aria-busy={isNotifying}>
+            className="rounded-lg p-6 w-full max-w-md mx-auto bg-white shadow-md"
+            aria-busy={isNotifying}>
             <h1 className="text-xl font-bold text-center">Send a Notification to All Users</h1>
             <p className="text-sm text-center text-gray-600">
                 All registered users will receive an email notification
@@ -92,7 +92,7 @@ export function NotificationModal({ url }: NotificationModalProps) {
                 <label className="block text-sm font-medium mb-1">Content</label>
                 <textarea
                     name="description"
-                    placeholder="Write message"
+                    placeholder={"Write your message here and do NOT include a signature as it will be automatically added. You can use up to 500 characters."}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full border border-gray-300 rounded px-3 py-2 h-28 resize-none focus:outline-none focus:ring-2 focus:ring-wondergreen"
