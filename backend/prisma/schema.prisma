@@ -261,6 +261,11 @@ enum EventLabel {
   partner
 }
 
+enum EventRegistrationType {
+  wonderhood
+  external
+}
+
 enum EventSchoolAccess {
   all
   homeschool_only
@@ -286,11 +291,11 @@ model Events {
     limit         Int?
     schoolAccess  EventSchoolAccess @default(all)
     label         EventLabel        @default(wonderhood)
-
+    registrationType EventRegistrationType @default(wonderhood)
+    registrationUrl  String?
     status        EventStatus @default(approved)
     submittedById String?     @db.ObjectId
     submittedBy   Users?      @relation("SubmittedEvents", fields: [submittedById], references: [id])
-
     city          String
     state         String
     address       String

@@ -91,6 +91,16 @@ async def create_event(
            status_code=400,
            detail="One or more child ids are invalid."
        )
+   
+   # External registrations must provide a registration URL
+   if (
+       event_data.registrationType == "external"
+       and not event_data.registrationUrl
+   ):
+        raise HTTPException(
+            status_code=400,
+            detail="Registration URL is required for external registration."
+        )
 
    # validate school access for pre-enrolled children
    for child in valid_children:
@@ -125,6 +135,9 @@ async def create_event(
                "participants": event_data.participants,
                "limit": event_data.limit,
                "schoolAccess": event_data.schoolAccess,
+               "label": event_data.label,
+               "registrationType": event_data.registrationType,
+               "registrationUrl": event_data.registrationUrl,
                "city": event_data.city,
                "state": event_data.state,
                "address": event_data.address,
@@ -212,6 +225,16 @@ async def submit_event(
 
     now = datetime.now(timezone.utc)
 
+    # External registrations must provide a registration URL
+    if (
+        event_data.registrationType == "external"
+        and not event_data.registrationUrl
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Registration URL is required for external registration."
+        )
+
     try:
         new_event = await db.events.create(
             data={
@@ -238,6 +261,8 @@ async def submit_event(
                 "userIds": [],
                 "childIds": [],
                 "label": "partner",
+                "registrationType": event_data.registrationType,
+                "registrationUrl": event_data.registrationUrl,
                 "status": "pending",
                 "submittedById": current_user.id,
                 "createdAt": now,
@@ -587,6 +612,9 @@ async def update_event(
     if event_data.participants is not None:  update_payload["participants"] = event_data.participants
     if event_data.limit is not None:         update_payload["limit"] = event_data.limit
     if event_data.schoolAccess is not None:  update_payload["schoolAccess"] = event_data.schoolAccess
+    if event_data.label is not None:         update_payload["label"] = event_data.label
+    if event_data.registrationType is not None: update_payload["registrationType"] = event_data.registrationType
+    if event_data.registrationUrl is not None: update_payload["registrationUrl"] = event_data.registrationUrl
     if event_data.city is not None:          update_payload["city"] = event_data.city
     if event_data.state is not None:         update_payload["state"] = event_data.state
     if event_data.address is not None:       update_payload["address"] = event_data.address

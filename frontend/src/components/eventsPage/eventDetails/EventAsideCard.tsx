@@ -41,6 +41,7 @@ export default function EventAsideCard({
     const limit = event.limit;
     const unlimited = limit == null;
     const spotsLeft = unlimited ? null : Math.max(0, limit - enrolled);
+    const isExternalRegistration = event.registrationType === "external" && !!event.registrationUrl;
     const timeLabel = formatTimeRange12h(event.date, event.startTime, event.endTime);
 
     const progressPct = useMemo(() => {
@@ -77,40 +78,49 @@ export default function EventAsideCard({
                     </span>
                 </div>
 
-                {/* Header with spots left */}
+                {/* Header with spots */}
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="font-bold text-sm sm:text-base text-wondergreen uppercase tracking-widest">
                         Participants
                     </h3>
+
                     <span
                         className="h-8 sm:h-9 inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 rounded-full
                         text-xs sm:text-sm font-semibold
                         bg-wonderleaf/15 text-wondergreen border border-wonderleaf/40 shadow-sm flex-shrink-0"
                         aria-live="polite"
                     >
-                        {unlimited ? "Unlimited spots" : `${spotsLeft} spots left`}
+                        {isExternalRegistration
+                            ? unlimited
+                                ? "Unlimited spots"
+                                : `Max ${limit}`
+                            : unlimited
+                                ? "Unlimited spots"
+                                : `${spotsLeft} spots left`}
                     </span>
                 </div>
 
                 {/* Enrollment progress */}
-                <div className="mb-5 sm:mb-6">
-                    <p className="text-xs font-bold text-wondergreen mb-2 uppercase tracking-wide">
-                        Enrollment Progress
-                    </p>
-                    <div className="w-full h-2.5 sm:h-3 bg-gray-300 rounded-full overflow-hidden" aria-label="Enrollment progress">
-                        <div
-                            className="h-full bg-gradient-to-r from-wonderleaf to-wondergreen transition-all duration-300"
-                            style={{ width: `${progressPct.toFixed(2)}%` }}
-                            role="progressbar"
-                            aria-valuenow={Number(progressPct.toFixed(0))}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                        />
+                {!isExternalRegistration && (
+                    <div className="mb-5 sm:mb-6">
+                        <p className="text-xs font-bold text-wondergreen mb-2 uppercase tracking-wide">
+                            Enrollment Progress
+                        </p>
+                        <div className="w-full h-2.5 sm:h-3 bg-gray-300 rounded-full overflow-hidden" aria-label="Enrollment progress">
+                            <div
+                                className="h-full bg-gradient-to-r from-wonderleaf to-wondergreen transition-all duration-300"
+                                style={{ width: `${progressPct.toFixed(2)}%` }}
+                                role="progressbar"
+                                aria-valuenow={Number(progressPct.toFixed(0))}
+                                aria-valuemin={0}
+                                aria-valuemax={100}
+                            />
+                        </div>
+                        <p className="text-xs text-gray-700 font-medium mt-1.5 sm:mt-2">
+                            {unlimited ? `${enrolled} enrolled (no limit)` : `${enrolled} of ${limit} enrolled`}
+                        </p>
                     </div>
-                    <p className="text-xs text-gray-700 font-medium mt-1.5 sm:mt-2">
-                        {unlimited ? `${enrolled} enrolled (no limit)` : `${enrolled} of ${limit} enrolled`}
-                    </p>
-                </div>
+                )}
 
                 {/* Date & Time */}
                 <div className="mb-3 sm:mb-4 pb-4 sm:pb-5 border-b border-white/50">
@@ -259,12 +269,23 @@ export default function EventAsideCard({
                             ✓ Spots Available
                         </button>
 
-                        <button
-                            onClick={onToggleForm}
-                            className="w-full rounded-full bg-wondergreen px-4 sm:px-5 py-2.5 sm:py-3 text-white font-bold uppercase tracking-wide text-xs sm:text-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
-                        >
-                            {showForm ? "Choose Child" : "Enroll in Event"}
-                        </button>
+                        {isExternalRegistration ? (
+                            <a
+                                href={event.registrationUrl!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block w-full text-center rounded-full bg-wondergreen px-4 sm:px-5 py-2.5 sm:py-3 text-white font-bold uppercase tracking-wide text-xs sm:text-sm hover:shadow-lg transition-all duration-200"
+                            >
+                                Register on Partner Website
+                            </a>
+                        ) : (
+                            <button
+                                onClick={onToggleForm}
+                                className="w-full rounded-full bg-wondergreen px-4 sm:px-5 py-2.5 sm:py-3 text-white font-bold uppercase tracking-wide text-xs sm:text-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                                {showForm ? "Choose Child" : "Enroll in Event"}
+                            </button>
+                        )}
                     </>
                 ) : (
                     <>
