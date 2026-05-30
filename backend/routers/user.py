@@ -5,8 +5,8 @@ from typing import Annotated, Optional, List
 from models.user_models import User, Child, Role, UserUpdateRequest, UserResponse, UserUpdateResponse
 from models.interaction_models import Event, Review, Notification
 from datetime import datetime
-from .auth.login import get_current_active_user, get_current_active_user_by_email
-from .auth.utils import hash_password, enforce_authentication
+from .auth.login import get_current_active_user, get_current_active_user_by_email, get_current_user
+from .auth.utils import hash_password, enforce_authentication, enforce_admin
 
 
 router = APIRouter()
@@ -15,6 +15,21 @@ router = APIRouter()
 UserResponse.model_rebuild()
 User.model_rebuild()
 UserUpdateResponse.model_rebuild()
+
+@router.get("/admin", status_code=200)
+async def admin_get_all_users(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    enforce_authentication(current_user)
+    enforce_admin(current_user)
+
+    users = await db.users.find_many(
+        include={
+            "children": True
+        }
+    )
+
+    return {"users": users}
 
 @router.get("/", response_model=List[UserResponse])
 async def get_all_users():

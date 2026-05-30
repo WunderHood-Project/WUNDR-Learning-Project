@@ -35,7 +35,9 @@ const toEventForm = (ev: Event): CreateEventPayload => ({
     longitude: ev.longitude ?? null,
     ageMin: ev.ageMin ?? null,
     ageMax: ev.ageMax ?? null,
-    label: ev.label ?? "wonderhood"
+    label: ev.label ?? "wonderhood",
+    registrationType: ev.registrationType ?? "wonderhood",
+    registrationUrl: ev.registrationUrl ?? "",
 })
 
 export default function UpdateEvent() {
@@ -117,6 +119,11 @@ export default function UpdateEvent() {
         // Validate participant LIMIT:
         if (formEvent.limit != null && formEvent.limit > 100) newErrors.limit = "There must be less than 100 participants"
         if (formEvent.limit != null && formEvent.limit < 0) newErrors.limit = "There must be at least 0 participants"
+
+        // Validate external registration must include a URL
+        if (formEvent.registrationType === "external" && !formEvent.registrationUrl?.trim()) {
+            newErrors.registrationUrl = "Registration URL is required for external registration"
+        }
 
         // Validate the address:
         //  ! Add more robust validation

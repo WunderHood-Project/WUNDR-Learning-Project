@@ -2,14 +2,14 @@
 
 import AdminGuard from '@/components/Administration/AdminGuard';
 import AdministrationPage from '@/components/Administration/AdministrationPage';
-import ImpactSummary from '@/components/Administration/ImpactSummary';
+import Users from '@/components/Administration/Users';
 
-export default function Page() {
+export default function UsersPage() {
   return (
     <AdminGuard>
-      <AdministrationPage title="Administration">
-        <ImpactSummary />
+      <AdministrationPage title="Users">
+        <Users />
       </AdministrationPage>
     </AdminGuard>
-);
+  );
 }

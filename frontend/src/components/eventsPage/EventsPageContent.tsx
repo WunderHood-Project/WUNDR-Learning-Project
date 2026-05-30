@@ -53,8 +53,18 @@ export default function EventsPageContent() {
         const formatted: GroupedActivity[] = activities.map((activity) => ({
           activityId: activity.id,
           activityName: activity.name,
-          events: (activity.events ?? []).filter((e) => e.status === "approved"),
-          programs: programs.filter((p) => p.activityId === activity.id),
+          events: (activity.events ?? [])
+          .filter((e) => e.status === "approved")
+          .filter((e) => new Date(e.date) >= new Date())
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+          programs: programs
+          .filter((p) => p.activityId === activity.id)
+          .filter((p) => p.status === "approved")
+          .filter((p) => {
+            if (isAdmin) return true;
+            return new Date(p.endDate) >= new Date();
+          })
+          .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()),
         }));
 
         // Ensure Events section appears first, Programs second

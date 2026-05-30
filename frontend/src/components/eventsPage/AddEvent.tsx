@@ -35,6 +35,8 @@ const initialEventForm = (): CreateEventPayload => ({
     address: "",
     zipCode: "",
     label: "wonderhood",
+    registrationType: "wonderhood",
+    registrationUrl: "",
     latitude: null,
     longitude: null,
     ageMin: null,
@@ -155,6 +157,11 @@ export default function AddEvent() {
         // Validate participant LIMIT:
         if (form.limit != null && form.limit > 100) newErrors.limit = "There must be less than 100 participants"
         if (form.limit != null && form.limit < 0) newErrors.limit = "There must be at least 0 participants"
+
+        // Validate external registration must include a URL
+        if (form.registrationType === "external" && !form.registrationUrl?.trim()) {
+            newErrors.registrationUrl = "Registration URL is required for external registration"
+        }
 
         // Validate the address:
         //  ! Add more robust validation

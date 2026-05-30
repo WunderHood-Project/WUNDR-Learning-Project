@@ -87,6 +87,15 @@ async def create_program(
     )
     if len(valid_children) != len(program_data.childIds):
         raise HTTPException(status_code=400, detail="One or more child IDs are invalid.")
+    
+    if (
+        program_data.registrationType == "external"
+        and not program_data.registrationUrl
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Registration URL is required for external registration.",
+        )
 
     valid_users = await db.users.find_many(
         where={"id": {"in": program_data.userIds}}
@@ -173,6 +182,15 @@ async def submit_program(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="An enrichment program with this name already exists.",
+        )
+    
+    if (
+        program_data.registrationType == "external"
+        and not program_data.registrationUrl
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Registration URL is required for external registration.",
         )
 
     data = _build_scalar_data(
@@ -265,6 +283,38 @@ async def get_pending_programs(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch pending programs: {str(e)}",
+        )
+
+    return {"programs": programs}
+
+# ---------------------------------------------------------------------------
+# GET /program/partner-published  (admin — approved partner programs)
+# ---------------------------------------------------------------------------
+
+@router.get("/partner-published", status_code=status.HTTP_200_OK)
+async def get_published_partner_programs(
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    """
+    Get all approved partner enrichment programs.
+    Admin only.
+    """
+    enforce_authentication(current_user, "view published partner programs")
+    enforce_admin(current_user, "view published partner programs")
+
+    try:
+        programs = await db.enrichmentprograms.find_many(
+            where={
+                "status": "approved",
+                "label": "partner",
+            },
+            order={"startDate": "desc"},
+            include={"submittedBy": True},
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch published partner programs: {str(e)}",
         )
 
     return {"programs": programs}
@@ -387,6 +437,24 @@ async def update_program(
     existing = await db.enrichmentprograms.find_unique(where={"id": program_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Enrichment program not found.")
+    
+    target_registration_type = (
+        program_data.registrationType
+        if program_data.registrationType is not None
+        else existing.registrationType
+    )
+
+    target_registration_url = (
+        program_data.registrationUrl
+        if program_data.registrationUrl is not None
+        else existing.registrationUrl
+    )
+
+    if target_registration_type == "external" and not target_registration_url:
+        raise HTTPException(
+            status_code=400,
+            detail="Registration URL is required for external registration.",
+        )
 
     # Check name uniqueness if name is being changed
     if program_data.name and program_data.name != existing.name:
