@@ -75,6 +75,7 @@ export default function ProgramDetailsAsideCard({
   const limit = program.limit;
   const unlimited = limit == null;
   const spotsLeft = unlimited ? null : Math.max(0, limit - enrolled);
+  const isExternalRegistration = program.registrationType === 'external' && !!program.registrationUrl;
 
   const progressPct = useMemo(() => {
     if (unlimited || !limit) return 0;
@@ -101,6 +102,8 @@ export default function ProgramDetailsAsideCard({
           </span>
         </div>
 
+        {!isExternalRegistration && (
+        <>
         {/* Spots */}
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-sm text-wondergreen uppercase tracking-widest">
@@ -130,6 +133,8 @@ export default function ProgramDetailsAsideCard({
             {unlimited ? `${enrolled} enrolled (no limit)` : `${enrolled} of ${limit} enrolled`}
           </p>
         </div>
+        </>
+        )}
 
         {/* Date range */}
         <div className="pb-4 border-b border-white/50">
@@ -188,109 +193,122 @@ export default function ProgramDetailsAsideCard({
         )}
 
         {/* CTA */}
-        {hasCapacity ? (
-          <>
-            <button
-              disabled
-              className="w-full rounded-full bg-wonderleaf text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
-            >
-              ✓ Spots Available
-            </button>
-
-            <button
-              onClick={onToggleForm}
-              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
-            >
-              {showForm ? 'Choose Child' : 'Enroll in Program'}
-            </button>
-
-            {showForm && enrollmentContent && (
-              <div className="mt-4">{enrollmentContent}</div>
-            )}
-          </>
-        ) : userHasChildEnrolled ? (
-          <>
-            <button
-              disabled
-              className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
-            >
-              Full Capacity
-            </button>
-
-            <button
-              onClick={onToggleForm}
-              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
-            >
-              Manage Enrollment
-            </button>
-
-            <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
-              Your child is enrolled. You can update enrollment or unenroll.
-            </div>
-
-            <button
-              onClick={onToggleForm}
-              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
-            >
-              {userHasChildInWaitList ? 'Manage Waitlist' : 'Join Waitlist for Another Child'}
-            </button>
-
-            <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
-              {userHasChildInWaitList
-                ? 'Another child is on the waitlist. You can remove them or add another child.'
-                : 'Program is full. You can add another child to the waitlist.'}
-            </div>
-
-            {showForm && enrollmentContent && (
-              <div className="mt-4">{enrollmentContent}</div>
-            )}
-          </>
-        ) : userHasChildInWaitList ? (
-          <>
-            <button
-              disabled
-              className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
-            >
-              Full Capacity
-            </button>
-
-            <button
-              onClick={onToggleForm}
-              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
-            >
-              Manage Waitlist
-            </button>
-
-            <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
-              Your child is on the waitlist. You can remove them or add another child.
-            </div>
-
-            {showForm && enrollmentContent && (
-              <div className="mt-4">{enrollmentContent}</div>
-            )}
-          </>
+        {isExternalRegistration ? (
+          <a
+            href={program.registrationUrl ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full inline-flex justify-center rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+          >
+            Register on Partner Website
+          </a>
         ) : (
           <>
-            <button
-              disabled
-              className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
-            >
-              Full Capacity
-            </button>
+            {hasCapacity ? (
+              <>
+                <button
+                  disabled
+                  className="w-full rounded-full bg-wonderleaf text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
+                >
+                  ✓ Spots Available
+                </button>
 
-            <button
-              onClick={onToggleForm}
-              className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
-            >
-              {showForm ? 'Choose Child' : 'Join Waitlist'}
-            </button>
+                <button
+                  onClick={onToggleForm}
+                  className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  {showForm ? 'Choose Child' : 'Enroll in Program'}
+                </button>
 
-            <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
-              This program is full. Join the waitlist to be contacted if a spot opens.
-            </div>
+                {showForm && enrollmentContent && (
+                  <div className="mt-4">{enrollmentContent}</div>
+                )}
+              </>
+            ) : userHasChildEnrolled ? (
+              <>
+                <button
+                  disabled
+                  className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
+                >
+                  Full Capacity
+                </button>
 
-            {showForm && enrollmentContent && (
-              <div className="mt-4">{enrollmentContent}</div>
+                <button
+                  onClick={onToggleForm}
+                  className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
+                >
+                  Manage Enrollment
+                </button>
+
+                <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
+                  Your child is enrolled. You can update enrollment or unenroll.
+                </div>
+
+                <button
+                  onClick={onToggleForm}
+                  className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
+                >
+                  {userHasChildInWaitList ? 'Manage Waitlist' : 'Join Waitlist for Another Child'}
+                </button>
+
+                <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
+                  {userHasChildInWaitList
+                    ? 'Another child is on the waitlist. You can remove them or add another child.'
+                    : 'Program is full. You can add another child to the waitlist.'}
+                </div>
+
+                {showForm && enrollmentContent && (
+                  <div className="mt-4">{enrollmentContent}</div>
+                )}
+              </>
+            ) : userHasChildInWaitList ? (
+              <>
+                <button
+                  disabled
+                  className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
+                >
+                  Full Capacity
+                </button>
+
+                <button
+                  onClick={onToggleForm}
+                  className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
+                >
+                  Manage Waitlist
+                </button>
+
+                <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
+                  Your child is on the waitlist. You can remove them or add another child.
+                </div>
+
+                {showForm && enrollmentContent && (
+                  <div className="mt-4">{enrollmentContent}</div>
+                )}
+              </>
+            ) : (
+              <>
+                <button
+                  disabled
+                  className="w-full rounded-full bg-wonderorange text-white px-4 py-2 font-bold uppercase tracking-wide text-xs cursor-default"
+                >
+                  Full Capacity
+                </button>
+
+                <button
+                  onClick={onToggleForm}
+                  className="w-full rounded-full bg-wondergreen px-4 py-2.5 text-white font-bold uppercase tracking-wide text-xs hover:shadow-lg transition-all"
+                >
+                  {showForm ? 'Choose Child' : 'Join Waitlist'}
+                </button>
+
+                <div className="text-center text-gray-700 bg-white/40 rounded-full px-4 py-2 font-semibold text-xs">
+                  This program is full. Join the waitlist to be contacted if a spot opens.
+                </div>
+
+                {showForm && enrollmentContent && (
+                  <div className="mt-4">{enrollmentContent}</div>
+                )}
+              </>
             )}
           </>
         )}
@@ -306,7 +324,7 @@ export default function ProgramDetailsAsideCard({
         )}
 
         {/* Admin attendees */}
-        {isAdmin && (
+        {!isExternalRegistration && isAdmin && (
           <div className="pt-5 border-t border-white/50">
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold text-wondergreen uppercase tracking-wide">
@@ -405,7 +423,7 @@ export default function ProgramDetailsAsideCard({
         )}
         
         {/* Admin waiting list */}
-        {isAdmin && (
+        {!isExternalRegistration && isAdmin && (
           <div className="pt-5 border-t border-white/50">
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold text-wondergreen uppercase tracking-wide">

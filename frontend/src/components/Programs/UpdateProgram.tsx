@@ -40,6 +40,8 @@ export default function UpdateProgram() {
       image: program.image ?? '',
       outcomes: program.outcomes ?? [],
       label: program.label,
+      registrationType: program.registrationType ?? 'wonderhood',
+      registrationUrl: program.registrationUrl ?? '',
       directorName: program.directorName ?? '',
       directorTitle: program.directorTitle ?? '',
       directorImage: program.directorImage ?? '',
@@ -128,6 +130,12 @@ export default function UpdateProgram() {
       errs.endDate = 'End date must be after start date.';
     if (form.ageMin !== undefined && form.ageMax !== undefined && form.ageMax < form.ageMin)
       errs.ageMax = 'Max age must be ≥ min age.';
+    if (
+      form.registrationType === 'external' &&
+      !form.registrationUrl?.trim()
+    ) {
+      errs.registrationUrl = 'Registration URL is required.';
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -157,6 +165,11 @@ export default function UpdateProgram() {
       state: form.state || undefined,
       address: form.address || undefined,
       zipCode: form.zipCode || undefined,
+      registrationType: form.registrationType,
+      registrationUrl:
+        form.registrationType === 'external'
+        ? form.registrationUrl || undefined
+        : undefined,
     };
 
     try {
@@ -550,6 +563,36 @@ export default function UpdateProgram() {
               <option value="partner">Partner</option>
             </select>
           </div>
+
+          <div>
+            <label className={labelCls}>Registration Method</label>
+            <select
+              name="registrationType"
+              value={form.registrationType ?? 'wonderhood'}
+              onChange={handleChange}
+              className={inputCls}
+            >
+              <option value="wonderhood">Register through WonderHood</option>
+              <option value="external">Register on External Website</option>
+            </select>
+          </div>
+
+          {form.registrationType === 'external' && (
+            <div>
+              <label className={labelCls}>
+                Registration URL <span className="text-red-600">*</span>
+              </label>
+              <input
+                type="url"
+                name="registrationUrl"
+                value={form.registrationUrl ?? ''}
+                onChange={handleChange}
+                className={inputCls}
+                placeholder="https://..."
+              />
+              {errors.registrationUrl && <p className={errorCls}>{errors.registrationUrl}</p>}
+            </div>
+          )}
 
           {serverError && (
             <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm">

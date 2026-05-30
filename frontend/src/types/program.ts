@@ -1,6 +1,7 @@
 export type ProgramStatus = "pending" | "approved" | "rejected";
 export type ProgramVenue = "in_person" | "online" | "hybrid";
 export type ProgramLabel = "wonderhood" | "partner";
+export type ProgramRegistrationType = "wonderhood" | "external";
 
 export type ProgramPhase = {
   season: string;
@@ -24,6 +25,8 @@ export type EnrichmentProgram = {
 
   outcomes: string[];
   label: ProgramLabel;
+  registrationType: ProgramRegistrationType;
+  registrationUrl?: string | null;
   phases?: ProgramPhase[] | null;
 
   directorName?: string | null;

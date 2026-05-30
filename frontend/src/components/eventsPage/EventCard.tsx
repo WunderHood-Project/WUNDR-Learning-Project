@@ -39,6 +39,8 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
           ? 'bg-yellow-50 text-yellow-800 border border-yellow-200'
           : 'bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30';
 
+  const isExternalRegistration = event.registrationType === "external" && !!event.registrationUrl;        
+
   const timeLabel = formatTimeRange12h(event.date, event.startTime, event.endTime);
 
   return (
@@ -142,19 +144,21 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
           </div>
 
           {/* Row 2: enrolled left + spots badge right (fixed width) */}
-          <div className="mt-2 flex items-center">
-            <p className="text-xs text-gray-600">
-              {unlimited ? `${enrolled} enrolled` : `${enrolled} of ${event.limit} enrolled`}
-            </p>
+          {!isExternalRegistration && (
+            <div className="mt-2 flex items-center">
+              <p className="text-xs text-gray-600">
+                {unlimited ? `${enrolled} enrolled` : `${enrolled} of ${event.limit} enrolled`}
+              </p>
 
-            <span
-              className={`ml-auto text-xs px-3 py-1.5 rounded-full font-semibold text-center w-[120px] ${spotsClass}`}
-              aria-label={spotsLabel}
-              title={spotsLabel}
-            >
-              {spotsLabel}
-            </span>
-          </div>
+              <span
+                className={`ml-auto text-xs px-3 py-1.5 rounded-full font-semibold text-center w-[120px] ${spotsClass}`}
+                aria-label={spotsLabel}
+                title={spotsLabel}
+              >
+                {spotsLabel}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Push CTA to bottom */}

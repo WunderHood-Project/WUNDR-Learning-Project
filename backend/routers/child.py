@@ -47,11 +47,11 @@ async def create_child(
     # Make sure the user is authenticated
     enforce_authentication(current_user, "add a child")
 
-    if current_user.role == "partner":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied: Partners are not allowed to add children."
-        )
+    # if current_user.role == "partner":
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Access denied: Partners are not allowed to add children."
+    #     )
 
     # now = datetime.now(timezone.utc)
     bday_dateTime = datetime.combine(child_data.birthday, time.min).replace(tzinfo=timezone.utc)

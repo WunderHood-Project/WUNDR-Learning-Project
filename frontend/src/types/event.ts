@@ -6,6 +6,8 @@ export type EventSchoolAccess =
 
 export type EventLabel = "wonderhood" | "partner";
 
+export type EventRegistrationType = "wonderhood" | "external";
+
 export type EventStatus = "pending" | "approved" | "rejected";
 
 
@@ -24,6 +26,9 @@ export type Event = {
     limit: number | null
     schoolAccess: EventSchoolAccess
     label: EventLabel
+
+    registrationType: EventRegistrationType
+    registrationUrl?: string | null
 
     city: string
     state: string

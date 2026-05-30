@@ -34,6 +34,10 @@ class EventLabel(str, Enum):
     WONDERHOOD = "wonderhood"
     PARTNER = "partner"
 
+class EventRegistrationType(str, Enum):
+    WONDERHOOD = "wonderhood"
+    EXTERNAL = "external"    
+
 class EventStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
@@ -53,6 +57,9 @@ class Event(BaseModel):
     limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
     label: EventLabel = EventLabel.WONDERHOOD
+
+    registrationType: EventRegistrationType = EventRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = Field(default=None)
 
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
@@ -77,6 +84,9 @@ class EventCreate(BaseModel):
     limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
     label: EventLabel = EventLabel.WONDERHOOD
+
+    registrationType: EventRegistrationType = EventRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = Field(default=None)
 
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
@@ -121,6 +131,8 @@ class EventUpdate(BaseModel):
     limit: Optional[int] = Field(default=None)
     schoolAccess: Optional[EventSchoolAccess] = Field(default=None)
     label: Optional[EventLabel] = Field(default=None)
+    registrationType: Optional[EventRegistrationType] = Field(default=None)
+    registrationUrl: Optional[str] = Field(default=None)
     userIds: Optional[List[str]] = Field(default=None)
     childIds: Optional[List[str]] = Field(default=None)
 
@@ -136,6 +148,8 @@ class EventSubmit(BaseModel):
     limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
     label: EventLabel = EventLabel.PARTNER
+    registrationType: EventRegistrationType = EventRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = Field(default=None)
     city: str = Field(min_length=1)
     state: str = Field(min_length=1)
     address: str = Field(min_length=1)
@@ -172,6 +186,10 @@ class ProgramLabel(str, Enum):
     WONDERHOOD = "wonderhood"
     PARTNER = "partner"
 
+class ProgramRegistrationType(str, Enum):
+    WONDERHOOD = "wonderhood"
+    EXTERNAL = "external"
+
 class ProgramStatusUpdate(BaseModel):
     """DTO for PATCH /program/{id}/status — admin approves or rejects a pending program."""
     status: ProgramStatus
@@ -195,6 +213,8 @@ class EnrichmentProgram(BaseModel):
     image: Optional[str] = None
     outcomes: List[str] = Field(default_factory=list)
     label: ProgramLabel = ProgramLabel.WONDERHOOD
+    registrationType: ProgramRegistrationType = ProgramRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = None
     phases: Optional[List[ProgramPhase]] = None
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
@@ -225,6 +245,8 @@ class EnrichmentProgramCreate(BaseModel):
     image: Optional[str] = None
     outcomes: List[str] = Field(default_factory=list)
     label: ProgramLabel = ProgramLabel.WONDERHOOD
+    registrationType: ProgramRegistrationType = ProgramRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = None
     phases: Optional[List[ProgramPhase]] = None
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
@@ -251,6 +273,8 @@ class EnrichmentProgramUpdate(BaseModel):
     image: Optional[str] = None
     outcomes: Optional[List[str]] = None
     label: Optional[ProgramLabel] = None
+    registrationType: Optional[ProgramRegistrationType] = None
+    registrationUrl: Optional[str] = None
     phases: Optional[List[ProgramPhase]] = None
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
@@ -286,6 +310,8 @@ class EnrichmentProgramSubmit(BaseModel):
     state: Optional[str] = None
     address: Optional[str] = None
     zipCode: Optional[str] = Field(default=None, pattern=r'^\d{5}(-\d{4})?$')
+    registrationType: ProgramRegistrationType = ProgramRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = None
 
 # ! Reviews
 class Review(BaseModel):

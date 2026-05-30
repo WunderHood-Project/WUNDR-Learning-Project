@@ -155,6 +155,43 @@ const EventFields: React.FC<Props> = ({ form, errors, minDate, onChange, onImage
 
             </div>
 
+            {/* Registration Method */}
+            <div>
+                <label className="block mb-1 font-medium">
+                    Registration Method <span className="text-rose-600">*</span>
+                </label>
+                <select
+                    name="registrationType"
+                    value={form.registrationType}
+                    onChange={onChange}
+                    className="w-full border rounded px-3 py-2"
+                    required
+                >
+                    <option value="wonderhood">Through WonderHood</option>
+                    <option value="external">Through Partner Website</option>
+                </select>
+            </div>
+
+            {form.registrationType === "external" && (
+                <div>
+                    <label className="block mb-1 font-medium">
+                        Registration URL <span className="text-rose-600">*</span>
+                    </label>
+                    <input
+                        type="url"
+                        name="registrationUrl"
+                        placeholder="https://example.org/register"
+                        value={form.registrationUrl ?? ""}
+                        onChange={onChange}
+                        className="w-full border rounded px-3 py-2"
+                        required
+                    />
+                    {errors.registrationUrl && (
+                        <p className="text-sm text-red-600">{errors.registrationUrl}</p>
+                    )}
+                </div>
+            )}
+
             <div>
                 <label className="block mb-1 font-medium">
                     Participants Limit{" "}

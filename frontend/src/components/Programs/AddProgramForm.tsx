@@ -24,6 +24,8 @@ const initialForm = (): CreateProgramPayload => ({
     image: '',
     outcomes: [],
     label: 'wonderhood',
+    registrationType: 'wonderhood',
+    registrationUrl: '',
     // phases: [],
     directorName: '',
     directorTitle: '',
@@ -35,6 +37,7 @@ const initialForm = (): CreateProgramPayload => ({
     state: 'CO',
     address: '',
     zipCode: '',
+
 });
 
 
@@ -235,7 +238,12 @@ export default function AddProgramForm() {
                 errs.zipCode = 'Zip code must be exactly 5 digits.';
             }
         }
-
+        if (
+            form.registrationType === 'external' &&
+            !form.registrationUrl?.trim()
+        ) {
+            errs.registrationUrl = 'Registration URL is required.';
+        }
         setErrors(errs);
         return errs;
     };
@@ -271,7 +279,12 @@ export default function AddProgramForm() {
             state: form.state || undefined,
             address: form.address || undefined,
             zipCode: form.zipCode || undefined,
-        };
+            registrationType: form.registrationType,
+            registrationUrl:
+                form.registrationType === 'external'
+                    ? form.registrationUrl || undefined
+                    : undefined,
+                    };
 
         try {
             await makeApiRequest(endpoint, {
@@ -349,6 +362,50 @@ export default function AddProgramForm() {
                             </select>
                         }
                     </div>
+                    <div>
+                        <label className={labelCls}>
+                            Registration Method
+                        </label>
+
+                        <select
+                            name="registrationType"
+                            value={form.registrationType}
+                            onChange={handleChange}
+                            className={inputCls}
+                        >
+                            <option value="wonderhood">
+                                Register through WonderHood
+                            </option>
+
+                            <option value="external">
+                                Register on External Website
+                            </option>
+                        </select>
+                    </div>
+
+                    {form.registrationType === 'external' && (
+                        <div>
+                            <label className={labelCls}>
+                                Registration URL
+                                <span className="text-rose-600">*</span>
+                            </label>
+
+                            <input
+                                type="url"
+                                name="registrationUrl"
+                                value={form.registrationUrl ?? ''}
+                                onChange={handleChange}
+                                className={inputCls}
+                                placeholder="https://..."
+                            />
+
+                            {errors.registrationUrl && (
+                                <p className={errorCls}>
+                                    {errors.registrationUrl}
+                                </p>
+                            )}
+                        </div>
+                    )}
                     {/* )} */}
 
                     <div>
