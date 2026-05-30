@@ -134,6 +134,14 @@ export default function ActivityBlock({
     el.scrollBy({ left: dir * step, behavior: 'smooth' });
   };
 
+  const sortedEvents = [...events].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  const sortedPrograms = [...programs].sort(
+    (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+  );
+
   return (
     <section className="mb-16">
       {/* --- Minimal header: icon chip + title + thin accent bar --- */}
@@ -190,7 +198,7 @@ export default function ActivityBlock({
         >
           {events.length > 0 || programs.length > 0 ? (
             <>
-              {events.map((event, i) => (
+              {sortedEvents.map((event, i) => (
                 <div
                   key={event.id ?? `${event.name}-${event.date}-${event.startTime}-${i}`}
                   className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"
@@ -202,7 +210,7 @@ export default function ActivityBlock({
                   />
                 </div>
               ))}
-              {programs.map((program) => (
+              {sortedPrograms.map((program) => (
                 <div
                   key={program.id}
                   className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0"

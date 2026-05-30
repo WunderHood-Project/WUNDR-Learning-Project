@@ -186,6 +186,10 @@ class ProgramLabel(str, Enum):
     WONDERHOOD = "wonderhood"
     PARTNER = "partner"
 
+class ProgramRegistrationType(str, Enum):
+    WONDERHOOD = "wonderhood"
+    EXTERNAL = "external"
+
 class ProgramStatusUpdate(BaseModel):
     """DTO for PATCH /program/{id}/status — admin approves or rejects a pending program."""
     status: ProgramStatus
@@ -209,6 +213,8 @@ class EnrichmentProgram(BaseModel):
     image: Optional[str] = None
     outcomes: List[str] = Field(default_factory=list)
     label: ProgramLabel = ProgramLabel.WONDERHOOD
+    registrationType: ProgramRegistrationType = ProgramRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = None
     phases: Optional[List[ProgramPhase]] = None
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
@@ -239,6 +245,8 @@ class EnrichmentProgramCreate(BaseModel):
     image: Optional[str] = None
     outcomes: List[str] = Field(default_factory=list)
     label: ProgramLabel = ProgramLabel.WONDERHOOD
+    registrationType: ProgramRegistrationType = ProgramRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = None
     phases: Optional[List[ProgramPhase]] = None
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
@@ -265,6 +273,8 @@ class EnrichmentProgramUpdate(BaseModel):
     image: Optional[str] = None
     outcomes: Optional[List[str]] = None
     label: Optional[ProgramLabel] = None
+    registrationType: Optional[ProgramRegistrationType] = None
+    registrationUrl: Optional[str] = None
     phases: Optional[List[ProgramPhase]] = None
     directorName: Optional[str] = None
     directorTitle: Optional[str] = None
@@ -300,6 +310,8 @@ class EnrichmentProgramSubmit(BaseModel):
     state: Optional[str] = None
     address: Optional[str] = None
     zipCode: Optional[str] = Field(default=None, pattern=r'^\d{5}(-\d{4})?$')
+    registrationType: ProgramRegistrationType = ProgramRegistrationType.WONDERHOOD
+    registrationUrl: Optional[str] = None
 
 # ! Reviews
 class Review(BaseModel):

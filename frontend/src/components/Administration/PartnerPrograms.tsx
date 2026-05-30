@@ -46,6 +46,8 @@ const VENUE_LABEL: Record<ProgramVenue, string> = {
 
 export default function PartnerPrograms() {
     const [items, setItems] = useState<PendingProgram[]>([]);
+    const [publishedItems, setPublishedItems] = useState<PendingProgram[]>([]);
+    const [tab, setTab] = useState<"pending" | "published">("pending");
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState<Set<string>>(new Set());
     const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
@@ -71,15 +73,32 @@ export default function PartnerPrograms() {
 
     const load = useCallback(async () => {
         if (!authHeaders) return;
+
         setLoading(true);
+
         try {
-            const res = await makeApiRequest<{ programs: PendingProgram[] }>(
-                `${API}/program/pending`,
-                { method: "GET", headers: authHeaders }
-            );
-            setItems(res.programs ?? []);
+            const [pendingRes, publishedRes] = await Promise.all([
+                makeApiRequest<{ programs: PendingProgram[] }>(
+                    `${API}/program/pending`,
+                    {
+                        method: "GET",
+                        headers: authHeaders,
+                    }
+                ),
+
+                makeApiRequest<{ programs: PendingProgram[] }>(
+                    `${API}/program/partner-published`,
+                    {
+                        method: "GET",
+                        headers: authHeaders,
+                    }
+                ),
+            ]);
+
+            setItems(pendingRes.programs ?? []);
+            setPublishedItems(publishedRes.programs ?? []);
         } catch (e) {
-            console.error("Failed to fetch pending programs:", e);
+            console.error("Failed to fetch partner programs:", e);
         } finally {
             setLoading(false);
         }
@@ -95,15 +114,44 @@ export default function PartnerPrograms() {
                 headers: authHeaders,
                 body: { status: next, ...(notes ? { adminNotes: notes } : {}) },
             });
-            setItems((arr) => arr.filter((p) => p.id !== id));
+            await load();
         } catch (e) {
             console.error("Status update failed:", e);
         }
     }
 
+    const displayedItems =
+    tab === "pending" ? items : publishedItems;
+
     return (
         <div className="max-w-6xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-4">Partner Program Submissions</h2>
+            <h2 className="text-2xl font-bold mb-4">Partner Programs</h2>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+                <button
+                    type="button"
+                    onClick={() => setTab("pending")}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold border transition ${
+                        tab === "pending"
+                            ? "bg-wondergreen text-white border-wondergreen"
+                            : "bg-white text-wondergreen border-gray-200 hover:border-wondergreen"
+                    }`}
+                >
+                    Pending ({items.length})
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setTab("published")}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold border transition ${
+                        tab === "published"
+                            ? "bg-wondergreen text-white border-wondergreen"
+                            : "bg-white text-wondergreen border-gray-200 hover:border-wondergreen"
+                    }`}
+                >
+                    Published ({publishedItems.length})
+                </button>
+            </div>
 
             <div className="overflow-x-auto rounded-2xl ring-1 ring-black/5 bg-white">
                 <table className="min-w-[960px] w-full text-sm">
@@ -116,22 +164,24 @@ export default function PartnerPrograms() {
                             <Th>Venue</Th>
                             <Th>Dates</Th>
                             <Th>Location</Th>
-                            <Th className="text-right">Actions</Th>
+                            {tab === "pending" && <Th className="text-right">Actions</Th>}
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={8} className="py-8 text-center">Loading…</td>
+                                <td colSpan={tab === "pending" ? 8 : 7} className="py-8 text-center">
+                                    Loading…
+                                </td>
                             </tr>
-                        ) : items.length === 0 ? (
+                        ) : displayedItems.length === 0 ? (
                             <tr>
-                                <td colSpan={8} className="py-8 text-center text-gray-500">
-                                    No pending submissions
+                                <td colSpan={tab === "pending" ? 8 : 7} className="py-8 text-center text-gray-500">
+                                    {tab === "pending" ? "No pending submissions" : "No published partner programs"}
                                 </td>
                             </tr>
                         ) : (
-                            items.map((p) => {
+                            displayedItems.map((p) => {
                                 const isOpen = open.has(p.id);
                                 return (
                                     <React.Fragment key={p.id}>
@@ -167,17 +217,19 @@ export default function PartnerPrograms() {
                                                     ? "Online"
                                                     : [p.city, p.state].filter(Boolean).join(", ") || "—"}
                                             </Td>
-                                            <Td className="text-right">
-                                                <div className="inline-flex gap-2">
-                                                    <Btn onClick={() => updateStatus(p.id, "approved")}>Approve</Btn>
-                                                    <Btn onClick={() => updateStatus(p.id, "rejected")} kind="danger">Reject</Btn>
-                                                </div>
-                                            </Td>
+                                            {tab === "pending" && (
+                                                <Td className="text-right">
+                                                    <div className="inline-flex gap-2">
+                                                        <Btn onClick={() => updateStatus(p.id, "approved")}>Approve</Btn>
+                                                        <Btn onClick={() => updateStatus(p.id, "rejected")} kind="danger">Reject</Btn>
+                                                    </div>
+                                                </Td>
+                                            )}
                                         </tr>
 
                                         {isOpen && (
                                             <tr key={`${p.id}-details`} className="border-t bg-gray-50/60">
-                                                <Td colSpan={8} className="px-6 py-5">
+                                                <Td colSpan={tab === "pending" ? 8 : 7} className="px-6 py-5">
                                                     <div className="grid gap-4">
                                                         <Block title="Description" text={p.description} />
 
@@ -217,24 +269,29 @@ export default function PartnerPrograms() {
                                                             )}
                                                         </div>
 
-                                                        <div>
-                                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                                Admin notes (optional — sent to partner on decision)
-                                                            </label>
-                                                            <textarea
-                                                                className="w-full border rounded p-2 text-sm"
-                                                                rows={2}
-                                                                value={adminNotes[p.id] ?? ""}
-                                                                onChange={(ev) =>
-                                                                    setAdminNotes((prev) => ({ ...prev, [p.id]: ev.target.value }))
-                                                                }
-                                                                placeholder="Optional notes for the partner…"
-                                                            />
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <Btn onClick={() => updateStatus(p.id, "approved")}>Approve</Btn>
-                                                            <Btn onClick={() => updateStatus(p.id, "rejected")} kind="danger">Reject</Btn>
-                                                        </div>
+                                                        {tab === "pending" && (
+                                                            <>
+                                                                <div>
+                                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                                        Admin notes (optional — sent to partner on decision)
+                                                                    </label>
+                                                                    <textarea
+                                                                        className="w-full border rounded p-2 text-sm"
+                                                                        rows={2}
+                                                                        value={adminNotes[p.id] ?? ""}
+                                                                        onChange={(ev) =>
+                                                                            setAdminNotes((prev) => ({ ...prev, [p.id]: ev.target.value }))
+                                                                        }
+                                                                        placeholder="Optional notes for the partner…"
+                                                                    />
+                                                                </div>
+
+                                                                <div className="flex gap-2">
+                                                                    <Btn onClick={() => updateStatus(p.id, "approved")}>Approve</Btn>
+                                                                    <Btn onClick={() => updateStatus(p.id, "rejected")} kind="danger">Reject</Btn>
+                                                                </div>
+                                                            </>
+                                                        )}                                                  
                                                     </div>
                                                 </Td>
                                             </tr>

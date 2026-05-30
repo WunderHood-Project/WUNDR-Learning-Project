@@ -334,6 +334,32 @@ async def get_pending_events(
     )
     return {"events": events}
 
+# =============================================================================
+# Admin: view published partner events
+# =============================================================================
+
+@router.get("/partner-published", status_code=status.HTTP_200_OK)
+async def get_published_partner_events(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    """
+    Return all approved partner events.
+    Admin only.
+    """
+    enforce_authentication(current_user, "view published partner events")
+    enforce_admin(current_user, "view published partner events")
+
+    events = await db.events.find_many(
+        where={
+            "status": "approved",
+            "label": "partner",
+        },
+        include={"activity": True, "submittedBy": True},
+        order={"date": "desc"},
+    )
+
+    return {"events": events}
+
 
 # =============================================================================
 # Admin: approve or reject a pending event
@@ -416,10 +442,19 @@ async def get_all_events(
 
    try:
        events = await db.events.find_many(
-           # skip=skip,
-           # take=limit,
-           order={"createdAt": "desc"}
-       )
+            where={
+                "date": {
+                    "gte": datetime.now(timezone.utc)
+                },
+                "OR": [
+                    {"status": "approved"},
+                    {"status": None}
+                ]
+            },
+            order={
+                "date": "asc"
+            }
+        )
        return {"events": events}
 
    except Exception as e:

@@ -348,6 +348,11 @@ enum ProgramLabel {
   partner
 }
 
+enum ProgramRegistrationType {
+  wonderhood
+  external
+}
+
 model EnrichmentPrograms {
   id               String        @id @default(auto()) @map("_id") @db.ObjectId
   name             String        @unique
@@ -382,6 +387,8 @@ model EnrichmentPrograms {
   // Enrollment
   participants     Int           @default(0)
   limit            Int?
+  registrationType ProgramRegistrationType @default(wonderhood)
+  registrationUrl  String?
 
   // Location
   venue            ProgramVenue  @default(in_person)

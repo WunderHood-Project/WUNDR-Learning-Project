@@ -41,6 +41,8 @@ export default function ProgramCard({ program, isAdmin, onDelete }: Props) {
           ? 'bg-yellow-50 text-yellow-800 border border-yellow-200'
           : 'bg-wonderleaf/10 text-wonderleaf border border-wonderleaf/30';
 
+  const isExternalRegistration = program.registrationType === 'external' && !!program.registrationUrl;
+
   return (
     <article className="flex-shrink-0 w-full sm:w-80 max-w-[22rem] bg-white/20 rounded-2xl border-2 border-wonderorange/30 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full relative">
       <div className="flex-1 p-4 sm:p-6 flex flex-col gap-3">
@@ -135,23 +137,25 @@ export default function ProgramCard({ program, isAdmin, onDelete }: Props) {
             </span>
           </div>
 
-          <div className="mt-2 flex items-center">
-            <div className="flex items-center gap-1.5">
-              <FaUser className="w-3 h-3 text-wonderorange" />
-              <p className="text-xs text-gray-600">
-                {unlimited
-                  ? `${enrolled} enrolled`
-                  : `${enrolled} of ${program.limit} enrolled`}
-              </p>
-            </div>
+          {!isExternalRegistration && (
+            <div className="mt-2 flex items-center">
+              <div className="flex items-center gap-1.5">
+                <FaUser className="w-3 h-3 text-wonderorange" />
+                <p className="text-xs text-gray-600">
+                  {unlimited
+                    ? `${enrolled} enrolled`
+                    : `${enrolled} of ${program.limit} enrolled`}
+                </p>
+              </div>
 
-            <span
-              className={`ml-auto text-xs px-3 py-1.5 rounded-full font-semibold text-center w-[120px] ${spotsClass}`}
-              aria-label={spotsLabel}
-            >
-              {spotsLabel}
-            </span>
-          </div>
+              <span
+                className={`ml-auto text-xs px-3 py-1.5 rounded-full font-semibold text-center w-[120px] ${spotsClass}`}
+                aria-label={spotsLabel}
+              >
+                {spotsLabel}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="mt-auto" />
@@ -174,15 +178,17 @@ export default function ProgramCard({ program, isAdmin, onDelete }: Props) {
               Edit
             </Link>
 
-            <OpenModalButton
-              className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-wonderleaf text-white font-semibold text-sm hover:bg-wonderleaf/90 transition-colors"
-              buttonText="Notify Users"
-              modalComponent={
-                <NotificationModal
-                  url={`${WONDERHOOD_URL}/program/${program.id}/notification/enrolled_users_child`}
-                />
-              }
-            />
+            {!isExternalRegistration && (
+              <OpenModalButton
+                className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-wonderleaf text-white font-semibold text-sm hover:bg-wonderleaf/90 transition-colors"
+                buttonText="Notify Users"
+                modalComponent={
+                  <NotificationModal
+                    url={`${WONDERHOOD_URL}/program/${program.id}/notification/enrolled_users_child`}
+                  />
+                }
+              />
+            )}
 
             <OpenModalButton
               className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors"
