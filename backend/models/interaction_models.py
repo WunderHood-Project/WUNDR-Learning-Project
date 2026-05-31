@@ -73,14 +73,14 @@ class Event(BaseModel):
     ageMax: Optional[int] = Field(default=None)
 
 class EventCreate(BaseModel):
-    activityId: str = Field(min_length=1)
+    activityId: Optional[str] = Field(default=None)
 
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
     notes: str = Field(default="")
     date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     image: str = Field(min_length=0)
-    participants: int = Field(default=0)
+    participants: int = Field(default=0, ge=0)
     limit: Optional[int] = Field(default=None)
     schoolAccess: EventSchoolAccess = EventSchoolAccess.ALL
     label: EventLabel = EventLabel.WONDERHOOD
@@ -127,7 +127,7 @@ class EventUpdate(BaseModel):
     volunteerLimit: Optional[int] = Field(default=None)
 
     image: Optional[str] = Field(default=None)
-    participants: Optional[int] = Field(default=None)
+    participants: Optional[int] = Field(default=None, ge=0)
     limit: Optional[int] = Field(default=None)
     schoolAccess: Optional[EventSchoolAccess] = Field(default=None)
     label: Optional[EventLabel] = Field(default=None)
@@ -139,7 +139,7 @@ class EventUpdate(BaseModel):
 
 class EventSubmit(BaseModel):
     """DTO for POST /event/submit — used by partners to propose an event for admin approval."""
-    activityId: str = Field(min_length=1)
+    activityId: Optional[str] = Field(default=None)
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
     notes: str = Field(default="")

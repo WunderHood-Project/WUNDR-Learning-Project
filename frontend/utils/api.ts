@@ -3,14 +3,6 @@ export const API = BASE;
 
 export function determineEnv() {
     return BASE;
-    // let baseURL: string = ""
-
-    // if (process.env.NODE_ENV === "production") {
-    //     baseURL = process.env.NEXT_PUBLIC_API_URL || ""
-    // }
-    // baseURL = process.env.NEXT_PUBLIC_API_URL|| ""
-
-    // return baseURL
 }
 
 if (typeof window !== 'undefined') {

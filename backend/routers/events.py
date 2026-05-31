@@ -60,16 +60,19 @@ async def create_event(
    enforce_authentication(current_user, "create an event")
    enforce_admin(current_user, "create an event")
 
-   # Verify that the activity ID is valid
-   activity = await db.activities.find_unique(where={
-       "id": event_data.activityId
-   })
-
-   if not activity:
-       raise HTTPException(
-           status_code=404,
-           detail="Activity not found."
-       )
+   # Resolve activity: use provided ID or fall back to the default "Events" activity
+   if event_data.activityId:
+       activity = await db.activities.find_unique(where={"id": event_data.activityId})
+       if not activity:
+           raise HTTPException(status_code=404, detail="Activity not found.")
+   else:
+       activity = await db.activities.find_first(where={"name": "Events"})
+       if not activity:
+           raise HTTPException(
+               status_code=404,
+               detail='No default "Events" activity exists. Please create it first.'
+           )
+   event_data.activityId = activity.id
 
    # Verify that the userIDs and childIDs are valid
    valid_users = await db.users.find_many(
@@ -219,9 +222,19 @@ async def submit_event(
             detail="Only partners can submit events for approval."
         )
 
-    activity = await db.activities.find_unique(where={"id": event_data.activityId})
-    if not activity:
-        raise HTTPException(status_code=404, detail="Activity not found.")
+    # Resolve activity: use provided ID or fall back to the default "Events" activity
+    if event_data.activityId:
+        activity = await db.activities.find_unique(where={"id": event_data.activityId})
+        if not activity:
+            raise HTTPException(status_code=404, detail="Activity not found.")
+    else:
+        activity = await db.activities.find_first(where={"name": "Events"})
+        if not activity:
+            raise HTTPException(
+                status_code=404,
+                detail='No default "Events" activity exists. Please create it first.'
+            )
+    event_data.activityId = activity.id
 
     now = datetime.now(timezone.utc)
 
@@ -1132,6 +1145,11 @@ async def remove_user_from_event(
    # Remove the user from the event
    updated_user_list = [uid for uid in event.userIds if uid != current_user.id]
 
+   if (event.participants or 0) < 1:
+       raise HTTPException(
+           status_code=status.HTTP_400_BAD_REQUEST,
+           detail="Participant count is already 0 and cannot be decremented."
+       )
 
    updated_event = await db.events.update(
        where={"id": event_id},
@@ -1222,6 +1240,11 @@ async def remove_child_from_event(
    # Remove child from event
    updated_child_list = [cid for cid in (event.childIds or []) if cid not in to_remove]
 
+   if (event.participants or 0) < len(to_remove):
+       raise HTTPException(
+           status_code=status.HTTP_400_BAD_REQUEST,
+           detail="Participant count cannot go below 0."
+       )
 
    updated_event = await db.events.update(
        where={"id": event_id},
