@@ -42,7 +42,7 @@ export default function ProgramDetails() {
   // get program id from route
   const { programId } = useParams() as { programId: string };
 
-   // program data + current user
+  // program data + current user
   const { program, loading, error, refetch } = useProgram(programId);
   const { user } = useUser();
 
@@ -371,7 +371,7 @@ export default function ProgramDetails() {
                           {removeWaitListId === child.id ? 'Removing…' : 'Remove'}
                         </button>
                       </div>
-                  </div>
+                    </div>
                   );
                 }
 
@@ -396,11 +396,10 @@ export default function ProgramDetails() {
                   <label
                     key={child.id}
                     htmlFor={childId}
-                    className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      isChecked
+                    className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isChecked
                         ? 'border-wondergreen bg-wondergreen/5'
                         : 'border-gray-200 bg-gray-50'
-                    }`}
+                      }`}
                   >
                     <input
                       id={childId}
@@ -427,26 +426,25 @@ export default function ProgramDetails() {
 
             <button
               type="submit"
-              className={`rounded-lg px-6 py-3 text-white font-bold uppercase tracking-wide text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                hasCapacity
+              className={`rounded-lg px-6 py-3 text-white font-bold uppercase tracking-wide text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${hasCapacity
                   ? 'bg-wondergreen hover:bg-wonderleaf'
                   : 'bg-wonderorange hover:bg-wonderorange/90'
-              }`}
+                }`}
               disabled={selected.size === 0}
             >
               {hasCapacity ? 'Enroll' : 'Join Waitlist'}
             </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  setServerError(null);
-                }}
-                className="ml-4 text-gray-600 font-medium hover:text-gray-900 underline"
-              >
-                Cancel
-              </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                setServerError(null);
+              }}
+              className="ml-4 text-gray-600 font-medium hover:text-gray-900 underline"
+            >
+              Cancel
+            </button>
           </form>
         ) : (
           <div className="rounded-2xl bg-amber-50 border border-amber-200 p-6 text-amber-900 font-semibold">
@@ -531,7 +529,7 @@ export default function ProgramDetails() {
         </h1>
 
         <Link
-          href="/programs"
+          href="/events"
           className="flex items-center mt-3 gap-2 text-wondergreen/80 hover:text-wondergreen/60 transition"
         >
           <ArrowLeft className="w-4 h-4" />

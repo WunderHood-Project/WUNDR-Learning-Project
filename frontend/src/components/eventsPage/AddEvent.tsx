@@ -54,7 +54,7 @@ export default function AddEvent() {
     // const isProgramSelected = selectedActivity?.name === "Enrichment Programs"
     const { activities } = useActivity()
     const [createType, setCreateType] = useState<'event' | 'program' | null>(null)
-    const eventActivity = activities.find((a) => a.name === 'Events')
+    const eventActivity = activities.find((a) => a.name === "Events")
     const { events } = useEvent(undefined)
     const router = useRouter()
     const todayYMD = useMemo(() => todayYMDUTC(), []);
@@ -72,7 +72,6 @@ export default function AddEvent() {
             }))
         }
     }, [createType, eventActivity])
-
 
     // Sets which creation flow the user wants to use.
     // For events, we auto-fill the default Events activityId so the event payload
@@ -178,8 +177,16 @@ export default function AddEvent() {
             return
         }
 
+        const resolvedActivityId = form.activityId || eventActivity?.id || ''
+        if (!resolvedActivityId) {
+            setErrors(prev => ({ ...prev, activityId: "Could not resolve activity. Please try again." }))
+            setIsSubmitting(false)
+            return
+        }
+
         const payload: CreateEventPayload = {
             ...form,
+            activityId: resolvedActivityId,
             date: ymdToIsoNoShift(form.date),
             label: isPartner ? 'partner' : form.label,
         };
