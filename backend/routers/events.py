@@ -157,7 +157,12 @@ async def create_event(
            }
        )
 
-
+       await db.impactstat.update(
+           data = {
+               "totalEventsCreated": {"increment": 1}
+           }
+       )
+           
        # Send the email notification to all users where emailNotificationsEnabled = True upon event creation
        users = await db.users.find_many(
            where={"emailNotificationsEnabled": True}
@@ -392,6 +397,13 @@ async def update_event_status(
         where={"id": event_id},
         data={"status": status_data.status.value, "updatedAt": datetime.now(timezone.utc)}
     )
+
+    if updated_event.status == "approved":
+        await db.impactstat.update(
+           data = {
+               "totalEventsCreated": {"increment": 1}
+           }
+       )
 
     # Notify the partner who submitted the event
     if event.submittedById:

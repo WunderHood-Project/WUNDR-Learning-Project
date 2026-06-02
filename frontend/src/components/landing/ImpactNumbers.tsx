@@ -1,17 +1,15 @@
 import CountUp from 'react-countup';
 import { determineEnv, makeApiRequest } from '../../../utils/api';
 import { User } from '@/types/user';
-import { EnrichmentProgram } from '@/types/program';
-import { Event } from '@/types/event';
 const WONDERHOOD_URL = determineEnv()
 
 const families: User[] = await makeApiRequest(`${WONDERHOOD_URL}/user/`);
-const { programs } = await makeApiRequest<{ programs: EnrichmentProgram[] }>(`${WONDERHOOD_URL}/program/`)
-const { events } = await makeApiRequest<{ events: Event[] }>(`${WONDERHOOD_URL}/event/`)
+const { totalEventsCreated, totalProgramsCreated } = await makeApiRequest<{ totalEventsCreated: number; totalProgramsCreated: number }>(`${WONDERHOOD_URL}/impact/events-programs`);
+
 
 const stats = [
   { value: families.length, suffix: "+", label: "Families Joined" },
-  { value: programs.length + events.length, suffix: "+", label: "Events & Programs Planned" },
+  { value: totalEventsCreated + totalProgramsCreated, suffix: "+", label: "Events & Programs Planned" },
   { value: 100, suffix: "%", label: "Real-World Learning" },
   { value: 100, suffix: "%", label: "Mission-Driven" },
   { value: 100, suffix: "%", label: "Community-Focused" },

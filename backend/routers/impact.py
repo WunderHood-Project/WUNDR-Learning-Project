@@ -85,3 +85,11 @@ async def get_admin_impact(
             "communityPartners": len(partner_users),
         },
     }
+
+@router.get("/events-programs", status_code=200)
+async def events_programs():
+    stat = await db.impactstat.find_first()
+    return {
+        "totalEventsCreated": stat.totalEventsCreated if stat else 0,
+        "totalProgramsCreated": stat.totalProgramsCreated if stat else 0,
+    }
