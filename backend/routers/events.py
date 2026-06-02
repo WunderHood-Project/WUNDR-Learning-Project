@@ -446,16 +446,15 @@ async def get_all_events(
                 "date": {
                     "gte": datetime.now(timezone.utc)
                 },
-                "OR": [
-                    {"status": "approved"},
-                    {"status": None}
-                ]
             },
             order={
                 "date": "asc"
             }
         )
-       return {"events": events}
+       # Include legacy null-status docs and explicitly approved events;
+       # exclude pending/rejected partner submissions.
+       visible = [e for e in events if not e.status or str(e.status) == "approved"]
+       return {"events": visible}
 
    except Exception as e:
        raise HTTPException(

@@ -1,8 +1,17 @@
 import CountUp from 'react-countup';
+import { determineEnv, makeApiRequest } from '../../../utils/api';
+import { User } from '@/types/user';
+import { EnrichmentProgram } from '@/types/program';
+import { Event } from '@/types/event';
+const WONDERHOOD_URL = determineEnv()
+
+const families: User[] = await makeApiRequest(`${WONDERHOOD_URL}/user/`);
+const { programs } = await makeApiRequest<{ programs: EnrichmentProgram[] }>(`${WONDERHOOD_URL}/program/`)
+const { events } = await makeApiRequest<{ events: Event[] }>(`${WONDERHOOD_URL}/event/`)
 
 const stats = [
-  { value: 23, suffix: "+", label: "Families Joined" },
-  { value: 100, suffix: "+", label: "Trips & Workshops Planned" },
+  { value: families.length, suffix: "+", label: "Families Joined" },
+  { value: programs.length + events.length, suffix: "+", label: "Events & Programs Planned" },
   { value: 100, suffix: "%", label: "Real-World Learning" },
   { value: 100, suffix: "%", label: "Mission-Driven" },
   { value: 100, suffix: "%", label: "Community-Focused" },
@@ -23,7 +32,7 @@ export default function ImpactStats() {
         <div className="w-full mt-2">
           <p className="text-base md:text-base lg:text-base xl:text-xl text-gray-600 max-w-5xl mx-auto text-center leading-relaxed">
             We believe learning flourishes when families and children come together.
-            <br/>
+            <br />
             WonderHood offers <span className="font-bold">free, real-world</span> experiences for homeschool and online learners, sparking new friendships, joyful discovery, and a sense of belonging in a vibrant community.
           </p>
         </div>
