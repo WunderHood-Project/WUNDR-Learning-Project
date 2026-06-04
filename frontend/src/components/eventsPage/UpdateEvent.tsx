@@ -136,7 +136,45 @@ export default function UpdateEvent() {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
+            setIsSubmitting(false)
             return
+        }
+
+        // Validate schoolAccess change against enrolled children.
+        // Uses singleEvent.childIds (already loaded) to skip the fetch entirely
+        // when no children are enrolled — no query for all users needed.
+        const newSchoolAccess = formEvent.schoolAccess
+        const originalSchoolAccess = singleEvent?.schoolAccess ?? 'all'
+        const schoolAccessChanged = newSchoolAccess !== originalSchoolAccess
+        const isRestrictive = newSchoolAccess !== 'all'
+        const enrolledChildIds = singleEvent?.childIds ?? []
+
+        if (schoolAccessChanged && isRestrictive && enrolledChildIds.length > 0) {
+            try {
+                const { children } = await makeApiRequest<{
+                    children: { firstName: string; lastName: string; schoolType: string }[]
+                }>(`${WONDERHOOD_URL}/event/${eventId}/attendees`, { method: "GET" })
+
+                const requiredSchoolType: Record<string, string> = {
+                    homeschool_only: 'homeschool',
+                    public_custer_only: 'public_custer',
+                    private_custer_only: 'private_custer',
+                }
+
+                const required = requiredSchoolType[newSchoolAccess]
+                const ineligible = children.filter(c => c.schoolType !== required)
+
+                if (ineligible.length > 0) {
+                    const names = ineligible.map(c => `${c.firstName} ${c.lastName}`).join(', ')
+                    setErrors({ schoolAccess: `Cannot change school access: ${names} ${ineligible.length === 1 ? 'is' : 'are'} not eligible for this restriction.` })
+                    setIsSubmitting(false)
+                    return
+                }
+            } catch {
+                setErrors({ schoolAccess: "Could not verify enrolled children eligibility. Please try again." })
+                setIsSubmitting(false)
+                return
+            }
         }
 
         // Create Payload
