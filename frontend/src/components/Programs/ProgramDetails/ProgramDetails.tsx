@@ -33,9 +33,20 @@ type ProgramWaitListEntry = {
   child?: Child;
 };
 
+type EmailWaitListEntry = {
+  id: string;
+  programId: string;
+  parentEmail: string;
+  childName: string;
+  status: string;
+  createdAt?: string;
+};
+
 type ProgramWaitListResponse = {
   count: number;
   waitlist: ProgramWaitListEntry[];
+  emailWaitlistCount: number;
+  emailWaitlist: EmailWaitListEntry[];
 };
 
 export default function ProgramDetails() {
@@ -49,6 +60,14 @@ export default function ProgramDetails() {
   // --- UI state ---
   const [serverError, setServerError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  // Email waitlist form
+  const [waitlistLeadChildName, setWaitlistLeadChildName] = useState('');
+  const [waitlistLeadEmail, setWaitlistLeadEmail] = useState('');
+  // Submission status
+  const [waitlistLeadSuccess, setWaitlistLeadSuccess] = useState(false);
+  const [waitlistLeadLoading, setWaitlistLeadLoading] = useState(false);
+  const [waitlistLeadError, setWaitlistLeadError] = useState<string | null>(null);
 
   // selected children for actions (enroll / waitlist)
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -68,6 +87,7 @@ export default function ProgramDetails() {
   const [waitListLoading, setWaitListLoading] = useState(false);
   const [waitListError, setWaitListError] = useState<string | null>(null);
   const [waitList, setWaitList] = useState<ProgramWaitListEntry[] | null>(null);
+  const [emailWaitList, setEmailWaitList] = useState<EmailWaitListEntry[] | null>(null);
   const [myWaitList, setMyWaitList] = useState<ProgramWaitListEntry[]>([]);
   const [removeWaitListId, setRemoveWaitListId] = useState<string | null>(null);
 
@@ -112,6 +132,7 @@ export default function ProgramDetails() {
       );
 
       setWaitList(res.waitlist ?? []);
+      setEmailWaitList(res.emailWaitlist ?? []);
     } catch (e) {
       setWaitListError(e instanceof Error ? e.message : 'Failed to load waitlist');
     } finally {
@@ -175,6 +196,45 @@ export default function ProgramDetails() {
     if (!user?.children?.length) return false;
     return user.children.some((child) => waitListChildSet.has(child.id));
   }, [user, waitListChildSet]);
+
+  // Email-only waitlist
+  const handleJoinEmailWaitlist = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    setWaitlistLeadError(null);
+    setWaitlistLeadLoading(true);
+
+    try {
+      await makeApiRequest(
+        `${WONDERHOOD_URL}/program/${programId}/waitlist-lead`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: {
+            parentEmail: waitlistLeadEmail,
+            childName: waitlistLeadChildName,
+            programId,
+          },
+        }
+      );
+
+      setWaitlistLeadSuccess(true);
+      setWaitlistLeadChildName('');
+      setWaitlistLeadEmail('');
+    } catch (err) {
+      setWaitlistLeadError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to join email waitlist.'
+      );
+    } finally {
+      setWaitlistLeadLoading(false);
+    }
+  };
 
   // --- join waitlist ---
   const handleJoinWaitlist = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -461,7 +521,9 @@ export default function ProgramDetails() {
       ) : (
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
           <p className="font-medium">
-            Please log in or create an account to enroll in programs.
+            {hasCapacity
+              ? 'Please log in or create an account to enroll in this program.'
+              : 'Create an account to manage enrollments and receive program and waitlist updates.'}
           </p>
           <div className="mt-2 flex gap-3">
             <OpenModalButton
@@ -475,6 +537,59 @@ export default function ProgramDetails() {
               modalComponent={<SignupModal />}
             />
           </div>
+
+          {!hasCapacity && (
+            <div className="mt-6 border-t pt-6">
+              <p className="text-center text-sm text-gray-500 mb-4">OR</p>
+
+              <p className="text-sm text-gray-700 mb-4">
+                Leave your email and your child&apos;s name and we&apos;ll contact you
+                when a spot opens.
+              </p>
+
+              {waitlistLeadSuccess ? (
+                <div className="rounded-lg bg-green-50 border border-green-200 p-4 text-green-700 text-sm">
+                  Thank you! We&apos;ll contact you if a spot becomes available.
+                </div>
+              ) : (
+                <form onSubmit={handleJoinEmailWaitlist} className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Child Full Name"
+                    value={waitlistLeadChildName}
+                    onChange={(e) => setWaitlistLeadChildName(e.target.value)}
+                    required
+                    className="w-full rounded-lg border px-3 py-2"
+                  />
+
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={waitlistLeadEmail}
+                    onChange={(e) => setWaitlistLeadEmail(e.target.value)}
+                    required
+                    className="w-full rounded-lg border px-3 py-2"
+                  />
+
+                  {waitlistLeadError && (
+                    <p className="text-sm text-red-600">
+                      {waitlistLeadError}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={waitlistLeadLoading}
+                    className="w-full rounded-lg bg-wonderorange px-4 py-3 text-white font-semibold hover:opacity-90 disabled:opacity-50"
+                  >
+                    {waitlistLeadLoading
+                      ? 'Submitting...'
+                      : 'Join Email Waitlist'}
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
         </div>
       )}
     </>
@@ -566,6 +681,7 @@ export default function ProgramDetails() {
             waitListOpen={waitListOpen}
             waitList={waitList}
             waitListLoading={waitListLoading}
+            emailWaitList={emailWaitList}
             waitListError={waitListError}
             onToggleWaitList={async () => {
               const next = !waitListOpen;

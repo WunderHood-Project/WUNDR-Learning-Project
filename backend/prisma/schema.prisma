@@ -417,6 +417,7 @@ model EnrichmentPrograms {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime?     @updatedAt
   waitlist         ProgramWaitlist[]
+  waitlistLeads    ProgramWaitlistLead[]
 }
 
 // ! ProgramWaitingList =============================================================================
@@ -451,6 +452,31 @@ model ProgramWaitlist {
   @@index([userId])
   @@index([programId, position]) 
   @@unique([programId, childId])
+}
+
+enum ProgramWaitlistLeadStatus {
+  waiting
+  contacted
+  registered
+  removed
+}
+
+model ProgramWaitlistLead {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  programId String @db.ObjectId
+  program   EnrichmentPrograms @relation(fields: [programId], references: [id])
+
+  parentEmail String
+  childName   String
+
+  status ProgramWaitlistLeadStatus @default(waiting)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([programId])
+  @@index([parentEmail])
 }
 
 // ! reviews        =============================================================================
