@@ -115,6 +115,16 @@ async def create_program(
     try:
         program = await db.enrichmentprograms.create(data=data)
 
+        # Counter for number of programs created
+        impact_stat = await db.impactstat.find_first()
+        if impact_stat:
+            await db.impactstat.update(
+            where={"id": impact_stat.id},
+            data = {
+                "totalProgramsCreated": {"increment": 1}
+            }
+        )
+
         # Send the email notification to all users where emailNotificationsEnabled = True upon event creation
         users = await db.users.find_many(
            where={"emailNotificationsEnabled": True}
@@ -515,6 +525,16 @@ async def update_program_status(
             where={"id": program_id},
             data={"status": status_data.status},
         )
+
+        if updated.status == "approved":
+            impact_stat = await db.impactstat.find_first()
+            if impact_stat:
+                await db.impactstat.update(
+                where={"id": impact_stat.id},
+                data = {
+                    "totalProgramsCreated": {"increment": 1}
+                }
+            )
 
         if existing.submittedById:
             await db.notifications.create(

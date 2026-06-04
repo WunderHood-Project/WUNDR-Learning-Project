@@ -633,3 +633,8 @@ class ProgramWaitlistLeadResponse(BaseModel):
     createdAt: datetime
     updatedAt: Optional[datetime] = None
     
+
+# ! Impact Stat
+class ImpactStat(BaseModel):
+    totalEventsCreated: int = Field(default=0) 
+    totalProgramsCreated: int = Field(default=0)

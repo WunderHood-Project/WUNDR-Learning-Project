@@ -90,7 +90,7 @@ const EventFields: React.FC<Props> = ({ form, errors, minDate, onChange, onImage
                     onChange={onChange}
                     rows={3}
                     placeholder="What to bring, attire, special instructions..."
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-wondergreen focus:ring-wondergreen"
+                    className="mt-1 block w-full border rounded shadow-sm px-3 py-2 focus:border-wondergreen focus:ring-wondergreen"
                 />
                 {errors.notes && (
                     <p className="mt-1 text-sm text-red-600">{errors.notes}</p>

@@ -642,3 +642,12 @@ model TaxReturnCredentials {
   donation                 Donations  @relation(fields: [donationId], references: [id])
   donationId               String     @unique @db.ObjectId
 }
+
+// ! ImpactStat =============================================================================
+model ImpactStat {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  totalEventsCreated   Int
+  totalProgramsCreated Int
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime? @default(now())
+}
