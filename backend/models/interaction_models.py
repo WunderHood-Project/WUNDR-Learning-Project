@@ -610,3 +610,9 @@ class ProgramWaitlistStatus(str, Enum):
 
 class ProgramWaitlistChildren(BaseModel):
     childIds: List[str]
+
+
+# ! Impact Stat
+class ImpactStat(BaseModel):
+    totalEventsCreated: int = Field(default=0) 
+    totalProgramsCreated: int = Field(default=0)
