@@ -9,7 +9,7 @@ const { totalEventsCreated, totalProgramsCreated } = await makeApiRequest<{ tota
 
 const stats = [
   { value: families.length, suffix: "+", label: "Families Joined" },
-  { value: totalEventsCreated + totalProgramsCreated, suffix: "+", label: "Events & Programs Planned" },
+  { value: totalEventsCreated + totalProgramsCreated, suffix: "+", label: "Events & Programs Published" },
   { value: 100, suffix: "%", label: "Real-World Learning" },
   { value: 100, suffix: "%", label: "Mission-Driven" },
   { value: 100, suffix: "%", label: "Community-Focused" },
