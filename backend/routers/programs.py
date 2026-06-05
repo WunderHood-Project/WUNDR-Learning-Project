@@ -1128,6 +1128,24 @@ async def create_program_waitlist_lead(
             detail="Program not found.",
         )
 
+    if program.status != "approved":
+        raise HTTPException(
+            status_code=400,
+            detail="Program is not available.",
+        )
+
+    if program.registrationType == "external":
+        raise HTTPException(
+            status_code=400,
+            detail="External registration programs do not support waitlists.",
+        )
+
+    if program.limit is None or program.participants < program.limit:
+        raise HTTPException(
+            status_code=400,
+            detail="This program still has available spots. Please enroll instead.",
+        )
+
     existing = await db.programwaitlistlead.find_first(
         where={
             "programId": program_id,
@@ -1142,13 +1160,19 @@ async def create_program_waitlist_lead(
             detail="This child is already on the email waitlist.",
         )
 
-    lead = await db.programwaitlistlead.create(
-        data={
-            "programId": program_id,
-            "parentEmail": lead_data.parentEmail,
-            "childName": lead_data.childName,
-        }
-    )
+    try:
+        lead = await db.programwaitlistlead.create(
+            data={
+                "programId": program_id,
+                "parentEmail": lead_data.parentEmail,
+                "childName": lead_data.childName,
+            }
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="This child is already on the email waitlist.",
+        )
 
     return {
         "message": "Added to email waitlist successfully.",

@@ -477,6 +477,7 @@ model ProgramWaitlistLead {
 
   @@index([programId])
   @@index([parentEmail])
+  @@unique([programId, parentEmail, childName])
 }
 
 // ! reviews        =============================================================================
