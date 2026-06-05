@@ -28,6 +28,15 @@ type ProgramWaitListEntry = {
   child?: WaitListChild;
 };
 
+type EmailWaitListEntry = {
+  id: string;
+  programId: string;
+  parentEmail: string;
+  childName: string;
+  status: string;
+  createdAt?: string;
+};
+
 type Props = {
   program: EnrichmentProgram;
   hasCapacity: boolean;
@@ -45,6 +54,7 @@ type Props = {
   enrollmentContent?: ReactNode;
   waitListOpen: boolean;
   waitList: ProgramWaitListEntry[] | null;
+  emailWaitList: EmailWaitListEntry[] | null;
   waitListLoading: boolean;
   waitListError: string | null;
   onToggleWaitList: () => void;
@@ -70,6 +80,7 @@ export default function ProgramDetailsAsideCard({
   waitListError,
   onToggleWaitList,
   userHasChildInWaitList,
+  emailWaitList,
 }: Props) {
   const enrolled = program.participants ?? 0;
   const limit = program.limit;
@@ -492,6 +503,37 @@ export default function ProgramDetailsAsideCard({
             )}
           </div>
         )}
+        {/* Admin email waitlist */}
+        {!isExternalRegistration && isAdmin && waitListOpen && emailWaitList?.length ? (
+          <div className="mt-4">
+            <p className="text-sm font-bold text-wondergreen uppercase tracking-wide mb-3">
+              Email Waitlist
+            </p>
+
+            <ul className="space-y-2">
+              {emailWaitList.map((entry) => (
+                <li
+                  key={entry.id}
+                  className="rounded-xl border border-white/60 bg-white/60 px-3 py-2"
+                >
+                  <p className="text-sm font-semibold text-gray-900">
+                    {entry.childName}
+                  </p>
+
+                  <p className="text-xs text-gray-700 mt-1">
+                    {entry.parentEmail}
+                  </p>
+
+                  {entry.createdAt && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(entry.createdAt).toLocaleDateString()}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
     </aside>
   );

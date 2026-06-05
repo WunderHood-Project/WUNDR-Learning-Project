@@ -10,6 +10,7 @@ from models.interaction_models import (
     ProgramStatusUpdate,
     EnrollChildren,
     NotificationCreate,
+    ProgramWaitlistLeadCreate,
 )
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication, get_program_link, convert_iso_date_to_string
@@ -874,10 +875,20 @@ async def get_program_waitlist(
             }
         }
     )
+    # get parents who joined the waitlist without creating an account
+    email_waitlist = await db.programwaitlistlead.find_many(
+        where={
+            "programId": program_id,
+            "status": "waiting",
+        },
+        order={"createdAt": "asc"},
+    )
 
     return {
         "count": len(waitlist),
         "waitlist": waitlist,
+        "emailWaitlistCount": len(email_waitlist),
+        "emailWaitlist": email_waitlist,
     }
 
 # ---------------------------------------------------------------------------
@@ -1091,4 +1102,79 @@ async def remove_child_from_program_waitlist(
     return {
         "waitlist": updated,
         "message": "Child removed from waitlist successfully.",
+    }
+
+# ---------------------------------------------------------------------------
+# POST /program/{program_id}/waitlist-lead
+# (public — email only waitlist)
+# ---------------------------------------------------------------------------
+
+@router.post("/{program_id}/waitlist-lead", status_code=status.HTTP_201_CREATED)
+async def create_program_waitlist_lead(
+    program_id: str,
+    lead_data: ProgramWaitlistLeadCreate,
+):
+    """
+    Simple waitlist for parents who do not want to register yet.
+    """
+
+    program = await db.enrichmentprograms.find_unique(
+        where={"id": program_id}
+    )
+
+    if not program:
+        raise HTTPException(
+            status_code=404,
+            detail="Program not found.",
+        )
+
+    if program.status != "approved":
+        raise HTTPException(
+            status_code=400,
+            detail="Program is not available.",
+        )
+
+    if program.registrationType == "external":
+        raise HTTPException(
+            status_code=400,
+            detail="External registration programs do not support waitlists.",
+        )
+
+    if program.limit is None or program.participants < program.limit:
+        raise HTTPException(
+            status_code=400,
+            detail="This program still has available spots. Please enroll instead.",
+        )
+
+    existing = await db.programwaitlistlead.find_first(
+        where={
+            "programId": program_id,
+            "parentEmail": lead_data.parentEmail,
+            "childName": lead_data.childName,
+        }
+    )
+
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="This child is already on the email waitlist.",
+        )
+
+    try:
+        lead = await db.programwaitlistlead.create(
+            data={
+                "programId": program_id,
+                "parentEmail": lead_data.parentEmail,
+                "childName": lead_data.childName,
+            }
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="This child is already on the email waitlist.",
+        )
+
+    return {
+        "message": "Added to email waitlist successfully.",
+        "lead": lead,
     }

@@ -611,6 +611,28 @@ class ProgramWaitlistStatus(str, Enum):
 class ProgramWaitlistChildren(BaseModel):
     childIds: List[str]
 
+class ProgramWaitlistLeadStatus(str, Enum):
+    WAITING = "waiting"
+    CONTACTED = "contacted"
+    REGISTERED = "registered"
+    REMOVED = "removed"
+
+
+class ProgramWaitlistLeadCreate(BaseModel):
+    programId: str = Field(min_length=1)
+    parentEmail: EmailStr
+    childName: str = Field(min_length=1, max_length=100)
+
+
+class ProgramWaitlistLeadResponse(BaseModel):
+    id: str
+    programId: str
+    parentEmail: EmailStr
+    childName: str
+    status: ProgramWaitlistLeadStatus
+    createdAt: datetime
+    updatedAt: Optional[datetime] = None
+    
 
 # ! Impact Stat
 class ImpactStat(BaseModel):
