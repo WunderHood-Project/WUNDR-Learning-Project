@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field, field_validator, EmailStr, HttpUrl
+from pydantic import BaseModel, Field, field_validator, EmailStr, HttpUrl, ConfigDict
 from typing import List, TYPE_CHECKING, Optional, Literal
 from enum import Enum
 from datetime import datetime, timezone
@@ -636,5 +636,48 @@ class ProgramWaitlistLeadResponse(BaseModel):
 
 # ! Impact Stat
 class ImpactStat(BaseModel):
-    totalEventsCreated: int = Field(default=0) 
+    totalEventsCreated: int = Field(default=0)
     totalProgramsCreated: int = Field(default=0)
+
+
+# ! Program Messages ============================================================
+class ProgramThreadStatus(str, Enum):
+    OPEN = "open"
+    CLOSED = "closed"
+
+
+class ProgramThreadCreate(BaseModel):
+    subject: str = Field(min_length=1, max_length=200)
+    content: str = Field(min_length=1, max_length=2000)
+
+
+class ProgramThreadStatusUpdate(BaseModel):
+    status: ProgramThreadStatus
+
+
+class ProgramMessageCreate(BaseModel):
+    content: str = Field(min_length=1, max_length=2000)
+
+
+class ProgramMessageResponse(BaseModel):
+    id: str
+    threadId: str
+    senderId: str
+    content: str
+    readByIds: List[str]
+    createdAt: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProgramThreadResponse(BaseModel):
+    id: str
+    programId: str
+    userId: str
+    subject: str
+    status: ProgramThreadStatus
+    messages: List[ProgramMessageResponse] = []
+    createdAt: datetime
+    updatedAt: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)

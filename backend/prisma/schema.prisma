@@ -55,6 +55,10 @@ model Users {
   programs          EnrichmentPrograms[] @relation(fields: [programIds], references: [id])
   submittedPrograms EnrichmentPrograms[] @relation("SubmittedPrograms")
   programWaitlist   ProgramWaitlist[]
+
+  // Program message threads
+  initiatedThreads  ProgramThread[]      @relation("ThreadInitiator")
+  sentMessages      ProgramMessage[]     @relation("MessageSender")
 }
 
 enum Roles {
@@ -418,6 +422,7 @@ model EnrichmentPrograms {
   updatedAt        DateTime?     @updatedAt
   waitlist         ProgramWaitlist[]
   waitlistLeads    ProgramWaitlistLead[]
+  threads          ProgramThread[]
 }
 
 // ! ProgramWaitingList =============================================================================
@@ -651,4 +656,45 @@ model ImpactStat {
   totalProgramsCreated Int
   createdAt            DateTime @default(now())
   updatedAt            DateTime? @default(now())
+}
+
+// ! Program Messages =============================================================================
+enum ProgramThreadStatus {
+  open
+  closed
+}
+
+model ProgramThread {
+  id        String              @id @default(auto()) @map("_id") @db.ObjectId
+
+  programId String              @db.ObjectId
+  program   EnrichmentPrograms  @relation(fields: [programId], references: [id])
+  isPrivate  Boolean            @default(false)
+  userId    String              @db.ObjectId
+  user      Users               @relation("ThreadInitiator", fields: [userId], references: [id])
+
+  subject   String
+  status    ProgramThreadStatus @default(open)
+
+  messages  ProgramMessage[]
+
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+model ProgramMessage {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+
+  threadId  String        @db.ObjectId
+  thread    ProgramThread @relation(fields: [threadId], references: [id])
+
+  senderId  String        @db.ObjectId
+  sender    Users         @relation("MessageSender", fields: [senderId], references: [id])
+
+  content   String
+
+  // IDs of users who have read this message
+  readByIds String[]      @db.ObjectId
+
+  createdAt DateTime      @default(now())
 }
