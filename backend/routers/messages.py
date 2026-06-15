@@ -1,6 +1,7 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from db.prisma_client import db
 from typing import Annotated
+from .notifications import send_email_multiple_users
 from models.user_models import User
 from models.interaction_models import (
     ProgramThreadCreate,
@@ -123,7 +124,7 @@ async def get_all_threads_admin(
 
 
 # ---------------------------------------------------------------------------
-# POST /program/{program_id}/threads/direct
+# POST /program/{program_id}/threads/directly-admin
 # User sends a private thread directly to admins (isPrivate=True).
 # ---------------------------------------------------------------------------
 @router.post(
@@ -134,6 +135,7 @@ async def create_direct_thread(
     program_id: str,
     body: ProgramThreadCreate,
     current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks
 ):
     enforce_authentication(current_user)
 
@@ -156,6 +158,26 @@ async def create_direct_thread(
             "thread": {"connect": {"id": thread.id}},
             "sender": {"connect": {"id": current_user.id}},
         }
+    )
+
+    admins = await db.users.find_many(where={"role": "admin"})
+
+    await db.notifications.create_many(
+        data=[{
+            "title": thread.subject,
+            "description": message.content,
+            "isRead": False,
+            "userId": admin.id
+        }
+        for admin in admins
+        ]
+    )
+
+    background_tasks.add_task(
+        send_email_multiple_users,
+        [admin.email for admin in admins],
+        f"New Direct Message Thread: {thread.subject}",
+        f"You have a new direct message thread regarding program '{program.name}'.\n\nSubject: {thread.subject}\n\nMessage: {message.content}\n\nPlease log in to the admin dashboard to reply."
     )
 
     return {"data": {"thread": thread, "message": message}, "message": "Direct message sent"}

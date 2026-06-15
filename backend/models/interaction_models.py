@@ -648,6 +648,7 @@ class ProgramThreadStatus(str, Enum):
 
 class ProgramThreadCreate(BaseModel):
     subject: str = Field(min_length=1, max_length=200)
+    isPrivate: bool = Field(default=False)
     content: str = Field(min_length=1, max_length=2000)
 
 
