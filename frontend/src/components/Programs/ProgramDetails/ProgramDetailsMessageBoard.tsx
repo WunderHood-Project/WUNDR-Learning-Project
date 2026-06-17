@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, MessageCircle, Send, Pencil, Trash2, Check, X } from 'lucide-react';
 import { makeApiRequest, determineEnv } from '../../../../utils/api';
+import OpenModalButton from '@/context/openModalButton';
+import ProgramDetailsThreadDeleteModal from './modals/ProgramDetailsThreadDeleteModal';
+import ProgramDetailsMessageDeleteModal from './modals/ProgramDetailsMessageDeleteModal';
 import { useUser } from '../../../../hooks/useUser';
 import type { ProgramThread } from '@/types/program';
 
@@ -365,14 +368,16 @@ export default function ProgramDetailsMessageBoard({ programId }: Props) {
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
-                        <button
-                          onClick={() => handleDeleteThread(thread.id)}
-                          disabled={deleteLoading[thread.id]}
+                        <OpenModalButton
                           className="p-1.5 text-gray-400 hover:text-red-500 transition disabled:opacity-50"
-                          title="Delete thread"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                          buttonText={<Trash2 className="w-3.5 h-3.5" />}
+                          modalComponent={
+                            <ProgramDetailsThreadDeleteModal
+                              thread={thread}
+                              onDelete={() => handleDeleteThread(thread.id)}
+                            />
+                          }
+                        />
                       </div>
                     )}
                   </div>
@@ -433,14 +438,24 @@ export default function ProgramDetailsMessageBoard({ programId }: Props) {
                                   >
                                     <Pencil className="w-3 h-3" />
                                   </button>
-                                  <button
+                                  {/* <button
                                     onClick={() => handleDeleteMessage(msg.id)}
                                     disabled={deleteLoading[msg.id]}
                                     className="p-1.5 text-gray-400 hover:text-red-500 transition disabled:opacity-50"
                                     title="Delete message"
                                   >
                                     <Trash2 className="w-3 h-3" />
-                                  </button>
+                                  </button> */}
+                                  <OpenModalButton
+                                    className="p-1.5 text-gray-400 hover:text-red-500 transition disabled:opacity-50"
+                                    buttonText={<Trash2 className="w-3 h-3" />}
+                                    modalComponent={
+                                      <ProgramDetailsMessageDeleteModal
+                                        message={msg}
+                                        onDelete={() => handleDeleteMessage(msg.id)}
+                                      />
+                                    }
+                                  />
                                 </div>
                               )}
                             </div>
