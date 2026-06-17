@@ -7,6 +7,8 @@ from models.interaction_models import (
     ProgramThreadCreate,
     ProgramThreadStatusUpdate,
     ProgramMessageCreate,
+    ProgramThreadUpdate,
+    ProgramMessageUpdate
 )
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
@@ -220,6 +222,37 @@ async def reply_to_thread(
 
     return {"data": message, "message": "Message sent"}
 
+# ---------------------------------------------------------------------------
+# PATCH /program/{program_id}/threads/{thread_id}
+# A current user (admin or thread owner) can update the thread subject or privacy setting.
+# ---------------------------------------------------------------------------
+@router.patch(
+        "/program/{program_id}/threads/{thread_id}",
+        status_code=status.HTTP_200_OK
+        )
+async def update_thread(
+    program_id: str,
+    thread_id: str,
+    body: ProgramThreadUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_authentication(current_user)
+
+    thread = await db.programthread.find_unique(
+        where={"id": thread_id},
+    )
+    if not thread or thread.programId != program_id:
+        raise HTTPException(status_code=404, detail="Thread not found")
+
+    if thread.userId != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    updated_thread =await db.programthread.update(
+        where={"id": thread_id},
+        data=body.model_dump(exclude_unset=True)
+    )
+
+    return {"data": updated_thread, "message": "Thread updated"}
 
 # ---------------------------------------------------------------------------
 # PATCH /program/{program_id}/threads/{thread_id}/read
@@ -280,7 +313,37 @@ async def update_thread_status(
 
     return {"data": updated, "message": f"Thread marked as {body.status.value}"}
 
+# ---------------------------------------------------------------------------
+# DELETE /program/{program_id}/threads/{thread_id}/me
+# User: delete a thread and all its messages.
+# ---------------------------------------------------------------------------
+@router.delete("/program/{program_id}/threads/{thread_id}/me", status_code=status.HTTP_200_OK)
+async def delete_my_thread(
+    program_id: str,
+    thread_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_authentication(current_user)
 
+    thread= await db.programthread.find_unique(
+        where={"id": thread_id},
+    )
+
+    if not thread or thread.programId != program_id:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    
+    if thread.userId != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    await db.programmessage.delete_many(
+        where={"threadId": thread_id}
+    )
+
+    await db.programthread.delete(
+        where={"id": thread_id}
+    )
+
+    return {"message": "Thread deleted"}
 # ---------------------------------------------------------------------------
 # DELETE /program/{program_id}/threads/{thread_id}
 # Admin: delete a thread and all its messages.
@@ -301,3 +364,64 @@ async def delete_thread(
     await db.programthread.delete(where={"id": thread_id})
 
     return {"message": "Thread deleted"}
+
+# ---------------------------------------------------------------------------
+# PATCH /program/{program_id}/messages/{message_id}
+# User can edit their own message content.
+# ---------------------------------------------------------------------------
+@router.patch("/program/{program_id}/messages/{message_id}", status_code=status.HTTP_200_OK)
+async def edit_message(
+    program_id: str,
+    message_id: str,
+    body: ProgramMessageUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_authentication(current_user)
+
+    message = await db.programmessage.find_unique(where={"id": message_id})
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    thread = await db.programthread.find_unique(where={"id": message.threadId})
+    if not thread or thread.programId != program_id:
+        raise HTTPException(status_code=404, detail="Thread not found")
+
+    if message.senderId != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    if body.content is None or body.content.strip() == "":
+        raise HTTPException(status_code=400, detail="Message content cannot be empty")
+    
+    updated = await db.programmessage.update(
+        where={"id": message_id},
+        data={"content": body.content},
+    )
+
+    return {"data": updated, "message": "Message updated"}
+
+# ---------------------------------------------------------------------------
+# DELETE /program/{program_id}/messages/{message_id}
+# User can delete their own message.
+# ---------------------------------------------------------------------------
+@router.delete("/program/{program_id}/messages/{message_id}", status_code=status.HTTP_200_OK)
+async def delete_message(
+    program_id: str,
+    message_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_authentication(current_user)
+
+    message = await db.programmessage.find_unique(where={"id": message_id})
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    thread = await db.programthread.find_unique(where={"id": message.threadId})
+    if not thread or thread.programId != program_id:
+        raise HTTPException(status_code=404, detail="Thread not found")
+
+    if message.senderId != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    await db.programmessage.delete(where={"id": message_id})
+
+    return {"message": "Message deleted"}

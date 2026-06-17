@@ -651,6 +651,9 @@ class ProgramThreadCreate(BaseModel):
     isPrivate: bool = Field(default=False)
     content: str = Field(min_length=1, max_length=2000)
 
+class ProgramThreadUpdate(BaseModel):
+    subject: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    isPrivate: Optional[bool] = Field(default=None)
 
 class ProgramThreadStatusUpdate(BaseModel):
     status: ProgramThreadStatus
@@ -659,6 +662,8 @@ class ProgramThreadStatusUpdate(BaseModel):
 class ProgramMessageCreate(BaseModel):
     content: str = Field(min_length=1, max_length=2000)
 
+class ProgramMessageUpdate(BaseModel):
+    content: Optional[str] = Field(default=None, min_length=1, max_length=2000)
 
 class ProgramMessageResponse(BaseModel):
     id: str

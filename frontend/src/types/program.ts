@@ -56,3 +56,26 @@ type ProgramMutable = Omit<EnrichmentProgram, ServerManaged>;
 export type CreateProgramPayload = ProgramMutable;
 export type UpdateProgramPayload = Partial<ProgramMutable>;
 export type ProgramFormErrors = Partial<Record<string, string>>;
+
+export type ProgramThreadStatus = "open" | "closed";
+
+export type ProgramMessage = {
+  id: string;
+  threadId: string;
+  senderId: string;
+  content: string;
+  readByIds: string[];
+  createdAt: string;
+};
+
+export type ProgramThread = {
+  id: string;
+  programId: string;
+  userId: string;
+  subject: string;
+  status: ProgramThreadStatus;
+  isPrivate: boolean;
+  messages: ProgramMessage[];
+  createdAt: string;
+  updatedAt?: string;
+};
