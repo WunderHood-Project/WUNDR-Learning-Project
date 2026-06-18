@@ -6,6 +6,7 @@ import { makeApiRequest, determineEnv } from '../../../../utils/api';
 import OpenModalButton from '@/context/openModalButton';
 import ProgramDetailsThreadDeleteModal from './modals/ProgramDetailsThreadDeleteModal';
 import ProgramDetailsMessageDeleteModal from './modals/ProgramDetailsMessageDeleteModal';
+import ProgramDetailsDirectMessages from './ProgramDetailsDirectMessages';
 import { useUser } from '../../../../hooks/useUser';
 import type { ProgramThread } from '@/types/program';
 
@@ -85,6 +86,8 @@ export default function ProgramDetailsMessageBoard({ programId }: Props) {
   const [editMessageContent, setEditMessageContent] = useState('');
   const [editMessageLoading, setEditMessageLoading] = useState<Record<string, boolean>>({});
 
+  const [privateRefreshKey, setPrivateRefreshKey] = useState(0);
+
   useEffect(() => {
     if (!user) return;
     loadThreads();
@@ -122,6 +125,7 @@ export default function ProgramDetailsMessageBoard({ programId }: Props) {
       setNewContent('');
       setSendToAdminsOnly(false);
       setShowNewThread(false);
+      if (sendToAdminsOnly) setPrivateRefreshKey(k => k + 1);
       await loadThreads();
     } catch (err) {
       setNewThreadError(err instanceof Error ? err.message : 'Failed to create thread');
@@ -506,6 +510,8 @@ export default function ProgramDetailsMessageBoard({ programId }: Props) {
           })}
         </div>
       )}
+
+      <ProgramDetailsDirectMessages programId={programId} refreshKey={privateRefreshKey} />
     </section>
   );
 }

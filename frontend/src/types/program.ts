@@ -71,6 +71,10 @@ export type ProgramMessage = {
 export type ProgramThread = {
   id: string;
   programId: string;
+  program?: {
+    id: string;
+    name: string;
+  };
   userId: string;
   subject: string;
   status: ProgramThreadStatus;

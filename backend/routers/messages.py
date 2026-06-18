@@ -124,6 +124,29 @@ async def get_all_threads_admin(
 
     return {"data": threads, "count": len(threads), "message": "Threads retrieved"}
 
+# ---------------------------------------------------------------------------
+# GET /admin/private-threads
+# Admin: all private threads, including direct messages. For Admin dashboard.
+# ---------------------------------------------------------------------------
+@router.get("/admin/private-threads")
+async def get_private_threads_admin(
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_admin(current_user)
+
+    threads = await db.programthread.find_many(
+        where={
+            "isPrivate": True,
+            "status": "open"
+            },
+        include={
+            "program": True,
+            "messages": True,
+            },
+        order={"createdAt": "desc"},
+    )
+
+    return {"data": threads, "count": len(threads), "message": "Private threads retrieved"}
 
 # ---------------------------------------------------------------------------
 # POST /program/{program_id}/threads/directly-admin
@@ -212,6 +235,37 @@ async def reply_to_thread(
     if not is_admin and thread.userId != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
 
+    message = await db.programmessage.create(
+        data={
+            "content": body.content,
+            "thread": {"connect": {"id": thread_id}},
+            "sender": {"connect": {"id": current_user.id}},
+        }
+    )
+
+    return {"data": message, "message": "Message sent"}
+
+# ---------------------------------------------------------------------------
+# POST /admin/threads/{thread_id}/messages
+# Admin: Reply to an existing PRIVATE thread.
+# ---------------------------------------------------------------------------
+@router.post("/admin/threads/{thread_id}/messages", status_code=status.HTTP_201_CREATED)
+async def admin_reply_to_thread(
+    thread_id: str,
+    body: ProgramMessageCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    enforce_admin(current_user)
+
+    thread = await db.programthread.find_unique(
+        where={"id": thread_id},
+    )
+    if not thread or not thread.isPrivate:
+        raise HTTPException(status_code=404, detail="Private thread not found")
+    
+    if thread.status == "closed":
+        raise HTTPException(status_code=400, detail="Thread is closed")
+    
     message = await db.programmessage.create(
         data={
             "content": body.content,
