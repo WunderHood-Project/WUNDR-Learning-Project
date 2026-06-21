@@ -15,6 +15,7 @@ import LoginModal from '@/components/login/LoginModal';
 import SignupModal from '@/components/signup/SignupModal';
 import ProgramDetailsAboutSection from './ProgramDetailsAboutSection';
 import ProgramDetailsAsideCard from './ProgramDetailsAsideCard';
+import ProgramDetailsMessageBoard from './ProgramDetailsMessageBoard';
 import type { Child } from '@/types/child';
 import { ageOnDate } from '../../../../utils/calculateAge';
 
@@ -696,6 +697,8 @@ export default function ProgramDetails() {
             userHasChildInWaitList={userHasChildInWaitList}
           />
         </div>
+
+        <ProgramDetailsMessageBoard programId={programId} />
       </main>
     </div>
   );

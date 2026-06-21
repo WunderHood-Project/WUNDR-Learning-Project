@@ -13,7 +13,7 @@ const tile =
 
 export default function AdministrationPage({ title, children }: Props) {
   return (
-    <div className="max-w-6xl mx-auto p-6 grid gap-5">
+    <div className="max-w-7xl mx-auto p-6 grid gap-5">
       {/* Top bar */}
       <div className="grid gap-1">
         <h1 className="text-2xl font-bold">{title}</h1>
@@ -39,6 +39,7 @@ export default function AdministrationPage({ title, children }: Props) {
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partners">Partners</Link>
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partner-events">Partner Events</Link>
         <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/partner-programs">Partner Programs</Link>
+        <Link className={`${tile} shrink-0 min-w-[180px]`} href="/admin/messages">Private Messages</Link>
       </nav>
 
 

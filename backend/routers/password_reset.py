@@ -65,11 +65,6 @@ async def forgot_password(
 
             To reset your password, please click the <a href="{link}">link</a>.
 
-            Best Regards,
-
-
-            WonderHood Project Team
-            info@whproject.org | whproject.org
         """
 
     # Send the email
