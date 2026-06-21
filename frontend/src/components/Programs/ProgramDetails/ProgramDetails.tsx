@@ -458,8 +458,8 @@ export default function ProgramDetails() {
                     key={child.id}
                     htmlFor={childId}
                     className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isChecked
-                        ? 'border-wondergreen bg-wondergreen/5'
-                        : 'border-gray-200 bg-gray-50'
+                      ? 'border-wondergreen bg-wondergreen/5'
+                      : 'border-gray-200 bg-gray-50'
                       }`}
                   >
                     <input
@@ -488,8 +488,8 @@ export default function ProgramDetails() {
             <button
               type="submit"
               className={`rounded-lg px-6 py-3 text-white font-bold uppercase tracking-wide text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${hasCapacity
-                  ? 'bg-wondergreen hover:bg-wonderleaf'
-                  : 'bg-wonderorange hover:bg-wonderorange/90'
+                ? 'bg-wondergreen hover:bg-wonderleaf'
+                : 'bg-wonderorange hover:bg-wonderorange/90'
                 }`}
               disabled={selected.size === 0}
             >

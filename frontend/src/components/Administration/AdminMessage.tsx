@@ -124,11 +124,10 @@ export default function AdminMessage({ programId }: Props) {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-semibold text-gray-800 truncate">{thread.subject}</p>
                       <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          isClosed
-                            ? 'bg-gray-100 text-gray-500'
-                            : 'bg-green-100 text-green-700'
-                        }`}
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${isClosed
+                          ? 'bg-gray-100 text-gray-500'
+                          : 'bg-green-100 text-green-700'
+                          }`}
                       >
                         {isClosed ? 'Closed' : 'Open'}
                       </span>
@@ -193,11 +192,10 @@ export default function AdminMessage({ programId }: Props) {
                       <button
                         onClick={() => handleStatusToggle(thread)}
                         disabled={statusLoading[thread.id]}
-                        className={`flex items-center gap-1.5 text-xs font-medium transition disabled:opacity-50 ${
-                          isClosed
-                            ? 'text-green-700 hover:text-green-600'
-                            : 'text-gray-500 hover:text-gray-700'
-                        }`}
+                        className={`flex items-center gap-1.5 text-xs font-medium transition disabled:opacity-50 ${isClosed
+                          ? 'text-green-700 hover:text-green-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                          }`}
                       >
                         {isClosed
                           ? <><CheckCircle className="w-3.5 h-3.5" /> Reopen thread</>

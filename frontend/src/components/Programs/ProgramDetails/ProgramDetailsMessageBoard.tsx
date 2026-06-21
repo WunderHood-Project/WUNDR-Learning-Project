@@ -375,9 +375,9 @@ export default function ProgramDetailsMessageBoard({ programId }: Props) {
                         <OpenModalButton
                           className="p-1.5 text-gray-400 hover:text-red-500 transition disabled:opacity-50"
                           buttonText={<Trash2 className="w-3.5 h-3.5" />}
+                          disabled={!!deleteLoading[thread.id]}
                           modalComponent={
                             <ProgramDetailsThreadDeleteModal
-                              thread={thread}
                               onDelete={() => handleDeleteThread(thread.id)}
                             />
                           }
@@ -453,9 +453,9 @@ export default function ProgramDetailsMessageBoard({ programId }: Props) {
                                   <OpenModalButton
                                     className="p-1.5 text-gray-400 hover:text-red-500 transition disabled:opacity-50"
                                     buttonText={<Trash2 className="w-3 h-3" />}
+                                    disabled={!!deleteLoading[msg.id]}
                                     modalComponent={
                                       <ProgramDetailsMessageDeleteModal
-                                        message={msg}
                                         onDelete={() => handleDeleteMessage(msg.id)}
                                       />
                                     }

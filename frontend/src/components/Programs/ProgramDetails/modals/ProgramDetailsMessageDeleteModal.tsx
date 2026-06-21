@@ -1,13 +1,11 @@
 import { useModal } from "../../../../context/modal";
-import { ProgramMessage } from "@/types/program";
 import { FaExclamationTriangle, FaTrash } from 'react-icons/fa';
 
 type Props = {
-    message: ProgramMessage;
     onDelete: () => void;
 }
 
-const ProgramDetailsMessageDeleteModal: React.FC<Props> = ({ message, onDelete }) => {
+const ProgramDetailsMessageDeleteModal: React.FC<Props> = ({ onDelete }) => {
     const { closeModal } = useModal();
 
     return (
