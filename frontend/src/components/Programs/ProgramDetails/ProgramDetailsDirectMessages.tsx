@@ -181,9 +181,8 @@ export default function ProgramDetailsDirectMessages({ programId, refreshKey }: 
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="font-semibold text-gray-800 truncate">{thread.subject}</p>
                           <span
-                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                              isClosed ? 'bg-gray-100 text-gray-500' : 'bg-green-100 text-green-700'
-                            }`}
+                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${isClosed ? 'bg-gray-100 text-gray-500' : 'bg-green-100 text-green-700'
+                              }`}
                           >
                             {isClosed ? 'Closed' : 'Open'}
                           </span>
