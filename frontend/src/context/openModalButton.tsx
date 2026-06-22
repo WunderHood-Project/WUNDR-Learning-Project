@@ -7,6 +7,7 @@ interface OpenModalButtonProps {
     buttonText: React.ReactNode;
     onButtonClick?: () => void;
     onModalClose?: () => void;
+    disabled?: boolean;
 }
 
 function OpenModalButton({
@@ -14,7 +15,8 @@ function OpenModalButton({
     modalComponent,
     buttonText,
     onButtonClick,
-    onModalClose
+    onModalClose,
+    disabled = false,
 }: OpenModalButtonProps) {
     const {setModalContent, setOnModalClose} = useModal()
 
@@ -24,7 +26,7 @@ function OpenModalButton({
         if (typeof onButtonClick === 'function') onButtonClick()
     }
 
-    return <button className={`modal-button ${className}`} onClick={onClick}>{buttonText}</button>
+    return <button className={`modal-button ${className}`} onClick={onClick} disabled={disabled}>{buttonText}</button>
 }
 
 export default OpenModalButton

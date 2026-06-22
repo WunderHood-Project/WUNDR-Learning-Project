@@ -31,6 +31,7 @@ from routers.policies import router as policies_router
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from routers.impact import router as impact_router
+from routers.messages import router as messages_router
 
 
 # When we start the app, connect to the db. When we shut down the app, disconnect
@@ -101,6 +102,7 @@ app.include_router(contact_router, prefix="/contact", tags=["contact"])
 app.include_router(waivers_router, prefix="/api/waivers", tags=["waivers"])
 app.include_router(policies_router, prefix="/api/policies", tags=["policies"])
 app.include_router(impact_router, prefix="/impact", tags=["impact"])
+app.include_router(messages_router, tags=["program-messages"])
 
 
 

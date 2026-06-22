@@ -36,13 +36,22 @@ const WONDERHOOD_URL = determineEnv();
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   // Core auth state
-  const [user, setUser]         = useState<User | null>(null);
-  const [token, setToken]       = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const s = localStorage.getItem('user');
+      return s ? (JSON.parse(s) as User) : null;
+    } catch { return null; }
+  });
+  const [token, setToken] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('token');
+  });
 
   // Status flags
-  const [authReady, setAuthReady]     = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   const [loadingUser, setLoadingUser] = useState(false);
-  const [userError, setUserError]     = useState<string | null>(null);
+  const [userError, setUserError] = useState<string | null>(null);
 
   /**
    * 1) On first mount, restore auth from localStorage and mark that
@@ -50,12 +59,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    *    Any JSON parse errors are ignored deliberately.
    */
   useEffect(() => {
-    try {
-      const storedUser  = localStorage.getItem("user");
-      const storedToken = localStorage.getItem("token");
-      if (storedUser)  setUser(JSON.parse(storedUser));
-      if (storedToken) setToken(storedToken);
-    } catch { /* ignore corrupted storage */ }
+    // try {
+    //   const storedUser = localStorage.getItem("user");
+    //   const storedToken = localStorage.getItem("token");
+    //   if (storedUser) setUser(JSON.parse(storedUser));
+    //   if (storedToken) setToken(storedToken);
+    // } catch { /* ignore corrupted storage */ }
     setAuthReady(true);
   }, []);
 
@@ -65,12 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   useEffect(() => {
     if (user) localStorage.setItem("user", JSON.stringify(user));
-    else      localStorage.removeItem("user");
+    else localStorage.removeItem("user");
   }, [user]);
 
   useEffect(() => {
     if (token) localStorage.setItem("token", token);
-    else       localStorage.removeItem("token");
+    else localStorage.removeItem("token");
   }, [token]);
 
   /**
@@ -83,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserError(null);
     try {
       const data = await makeApiRequest<User>(`${WONDERHOOD_URL}/user/me`, {
-          headers: { Authorization: `Bearer ${token}`}
+        headers: { Authorization: `Bearer ${token}` }
       })
       setUser(data)
     } catch (err) {
