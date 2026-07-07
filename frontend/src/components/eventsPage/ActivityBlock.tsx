@@ -15,6 +15,9 @@ interface Props {
   isAdmin: boolean;
   onDeleteEvent: (id: string) => void;
   onDeleteProgram: (id: string) => void;
+  showPastButton?: boolean;
+  showPastEvents?: boolean;
+  onTogglePastEvents?: () => void;
 }
 
 /** Theme per activity (bar, title, chip colors) */
@@ -82,6 +85,9 @@ export default function ActivityBlock({
   isAdmin,
   onDeleteEvent,
   onDeleteProgram,
+  showPastButton,
+  showPastEvents,
+  onTogglePastEvents,
 }: Props) {
   const theme = getTheme(activityName);
 
@@ -146,17 +152,28 @@ export default function ActivityBlock({
     <section className="mb-16">
       {/* --- Minimal header: icon chip + title + thin accent bar --- */}
       <div className="mb-4">
-        <div className="flex items-center gap-3">
-          <span
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span
             className={`inline-grid h-12 w-12 place-items-center rounded-xl ring-1 ${theme.chipBg} ${theme.chipRing}`}
             aria-hidden="true"
-          >
-            <HeaderIcon name={activityName} />
-          </span>
+            >
+              <HeaderIcon name={activityName} />
+            </span>
+              <h2 className={`text-2xl md:text-3xl font-bold ${theme.title}`}>
+              {activityName === 'Enrichment Programs' ? 'Programs' : activityName}
+              </h2>
+          </div>
 
-          <h2 className={`text-2xl md:text-3xl font-bold ${theme.title}`}>
-            {activityName === 'Enrichment Programs' ? 'Programs' : activityName}
-          </h2>
+          {showPastButton && (
+            <button
+              type="button"
+              onClick={onTogglePastEvents}
+              className="inline-flex items-center gap-2 rounded-full bg-wondergreen px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-wonderleaf hover:shadow-lg transition-all duration-200"
+            >
+              {showPastEvents ? "← Current Events" : "Past Events →"}
+            </button>
+          )}
         </div>
 
         {/* thin bar */}
