@@ -28,6 +28,7 @@ export default function EventsPageContent() {
   const [grouped, setGrouped] = useState<GroupedActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -55,7 +56,13 @@ export default function EventsPageContent() {
           activityName: activity.name,
           events: (activity.events ?? [])
           .filter((e) => e.status === "approved")
-          .filter((e) => new Date(e.date) >= new Date())
+          .filter((e) => {
+            const eventDate = new Date(e.date);
+            const today = new Date();
+            return showPastEvents
+              ? eventDate < today
+              : eventDate >= today;
+          })
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
           programs: programs
           .filter((p) => p.activityId === activity.id)
@@ -90,7 +97,7 @@ export default function EventsPageContent() {
     };
 
     fetchAll();
-  }, []);
+  }, [showPastEvents]);
 
   const handleDeleteEvent = (deletedId: string) => {
     setGrouped(prev =>
@@ -125,7 +132,7 @@ export default function EventsPageContent() {
       )}
       <GradientBanner
         size="md"
-        title="Upcoming Events"
+        title={showPastEvents ? "Past Events" : "Upcoming Events"}
         subtitle="Connect with other homeschooling families through hands-on
           experiences, outdoor adventures, and educational opportunities."
       />
@@ -149,6 +156,9 @@ export default function EventsPageContent() {
             isAdmin={isAdmin}
             onDeleteEvent={handleDeleteEvent}
             onDeleteProgram={handleDeleteProgram}
+            showPastButton={activityName.toLowerCase().includes("event")}
+            showPastEvents={showPastEvents}
+            onTogglePastEvents={() => setShowPastEvents((prev) => !prev)}
           />
         ))}
       </div>
