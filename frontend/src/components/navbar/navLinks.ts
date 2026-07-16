@@ -8,8 +8,7 @@ export type NavLink = {
 export const NAV_LINKS: NavLink[] = [
     { href: '/about',        label: 'About' },
     { href: '/events',       label: 'Events' },
-
+    {href: '/fundraiser-dinner', label: 'Fundraiser Dinner'},
     { href: '/support',      label: 'Clubs', disabled: true, badge: 'coming-soon' },
-
     { href: '/get-involved', label: 'Get Involved' },
 ];

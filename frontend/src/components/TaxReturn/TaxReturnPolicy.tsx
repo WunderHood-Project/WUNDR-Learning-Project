@@ -3,19 +3,12 @@
 import TaxReturnForm from "./TaxReturnForm";
 import { useState } from "react"
 import Link from "next/link"
-// import { BeatLoader } from "react-spinners"
 
 export default function TaxReturnWaiver() {
     const [acknowledgementRequested, setAcknowledgementRequested] = useState<boolean>(false)
-    // const [loading, setLoading] = useState(true)
 
     return (
         <>
-            {/* {loading === true ? */}
-            {/* <div className="flex flex-col justify-center items-center h-screen">
-                    <BeatLoader color="#90b35c" size={15} />
-                </div> : */}
-
             <div className="flex flex-col mt-6 items-center h-full">
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl shadow-sm w-full max-w-3xl p-5">
                     <div className="flex flex-row items-start">
@@ -97,7 +90,6 @@ export default function TaxReturnWaiver() {
                     }
                 </div>
             </div>
-            {/* } */}
         </>
     )
 }

@@ -1,10 +1,9 @@
-from typing import Annotated
-import uuid
-from fastapi import APIRouter, status, HTTPException, Depends, Request, Cookie
+from typing import Annotated, Optional
+from fastapi import APIRouter, status, HTTPException, Depends, Request
 from fastapi.responses import RedirectResponse
 from models.interaction_models import DonationCreate, DinnerPaymentCreate
 from models.user_models import User
-from auth.login import get_current_user
+from routers.auth.login import get_current_user_optional
 from db.prisma_client import db
 import stripe
 import os
@@ -62,16 +61,14 @@ async def verify_payment(session_id):
         session = stripe.checkout.Session.retrieve(session_id)
     except Exception:
         return RedirectResponse(url=f"{FRONTEND_URL}/")
-    
+        
     if session.payment_status != "paid":
         return RedirectResponse(url=f"{FRONTEND_URL}/")
-    
-    donation = await db.donations.find_unique(
-        where={"sessionId": session_id}
-    )
 
-    if not donation:
-        pass
+    kind = (session.metadata or {}).get("kind")
+
+    if kind == "dinner":
+        return RedirectResponse(url=f"{FRONTEND_URL}/fundraiser-dinner?success=dinner")
 
     response = RedirectResponse(url=f"{FRONTEND_URL}/tax-return")
 
@@ -171,6 +168,7 @@ async def _handle_dinner_payment(session):
         return
 
     user_id = session["metadata"].get("userId")
+    email = session["metadata"].get("email")
 
     dinner_payment_data = {
         "amount": int(session["amount_total"] / 100),
@@ -179,6 +177,8 @@ async def _handle_dinner_payment(session):
 
     if user_id:
         dinner_payment_data["user"] = {"connect": {"id": user_id}}
+    elif email:
+        dinner_payment_data["email"] = email
 
     await db.dinnerpayment.create(data=dinner_payment_data)
 
@@ -186,7 +186,7 @@ async def _handle_dinner_payment(session):
 @router.post("/dinner", status_code=status.HTTP_202_ACCEPTED)
 async def dinner_payment(
     dinner_data: DinnerPaymentCreate,
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[Optional[User], Depends(get_current_user_optional)]
 ):
     """
     Create a dinner payment
@@ -194,7 +194,11 @@ async def dinner_payment(
     Any user should be able to make a dinner payment    
     """
 
-    metadata = {"kind": "dinner", "userId": current_user.id}
+    metadata = {"kind": "dinner"}
+    if current_user:
+        metadata["userId"] = current_user.id
+    elif dinner_data.email:
+        metadata["email"] = dinner_data.email
 
     try:
         session = stripe.checkout.Session.create(
