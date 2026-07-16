@@ -44,6 +44,7 @@ async def create_payment(
                     "quantity": 1,
                 }
             ],
+            customer_email=donation_data.email,
             ui_mode="embedded",
             return_url=f"{BACKEND_URL}/payments/verify?session_id={{CHECKOUT_SESSION_ID}}",
             metadata=metadata
@@ -214,6 +215,7 @@ async def dinner_payment(
                     "quantity": 1,
                 }
             ],
+            customer_email=dinner_data.email,
             ui_mode="embedded",
             return_url=f"{BACKEND_URL}/payments/verify?session_id={{CHECKOUT_SESSION_ID}}",
             metadata=metadata

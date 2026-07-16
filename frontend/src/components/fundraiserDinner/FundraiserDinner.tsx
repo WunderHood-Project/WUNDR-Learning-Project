@@ -7,10 +7,7 @@ import { EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { determineEnv } from "../../../utils/api";
 import { CreateDinnerPaymentPayload, DinnerPaymentFormErrors } from '../../types/fundraiserDinner'
-import { useUser } from "../../../hooks/useUser";
-import { useModal } from "@/context/modal";
-import LoginModal from "../login/LoginModal";
-import DinnerAuthPrompt from "./DinnerAuthPrompt";
+import { isEmail } from "../../../utils/emailValidation";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const WONDERHOOD_URL = determineEnv()
@@ -24,8 +21,6 @@ export default function FundraiserDinnerPaymentPage() {
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [toast, setToast] = useState<string | null>(null);
     const searchParams = useSearchParams()
-    const { user } = useUser()
-    const { setModalContent, closeModal } = useModal()
     const router = useRouter()
     const [form, setForm] = useState<CreateDinnerPaymentPayload>(() => initialPaymentForm())
     const [errors, setErrors] = useState<DinnerPaymentFormErrors>({})
@@ -78,27 +73,17 @@ export default function FundraiserDinnerPaymentPage() {
         const newErrors: DinnerPaymentFormErrors = {}
 
         // Guests have no account to link the ticket to, so we need an email for their receipt
-        if (!user && !form.email) {
-            newErrors.email = "Email is required so we can send your receipt"
+        if (!form.email) {
+            newErrors.email = "Email is required"
+        }
+
+        if (form.email && !isEmail(form.email)) {
+            newErrors.email = "Please enter a valid email address"
         }
 
         // Return if there are validation errors
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
-            return
-        }
-
-        if (!user) {
-            setModalContent(
-                <DinnerAuthPrompt
-                    onClose={closeModal}
-                    onLogin={() => setModalContent(<LoginModal />)}
-                    onGuest={() => {
-                        closeModal()
-                        doCheckout()
-                    }}
-                />
-            )
             return
         }
 
@@ -147,7 +132,7 @@ export default function FundraiserDinnerPaymentPage() {
                     name="email"
                     id="email"
                     onChange={handleChange}
-                    defaultValue={form.email}
+                    value={form.email}
                     className="w-40 border border-amber-300 rounded-md p-2 text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                     placeholder="johndoe@me.com"
                 />
