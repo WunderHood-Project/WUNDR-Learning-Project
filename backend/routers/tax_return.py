@@ -69,7 +69,7 @@ async def create_tax_return_credentials(
         )
 
         # Send email to all admins to send a tax return to the user
-        admins = await db.users.find_many(where={"isAdmin": True})
+        admins = await db.users.find_many(where={"role": "admin"})
         admin_subject = "New Tax Return Request Received"
         admin_contents = (
             f"Hello Admin,\n\nA new tax return request has been submitted by {tax_return_data.email}. "
