@@ -1,21 +1,32 @@
-import CountUp from 'react-countup';
+import AnimatedStat from './AnimatedStat';
 import { determineEnv, makeApiRequest } from '../../../utils/api';
 import { User } from '@/types/user';
 const WONDERHOOD_URL = determineEnv()
 
-const families: User[] = await makeApiRequest(`${WONDERHOOD_URL}/user/`);
-const { totalEventsCreated, totalProgramsCreated } = await makeApiRequest<{ totalEventsCreated: number; totalProgramsCreated: number }>(`${WONDERHOOD_URL}/impact/events-programs`);
+async function getImpactData() {
+  try {
+    const [families, { totalEventsCreated, totalProgramsCreated }] = await Promise.all([
+      makeApiRequest<User[]>(`${WONDERHOOD_URL}/user/`),
+      makeApiRequest<{ totalEventsCreated: number; totalProgramsCreated: number }>(`${WONDERHOOD_URL}/impact/events-programs`),
+    ]);
 
+    return { familyCount: families.length, eventsAndPrograms: totalEventsCreated + totalProgramsCreated };
+  } catch {
+    return { familyCount: 0, eventsAndPrograms: 0 };
+  }
+}
 
-const stats = [
-  { value: families.length, suffix: "+", label: "Families Joined" },
-  { value: totalEventsCreated + totalProgramsCreated, suffix: "+", label: "Events & Programs Published" },
-  { value: 100, suffix: "%", label: "Real-World Learning" },
-  { value: 100, suffix: "%", label: "Mission-Driven" },
-  { value: 100, suffix: "%", label: "Community-Focused" },
-];
+export default async function ImpactStats() {
+  const { familyCount, eventsAndPrograms } = await getImpactData();
 
-export default function ImpactStats() {
+  const stats = [
+    { value: familyCount, suffix: "+", label: "Families Joined" },
+    { value: eventsAndPrograms, suffix: "+", label: "Events & Programs Published" },
+    { value: 100, suffix: "%", label: "Real-World Learning" },
+    { value: 100, suffix: "%", label: "Mission-Driven" },
+    { value: 100, suffix: "%", label: "Community-Focused" },
+  ];
+
   return (
     <section className="w-full pt-10 pb-7 text-wondergreen bg-[#FAF7ED] my-8">
       <div className="max-w-7xl mx-auto flex flex-col items-center px-4">
@@ -56,7 +67,7 @@ export default function ImpactStats() {
 
             >
               <span className="text-3xl sm:text-4xl md:text-[38px] xl:text-[40px] font-bold text-wondergreen mt-2">
-                <CountUp end={stat.value} duration={1.4 + idx * 0.2} suffix={stat.suffix} />
+                <AnimatedStat value={stat.value} duration={1.4 + idx * 0.2} suffix={stat.suffix} />
               </span>
               <div className="mt-2 text-center text-orange-400 font-medium">
                 <div className="text-base sm:text-base xl:text-lg whitespace-nowrap">{stat.label}</div>
