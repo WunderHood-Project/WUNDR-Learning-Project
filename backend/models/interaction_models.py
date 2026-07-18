@@ -687,3 +687,9 @@ class ProgramThreadResponse(BaseModel):
     updatedAt: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+# ! Dinner Payments ============================================================
+class DinnerPaymentCreate(BaseModel):
+    amount: Literal[25] = Field(25, description="Amount in USD; fixed dinner ticket price")
+    email: Optional[str] = None
+    userId: Optional[str] = None
