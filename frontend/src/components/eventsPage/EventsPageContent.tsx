@@ -29,6 +29,7 @@ export default function EventsPageContent() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
+  const [showPastPrograms, setShowPastPrograms] = useState(false);
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -68,8 +69,11 @@ export default function EventsPageContent() {
           .filter((p) => p.activityId === activity.id)
           .filter((p) => p.status === "approved")
           .filter((p) => {
-            if (isAdmin) return true;
-            return new Date(p.endDate) >= new Date();
+            const endDate = new Date(p.endDate);
+            const today = new Date();
+            return showPastPrograms
+              ? endDate < today
+              : endDate >= today;
           })
           .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()),
         }));
@@ -97,7 +101,7 @@ export default function EventsPageContent() {
     };
 
     fetchAll();
-  }, [showPastEvents]);
+  }, [showPastEvents, showPastPrograms]);
 
   const handleDeleteEvent = (deletedId: string) => {
     setGrouped(prev =>
@@ -159,6 +163,9 @@ export default function EventsPageContent() {
             showPastButton={activityName.toLowerCase().includes("event")}
             showPastEvents={showPastEvents}
             onTogglePastEvents={() => setShowPastEvents((prev) => !prev)}
+            showPastProgramsButton={activityName.toLowerCase().includes("program")}
+            showPastPrograms={showPastPrograms}
+            onTogglePastPrograms={() => setShowPastPrograms((prev) => !prev)}
           />
         ))}
       </div>

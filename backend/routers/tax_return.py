@@ -5,7 +5,7 @@ from models.user_models import User
 from models.interaction_models import TaxReturnCredentialsCreate, TaxReturnCredentialsUpdate
 from .auth.login import get_current_user
 from .auth.utils import enforce_admin, enforce_authentication
-from .notifications import send_email_one_user
+from .notifications import send_email_one_user, send_email_multiple_users
 from datetime import datetime, timezone
 
 router = APIRouter()
@@ -45,10 +45,11 @@ async def create_tax_return_credentials(
             }
         )
 
+        # Send email to tax return requester and create a notification for them
         subject = "We Got Your Tax Return Request 📒"
         contents = (
             "Hello,\n\nWe appreciate your generosity and our team will process your request as soon as possible. "
-            "In the meantime, please check out all that we do on our About page.\n\nBest,\n\nWonderHood Team"
+            "In the meantime, please check out all that we do on our About page."
         )
 
         background_tasks.add_task(
@@ -65,6 +66,21 @@ async def create_tax_return_credentials(
                 "isRead": False,
                 "time": datetime.now(timezone.utc),
             }
+        )
+
+        # Send email to all admins to send a tax return to the user
+        admins = await db.users.find_many(where={"role": "admin"})
+        admin_subject = "New Tax Return Request Received"
+        admin_contents = (
+            f"Hello Admin,\n\nA new tax return request has been submitted by {tax_return_data.email}. "
+            "Please review the request and take appropriate action."
+        )
+
+        background_tasks.add_task(
+            send_email_multiple_users,
+            [admin.email for admin in admins],
+            admin_subject,
+            admin_contents
         )
 
         return {"status": f"Successfully created tax return instance: {new_tax_return}"}

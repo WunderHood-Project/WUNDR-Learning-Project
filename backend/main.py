@@ -1,8 +1,13 @@
 import os
 from dotenv import load_dotenv
 
-_env = os.getenv("APP_ENV", "production")
-load_dotenv(".env.staging" if _env == "staging" else ".env", override=True)
+_env = os.getenv("APP_ENV", "local")
+if _env == "staging":
+    load_dotenv(".env.staging", override=True)
+elif _env == "production":
+    load_dotenv(".env", override=True)
+else:
+    load_dotenv(".env.local", override=True)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

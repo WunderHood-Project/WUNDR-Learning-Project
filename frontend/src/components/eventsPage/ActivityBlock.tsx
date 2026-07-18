@@ -18,6 +18,9 @@ interface Props {
   showPastButton?: boolean;
   showPastEvents?: boolean;
   onTogglePastEvents?: () => void;
+  showPastProgramsButton?: boolean;
+  showPastPrograms?: boolean;
+  onTogglePastPrograms?: () => void;
 }
 
 /** Theme per activity (bar, title, chip colors) */
@@ -88,6 +91,9 @@ export default function ActivityBlock({
   showPastButton,
   showPastEvents,
   onTogglePastEvents,
+  showPastProgramsButton,
+  showPastPrograms,
+  onTogglePastPrograms,
 }: Props) {
   const theme = getTheme(activityName);
 
@@ -172,6 +178,16 @@ export default function ActivityBlock({
               className="inline-flex items-center gap-2 rounded-full bg-wondergreen px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-wonderleaf hover:shadow-lg transition-all duration-200"
             >
               {showPastEvents ? "← Current Events" : "Past Events →"}
+            </button>
+          )}
+
+          {showPastProgramsButton && (
+            <button
+              type="button"
+              onClick={onTogglePastPrograms}
+              className="inline-flex items-center gap-2 rounded-full bg-wondergreen px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-wonderleaf hover:shadow-lg transition-all duration-200"
+            >
+              {showPastPrograms ? "← Current Programs" : "Past Programs →"}
             </button>
           )}
         </div>

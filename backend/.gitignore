@@ -12,6 +12,7 @@ ENV/
 env/
 *.env
 .env.staging
+.env.local
 
 # VS Code settings
 .vscode/

@@ -19,7 +19,7 @@
         
         pip install -r requirements.txt
 
-2. Run Prisma commands:
+2. Run Prisma commands in the backend directory:
 
         prisma generate
         prisma db push
@@ -61,7 +61,7 @@
 
     e.g. STRIPE_SECRET_KEY=""
 
-2. Generate a 'whsec' key using the below command, and add it to backend.env:
+2. Generate a 'whsec' key using the below command, and add it to backend.env.local:
 
     stripe listen --forward-to localhost:8000/payments/webhook
 
@@ -71,7 +71,9 @@
 
 3. Ensure that all routes and fetch calls are properly using .env.local keys
 
-4. Restart the backend and frontend servers
+4. Restart the frontend server. Restart the BACKEND server using:
+
+   APP_ENV=local uvicorn main:app --reload
 
 5. Navigate to 'localhost:3000/donate' and fill out Stripe fields using test credit card info:
 

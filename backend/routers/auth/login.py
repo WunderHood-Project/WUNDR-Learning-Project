@@ -21,6 +21,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
 
 
 oauth2_scheme = HTTPBearer()
+optional_oauth2_scheme = HTTPBearer(auto_error=False)
 
 # For authentication of user by id
 security = HTTPBearer()
@@ -139,6 +140,20 @@ async def get_current_active_user_by_email(
         current_user: Annotated[User, Depends(get_current_user_by_email)]
 ):
     return current_user
+
+async def get_current_user_optional(
+    token: Annotated[HTTPAuthorizationCredentials | None, Depends(optional_oauth2_scheme)],
+) -> User | None:
+    if token is None:
+        return None
+    try:
+        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            return None
+    except InvalidTokenError:
+        return None
+    return await db.users.find_unique(where={"email": username})
 
 @router.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):

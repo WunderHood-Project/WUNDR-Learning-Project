@@ -47,6 +47,9 @@ model Users {
   volunteer Volunteers?
   waiverSignatures WaiverSignatures[]
 
+  // One-to-m
+  dinnerPayments DinnerPayment[]
+
   // Partner-submitted events
   submittedEvents   Events[]             @relation("SubmittedEvents")
 
@@ -645,8 +648,27 @@ model TaxReturnCredentials {
   updatedAt                DateTime? @default(now())
 
   // One-to-One
+  dinnerPayment            DinnerPayment? @relation(fields: [dinnerPaymentId], references: [id])
+  dinnerPaymentId          String? @unique @db.ObjectId
   donation                 Donations  @relation(fields: [donationId], references: [id])
   donationId               String     @unique @db.ObjectId
+}
+
+// ! DinnerPayment          =============================================================================
+model DinnerPayment {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  amount             Int         @default(25)
+  email              String?
+  sessionId          String?       @unique
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime?     @default(now())
+
+  // One-to-One Relationship
+  taxReturn          TaxReturnCredentials?
+
+  // One-to-Many Relationship
+  user               Users?  @relation(fields: [userId], references: [id])
+  userId             String? @db.ObjectId
 }
 
 // ! ImpactStat =============================================================================
