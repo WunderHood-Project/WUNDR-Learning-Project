@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import FundraiserDinnerPaymentPage from "../../components/fundraiserDinner/FundraiserDinner";
 
 export default function FundraiserDinner() {
@@ -13,7 +14,9 @@ export default function FundraiserDinner() {
                     </p>
                 </div>
                 <div className="flex flex-col items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
-                    <FundraiserDinnerPaymentPage />
+                    <Suspense>
+                        <FundraiserDinnerPaymentPage />
+                    </Suspense>
                 </div>
             </div>
         </>
