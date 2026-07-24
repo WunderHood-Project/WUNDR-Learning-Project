@@ -11,6 +11,12 @@ import os
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
+# Locally, frontend/backend are both on localhost (same-site, different ports) and served over
+# plain HTTP, so the cookie can stay Secure=False/SameSite=Lax. In deployed environments the two
+# live on different domains and Stripe's redirect brings the browser back over HTTPS, so the
+# cookie must be Secure/SameSite=None to survive the cross-site fetch from the frontend.
+IS_CROSS_SITE_DEPLOYMENT = BACKEND_URL.startswith("https://")
+
 router = APIRouter()
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
@@ -68,8 +74,15 @@ async def verify_payment(session_id):
 
     kind = (session.metadata or {}).get("kind")
 
+    # Create the donation/dinner-payment row synchronously so it's guaranteed to exist by the
+    # time the browser is redirected here, instead of racing the async Stripe webhook for it.
+    # _handle_donation/_handle_dinner_payment are idempotent on sessionId, so if the webhook
+    # already ran (or runs later), this is a no-op against the same row.
     if kind == "dinner":
+        await _handle_dinner_payment(session)
         return RedirectResponse(url=f"{FRONTEND_URL}/fundraiser-dinner?success=dinner")
+
+    await _handle_donation(session)
 
     response = RedirectResponse(url=f"{FRONTEND_URL}/tax-return")
 
@@ -77,24 +90,26 @@ async def verify_payment(session_id):
         key="tax_return_allowed",
         value=session_id,
         httponly=True,
-        secure=True,
-        samesite="strict",
+        secure=IS_CROSS_SITE_DEPLOYMENT,
+        samesite="none" if IS_CROSS_SITE_DEPLOYMENT else "lax",
         max_age=1800
     )
 
     return response
-    
+
 @router.get("/latest")
-async def get_latest_donation():
+async def get_latest_donation(request: Request):
     """
-        Return the latest donation made
+        Return the donation tied to this browser's verified checkout session
     """
-    latest_donation = await db.stripeevents.find_first(
-        order={"createdAt": "desc"}
-    )
-    if not latest_donation:
+    session_id = request.cookies.get("tax_return_allowed")
+    if not session_id:
+        raise HTTPException(status_code=404, detail="No verified donation session found")
+
+    donation = await db.donations.find_unique(where={"sessionId": session_id})
+    if not donation:
         raise HTTPException(status_code=404, detail="No donations found")
-    return latest_donation
+    return donation
 
 @router.post("/webhook")
 async def stripe_webhook(request: Request):

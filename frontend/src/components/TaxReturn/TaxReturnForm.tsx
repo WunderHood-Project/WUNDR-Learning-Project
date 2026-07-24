@@ -73,8 +73,13 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
 
         // Handle submit logic here
         try {
-            // Fetch the last payment to complete tax return payload
-            const res = await fetch(`${WONDERHOOD_URL}/payments/latest`)
+            // Fetch the donation tied to this browser's verified checkout session
+            const res = await fetch(`${WONDERHOOD_URL}/payments/latest`, {
+                credentials: "include",
+            })
+            if (!res.ok) {
+                throw new Error("We couldn't find a verified donation for this session. Please complete a donation before requesting a tax return acknowledgement.")
+            }
             const latestDonation = await res.json()
 
             const payload: CreateTaxReturnPayload = {
