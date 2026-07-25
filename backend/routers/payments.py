@@ -5,6 +5,7 @@ from models.interaction_models import DonationCreate, DinnerPaymentCreate
 from models.user_models import User
 from routers.auth.login import get_current_user_optional
 from db.prisma_client import db
+from prisma.errors import UniqueViolationError
 import stripe
 import os
 
@@ -172,7 +173,11 @@ async def _handle_donation(session):
     if user_id:
         donation_data["user"] = {"connect": {"id": user_id}}
 
-    await db.donations.create(data=donation_data)
+    try:
+        await db.donations.create(data=donation_data)
+    except UniqueViolationError:
+        # Webhook and /verify raced to create the same sessionId; the other one won.
+        pass
 
 
 async def _handle_dinner_payment(session):
@@ -196,7 +201,11 @@ async def _handle_dinner_payment(session):
     elif email:
         dinner_payment_data["email"] = email
 
-    await db.dinnerpayment.create(data=dinner_payment_data)
+    try:
+        await db.dinnerpayment.create(data=dinner_payment_data)
+    except UniqueViolationError:
+        # Webhook and /verify raced to create the same sessionId; the other one won.
+        pass
 
 # ! DinnerPayment          =============================================================================
 @router.post("/dinner", status_code=status.HTTP_202_ACCEPTED)
