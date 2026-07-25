@@ -11,6 +11,7 @@ import TaxReturnSuccessModal from "./TaxReturnSuccessModal"
 
 type Props = {
     acknowledgementRequested: boolean
+    checkoutSessionId: string | null
 }
 
 const WONDERHOOD_URL = determineEnv()
@@ -31,7 +32,7 @@ const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
     general: ""
 })
 
-const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
+const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested, checkoutSessionId }) => {
     const [form, setForm] = useState<CreateTaxReturnPayload>(() => initialTaxReturnForm())
     const [errors, setErrors] = useState<TaxReturnErrors>({})
     const router = useRouter()
@@ -71,11 +72,17 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested }) => {
             return
         }
 
+        if (!checkoutSessionId) {
+            validationErrors.general = "We couldn't find a verified donation for this session. Please complete a donation before requesting a tax return acknowledgement."
+            setErrors(validationErrors)
+            return
+        }
+
         // Handle submit logic here
         try {
             // Fetch the donation tied to this browser's verified checkout session
             const res = await fetch(`${WONDERHOOD_URL}/payments/latest`, {
-                credentials: "include",
+                headers: { "X-Checkout-Session-Id": checkoutSessionId },
             })
             if (!res.ok) {
                 throw new Error("We couldn't find a verified donation for this session. Please complete a donation before requesting a tax return acknowledgement.")

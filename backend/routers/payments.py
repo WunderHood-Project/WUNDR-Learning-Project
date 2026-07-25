@@ -12,11 +12,9 @@ import os
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
-# Locally, frontend/backend are both on localhost (same-site, different ports) and served over
-# plain HTTP, so the cookie can stay Secure=False/SameSite=Lax. In deployed environments the two
-# live on different domains and Stripe's redirect brings the browser back over HTTPS, so the
-# cookie must be Secure/SameSite=None to survive the cross-site fetch from the frontend.
-IS_CROSS_SITE_DEPLOYMENT = BACKEND_URL.startswith("https://")
+# Header the frontend echoes the Stripe checkout session id back on, in place of a cross-site
+# cookie (which browsers with third-party cookie blocking would silently drop).
+CHECKOUT_SESSION_HEADER = "x-checkout-session-id"
 
 router = APIRouter()
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
@@ -85,25 +83,19 @@ async def verify_payment(session_id):
 
     await _handle_donation(session)
 
-    response = RedirectResponse(url=f"{FRONTEND_URL}/tax-return")
-
-    response.set_cookie(
-        key="tax_return_allowed",
-        value=session_id,
-        httponly=True,
-        secure=IS_CROSS_SITE_DEPLOYMENT,
-        samesite="none" if IS_CROSS_SITE_DEPLOYMENT else "lax",
-        max_age=1800
-    )
-
-    return response
+    # Carry the session id to the frontend in the URL rather than a cookie: the frontend and
+    # backend live on different domains in production, and a cookie set here would be a
+    # cross-site (third-party) cookie that Safari/Chrome increasingly block outright. The
+    # frontend reads this once, strips it from the visible URL, and echoes it back as a header
+    # on subsequent requests.
+    return RedirectResponse(url=f"{FRONTEND_URL}/tax-return?session_id={session_id}")
 
 @router.get("/latest")
 async def get_latest_donation(request: Request):
     """
         Return the donation tied to this browser's verified checkout session
     """
-    session_id = request.cookies.get("tax_return_allowed")
+    session_id = request.headers.get(CHECKOUT_SESSION_HEADER)
     if not session_id:
         raise HTTPException(status_code=404, detail="No verified donation session found")
 
