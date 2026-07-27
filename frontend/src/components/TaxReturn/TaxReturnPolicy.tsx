@@ -1,11 +1,32 @@
 "use client"
 
 import TaxReturnForm from "./TaxReturnForm";
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+
+const CHECKOUT_SESSION_STORAGE_KEY = "checkoutSessionId"
 
 export default function TaxReturnWaiver() {
     const [acknowledgementRequested, setAcknowledgementRequested] = useState<boolean>(false)
+    const [checkoutSessionId, setCheckoutSessionId] = useState<string | null>(null)
+    const router = useRouter()
+    const searchParams = useSearchParams()
+
+    // /payments/verify redirects here with ?session_id=... in place of a cross-site cookie.
+    // Capture it once, strip it from the visible URL/history, and fall back to sessionStorage
+    // so a page refresh on /tax-return doesn't lose it.
+    useEffect(() => {
+        const sessionIdFromUrl = searchParams.get("session_id")
+
+        if (sessionIdFromUrl) {
+            sessionStorage.setItem(CHECKOUT_SESSION_STORAGE_KEY, sessionIdFromUrl)
+            setCheckoutSessionId(sessionIdFromUrl)
+            router.replace("/tax-return")
+        } else {
+            setCheckoutSessionId(sessionStorage.getItem(CHECKOUT_SESSION_STORAGE_KEY))
+        }
+    }, [searchParams, router])
 
     return (
         <>
@@ -73,7 +94,7 @@ export default function TaxReturnWaiver() {
                             <p className="font-medium text-amber-950">Thank you again for your generous support of our mission!</p>
 
                             <div className="mt-5">
-                                <TaxReturnForm acknowledgementRequested={acknowledgementRequested} />
+                                <TaxReturnForm acknowledgementRequested={acknowledgementRequested} checkoutSessionId={checkoutSessionId} />
                             </div>
                         </div>
                     </details>

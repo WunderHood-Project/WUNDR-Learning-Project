@@ -5,11 +5,16 @@ from models.interaction_models import DonationCreate, DinnerPaymentCreate
 from models.user_models import User
 from routers.auth.login import get_current_user_optional
 from db.prisma_client import db
+from prisma.errors import UniqueViolationError
 import stripe
 import os
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+
+# Header the frontend echoes the Stripe checkout session id back on, in place of a cross-site
+# cookie (which browsers with third-party cookie blocking would silently drop).
+CHECKOUT_SESSION_HEADER = "x-checkout-session-id"
 
 router = APIRouter()
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
@@ -68,33 +73,36 @@ async def verify_payment(session_id):
 
     kind = (session.metadata or {}).get("kind")
 
+    # Create the donation/dinner-payment row synchronously so it's guaranteed to exist by the
+    # time the browser is redirected here, instead of racing the async Stripe webhook for it.
+    # _handle_donation/_handle_dinner_payment are idempotent on sessionId, so if the webhook
+    # already ran (or runs later), this is a no-op against the same row.
     if kind == "dinner":
+        await _handle_dinner_payment(session)
         return RedirectResponse(url=f"{FRONTEND_URL}/fundraiser-dinner?success=dinner")
 
-    response = RedirectResponse(url=f"{FRONTEND_URL}/tax-return")
+    await _handle_donation(session)
 
-    response.set_cookie(
-        key="tax_return_allowed",
-        value=session_id,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-        max_age=1800
-    )
+    # Carry the session id to the frontend in the URL rather than a cookie: the frontend and
+    # backend live on different domains in production, and a cookie set here would be a
+    # cross-site (third-party) cookie that Safari/Chrome increasingly block outright. The
+    # frontend reads this once, strips it from the visible URL, and echoes it back as a header
+    # on subsequent requests.
+    return RedirectResponse(url=f"{FRONTEND_URL}/tax-return?session_id={session_id}")
 
-    return response
-    
 @router.get("/latest")
-async def get_latest_donation():
+async def get_latest_donation(request: Request):
     """
-        Return the latest donation made
+        Return the donation tied to this browser's verified checkout session
     """
-    latest_donation = await db.stripeevents.find_first(
-        order={"createdAt": "desc"}
-    )
-    if not latest_donation:
+    session_id = request.headers.get(CHECKOUT_SESSION_HEADER)
+    if not session_id:
+        raise HTTPException(status_code=404, detail="No verified donation session found")
+
+    donation = await db.donations.find_unique(where={"sessionId": session_id})
+    if not donation:
         raise HTTPException(status_code=404, detail="No donations found")
-    return latest_donation
+    return donation
 
 @router.post("/webhook")
 async def stripe_webhook(request: Request):
@@ -157,7 +165,11 @@ async def _handle_donation(session):
     if user_id:
         donation_data["user"] = {"connect": {"id": user_id}}
 
-    await db.donations.create(data=donation_data)
+    try:
+        await db.donations.create(data=donation_data)
+    except UniqueViolationError:
+        # Webhook and /verify raced to create the same sessionId; the other one won.
+        pass
 
 
 async def _handle_dinner_payment(session):
@@ -181,7 +193,11 @@ async def _handle_dinner_payment(session):
     elif email:
         dinner_payment_data["email"] = email
 
-    await db.dinnerpayment.create(data=dinner_payment_data)
+    try:
+        await db.dinnerpayment.create(data=dinner_payment_data)
+    except UniqueViolationError:
+        # Webhook and /verify raced to create the same sessionId; the other one won.
+        pass
 
 # ! DinnerPayment          =============================================================================
 @router.post("/dinner", status_code=status.HTTP_202_ACCEPTED)

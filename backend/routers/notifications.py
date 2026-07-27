@@ -19,7 +19,7 @@ router = APIRouter()
 yagmail_app_password = os.getenv("YAGMAIL_APP_PASSWORD")
 yagmail_email = os.getenv("YAGMAIL_EMAIL")
 yag = yagmail.SMTP(yagmail_email, yagmail_app_password)
-signature_text = "<br><br>Best,<br><br>WonderHood Team<br>info@whproject.org"
+signature_text = "<br><br>Best,<br><br>WonderHood Team<br>info@whproject.org<br>whproject.org"
 
 def send_email_one_user(
         user_email: str,
