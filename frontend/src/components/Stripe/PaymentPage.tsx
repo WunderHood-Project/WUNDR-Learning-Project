@@ -35,8 +35,12 @@ export default function PaymentPage() {
         const newErrors: PaymentFormErrors = {}
 
         // Add validations
-        if (Number(form?.amount) < 0) newErrors.amount = "The donation amount must be greater than 0"
-
+        const amount = Number(form?.amount)
+        if (form?.amount === "" || Number.isNaN(amount)) {
+            newErrors.amount = "Please enter a donation amount"
+        } else if (amount <= 0) {
+            newErrors.amount = "The donation amount must be greater than 0"
+        }
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
@@ -47,18 +51,23 @@ export default function PaymentPage() {
             ...form
         }
 
-        const response = await fetch(`${WONDERHOOD_URL}/payments`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
+        try {
+            const response = await fetch(`${WONDERHOOD_URL}/payments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
 
-        if (!response.ok) {
-            throw new Error(`Failed to create payment session: ${response.statusText}`);
+            if (!response.ok) {
+                setErrors({ amount: "We couldn't process that donation amount. Please check it and try again." })
+                return
+            }
+
+            const data: PaymentSessionResponse = await response.json();
+            setClientSecret(data["client-secret"]);
+        } catch {
+            setErrors({ amount: "Something went wrong submitting your donation. Please try again." })
         }
-
-        const data: PaymentSessionResponse = await response.json();
-        setClientSecret(data["client-secret"]);
     };
 
     const options = useMemo(() => ({ clientSecret }), [clientSecret]);
@@ -94,6 +103,7 @@ export default function PaymentPage() {
                         placeholder="0"
                         min="1"
                         step="any"
+                        required
                     />
                     {errors.amount && (
                         <p className="text-red-600 text-sm mt-1">{errors.amount}</p>

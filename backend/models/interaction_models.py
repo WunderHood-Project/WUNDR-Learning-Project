@@ -560,7 +560,7 @@ class PartnerApplicationResponse(BaseModel):
 
 class DonationCreate(BaseModel):
     donationType: str
-    amount: int
+    amount: float
     email: Optional[str] = None
     userId: Optional[str] = None
 
