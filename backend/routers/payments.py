@@ -161,7 +161,7 @@ async def _handle_donation(session):
     user_id = session["metadata"].get("userId")
     donation_data = {
         "donationType": session["metadata"].get("donationType", "Donation"),
-        "amount": int(session["amount_total"] / 100),
+        "amount": round(session["amount_total"] / 100, 2),
         "sessionId": session["id"],
     }
     if user_id:
@@ -186,7 +186,7 @@ async def _handle_dinner_payment(session):
     email = session["metadata"].get("email")
 
     dinner_payment_data = {
-        "amount": int(session["amount_total"] / 100),
+        "amount": round(session["amount_total"] / 100, 2),
         "sessionId": session["id"],
     }
 
@@ -210,6 +210,9 @@ async def cleanup_checkout_session(
     """
         Delete every record created by a single Stripe Checkout Session (staging only).
 
+        Covers both donation (/payments) and dinner payment (/payments/dinner)
+        sessions -- a session id can only ever belong to one of the two.
+
         Everything is resolved strictly from the Checkout Session ID, never from
         email/amount/timestamp, since those can collide with unrelated donor
         activity. Stripe is treated as the source of truth for which webhook
@@ -230,10 +233,15 @@ async def cleanup_checkout_session(
         raise HTTPException(status_code=404, detail="Checkout session not found")
 
     donation = await db.donations.find_unique(where={"sessionId": session_id})
+    dinner_payment = None
+    if not donation:
+        dinner_payment = await db.dinnerpayment.find_unique(where={"sessionId": session_id})
 
     tax_return = None
     if donation:
         tax_return = await db.taxreturncredentials.find_unique(where={"donationId": donation.id})
+    elif dinner_payment:
+        tax_return = await db.taxreturncredentials.find_unique(where={"dinnerPaymentId": dinner_payment.id})
 
     matching_event_ids = []
     events = stripe.Event.list(
@@ -251,7 +259,7 @@ async def cleanup_checkout_session(
             where={"eventId": {"in": matching_event_ids}}
         )
 
-    if not donation and not tax_return and not stripe_event_rows:
+    if not donation and not dinner_payment and not tax_return and not stripe_event_rows:
         return {"sessionId": session_id, "status": "nothing_to_clean", "removed": []}
 
     removed = []
@@ -268,6 +276,10 @@ async def cleanup_checkout_session(
             if donation:
                 await tx.donations.delete(where={"id": donation.id})
                 removed.append({"type": "Donations", "id": donation.id})
+
+            if dinner_payment:
+                await tx.dinnerpayment.delete(where={"id": dinner_payment.id})
+                removed.append({"type": "DinnerPayment", "id": dinner_payment.id})
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Cleanup failed and was rolled back: {e}")
 
