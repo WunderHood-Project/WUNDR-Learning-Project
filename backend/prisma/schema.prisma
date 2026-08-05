@@ -614,7 +614,7 @@ enum DonationType {
 model Donations {
   id                 String      @id @default(auto()) @map("_id") @db.ObjectId
   donationType       DonationType
-  amount             Int
+  amount             Float
   email              String?
   sessionId          String?       @unique
   createdAt          DateTime      @default(now())
@@ -657,7 +657,7 @@ model TaxReturnCredentials {
 // ! DinnerPayment          =============================================================================
 model DinnerPayment {
   id                 String      @id @default(auto()) @map("_id") @db.ObjectId
-  amount             Int         @default(25)
+  amount             Float         @default(25.00)
   email              String?
   sessionId          String?       @unique
   createdAt          DateTime      @default(now())

@@ -16,6 +16,18 @@ type Props = {
 
 const WONDERHOOD_URL = determineEnv()
 
+// Mirrors the backend's TaxReturnCredentialsCreate constraints (interaction_models.py)
+const ZIP_REGEX = /^\d{5}(-\d{4})?$/
+// Unicode-aware so names like "San José" or "Montréal" aren't rejected
+const CITY_REGEX = /^[\p{L}\s.'-]+$/u
+const US_STATE_CODES = new Set([
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY",
+    "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND",
+    "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC",
+    // US territories
+    "AS", "GU", "MP", "PR", "VI",
+])
+
 const initialTaxReturnForm = (): CreateTaxReturnPayload => ({
     acknowledgementRequested: false,
     firstName: "",
@@ -59,10 +71,30 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested, checkoutSess
         if (!form.firstName) validationErrors.firstName = "Please provide a first name"
         if (!form.lastName) validationErrors.lastName = "Please provide a last name"
         if (!form.email) validationErrors.email = "Please provide an email"
-        if (!form.address) validationErrors.address = "Please provide an address"
-        if (!form.city) validationErrors.city = "Please provide a valid city"
-        if (!form.state) validationErrors.state = "Please provide a valid state"
-        if (!form.zipCode) validationErrors.zipCode = "Please provide a phone number"
+
+        if (!form.address) {
+            validationErrors.address = "Please provide an address"
+        } else if (form.address.trim().length < 3) {
+            validationErrors.address = "Please provide a complete street address"
+        }
+
+        if (!form.city) {
+            validationErrors.city = "Please provide a valid city"
+        } else if (!CITY_REGEX.test(form.city.trim())) {
+            validationErrors.city = "City can only contain letters, spaces, and hyphens"
+        }
+
+        if (!form.state) {
+            validationErrors.state = "Please provide a valid state"
+        } else if (!US_STATE_CODES.has(form.state.trim().toUpperCase())) {
+            validationErrors.state = "Please provide a valid 2-letter state code (e.g. NY)"
+        }
+
+        if (!form.zipCode) {
+            validationErrors.zipCode = "Please provide a zip code"
+        } else if (!ZIP_REGEX.test(form.zipCode.trim())) {
+            validationErrors.zipCode = "Please provide a valid zip code (e.g. 12345 or 12345-6789)"
+        }
 
         if (!isEmail(form.email)) validationErrors.email = "Please provide a valid email address"
         if (form.phoneNumber && !formatUs(form.phoneNumber)) validationErrors.phoneNumber = "Please provide a valid phone number"
@@ -92,6 +124,7 @@ const TaxReturnForm: React.FC<Props> = ({ acknowledgementRequested, checkoutSess
             const payload: CreateTaxReturnPayload = {
                 ...form,
                 phoneNumber: form.phoneNumber ? normalizePhone(form.phoneNumber) : undefined,
+                state: form.state.trim().toUpperCase(),
                 acknowledgementRequested: Boolean(acknowledgementRequested),
                 donationId: latestDonation.id
             }
