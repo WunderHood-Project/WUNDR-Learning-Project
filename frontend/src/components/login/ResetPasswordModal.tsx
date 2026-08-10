@@ -131,7 +131,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
                   type={showPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
-                  minLength={6}
+                  minLength={8}
                   className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
                   required
                   placeholder="Enter new password"
@@ -159,7 +159,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
-                  minLength={6}
+                  minLength={8}
                   className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
                   required
                   placeholder="Repeat new password"
