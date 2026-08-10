@@ -76,7 +76,14 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
           setModalContent(<LoginModal />)
         }, 2000);
       } else {
-        setMessage(data?.detail || "Failed to reset password.");
+        const detail = data?.detail;
+        const errorMessage =
+          typeof detail === "string"
+            ? detail
+            : Array.isArray(detail)
+              ? detail.map((err: { msg: string }) => err.msg).join(" ")
+              : "Failed to reset password.";
+        setMessage(errorMessage);
       }
     } catch {
       setMessage("Network error. Please try again.");
