@@ -98,6 +98,7 @@ async def reset_password(payload: PasswordResetPayload):
 
     # Decode the token
     try:
+        print("Decoding token:", payload.token)
         decoded = jwt.decode(payload.token, SECRET_KEY, algorithms=[ALGORITHM])
         email = decoded.get("sub")
 
