@@ -161,14 +161,14 @@ export default function ActivityBlock({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span
-            className={`inline-grid h-12 w-12 place-items-center rounded-xl ring-1 ${theme.chipBg} ${theme.chipRing}`}
-            aria-hidden="true"
+              className={`inline-grid h-12 w-12 place-items-center rounded-xl ring-1 ${theme.chipBg} ${theme.chipRing}`}
+              aria-hidden="true"
             >
               <HeaderIcon name={activityName} />
             </span>
-              <h2 className={`text-2xl md:text-3xl font-bold ${theme.title}`}>
+            <h2 className={`text-2xl md:text-3xl font-bold ${theme.title}`}>
               {activityName === 'Enrichment Programs' ? 'Programs' : activityName}
-              </h2>
+            </h2>
           </div>
 
           {showPastButton && (
@@ -265,7 +265,7 @@ export default function ActivityBlock({
             // </div>
             <div className="snap-start w-[300px] sm:w-[320px] lg:w-[340px] flex-shrink-0 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-10 text-center shadow-sm">
               <p className="text-base md:text-lg font-semibold leading-snug text-gray-700">
-                Our Spring 2026 program schedule is being finalized.
+                Our upcoming programs and events schedule are being finalized.
               </p>
 
               <p className="mt-3 text-sm leading-relaxed text-gray-500">
