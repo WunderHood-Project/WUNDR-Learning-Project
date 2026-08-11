@@ -87,7 +87,7 @@ async def forgot_password(
 
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(payload: PasswordResetPayload):
-
+    print("Resetting password for token:", payload.token)
     """
     Completes Password Reset
 
