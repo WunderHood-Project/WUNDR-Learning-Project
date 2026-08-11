@@ -76,7 +76,14 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
           setModalContent(<LoginModal />)
         }, 2000);
       } else {
-        setMessage(data?.detail || "Failed to reset password.");
+        const detail = data?.detail;
+        const errorMessage =
+          typeof detail === "string"
+            ? detail
+            : Array.isArray(detail)
+              ? detail.map((err: { msg: string }) => err.msg).join(" ")
+              : "Failed to reset password.";
+        setMessage(errorMessage);
       }
     } catch {
       setMessage("Network error. Please try again.");
@@ -131,7 +138,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
                   type={showPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
-                  minLength={6}
+                  minLength={8}
                   className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
                   required
                   placeholder="Enter new password"
@@ -159,7 +166,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ token, onClose 
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
-                  minLength={6}
+                  minLength={8}
                   className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-gray-800"
                   required
                   placeholder="Repeat new password"
