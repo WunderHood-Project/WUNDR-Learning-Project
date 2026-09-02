@@ -12,9 +12,13 @@ python -m prisma py fetch
 # Select only the executable engine. A wildcard can incorrectly select the
 # similarly named libquery_engine shared library.
 BIN="$(find \
+  /opt/render/project/src/backend \
   /opt/render/project/src/backend/.prisma/binaries \
   /opt/render/.cache/prisma-python/binaries \
-  -type f -name 'query-engine-debian-openssl-3.0.x' \
+  -type f \( \
+    -name 'query-engine-debian-openssl-3.0.x' -o \
+    -name 'prisma-query-engine-debian-openssl-3.0.x' \
+  \) \
   -print -quit 2>/dev/null)"
 
 if [ -z "$BIN" ]; then
