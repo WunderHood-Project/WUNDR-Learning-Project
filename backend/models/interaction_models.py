@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pydantic import BaseModel, Field, field_validator, EmailStr, HttpUrl, ConfigDict
-from typing import List, TYPE_CHECKING, Optional, Literal
+from typing import List, TYPE_CHECKING, Optional
 from enum import Enum
 from datetime import datetime, timezone
 
@@ -690,6 +690,9 @@ class ProgramThreadResponse(BaseModel):
 
 # ! Dinner Payments ============================================================
 class DinnerPaymentCreate(BaseModel):
-    amount: Literal[25] = Field(25, description="Amount in USD; fixed dinner ticket price")
+    adultQty: int = Field(0, ge=0, le=100)
+    childQty: int = Field(0, ge=0, le=100)
+    freeQty: int = Field(0, ge=0, le=100)
+    familyQty: int = Field(0, ge=0, le=50)
     email: Optional[str] = None
     userId: Optional[str] = None

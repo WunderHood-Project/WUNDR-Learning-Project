@@ -1,6 +1,7 @@
 "use client"
 
 import { loadStripe } from "@stripe/stripe-js";
+import { useSearchParams } from "next/navigation";
 import { useState, useMemo } from "react";
 import { EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
@@ -10,21 +11,27 @@ import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const WONDERHOOD_URL = determineEnv()
 
-const initialPaymentForm = (): CreatePaymentPayload => ({
+const initialPaymentForm = (donationType: "Donation" | "Sponsorship"): CreatePaymentPayload => ({
     amount: "",
-    donationType: "Donation"
+    donationType
 })
 
 
 export default function PaymentPage() {
     // const { token } = useAuth()
+    const searchParams = useSearchParams()
+    const preselectedType = searchParams.get('type') === 'Sponsorship' ? 'Sponsorship' : 'Donation'
     const [clientSecret, setClientSecret] = useState<string | null>(null);
-    const [form, setForm] = useState<CreatePaymentPayload>(() => initialPaymentForm())
+    const [form, setForm] = useState<CreatePaymentPayload>(() => initialPaymentForm(preselectedType))
     const [errors, setErrors] = useState<PaymentFormErrors>({})
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setForm(prev => ({ ...prev, [name]: value }))
+    }
+
+    const handleTypeChange = (donationType: "Donation" | "Sponsorship") => {
+        setForm(prev => ({ ...prev, donationType }))
     }
 
     const createSession = async (e: React.FormEvent) => {
@@ -79,11 +86,42 @@ export default function PaymentPage() {
             className="bg-amber-50 border border-amber-200 rounded-2xl shadow-sm p-6 w-full max-w-md mx-auto mt-8"
         >
             <h2 className="text-lg font-semibold text-amber-900 mb-3">
-                Make a Donation
+                {form.donationType === "Sponsorship" ? "Become a Sponsor" : "Make a Donation"}
             </h2>
             <p className="text-sm text-amber-800 mb-6">
                 Your support helps us continue our mission. Please enter your donation amount below.
             </p>
+
+            {/* Donation Type Toggle */}
+            <div className="mb-5">
+                <span className="block text-sm font-medium text-amber-900 mb-2">
+                    Contribution Type
+                </span>
+                <div className="flex gap-2">
+                    <button
+                        type="button"
+                        onClick={() => handleTypeChange("Donation")}
+                        className={`flex-1 rounded-md py-2 px-3 text-sm font-semibold border transition ${
+                            form.donationType === "Donation"
+                                ? "bg-wonderleaf text-white border-wonderleaf"
+                                : "bg-white text-amber-900 border-amber-300 hover:bg-amber-100"
+                        }`}
+                    >
+                        Donation
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleTypeChange("Sponsorship")}
+                        className={`flex-1 rounded-md py-2 px-3 text-sm font-semibold border transition ${
+                            form.donationType === "Sponsorship"
+                                ? "bg-wonderleaf text-white border-wonderleaf"
+                                : "bg-white text-amber-900 border-amber-300 hover:bg-amber-100"
+                        }`}
+                    >
+                        Sponsorship
+                    </button>
+                </div>
+            </div>
 
             {/* Donation Amount Field */}
             <div className="mb-5">

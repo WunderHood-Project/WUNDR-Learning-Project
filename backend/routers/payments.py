@@ -81,7 +81,7 @@ async def verify_payment(session_id):
     # already ran (or runs later), this is a no-op against the same row.
     if kind == "dinner":
         await _handle_dinner_payment(session)
-        return RedirectResponse(url=f"{FRONTEND_URL}/fundraiser-dinner?success=dinner")
+        return RedirectResponse(url=f"{FRONTEND_URL}/fundraiser-dinner/tickets?success=dinner")
 
     await _handle_donation(session)
 
@@ -286,6 +286,21 @@ async def cleanup_checkout_session(
     return {"sessionId": session_id, "status": "cleaned", "removed": removed}
 
 # ! DinnerPayment          =============================================================================
+
+# Prices in cents, priced server-side so the client can never dictate the checkout total.
+DINNER_TICKET_PRICES = {
+    "adultQty": 3500,
+    "childQty": 1500,
+    "freeQty": 0,
+    "familyQty": 9000,
+}
+DINNER_TICKET_LABELS = {
+    "adultQty": "Adult Ticket",
+    "childQty": "Child Ticket (Ages 5-12)",
+    "freeQty": "Child (4 & Under)",
+    "familyQty": "Family Ticket",
+}
+
 @router.post("/dinner", status_code=status.HTTP_202_ACCEPTED)
 async def dinner_payment(
     dinner_data: DinnerPaymentCreate,
@@ -294,8 +309,34 @@ async def dinner_payment(
     """
     Create a dinner payment
 
-    Any user should be able to make a dinner payment    
+    Any user should be able to make a dinner payment
     """
+
+    quantities = {
+        "adultQty": dinner_data.adultQty,
+        "childQty": dinner_data.childQty,
+        "freeQty": dinner_data.freeQty,
+        "familyQty": dinner_data.familyQty,
+    }
+
+    if sum(quantities.values()) == 0:
+        raise HTTPException(status_code=400, detail="Select at least one ticket")
+
+    line_items = [
+        {
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": DINNER_TICKET_LABELS[tier]},
+                "unit_amount": DINNER_TICKET_PRICES[tier],
+            },
+            "quantity": qty,
+        }
+        for tier, qty in quantities.items() if qty > 0
+    ]
+
+    payable_total = sum(DINNER_TICKET_PRICES[tier] * qty for tier, qty in quantities.items())
+    if payable_total == 0:
+        raise HTTPException(status_code=400, detail="Please include at least one paid ticket")
 
     metadata = {"kind": "dinner"}
     if current_user:
@@ -307,16 +348,7 @@ async def dinner_payment(
         session = stripe.checkout.Session.create(
             mode="payment",
             invoice_creation={"enabled": True},
-            line_items=[
-                {  
-                    "price_data": {
-                        "currency": "usd",
-                        "product_data": {"name": "Fundraiser Dinner Payment"},
-                        "unit_amount": 2500,
-                    },
-                    "quantity": 1,
-                }
-            ],
+            line_items=line_items,
             customer_email=dinner_data.email,
             ui_mode="embedded",
             return_url=f"{BACKEND_URL}/payments/verify?session_id={{CHECKOUT_SESSION_ID}}",
