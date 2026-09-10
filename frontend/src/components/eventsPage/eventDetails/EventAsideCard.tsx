@@ -18,6 +18,7 @@ type Props = {
     attendees: Child[] | null;
     attendeesLoading: boolean;
     attendeesError: string | null;
+    onAdminRemoveAttendee: (child: Child) => void;
     onToggleAttendees: () => void;
     enrollmentContent?: ReactNode;
 };
@@ -34,6 +35,7 @@ export default function EventAsideCard({
     attendees,
     attendeesLoading,
     attendeesError,
+    onAdminRemoveAttendee,
     onToggleAttendees,
     enrollmentContent,
 }: Props) {
@@ -360,13 +362,13 @@ export default function EventAsideCard({
                                         key={c.id}
                                         className="rounded-xl border border-white/60 bg-white/60 px-3 py-2"
                                         >
-                                        {/* Header row (clickable) */}
-                                        <button
-                                            type="button"
-                                            onClick={() => toggleExpanded(c.id)}
-                                            className="w-full text-left"
-                                        >
-                                            <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleExpanded(c.id)}
+                                                className="min-w-0 flex-1 text-left"
+                                                aria-expanded={isOpen}
+                                            >
                                                 <div className="text-sm font-semibold text-gray-900">
                                                     {c.firstName} {c.lastName}
                                                     {c.preferredName ? (
@@ -392,8 +394,16 @@ export default function EventAsideCard({
                                                         {isOpen ? "Hide details" : "View details"}
                                                     </span>
                                                 </div>
-                                            </div>
-                                        </button>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => onAdminRemoveAttendee(c)}
+                                                className="shrink-0 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-100"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
 
                                         {/* Details (expanded) */}
                                         {isOpen && (
@@ -482,7 +492,7 @@ export default function EventAsideCard({
                                     </li>
                                 );
                             })}
-                        </ul>
+                            </ul>
                         )}
                     </div>
                     )}
