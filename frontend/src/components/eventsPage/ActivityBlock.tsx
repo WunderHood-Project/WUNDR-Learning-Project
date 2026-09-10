@@ -14,6 +14,7 @@ interface Props {
   programs: EnrichmentProgram[];
   isAdmin: boolean;
   onDeleteEvent: (id: string) => void;
+  onEventParticipantCountChange: (eventId: string, participants: number) => void;
   onDeleteProgram: (id: string) => void;
   showPastButton?: boolean;
   showPastEvents?: boolean;
@@ -87,6 +88,7 @@ export default function ActivityBlock({
   programs,
   isAdmin,
   onDeleteEvent,
+  onEventParticipantCountChange,
   onDeleteProgram,
   showPastButton,
   showPastEvents,
@@ -240,6 +242,7 @@ export default function ActivityBlock({
                     event={event}
                     isAdmin={isAdmin}
                     onDelete={onDeleteEvent}
+                    onParticipantCountChange={onEventParticipantCountChange}
                   />
                 </div>
               ))}

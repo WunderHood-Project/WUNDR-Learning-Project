@@ -13,6 +13,7 @@ import type { Event, EventLabel } from '@/types/event';
 import Image from "next/image";
 import AppIcon from "@/app/icon.png";
 import { normalizeNextImageSrc } from "../../../utils/image/normalizeNextImageSrc";
+import ManageEventAttendeesModal from './ManageEventAttendeesModal';
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -20,9 +21,10 @@ type Props = {
   event: Event;
   isAdmin: boolean;
   onDelete: (id: string) => void;
+  onParticipantCountChange: (eventId: string, participants: number) => void;
 };
 
-export default function EventCard({ event, isAdmin, onDelete }: Props) {
+export default function EventCard({ event, isAdmin, onDelete, onParticipantCountChange }: Props) {
   // Derived numbers/labels for capacity
   const enrolled = event.participants ?? 0;
   const unlimited = event.limit == null;
@@ -175,6 +177,19 @@ export default function EventCard({ event, isAdmin, onDelete }: Props) {
         {/* Admin actions */}
         {isAdmin && (
           <div className="space-y-2 pt-3 border-t border-gray-200">
+            {event.registrationType !== 'external' && event.id && (
+              <OpenModalButton
+                className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 border border-wondergreen bg-white text-wondergreen font-semibold text-sm hover:bg-wondergreen/10 transition-colors"
+                buttonText="Manage Attendees"
+                modalComponent={
+                  <ManageEventAttendeesModal
+                    event={event}
+                    onParticipantCountChange={onParticipantCountChange}
+                  />
+                }
+              />
+            )}
+
             <Link
               href={`/events/${event.id}/updateEvent`}
               className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-wonderorange text-white font-semibold text-sm hover:bg-wonderorange/90 transition-colors"
