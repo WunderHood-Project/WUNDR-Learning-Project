@@ -18,6 +18,8 @@ import ProgramDetailsAsideCard from './ProgramDetailsAsideCard';
 import ProgramDetailsMessageBoard from './ProgramDetailsMessageBoard';
 import type { Child } from '@/types/child';
 import { ageOnDate } from '../../../../utils/calculateAge';
+import { useModal } from '@/context/modal';
+import RemoveProgramAttendeeModal from './RemoveProgramAttendeeModal';
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -57,6 +59,7 @@ export default function ProgramDetails() {
   // program data + current user
   const { program, loading, error, refetch } = useProgram(programId);
   const { user } = useUser();
+  const { setModalContent } = useModal();
 
   // --- UI state ---
   const [serverError, setServerError] = useState<string | null>(null);
@@ -117,6 +120,22 @@ export default function ProgramDetails() {
     } finally {
       setAttendeesLoading(false);
     }
+  };
+
+  const handleAdminRemoveAttendee = (child: Child) => {
+    if (!isAdmin || !program) return;
+
+    setModalContent(
+      <RemoveProgramAttendeeModal
+        programId={programId}
+        programName={program.name}
+        child={child}
+        onRemoved={async () => {
+          await loadAttendees();
+          refetch();
+        }}
+      />
+    );
   };
 
   // --- load full waitlist (admin) ---
@@ -679,6 +698,7 @@ export default function ProgramDetails() {
             attendees={attendees}
             attendeesLoading={attendeesLoading}
             attendeesError={attendeesError}
+            onAdminRemoveAttendee={handleAdminRemoveAttendee}
             waitListOpen={waitListOpen}
             waitList={waitList}
             waitListLoading={waitListLoading}

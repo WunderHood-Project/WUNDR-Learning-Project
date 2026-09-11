@@ -409,6 +409,91 @@ async def get_program_attendees(
     }
 
 
+@router.delete("/{program_id}/attendees/{child_id}", status_code=status.HTTP_200_OK)
+async def remove_program_attendee_admin(
+    program_id: str,
+    child_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
+):
+    """Remove an enrolled child from an enrichment program as an administrator."""
+    enforce_authentication(current_user, "remove a program attendee")
+    enforce_admin(current_user, "remove a program attendee")
+
+    async with db.tx() as tx:
+        program = await tx.enrichmentprograms.find_unique(where={"id": program_id})
+        if not program:
+            raise HTTPException(status_code=404, detail="Enrichment program not found.")
+
+        child = await tx.children.find_unique(
+            where={"id": child_id},
+            include={"parents": True},
+        )
+        if not child:
+            raise HTTPException(status_code=404, detail="Child not found.")
+
+        if child_id not in (program.childIds or []):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Child is not enrolled in this program.",
+            )
+
+        if (program.participants or 0) < 1:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Participant count is inconsistent; attendee was not removed.",
+            )
+
+        updated_child_ids = [
+            enrolled_child_id
+            for enrolled_child_id in (program.childIds or [])
+            if enrolled_child_id != child_id
+        ]
+
+        updated_program = await tx.enrichmentprograms.update(
+            where={"id": program_id},
+            data={
+                "children": {"disconnect": [{"id": child_id}]},
+                "childIds": updated_child_ids,
+                "participants": {"decrement": 1},
+            },
+        )
+
+        child_name = f"{child.firstName} {child.lastName}"
+        subject = f"Program Enrollment Update: {program.name}"
+        content = (
+            f"Hello,\n\n{child_name} has been removed from the {program.name} program "
+            f"starting on {convert_iso_date_to_string(program.startDate)} by a WonderHood administrator. "
+            "Please contact WonderHood if you have any questions."
+        )
+
+        for parent in child.parents or []:
+            await tx.notifications.create(
+                data={
+                    "title": subject,
+                    "link": get_program_link(program.id),
+                    "description": f"{child_name} has been removed from {program.name}.",
+                    "userId": parent.id,
+                    "isRead": False,
+                    "time": program.startDate,
+                }
+            )
+
+    for parent in child.parents or []:
+        if parent.emailNotificationsEnabled:
+            background_tasks.add_task(
+                send_email_one_user,
+                parent.email,
+                subject,
+                content,
+            )
+
+    return {
+        "program": updated_program,
+        "message": f"Removed {child_name} from program.",
+    }
+
+
 # ---------------------------------------------------------------------------
 # GET /program/{program_id}  (public)
 # ---------------------------------------------------------------------------
