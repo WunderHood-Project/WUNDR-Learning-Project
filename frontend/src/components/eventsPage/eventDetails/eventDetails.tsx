@@ -16,6 +16,8 @@ import SignupModal from '@/components/signup/SignupModal';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { Child } from '@/types/child';
+import { useModal } from '@/context/modal';
+import RemoveEventAttendeeModal from './RemoveEventAttendeeModal';
 
 const WONDERHOOD_URL = determineEnv()
 
@@ -27,6 +29,7 @@ export default function EventDetails() {
 
     const { event, loading, error, refetch } = useEvent(eventId)
     const { user } = useUser()
+    const { setModalContent } = useModal();
 
     const [serverError, setServerError] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
@@ -76,6 +79,22 @@ export default function EventDetails() {
         } finally {
             setAttendeesLoading(false);
         }
+    };
+
+    const handleAdminRemoveAttendee = (child: Child) => {
+        if (!isAdmin || !event) return;
+
+        setModalContent(
+            <RemoveEventAttendeeModal
+                eventId={eventId}
+                eventName={event.name}
+                child={child}
+                onRemoved={async () => {
+                    await loadAttendees();
+                    refetch();
+                }}
+            />
+        );
     };
 
     const toggleChild = (id: string) => {
@@ -390,6 +409,7 @@ export default function EventDetails() {
                         attendees={attendees}
                         attendeesLoading={attendeesLoading}
                         attendeesError={attendeesError}
+                        onAdminRemoveAttendee={handleAdminRemoveAttendee}
                         onToggleAttendees={async () => {
                             // Toggle UI open/close. If opening for the first time, lazy-load attendees.
                             const next = !attendeesOpen;
