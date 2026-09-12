@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field, field_validator, EmailStr, HttpUrl, ConfigDict
+from pydantic import BaseModel, Field, field_validator, model_validator, EmailStr, HttpUrl, ConfigDict
 from typing import List, TYPE_CHECKING, Optional
 from enum import Enum
 from datetime import datetime, timezone
@@ -558,11 +558,19 @@ class PartnerApplicationResponse(BaseModel):
 
 # ! Donations
 
+SPONSORSHIP_MIN_AMOUNT = 250.00
+
 class DonationCreate(BaseModel):
     donationType: str
     amount: float = Field(ge=0.50, lt=100000000, allow_inf_nan=False)
     email: Optional[str] = None
     userId: Optional[str] = None
+
+    @model_validator(mode="after")
+    def enforce_sponsorship_minimum(self):
+        if self.donationType == "Sponsorship" and self.amount < SPONSORSHIP_MIN_AMOUNT:
+            raise ValueError(f"Sponsorships require a minimum donation of ${SPONSORSHIP_MIN_AMOUNT:.2f}")
+        return self
 
 
 # ! Tax Return Acknowledgment Credentials

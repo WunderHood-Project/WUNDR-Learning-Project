@@ -10,6 +10,7 @@ import { CreatePaymentPayload, PaymentFormErrors } from "../../types/payment";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 const WONDERHOOD_URL = determineEnv()
+const SPONSOR_MIN_AMOUNT = 250
 
 const initialPaymentForm = (donationType: "Donation" | "Sponsorship"): CreatePaymentPayload => ({
     amount: "",
@@ -47,6 +48,8 @@ export default function PaymentPage() {
             newErrors.amount = "Please enter a donation amount"
         } else if (amount < 0.50) {
             newErrors.amount = "The donation amount must be greater than 0"
+        } else if (form.donationType === "Sponsorship" && amount < SPONSOR_MIN_AMOUNT) {
+            newErrors.amount = `Sponsorships require a minimum donation of $${SPONSOR_MIN_AMOUNT}`
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -129,7 +132,7 @@ export default function PaymentPage() {
                     htmlFor="amount"
                     className="block text-sm font-medium text-amber-900 mb-2"
                 >
-                    Donation Amount ($)
+                    {form.donationType === "Sponsorship" ? `Sponsorship Amount ($${SPONSOR_MIN_AMOUNT} minimum)` : "Donation Amount ($)"}
                 </label>
                 <input
                     type="number"
@@ -139,7 +142,7 @@ export default function PaymentPage() {
                     onChange={handleChange}
                     className="w-40 border border-amber-300 rounded-md p-2 text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                     placeholder="0"
-                    min="0.50"
+                    min={form.donationType === "Sponsorship" ? SPONSOR_MIN_AMOUNT : 0.50}
                     step="any"
                     required
                 />
@@ -147,6 +150,17 @@ export default function PaymentPage() {
                     <p className="text-red-600 text-sm mt-1">{errors.amount}</p>
                 )}
             </div>
+
+            {form.donationType === "Sponsorship" && (
+                <div className="mb-5 rounded-md border border-amber-300 bg-amber-100/60 p-3 text-sm text-amber-900">
+                    Sponsorships require a minimum donation of ${SPONSOR_MIN_AMOUNT}. If you&rsquo;d like us
+                    to display your logo on our website and event page, please email it to{" "}
+                    <a href="mailto:info@whproject.org" className="underline hover:text-wondergreen">
+                        info@whproject.org
+                    </a>. If you provide a banner, we&rsquo;d be happy to display it during the
+                    fundraiser dinner as well.
+                </div>
+            )}
 
             {/* Submit or Checkout */}
             <div className="mt-6">

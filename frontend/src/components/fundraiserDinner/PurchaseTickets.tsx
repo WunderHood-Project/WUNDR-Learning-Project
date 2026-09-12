@@ -40,7 +40,7 @@ export default function PurchaseTickets() {
 
     useEffect(() => {
         const success = searchParams.get('success');
-        if (success === 'dinner') setToast('Fundraiser dinner ticket purchased successfully!');
+        if (success === 'dinner') setToast('Purchase was successful! Please keep a copy of your receipt for entry to the event.');
         if (success) {
             router.replace('/fundraiser-dinner/tickets', { scroll: false });
             const timer = setTimeout(() => setToast(null), 4000);
