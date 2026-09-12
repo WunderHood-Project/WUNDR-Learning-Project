@@ -135,7 +135,7 @@ export default function PurchaseTickets() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                     <span className="text-sm font-semibold">{toast}</span>
-                    <button onClick={() => setToast(null)} className="ml-2 text-white/70 hover:text-white text-lg leading-none">×</button>
+                    <button type="button" onClick={() => setToast(null)} className="ml-2 text-white/70 hover:text-white text-lg leading-none">×</button>
                 </div>
             )}
             <h2 className="text-lg font-semibold text-amber-900 mb-3">

@@ -658,6 +658,10 @@ model TaxReturnCredentials {
 model DinnerPayment {
   id                 String      @id @default(auto()) @map("_id") @db.ObjectId
   amount             Float         @default(25.00)
+  adultQty           Int           @default(0)
+  childQty           Int           @default(0)
+  freeQty            Int           @default(0)
+  familyQty          Int           @default(0)
   email              String?
   sessionId          String?       @unique
   createdAt          DateTime      @default(now())
