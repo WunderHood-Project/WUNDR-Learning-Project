@@ -50,6 +50,7 @@ type Props = {
   attendees: Child[] | null;
   attendeesLoading: boolean;
   attendeesError: string | null;
+  onAdminRemoveAttendee: (child: Child) => void;
   onToggleAttendees: () => void;
   enrollmentContent?: ReactNode;
   waitListOpen: boolean;
@@ -72,6 +73,7 @@ export default function ProgramDetailsAsideCard({
   attendees,
   attendeesLoading,
   attendeesError,
+  onAdminRemoveAttendee,
   onToggleAttendees,
   enrollmentContent,
   waitListOpen,
@@ -364,12 +366,13 @@ export default function ProgramDetailsAsideCard({
                       const isOpen = expandedChildId === c.id;
                       return (
                         <li key={c.id} className="rounded-xl border border-white/60 bg-white/60 px-3 py-2">
-                          <button
-                            type="button"
-                            onClick={() => toggleExpanded(c.id)}
-                            className="w-full text-left"
-                          >
-                            <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <button
+                              type="button"
+                              onClick={() => toggleExpanded(c.id)}
+                              className="min-w-0 flex-1 text-left"
+                              aria-expanded={isOpen}
+                            >
                               <span className="text-sm font-semibold text-gray-900">
                                 {c.firstName} {c.lastName}
                               </span>
@@ -387,8 +390,16 @@ export default function ProgramDetailsAsideCard({
                                   {isOpen ? 'Hide' : 'Details'}
                                 </span>
                               </div>
-                            </div>
-                          </button>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => onAdminRemoveAttendee(c)}
+                              className="shrink-0 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-semibold text-red-700 hover:bg-red-100"
+                            >
+                              Remove
+                            </button>
+                          </div>
 
                           {isOpen && (
                             <div className="mt-3 rounded-lg bg-white/70 border border-white/70 p-3 space-y-3">

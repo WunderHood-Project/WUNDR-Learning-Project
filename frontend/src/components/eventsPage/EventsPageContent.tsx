@@ -121,6 +121,17 @@ export default function EventsPageContent() {
     );
   };
 
+  const handleProgramParticipantCountChange = (programId: string, participants: number) => {
+    setGrouped((current) =>
+      current.map((group) => ({
+        ...group,
+        programs: group.programs.map((program) =>
+          program.id === programId ? { ...program, participants } : program,
+        ),
+      })),
+    );
+  };
+
   if (loading) return <div className="text-center py-20 text-green-700"><BeatLoader color="#90b35c" size={15} /></div>
 
   return (
@@ -160,6 +171,7 @@ export default function EventsPageContent() {
             isAdmin={isAdmin}
             onDeleteEvent={handleDeleteEvent}
             onDeleteProgram={handleDeleteProgram}
+            onProgramParticipantCountChange={handleProgramParticipantCountChange}
             showPastButton={activityName.toLowerCase().includes("event")}
             showPastEvents={showPastEvents}
             onTogglePastEvents={() => setShowPastEvents((prev) => !prev)}
