@@ -3,6 +3,8 @@ export type fundraiserDinner = {
     childQty: number,
     freeQty: number,
     familyQty: number,
+    firstName: string,
+    lastName: string,
     email: string,
     sessionId: string,
     userId: string

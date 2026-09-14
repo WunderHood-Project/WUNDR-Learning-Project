@@ -662,6 +662,8 @@ model DinnerPayment {
   childQty           Int           @default(0)
   freeQty            Int           @default(0)
   familyQty          Int           @default(0)
+  firstName          String?
+  lastName           String?
   email              String?
   sessionId          String?       @unique
   createdAt          DateTime      @default(now())

@@ -702,5 +702,7 @@ class DinnerPaymentCreate(BaseModel):
     childQty: int = Field(0, ge=0, le=100)
     freeQty: int = Field(0, ge=0, le=100)
     familyQty: int = Field(0, ge=0, le=50)
+    firstName: str = Field(min_length=1, max_length=100)
+    lastName: str = Field(min_length=1, max_length=100)
     email: Optional[str] = None
     userId: Optional[str] = None

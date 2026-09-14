@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react";
 import { EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { determineEnv } from "../../../utils/api";
-import { CreateDinnerPaymentPayload, DinnerPaymentFormErrors, DINNER_TICKET_TIERS } from '../../types/fundraiserDinner'
+import { CreateDinnerPaymentPayload, DinnerPaymentFormErrors, DinnerTicketTierKey, DINNER_TICKET_TIERS } from '../../types/fundraiserDinner'
 import { isEmail } from "../../../utils/emailValidation";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -17,6 +17,8 @@ const initialPaymentForm = (): CreateDinnerPaymentPayload => ({
     childQty: 0,
     freeQty: 0,
     familyQty: 0,
+    firstName: "",
+    lastName: "",
     email: "",
 })
 
@@ -30,11 +32,12 @@ export default function PurchaseTickets() {
     const [form, setForm] = useState<CreateDinnerPaymentPayload>(() => initialPaymentForm())
     const [errors, setErrors] = useState<DinnerPaymentFormErrors>({})
 
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm(prev => ({ ...prev, email: e.target.value }))
+    const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setForm(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleQtyChange = (key: keyof Omit<CreateDinnerPaymentPayload, "email">, delta: number) => {
+    const handleQtyChange = (key: DinnerTicketTierKey, delta: number) => {
         setForm(prev => ({ ...prev, [key]: Math.max(0, prev[key] + delta) }))
     }
 
@@ -100,6 +103,14 @@ export default function PurchaseTickets() {
         if (total === 0) {
             setSubmitError("Please include at least one paid ticket.")
             return
+        }
+
+        if (!form.firstName.trim()) {
+            newErrors.firstName = "First name is required"
+        }
+
+        if (!form.lastName.trim()) {
+            newErrors.lastName = "Last name is required"
         }
 
         // Guests have no account to link the ticket to, so we need an email for their receipt
@@ -184,6 +195,50 @@ export default function PurchaseTickets() {
                         <span className="text-xl font-bold text-amber-900">${total}</span>
                     </div>
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                        <div>
+                            <label
+                                htmlFor="firstName"
+                                className="block text-sm font-medium text-amber-900 mb-2"
+                            >
+                                First Name
+                            </label>
+                            <input
+                                type="text"
+                                name="firstName"
+                                id="firstName"
+                                onChange={handleTextChange}
+                                value={form.firstName}
+                                className="w-full border border-amber-300 rounded-md p-2 text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
+                                placeholder="John"
+                            />
+                            {errors.firstName && (
+                                <p className="text-red-600 text-sm mt-1">{errors.firstName}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="lastName"
+                                className="block text-sm font-medium text-amber-900 mb-2"
+                            >
+                                Last Name
+                            </label>
+                            <input
+                                type="text"
+                                name="lastName"
+                                id="lastName"
+                                onChange={handleTextChange}
+                                value={form.lastName}
+                                className="w-full border border-amber-300 rounded-md p-2 text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
+                                placeholder="Doe"
+                            />
+                            {errors.lastName && (
+                                <p className="text-red-600 text-sm mt-1">{errors.lastName}</p>
+                            )}
+                        </div>
+                    </div>
+
                     <div className="mb-5">
                         <label
                             htmlFor="email"
@@ -195,7 +250,7 @@ export default function PurchaseTickets() {
                             type="email"
                             name="email"
                             id="email"
-                            onChange={handleEmailChange}
+                            onChange={handleTextChange}
                             value={form.email}
                             className="w-full border border-amber-300 rounded-md p-2 text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                             placeholder="johndoe@me.com"

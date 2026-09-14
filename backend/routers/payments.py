@@ -192,6 +192,8 @@ async def _handle_dinner_payment(session):
         "childQty": int(session["metadata"].get("childQty", 0)),
         "freeQty": int(session["metadata"].get("freeQty", 0)),
         "familyQty": int(session["metadata"].get("familyQty", 0)),
+        "firstName": session["metadata"].get("firstName"),
+        "lastName": session["metadata"].get("lastName"),
     }
 
     if user_id:
@@ -342,7 +344,12 @@ async def dinner_payment(
     if payable_total == 0:
         raise HTTPException(status_code=400, detail="Please include at least one paid ticket")
 
-    metadata = {"kind": "dinner", **{tier: str(qty) for tier, qty in quantities.items()}}
+    metadata = {
+        "kind": "dinner",
+        "firstName": dinner_data.firstName,
+        "lastName": dinner_data.lastName,
+        **{tier: str(qty) for tier, qty in quantities.items()},
+    }
     if current_user:
         metadata["userId"] = current_user.id
     elif dinner_data.email:
