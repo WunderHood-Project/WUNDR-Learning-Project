@@ -24,6 +24,14 @@ export default function ProgramsPageContent() {
     setLocalPrograms((displayPrograms).filter((p) => p.id !== deletedId));
   };
 
+  const handleParticipantCountChange = (programId: string, participants: number) => {
+    setLocalPrograms(
+      displayPrograms.map((program) =>
+        program.id === programId ? { ...program, participants } : program,
+      ),
+    );
+  };
+
   if (loading)
     return (
       <div className="text-center py-20 text-green-700">
@@ -75,6 +83,7 @@ export default function ProgramsPageContent() {
                 program={program}
                 isAdmin={isAdmin}
                 onDelete={handleDelete}
+                onParticipantCountChange={handleParticipantCountChange}
               />
             ))}
           </div>

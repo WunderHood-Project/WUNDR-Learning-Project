@@ -66,10 +66,20 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 #     delete_notifications_scheduler.start()
 
 # CORS Policy
+allowed_origins = [
+    "http://localhost:3000",
+    "https://wonderhood-frontend.onrender.com",
+    "https://whproject.org",
+    "https://www.whproject.org",
+]
+
+configured_frontend_url = os.getenv("FRONTEND_URL", "").rstrip("/")
+if configured_frontend_url and configured_frontend_url not in allowed_origins:
+    allowed_origins.append(configured_frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-
-    allow_origins=["http://localhost:3000", "https://wonderhood-frontend.onrender.com", "https://whproject.org", "https://www.whproject.org"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -108,6 +118,5 @@ app.include_router(waivers_router, prefix="/api/waivers", tags=["waivers"])
 app.include_router(policies_router, prefix="/api/policies", tags=["policies"])
 app.include_router(impact_router, prefix="/impact", tags=["impact"])
 app.include_router(messages_router, tags=["program-messages"])
-
 
 

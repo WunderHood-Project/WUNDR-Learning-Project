@@ -12,6 +12,7 @@ import { normalizeNextImageSrc } from '../../../utils/image/normalizeNextImageSr
 import { formatDate } from '../../../utils/formatDate';
 import type { EnrichmentProgram, ProgramLabel, ProgramVenue } from '@/types/program';
 import { FaLocationDot } from 'react-icons/fa6';
+import ManageProgramAttendeesModal from './ManageProgramAttendeesModal';
 
 const WONDERHOOD_URL = determineEnv();
 
@@ -19,9 +20,10 @@ type Props = {
   program: EnrichmentProgram;
   isAdmin: boolean;
   onDelete: (id: string) => void;
+  onParticipantCountChange: (programId: string, participants: number) => void;
 };
 
-export default function ProgramCard({ program, isAdmin, onDelete }: Props) {
+export default function ProgramCard({ program, isAdmin, onDelete, onParticipantCountChange }: Props) {
   const enrolled = program.participants ?? 0;
   const unlimited = program.limit == null;
   const spotsLeft = unlimited ? null : Math.max(0, program.limit! - enrolled);
@@ -171,6 +173,19 @@ export default function ProgramCard({ program, isAdmin, onDelete }: Props) {
         {/* Admin actions */}
         {isAdmin && (
           <div className="space-y-2 pt-3 border-t border-gray-200">
+            {!isExternalRegistration && program.id && (
+              <OpenModalButton
+                className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 border border-wondergreen bg-white text-wondergreen font-semibold text-sm hover:bg-wondergreen/10 transition-colors"
+                buttonText="Manage Attendees"
+                modalComponent={
+                  <ManageProgramAttendeesModal
+                    program={program}
+                    onParticipantCountChange={onParticipantCountChange}
+                  />
+                }
+              />
+            )}
+
             <Link
               href={`/programs/${program.id}/update`}
               className="w-full inline-flex items-center justify-center rounded-lg px-4 py-2 bg-wonderorange text-white font-semibold text-sm hover:bg-wonderorange/90 transition-colors"

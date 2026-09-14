@@ -599,6 +599,91 @@ async def get_event_attendees_admin(
     }
 
 
+@router.delete("/{event_id}/attendees/{child_id}", status_code=status.HTTP_200_OK)
+async def remove_event_attendee_admin(
+    event_id: str,
+    child_id: str,
+    current_user: Annotated[User, Depends(get_current_user)],
+    background_tasks: BackgroundTasks,
+):
+    """Remove an enrolled child from an event as an administrator."""
+    enforce_authentication(current_user, "remove an event attendee")
+    enforce_admin(current_user, "remove an event attendee")
+
+    async with db.tx() as tx:
+        event = await tx.events.find_unique(where={"id": event_id})
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+
+        child = await tx.children.find_unique(
+            where={"id": child_id},
+            include={"parents": True},
+        )
+        if not child:
+            raise HTTPException(status_code=404, detail="Child not found")
+
+        if child_id not in (event.childIds or []):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Child is not enrolled in this event",
+            )
+
+        if (event.participants or 0) < 1:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Participant count is inconsistent; attendee was not removed",
+            )
+
+        updated_child_ids = [
+            enrolled_child_id
+            for enrolled_child_id in (event.childIds or [])
+            if enrolled_child_id != child_id
+        ]
+
+        updated_event = await tx.events.update(
+            where={"id": event_id},
+            data={
+                "children": {"disconnect": [{"id": child_id}]},
+                "childIds": updated_child_ids,
+                "participants": {"decrement": 1},
+            },
+        )
+
+        child_name = f"{child.firstName} {child.lastName}"
+        subject = f"Event Enrollment Update: {event.name}"
+        content = (
+            f"Hello,\n\n{child_name} has been removed from the {event.name} event "
+            f"on {convert_iso_date_to_string(event.date)} by a WonderHood administrator. "
+            "Please contact WonderHood if you have any questions."
+        )
+
+        for parent in child.parents or []:
+            await tx.notifications.create(
+                data={
+                    "title": subject,
+                    "link": get_event_link(event.id),
+                    "description": f"{child_name} has been removed from {event.name}.",
+                    "userId": parent.id,
+                    "isRead": False,
+                    "time": event.date,
+                }
+            )
+
+    for parent in child.parents or []:
+        if parent.emailNotificationsEnabled:
+            background_tasks.add_task(
+                send_email_one_user,
+                parent.email,
+                subject,
+                content,
+            )
+
+    return {
+        "event": updated_event,
+        "message": f"Removed {child_name} from event",
+    }
+
+
 @router.patch("/{event_id}", status_code=status.HTTP_200_OK)
 async def update_event(
     event_id: str,
