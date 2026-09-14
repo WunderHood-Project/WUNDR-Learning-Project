@@ -26,7 +26,7 @@ export function DesktopNavItems({ links, pathname }: CommonProps) {
               title="Coming soon"
               className={`
                 relative inline-flex items-center
-                py-2
+                py-4
                 px-3 lg:px-3 xl:px-6
                 text-[17px] lg:text-[17px] xl:text-[20px]
                 font-semibold text-wondergreen cursor-not-allowed select-none
@@ -127,11 +127,10 @@ export function MobileNavItems({ links, pathname, onClose }: MobileProps) {
             key={href}
             href={href}
             onClick={onClose}
-            className={`block px-4 py-3 text-lg font-semibold rounded-lg transition-all duration-300 ${
-              isActive
-                ? 'bg-gradient-to-r from-wonderleaf/20 to-wondergreen/20 text-wondergreen border-l-4 border-wondergreen'
-                : 'text-gray-700 hover:text-wondergreen hover:bg-wondergreen/5'
-            }`}
+            className={`block px-4 py-3 text-lg font-semibold rounded-lg transition-all duration-300 ${isActive
+              ? 'bg-gradient-to-r from-wonderleaf/20 to-wondergreen/20 text-wondergreen border-l-4 border-wondergreen'
+              : 'text-gray-700 hover:text-wondergreen hover:bg-wondergreen/5'
+              }`}
           >
             {label}
           </Link>

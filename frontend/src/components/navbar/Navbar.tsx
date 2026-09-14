@@ -80,22 +80,22 @@ export default function Navbar() {
   return (
     <nav className="bg-gradient-to-r from-wonderbg via-white to-wondersun/20 backdrop-blur-sm border-b border-wonderleaf/20 shadow-lg sticky top-0 z-50">
       {/* smaller horizontal padding on mobile, none on sm+ as you asked */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-[1440px] mx-auto px-4">
         <div className="grid grid-cols-[auto_1fr_auto] items-center h-16 md:h-20">
           {/* Brand: logo + name */}
-          <Link href="/" className="flex items-center space-x-1 shrink-0 group">
+          <Link href="/" className="flex items-center space-x-1 shrink-0 min-w-fit group">
             <div className="relative">
               <div className="absolute inset-0 bg-wonderleaf/20 rounded-full blur-lg group-hover:bg-wondergreen/30 transition-all duration-300" />
               <div className="relative z-10 group-hover:scale-105 transition-transform duration-300">
                 {/* Logo is smaller on mobile, scales up on breakpoints */}
                 <Image
-                src="/logo.png"
-                alt="WonderHood logo"
-                width={60}
-                height={55}
-                priority
-                className="w-10 h-9 sm:w-12 sm:h-11 md:w-[60px] md:h-[50px]"
-                sizes="(max-width: 640px) 40px, (max-width: 768px) 48px, 60px"
+                  src="/logo.png"
+                  alt="WonderHood logo"
+                  width={60}
+                  height={55}
+                  priority
+                  className="w-10 h-9 sm:w-12 sm:h-11 md:w-[60px] md:h-[50px]"
+                  sizes="(max-width: 640px) 40px, (max-width: 768px) 48px, 60px"
                 />
               </div>
             </div>
@@ -105,17 +105,17 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation (presentational only) */}
-          <div className="hidden md:flex justify-center justify-self-center lg:pl-6 xl:pl-14">
+          <div className="hidden md:flex items-center min-w-0 overflow-x-auto overflow-y-visible lg:pl-6 xl:pl-14">
             <DesktopNavItems links={NAV_LINKS} pathname={pathname} />
           </div>
 
 
           {/* Right side: Auth / Profile (desktop only) */}
           <div className="hidden lg:flex items-center
-            ml-6 lg:ml-6 xl:ml-6
-            pr-24
+            ml-6 lg:ml-0 xl:ml-0
+            pr-4
             border-l border-wonderleaf/30
-            shrink-0 lg:w-[320px] xl:w-[360px] justify-end gap-4">
+            shrink-0 w-fit justify-end gap-4">
 
             {!authReady ? (
               <div className="invisible flex items-center gap-4">
@@ -167,8 +167,8 @@ export default function Navbar() {
                       className={`h-11 pl-2 pr-3.5 rounded-xl font-semibold flex items-center
                                   border-2 bg-white/70 backdrop-blur-sm hover:shadow-lg transition
                                   ${pathname === "/profile"
-                                    ? "border-wondergreen bg-wondergreen/10 text-wondergreen"
-                                    : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"}`}
+                          ? "border-wondergreen bg-wondergreen/10 text-wondergreen"
+                          : "border-wonderleaf/30 text-wondergreen hover:border-wonderleaf hover:bg-wonderleaf/10"}`}
                     >
                       <div className="w-8 h-8 mr-3 rounded-full bg-gradient-to-r from-wonderleaf to-wondergreen
                                       text-white font-bold text-sm flex items-center justify-center">
@@ -192,12 +192,12 @@ export default function Navbar() {
           {/* Mobile menu toggle */}
           <div className="lg:hidden justify-self-end">
             <button
-            ref={menuToggleRef}
-            onClick={(e) => { e.stopPropagation(); setIsMenuOpen(prev => !prev); }}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-nav"
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-            className="p-2 text-wondergreen hover:text-wonderleaf transition-colors duration-300"
+              ref={menuToggleRef}
+              onClick={(e) => { e.stopPropagation(); setIsMenuOpen(prev => !prev); }}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-nav"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              className="p-2 text-wondergreen hover:text-wonderleaf transition-colors duration-300"
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMenuOpen ? (
@@ -213,18 +213,18 @@ export default function Navbar() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div
-          id="mobile-nav"
-          ref={mobileMenuRef}
-          className="relative lg:hidden bg-white/95 backdrop-blur-sm rounded-b-2xl shadow-lg mt-2 overscroll-contain"
-          role="menu"
-          aria-label="Mobile navigation"
+            id="mobile-nav"
+            ref={mobileMenuRef}
+            className="relative lg:hidden bg-white/95 backdrop-blur-sm rounded-b-2xl shadow-lg mt-2 overscroll-contain"
+            role="menu"
+            aria-label="Mobile navigation"
           >
             {/* Menu items list */}
             <div className="space-y-0.5">
               <MobileNavItems
-              links={NAV_LINKS}
-              pathname={pathname}
-              onClose={() => setIsMenuOpen(false)}
+                links={NAV_LINKS}
+                pathname={pathname}
+                onClose={() => setIsMenuOpen(false)}
               />
             </div>
 
@@ -247,7 +247,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     className="h-11 rounded-2xl border-2 border-wondergreen text-wondergreen font-semibold hover:bg-wondergreen/5 focus:outline-none focus:ring-2 focus:ring-wonderleaf/40"
-                    
+
                     onClick={(e) => { handleLogin(e); setIsMenuOpen(false); }}
                   >
                     Login
